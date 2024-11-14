@@ -237,7 +237,7 @@ public abstract class BaseStringTableParser : IEnumerable<IReadOnlyList<string>>
     /// <exception cref="ObjectDisposedException">reader has disposed.</exception>
     protected virtual IEnumerable<string> ReadLines(TextReader reader, bool disposeOnComplete = false)
     {
-        if (reader == null) throw new ArgumentNullException(nameof(reader), "reader could not be null.");
+        if (reader == null) throw ObjectConvert.ArgumentNull(nameof(reader));
         try
         {
             while (true)
@@ -290,7 +290,7 @@ public abstract class BaseStringTableParser : IEnumerable<IReadOnlyList<string>>
     /// <exception cref="ObjectDisposedException">reader has disposed.</exception>
     private IEnumerable<IReadOnlyList<string>> Parse(TextReader reader, bool disposeOnComplete = false)
     {
-        if (reader == null) throw new ArgumentNullException(nameof(reader), "reader could not be null.");
+        if (reader == null) throw ObjectConvert.ArgumentNull(nameof(reader));
         return Parse(ReadLines(reader, true));
     }
 

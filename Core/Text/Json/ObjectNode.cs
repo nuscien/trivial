@@ -508,8 +508,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool IsNull(string key)
     {
         AssertKey(key);
@@ -545,7 +546,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>true if it contains the property key; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsKey(string key)
     {
         AssertKey(key);
@@ -557,7 +559,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>true if it contains the property key; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsKey(ReadOnlySpan<char> key)
         => ContainsKey(key.ToString());
 
@@ -566,7 +569,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key)
     {
         AssertKey(key);
@@ -579,7 +583,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out string value)
     {
         AssertKey(key);
@@ -593,7 +598,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out int value)
     {
         AssertKey(key);
@@ -607,7 +613,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out long value)
     {
         AssertKey(key);
@@ -621,7 +628,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out bool? value)
     {
         AssertKey(key);
@@ -635,7 +643,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out JsonObjectNode value)
     {
         AssertKey(key);
@@ -649,7 +658,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>true if it contains the property key only; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out JsonArrayNode value)
     {
         AssertKey(key);
@@ -735,8 +745,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public string GetRawText(string key)
     {
@@ -751,8 +762,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public string GetRawText(ReadOnlySpan<char> key)
         => GetRawText(key.ToString());
@@ -763,8 +775,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public JsonValueKind GetValueKind(string key, bool strictMode = false)
     {
         if (strictMode) AssertKey(key);
@@ -784,7 +797,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The value result output.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public JsonValueKind GetValueKind(string key, out object result)
     {
         var kind = GetValueKind(key, false);
@@ -838,8 +852,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
         => GetValueKind(key.ToString(), strictMode);
 
@@ -849,8 +864,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="strictMode">true if want to convert to string only when it is a string; otherwise, false.</param>
     /// <returns>The value. It will be null if the value is null.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public string GetStringValue(string key, bool strictMode = false)
     {
@@ -883,8 +899,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
     /// <param name="length">The number of characters in the substring.</param>
     /// <returns>The substring.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist; startIndex of length is less than 0; or startIndex plus length indicates a position not within this property string value.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public string GetSubstringValue(string key, int startIndex, int? length = null)
     {
@@ -897,8 +914,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="FormatException">The value is not in a recognized format.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public Guid GetGuidValue(string key)
@@ -909,8 +927,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     /// <exception cref="FormatException">The value is not of the correct format.</exception>
     /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
@@ -929,8 +948,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     /// <exception cref="FormatException">The value is not of the correct format.</exception>
     /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
@@ -949,8 +969,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     /// <exception cref="FormatException">The value is not of the correct format.</exception>
     /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
@@ -969,8 +990,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     /// <exception cref="FormatException">The value is not of the correct format.</exception>
     /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
@@ -989,8 +1011,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public double GetDoubleValue(string key)
     {
@@ -1007,8 +1030,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public decimal GetDecimalValue(string key)
     {
@@ -1025,8 +1049,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public bool GetBooleanValue(string key)
     {
@@ -1046,8 +1071,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public JsonObjectNode GetObjectValue(string key)
     {
@@ -1096,8 +1122,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public JsonArrayNode GetArrayValue(string key)
     {
@@ -1111,8 +1138,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="FormatException">The value is not in a recognized format.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public DateTime GetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
@@ -1232,8 +1260,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public BaseJsonValueNode GetValue(string key)
     {
         AssertKey(key);
@@ -1246,8 +1275,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="undefined">true if return undefined when the property does not exist; otherwise, false.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">The property does not exist and argument undefined is false.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public BaseJsonValueNode GetValue(string key, bool undefined)
     {
         AssertKey(key);
@@ -1469,6 +1499,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="ArgumentException">The property key was empty.</exception>
     /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
     public T GetValue<T>(IEnumerable<string> keyPath)
     {
@@ -3652,8 +3683,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if deserialize succeeded; otherwise, false.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the property key was empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
     public bool TryDeserializeValue<T>(string key, JsonSerializerOptions options, out T result)
     {
@@ -3708,7 +3739,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool Remove(string key)
     {
         AssertKey(key);
@@ -3720,7 +3752,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool Remove(ReadOnlySpan<char> key)
         => RemoveProperty(key.ToString());
 
@@ -3745,7 +3778,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Sets null to the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetNullValue(string key)
     {
         AssertKey(key);
@@ -3763,7 +3797,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="_">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, DBNull _)
     {
         AssertKey(key);
@@ -3775,7 +3810,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, string value)
     {
         AssertKey(key);
@@ -3788,7 +3824,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IJsonValueNode<string> value)
     {
         AssertKey(key);
@@ -3801,7 +3838,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueOrRemove(string key, string value)
     {
         AssertKey(key);
@@ -3814,7 +3852,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, string value)
     {
         if (value == null) return;
@@ -3826,7 +3865,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, StringBuilder value)
     {
         if (value == null) return;
@@ -3838,7 +3878,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, string value)
     {
         if (string.IsNullOrEmpty(value)) return;
@@ -3850,7 +3891,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, StringBuilder value)
     {
         if (value == null || value.Length < 1) return;
@@ -3862,7 +3904,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, char[] value)
     {
         AssertKey(key);
@@ -3875,7 +3918,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, StringBuilder value)
         => SetValue(key, value?.ToString());
 
@@ -3884,7 +3928,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void SetValue(string key, SecureString value)
     {
@@ -3899,7 +3944,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetFormatValue(string key, string value, params object[] args)
     {
         AssertKey(key);
@@ -3911,7 +3957,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, Guid value)
     {
         AssertKey(key);
@@ -3923,7 +3970,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, Uri value)
     {
         AssertKey(key);
@@ -3945,7 +3993,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, DateTime value)
     {
         AssertKey(key);
@@ -3988,7 +4037,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, Uri value)
     {
         if (value == null) return;
@@ -4001,7 +4051,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom date and time format string; or null, if force to use JavaScript date time string format..</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, DateTime value, string format)
     {
         AssertKey(key);
@@ -4013,7 +4064,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, uint value)
     {
         AssertKey(key);
@@ -4025,7 +4077,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, int value)
     {
         AssertKey(key);
@@ -4039,7 +4092,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, int value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
@@ -4051,7 +4105,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, int? value)
     {
         if (value.HasValue) SetValue(key, value.Value);
@@ -4062,7 +4117,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="setter">The handler of value setter.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, Func<int, bool, int> setter)
     {
         AssertKey(key);
@@ -4077,7 +4133,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="setter">The handler of value setter.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, Func<int?, int?> setter)
     {
         AssertKey(key);
@@ -4092,7 +4149,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, long value)
     {
         AssertKey(key);
@@ -4106,7 +4164,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, long value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
@@ -4118,7 +4177,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, long? value)
     {
         if (value.HasValue) SetValue(key, value.Value);
@@ -4129,7 +4189,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, float value)
     {
         AssertKey(key);
@@ -4141,7 +4202,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, float? value)
     {
         if (value.HasValue && !float.IsNaN(value.Value)) SetValue(key, value.Value);
@@ -4152,7 +4214,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, double value)
     {
         AssertKey(key);
@@ -4164,7 +4227,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, double? value)
     {
         if (value.HasValue && !double.IsNaN(value.Value)) SetValue(key, value.Value);
@@ -4175,7 +4239,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, decimal value)
     {
         AssertKey(key);
@@ -4189,7 +4254,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, float value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
@@ -4203,7 +4269,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, double value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
@@ -4217,7 +4284,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, decimal value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
@@ -4229,7 +4297,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, bool value)
     {
         AssertKey(key);
@@ -4241,7 +4310,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, bool? value)
     {
         AssertKey(key);
@@ -4254,7 +4324,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IJsonValueNode<bool> value)
     {
         AssertKey(key);
@@ -4272,7 +4343,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, bool? value)
     {
         if (value.HasValue) SetValue(key, value.Value);
@@ -4283,7 +4355,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, JsonArrayNode value)
     {
         AssertKey(key);
@@ -4295,7 +4368,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, JsonArrayNode value)
     {
         if (value == null) return;
@@ -4307,7 +4381,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, JsonArrayNode value)
     {
         if (value == null || value.Count < 1) return;
@@ -4319,7 +4394,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The JSON object node created.</param>
-    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, out JsonArrayNode value)
     {
         value = new();
@@ -4332,7 +4408,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="returnCurrentIfExist">true if return the one existed instead always create; otherwise, false.</param>
     /// <param name="value">The JSON object node created.</param>
-    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, bool returnCurrentIfExist, out JsonArrayNode value)
     {
         if (!returnCurrentIfExist)
@@ -4353,7 +4430,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueOrRemove(string key, JsonArrayNode value)
     {
         AssertKey(key);
@@ -4366,7 +4444,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, JsonObjectNode value)
     {
         AssertKey(key);
@@ -4381,7 +4460,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The JSON object node created.</param>
-    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, out JsonObjectNode value)
     {
         value = new();
@@ -4394,7 +4474,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="returnCurrentIfExist">true if return the one existed instead always create; otherwise, false.</param>
     /// <param name="value">The JSON object node created.</param>
-    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, bool returnCurrentIfExist, out JsonObjectNode value)
     {
         if (!returnCurrentIfExist)
@@ -4416,7 +4497,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="subKey">The sub property key.</param>
     /// <param name="value">The JSON object node created.</param>
-    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, string subKey, out JsonObjectNode value)
     {
         value = new();
@@ -4433,7 +4515,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, JsonObjectNode value)
     {
         if (value == null) return;
@@ -4445,7 +4528,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueOrRemove(string key, JsonObjectNode value)
     {
         AssertKey(key);
@@ -4458,7 +4542,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IJsonObjectHost value)
     {
         AssertKey(key);
@@ -4470,7 +4555,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IJsonObjectHost value)
     {
         if (value is null) return;
@@ -4482,7 +4568,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueOrRemove(string key, IJsonObjectHost value)
     {
         AssertKey(key);
@@ -4495,7 +4582,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<IJsonObjectHost> value)
     {
         AssertKey(key);
@@ -4513,7 +4601,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<IJsonObjectHost> value)
     {
         if (value is null) return;
@@ -4525,7 +4614,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<IJsonObjectHost> value)
     {
         if (value is null || value.Count < 1) return;
@@ -4538,7 +4628,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <param name="converter">The converter.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters. The converter should not be null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue<T>(string key, IEnumerable<T> value, Func<T, JsonObjectNode> converter)
     {
         AssertKey(key);
@@ -4558,7 +4649,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <param name="converter">The converter.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters. The converter should not be null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull<T>(string key, IEnumerable<T> value, Func<T, JsonObjectNode> converter)
     {
         if (value is null) return;
@@ -4571,7 +4663,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <param name="converter">The converter.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters. The converter should not be null.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty<T>(string key, ICollection<T> value, Func<T, JsonObjectNode> converter)
     {
         if (value is null || value.Count < 1) return;
@@ -4583,7 +4676,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, JsonDocument value)
     {
         AssertKey(key);
@@ -4595,7 +4689,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, JsonElement value)
     {
         AssertKey(key);
@@ -4607,8 +4702,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    public void SetValue(string key, System.Text.Json.Nodes.JsonNode value)
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonNode value)
     {
         AssertKey(key);
         SetProperty(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
@@ -4618,7 +4714,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="property">The property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(JsonProperty property)
     {
         SetValue(property.Name, property.Value);
@@ -4629,7 +4726,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<string> value)
     {
         AssertKey(key);
@@ -4643,7 +4741,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<string> value)
     {
         if (value == null) return;
@@ -4655,7 +4754,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<string> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4667,7 +4767,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<bool> value)
     {
         AssertKey(key);
@@ -4681,7 +4782,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<bool> value)
     {
         if (value == null) return;
@@ -4693,7 +4795,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<bool> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4705,7 +4808,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<int> value)
     {
         AssertKey(key);
@@ -4719,7 +4823,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<int> value)
     {
         if (value == null) return;
@@ -4731,7 +4836,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<int> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4743,7 +4849,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<long> value)
     {
         AssertKey(key);
@@ -4757,7 +4864,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<long> value)
     {
         if (value == null) return;
@@ -4769,7 +4877,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<long> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4781,7 +4890,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<float> value)
     {
         AssertKey(key);
@@ -4795,7 +4905,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<float> value)
     {
         if (value == null) return;
@@ -4807,7 +4918,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<float> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4819,7 +4931,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<double> value)
     {
         AssertKey(key);
@@ -4833,7 +4946,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<double> value)
     {
         if (value == null) return;
@@ -4845,7 +4959,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<double> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4857,7 +4972,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<decimal> value)
     {
         AssertKey(key);
@@ -4871,7 +4987,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<decimal> value)
     {
         if (value == null) return;
@@ -4883,7 +5000,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<decimal> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4895,7 +5013,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<JsonObjectNode> value)
     {
         AssertKey(key);
@@ -4909,7 +5028,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<JsonObjectNode> value)
     {
         if (value == null) return;
@@ -4921,7 +5041,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, ICollection<JsonObjectNode> value)
     {
         if (value == null || value.Count < 1) return;
@@ -4934,6 +5055,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="converter">The converter.</param>
     /// <returns>The value of the property.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public BaseJsonValueNode SetValue(string key, Func<BaseJsonValueNode, BaseJsonValueNode> converter)
     {
         var v = TryGetValue(key);
@@ -4950,6 +5073,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="converter">The converter.</param>
     /// <returns>The value of the property.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public BaseJsonValueNode SetValue(string key, Func<string, BaseJsonValueNode, BaseJsonValueNode> converter)
     {
         var v = TryGetValue(key);
@@ -4966,7 +5091,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="inArray">An array of 8-bit unsigned integers.</param>
     /// <param name="options">A formatting options.</param>
-    /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetBase64(string key, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
         SetValue(key, Convert.ToBase64String(inArray, options));
@@ -4978,7 +5104,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="bytes">The bytes to convert to base 64 string.</param>
     /// <param name="options">A formatting options.</param>
-    /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetBase64(string key, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
 #if NETFRAMEWORK
@@ -4993,7 +5120,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetDateTimeStringValue(string key, DateTime value)
     {
         AssertKey(key);
@@ -5005,7 +5133,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetJavaScriptDateTicksValue(string key, DateTime value)
     {
         AssertKey(key);
@@ -5017,7 +5146,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetUnixTimestampValue(string key, DateTime value)
     {
         AssertKey(key);
@@ -5029,7 +5159,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetWindowsFileTimeUtcValue(string key, DateTime value)
     {
         AssertKey(key);
@@ -5042,6 +5173,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, string>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5082,6 +5215,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyE">The key of property E to set.</param>
     /// <param name="valueE">The value of property E to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, string valueA, string keyB, string valueB, string keyC = null, string valueC = null, string keyD = null, string valueD = null, string keyE = null, string valueE = null)
     {
         var i = 0;
@@ -5142,6 +5277,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyJ">The key of property J to set.</param>
     /// <param name="valueJ">The value of property J to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, string valueA, string keyB, string valueB, string keyC, string valueC, string keyD, string valueD, string keyE, string valueE, string keyF, string valueF, string keyG = null, string valueG = null, string keyH = null, string valueH = null, string keyI = null, string valueI = null, string keyJ = null, string valueJ = null)
     {
         var i = SetRange(keyA, valueA, keyB, valueB, keyC, valueC, keyD, valueD, keyE, valueE);
@@ -5155,6 +5292,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, int>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5199,6 +5338,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyG">The key of property G to set.</param>
     /// <param name="valueG">The value of property G to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, int valueA, string keyB, int valueB, string keyC = null, int? valueC = null, string keyD = null, int? valueD = null, string keyE = null, int? valueE = null, string keyF = null, int? valueF = null, string keyG = null, int? valueG = null)
     {
         var i = 0;
@@ -5258,6 +5399,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, float>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5302,6 +5445,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyG">The key of property G to set.</param>
     /// <param name="valueG">The value of property G to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, float valueA, string keyB, float valueB, string keyC = null, float? valueC = null, string keyD = null, float? valueD = null, string keyE = null, float? valueE = null, string keyF = null, float? valueF = null, string keyG = null, float? valueG = null)
     {
         var i = 0;
@@ -5361,6 +5506,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, double>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5405,6 +5552,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyG">The key of property G to set.</param>
     /// <param name="valueG">The value of property G to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, double valueA, string keyB, double valueB, string keyC = null, double? valueC = null, string keyD = null, double? valueD = null, string keyE = null, double? valueE = null, string keyF = null, double? valueF = null, string keyG = null, double? valueG = null)
     {
         var i = 0;
@@ -5464,6 +5613,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, decimal>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5508,6 +5659,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyG">The key of property G to set.</param>
     /// <param name="valueG">The value of property G to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, decimal valueA, string keyB, decimal valueB, string keyC = null, decimal? valueC = null, string keyD = null, decimal? valueD = null, string keyE = null, decimal? valueE = null, string keyF = null, decimal? valueF = null, string keyG = null, decimal? valueG = null)
     {
         var i = 0;
@@ -5567,6 +5720,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, bool>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5611,6 +5766,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyG">The key of property G to set.</param>
     /// <param name="valueG">The value of property G to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, bool valueA, string keyB, bool valueB, string keyC = null, bool? valueC = null, string keyD = null, bool? valueD = null, string keyE = null, bool? valueE = null, string keyF = null, bool? valueF = null, string keyG = null, bool? valueG = null)
     {
         var i = 0;
@@ -5670,6 +5827,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, JsonObjectNode>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5710,6 +5869,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyE">The key of property E to set.</param>
     /// <param name="valueE">The value of property E to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, JsonObjectNode valueA, string keyB, JsonObjectNode valueB, string keyC = null, JsonObjectNode valueC = null, string keyD = null, JsonObjectNode valueD = null, string keyE = null, JsonObjectNode valueE = null)
     {
         var i = 0;
@@ -5770,6 +5931,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyJ">The key of property J to set.</param>
     /// <param name="valueJ">The value of property J to set.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(string keyA, JsonObjectNode valueA, string keyB, JsonObjectNode valueB, string keyC, JsonObjectNode valueC, string keyD, JsonObjectNode valueD, string keyE, JsonObjectNode valueE, string keyF, JsonObjectNode valueF, string keyG = null, JsonObjectNode valueG = null, string keyH = null, JsonObjectNode valueH = null, string keyI = null, JsonObjectNode valueI = null, string keyJ = null, JsonObjectNode valueJ = null)
     {
         var i = SetRange(keyA, valueA, keyB, valueB, keyC, valueC, keyD, valueD, keyE, valueE);
@@ -5783,6 +5946,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, BaseJsonValueNode>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5815,6 +5980,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, JsonArrayNode>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5847,6 +6014,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, JsonElement>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5879,6 +6048,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Nodes.JsonNode>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -5911,6 +6082,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public int SetRange(IEnumerable<KeyValuePair<string, IJsonObjectHost>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -6164,7 +6337,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The value to increase.</param>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void IncreaseValue(string key, int value = 1)
     {
@@ -6224,7 +6398,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The value to increase.</param>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void IncreaseValue(string key, long value)
     {
@@ -6284,7 +6459,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The value to increase.</param>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void IncreaseValue(string key, double value)
     {
@@ -6343,7 +6519,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The value to decrease.</param>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void DecreaseValue(string key, int value = 1)
         => IncreaseValue(key, -value);
@@ -6353,7 +6530,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The value to decrease.</param>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void DecreaseValue(string key, long value)
         => IncreaseValue(key, -value);
@@ -6363,7 +6541,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The value to decrease.</param>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void DecreaseValue(string key, double value)
         => IncreaseValue(key, -value);
@@ -6375,6 +6554,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="force">true if set a new one if the current is not JSON object; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
     /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureObjectValue(string key, bool force, out JsonValueKind oldValueKind)
     {
         oldValueKind = GetValueKind(key);
@@ -6390,6 +6571,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
     /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureObjectValue(string key, out JsonValueKind oldValueKind)
         => EnsureObjectValue(key, false, out oldValueKind);
 
@@ -6400,6 +6583,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="force">true if set a new one if the current is not JSON array; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
     /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureArrayValue(string key, bool force, out JsonValueKind oldValueKind)
     {
         oldValueKind = GetValueKind(key);
@@ -6415,6 +6600,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
     /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureArrayValue(string key, out JsonValueKind oldValueKind)
         => EnsureObjectValue(key, false, out oldValueKind);
 
@@ -6426,6 +6613,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="force">true if set a new one if the current is not JSON array; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
     /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureValue(string key, BaseJsonValueNode defaultValue, bool force, out JsonValueKind oldValueKind)
     {
         oldValueKind = GetValueKind(key);
@@ -6442,6 +6631,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="defaultValue">The default value.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
     /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureValue(string key, BaseJsonValueNode defaultValue, out JsonValueKind oldValueKind)
         => EnsureValue(key, defaultValue, false, out oldValueKind);
 
@@ -6452,6 +6643,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="test">The test handler to determine whether set a default value.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The value of the property.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public BaseJsonValueNode EnsureValue(string key, Func<BaseJsonValueNode, bool> test, BaseJsonValueNode defaultValue)
     {
         var v = TryGetValue(key);
@@ -6468,6 +6661,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="test">The test handler to determine whether set a default value.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The value of the property.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public BaseJsonValueNode EnsureValue(string key, Func<string, BaseJsonValueNode, bool> test, BaseJsonValueNode defaultValue)
     {
         var v = TryGetValue(key);
@@ -6483,7 +6678,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The string value to append.</param>
     /// <returns>The string value.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not string.</exception>
     public string AppendValue(string key, string value)
     {
@@ -6524,7 +6720,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="value">The string value to append.</param>
     /// <returns>The string value.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not string.</exception>
     public string AppendValue(string key, StringBuilder value)
         => AppendValue(key, value?.ToString());
@@ -6536,7 +6733,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="format">The string value to append.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <returns>The string value.</returns>
-    /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not string.</exception>
     public string AppendValueFormat(string key, string format, params object[] args)
         => AppendValue(key, string.Format(format, args));
@@ -7139,7 +7337,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, Uri value)
     {
         AssertKey(key);
@@ -7171,7 +7370,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<string> value)
     {
         AssertKey(key);
@@ -7185,7 +7385,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<int> value)
     {
         AssertKey(key);
@@ -7199,7 +7400,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<long> value)
     {
         AssertKey(key);
@@ -7213,7 +7415,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<float> value)
     {
         AssertKey(key);
@@ -7227,7 +7430,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<double> value)
     {
         AssertKey(key);
@@ -7241,7 +7445,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<decimal> value)
     {
         AssertKey(key);
@@ -7255,7 +7460,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<JsonObjectNode> value)
     {
         AssertKey(key);
@@ -7931,8 +8137,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the key was empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="JsonException">The JSON is invalid. -or- The value type is not compatible with the JSON.</exception>
     public T DeserializeValue<T>(string key, JsonSerializerOptions options = default)
     {
@@ -7949,8 +8155,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="returnType">The type of the object to convert to and return.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the key was empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="JsonException">The JSON is invalid. -or- The value type is not compatible with the JSON.</exception>
     public object DeserializeValue(string key, Type returnType, JsonSerializerOptions options = default)
     {
@@ -7968,8 +8174,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="parser">The string parser.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the key was empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
     public T DeserializeValue<T>(string key, Func<string, T> parser, JsonSerializerOptions options = default)
     {
@@ -8012,7 +8218,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <typeparam name="T">The type of element output.</typeparam>
     /// <param name="selector">The transform function.</param>
     /// <returns>A collection whose elements are the result of invoking the transform function on each property.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">selector was null.</exception>
     public IEnumerable<T> Select<T>(Func<JsonValueKind, object, string, T> selector)
     {
         if (selector == null) throw ObjectConvert.ArgumentNull(nameof(selector));
@@ -8028,7 +8234,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the property key; the third is the index of the element after filter.</param>
     /// <returns>A new JSON object after filter.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException">predicate was null.</exception>
     public JsonObjectNode Where(Func<JsonValueKind, object, string, int, bool> predicate)
     {
         if (predicate == null) throw ObjectConvert.ArgumentNull(nameof(predicate));
@@ -8382,9 +8588,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     private static void AssertKey(string key)
-    {
-        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key), "key should not be null, empty, or consists only of white-space characters.");
-    }
+        => StringExtensions.AssertNotWhiteSpace(nameof(key), key);
 
     /// <summary>
     /// Converts to JSON document.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -155,7 +156,7 @@ public static partial class Arithmetic
     public static Point1D<int> Negate(Point1D<int> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point1D<int>
         {
             X = -value.X
@@ -170,7 +171,7 @@ public static partial class Arithmetic
     public static Point1D<long> Negate(Point1D<long> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point1D<long>
         {
             X = -value.X
@@ -185,7 +186,7 @@ public static partial class Arithmetic
     public static Point1D<float> Negate(Point1D<float> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point1D<float>
         {
             X = -value.X
@@ -200,7 +201,7 @@ public static partial class Arithmetic
     public static Point1D<double> Negate(Point1D<double> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point1D<double>
         {
             X = -value.X
@@ -216,9 +217,9 @@ public static partial class Arithmetic
     public static int GetDistance(Point1D<int> pointA, Point1D<int> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return pointB.X - pointA.X;
     }
 
@@ -231,9 +232,9 @@ public static partial class Arithmetic
     public static long GetDistance(Point1D<long> pointA, Point1D<long> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return pointB.X - pointA.X;
     }
 
@@ -246,9 +247,9 @@ public static partial class Arithmetic
     public static float GetDistance(Point1D<float> pointA, Point1D<float> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return pointB.X - pointA.X;
     }
 
@@ -261,9 +262,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point1D<double> pointA, Point1D<double> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return pointB.X - pointA.X;
     }
 
@@ -423,7 +424,7 @@ public static partial class Arithmetic
     public static Point2D<int> Negate(Point2D<int> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point2D<int>
         {
             X = -value.X,
@@ -439,7 +440,7 @@ public static partial class Arithmetic
     public static Point2D<long> Negate(Point2D<long> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point2D<long>
         {
             X = -value.X,
@@ -455,7 +456,7 @@ public static partial class Arithmetic
     public static Point2D<float> Negate(Point2D<float> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point2D<float>
         {
             X = -value.X,
@@ -471,7 +472,7 @@ public static partial class Arithmetic
     public static Point2D<double> Negate(Point2D<double> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point2D<double>
         {
             X = -value.X,
@@ -488,9 +489,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point2D<int> pointA, Point2D<int> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return Math.Sqrt((pointB.X - pointA.X) ^ 2 + (pointB.Y - pointA.Y) ^ 2);
     }
 
@@ -503,9 +504,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point2D<long> pointA, Point2D<long> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return Math.Sqrt((pointB.X - pointA.X) ^ 2 + (pointB.Y - pointA.Y) ^ 2);
     }
 
@@ -518,9 +519,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point2D<float> pointA, Point2D<float> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         var numA = pointB.X - pointA.X;
         var numB = pointB.Y - pointA.Y;
         return Math.Sqrt(numA * numA + numB * numB);
@@ -535,9 +536,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point2D<double> pointA, Point2D<double> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         var numA = pointB.X - pointA.X;
         var numB = pointB.Y - pointA.Y;
         return Math.Sqrt(numA * numA + numB * numB);
@@ -707,7 +708,7 @@ public static partial class Arithmetic
     public static Point3D<int> Negate(Point3D<int> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point3D<int>
         {
             X = -value.X,
@@ -724,7 +725,7 @@ public static partial class Arithmetic
     public static Point3D<long> Negate(Point3D<long> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point3D<long>
         {
             X = -value.X,
@@ -741,7 +742,7 @@ public static partial class Arithmetic
     public static Point3D<float> Negate(Point3D<float> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point3D<float>
         {
             X = -value.X,
@@ -758,7 +759,7 @@ public static partial class Arithmetic
     public static Point3D<double> Negate(Point3D<double> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point3D<double>
         {
             X = -value.X,
@@ -776,9 +777,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point3D<int> pointA, Point3D<int> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return Math.Sqrt((pointB.X - pointA.X) ^ 2 + (pointB.Y - pointA.Y) ^ 2 + (pointB.Z - pointA.Z) ^ 2);
     }
 
@@ -791,9 +792,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point3D<long> pointA, Point3D<long> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         return Math.Sqrt((pointB.X - pointA.X) ^ 2 + (pointB.Y - pointA.Y) ^ 2 + (pointB.Z - pointA.Z) ^ 2);
     }
 
@@ -806,9 +807,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point3D<float> pointA, Point3D<float> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         var numA = pointB.X - pointA.X;
         var numB = pointB.Y - pointA.Y;
         var numC = pointB.Z - pointA.Z;
@@ -824,9 +825,9 @@ public static partial class Arithmetic
     public static double GetDistance(Point3D<double> pointA, Point3D<double> pointB)
     {
         if (pointA is null)
-            throw new ArgumentNullException("pointA");
+            throw ObjectConvert.ArgumentNull(nameof(pointA));
         if (pointB is null)
-            throw new ArgumentNullException("pointB");
+            throw ObjectConvert.ArgumentNull(nameof(pointB));
         var numA = pointB.X - pointA.X;
         var numB = pointB.Y - pointA.Y;
         var numC = pointB.Z - pointA.Z;
@@ -1005,7 +1006,7 @@ public static partial class Arithmetic
     public static Point4D<int> Negate(Point4D<int> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<int>
         {
             X = -value.X,
@@ -1023,7 +1024,7 @@ public static partial class Arithmetic
     public static Point4D<long> Negate(Point4D<long> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<long>
         {
             X = -value.X,
@@ -1041,7 +1042,7 @@ public static partial class Arithmetic
     public static Point4D<float> Negate(Point4D<float> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<float>
         {
             X = -value.X,
@@ -1059,7 +1060,7 @@ public static partial class Arithmetic
     public static Point4D<double> Negate(Point4D<double> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<double>
         {
             X = -value.X,
@@ -1241,7 +1242,7 @@ public static partial class Arithmetic
     public static Point4D<int, TimeSpan> Negate(Point4D<int, TimeSpan> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<int, TimeSpan>
         {
             X = -value.X,
@@ -1259,7 +1260,7 @@ public static partial class Arithmetic
     public static Point4D<long, TimeSpan> Negate(Point4D<long, TimeSpan> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<long, TimeSpan>
         {
             X = -value.X,
@@ -1277,7 +1278,7 @@ public static partial class Arithmetic
     public static Point4D<float, TimeSpan> Negate(Point4D<float, TimeSpan> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<float, TimeSpan>
         {
             X = -value.X,
@@ -1295,7 +1296,7 @@ public static partial class Arithmetic
     public static Point4D<double, TimeSpan> Negate(Point4D<double, TimeSpan> value)
     {
         if (value is null)
-            throw new ArgumentNullException("value");
+            throw ObjectConvert.ArgumentNull(nameof(value));
         return new Point4D<double, TimeSpan>
         {
             X = -value.X,

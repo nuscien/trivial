@@ -123,7 +123,7 @@ internal class SHA3Managed : HashAlgorithm
 
     protected override void HashCore(byte[] array, int ibStart, int cbSize)
     {
-        if (array == null) throw new ArgumentNullException(nameof(array), "array is null.");
+        if (array == null) throw Reflection.ObjectConvert.ArgumentNull(nameof(array));
         if (ibStart < 0) throw new ArgumentOutOfRangeException(nameof(ibStart), "ibStart is out of range.");
         if (cbSize > array.Length) throw new ArgumentOutOfRangeException(nameof(cbSize), "cbSize is out of range.");
         if (ibStart + cbSize > array.Length) throw new ArgumentOutOfRangeException(nameof(ibStart), "ibStart or cbSize is out of range.");

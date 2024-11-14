@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 
 namespace Trivial.Text;
 
@@ -467,7 +468,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartWith(string str, string value, out string rest)
     {
-        if (value == null) throw new ArgumentNullException(nameof(value), "value is null.");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (str?.StartsWith(value) != true)
         {
             rest = str;
@@ -490,7 +491,7 @@ public static class StringExtensions
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartWith(string str, string value, StringComparison comparisonType, out string rest)
     {
-        if (value == null) throw new ArgumentNullException(nameof(value), "value is null.");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (str?.StartsWith(value, comparisonType) != true)
         {
             rest = str;
@@ -817,6 +818,18 @@ public static class StringExtensions
         => moreThanOne
             ? s.Length > 1 && s[s.Length - 1] == last && (s.Length - s.Substring(0, s.Length - 1).TrimEnd(except).Length) % 2 > 0
             : s.Length > 0 && s[s.Length - 1] == last && (s.Length == 1 || (s.Length - s.Substring(0, s.Length - 1).TrimEnd(except).Length) % 2 > 0);
+
+    /// <summary>
+    /// Asserts the value is not null, empty or consists only of white-space characters.
+    /// </summary>
+    /// <param name="paramName">The parameter name.</param>
+    /// <param name="value">The value to test.</param>
+    /// <exception cref="ArgumentException">The value was empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">The value was null.</exception>
+    internal static void AssertNotWhiteSpace(string paramName, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) throw value is null ? ObjectConvert.ArgumentNull(paramName) : new ArgumentException(string.Concat(paramName, " should not be null, empty or consists only of white-space characters."), nameof(value));
+    }
 
     /// <summary>
     /// Serializes an object into JSON format.

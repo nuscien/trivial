@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -927,7 +928,7 @@ public static partial class StatisticalMethod
     /// <exception cref="InvalidOperationException">col has no element.</exception>
     public static T Min<T>(IEnumerable<T> col) where T : IComparable
     {
-        if (col is null) throw new ArgumentNullException(nameof(col), "col was null.");
+        if (col is null) throw ObjectConvert.ArgumentNull(nameof(col));
         var result = Min(col, default, out var i);
         if (i < 0) throw new InvalidOperationException("col should contain one or more elements but not empty.", new ArgumentException("col was empty.", nameof(col)));
         return result;
@@ -990,7 +991,7 @@ public static partial class StatisticalMethod
     /// <exception cref="InvalidOperationException">col has no element.</exception>
     public static T Max<T>(IEnumerable<T> col) where T : IComparable
     {
-        if (col is null) throw new ArgumentNullException(nameof(col), "col was null.");
+        if (col is null) throw ObjectConvert.ArgumentNull(nameof(col));
         var result = Max(col, default, out var i);
         if (i < 0) throw new InvalidOperationException("col should contain one or more elements but not empty.", new ArgumentException("col was empty.", nameof(col)));
         return result;

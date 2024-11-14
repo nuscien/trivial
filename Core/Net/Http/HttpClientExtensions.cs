@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
 
@@ -54,8 +54,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task CopyToAsync(this HttpContent httpContent, Stream destination, int bufferSize, IProgress<long> progress = null, CancellationToken cancellationToken = default)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
-        if (destination == null) throw new ArgumentNullException(nameof(destination));
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
+        if (destination == null) throw ObjectConvert.ArgumentNull(nameof(destination));
 #if NET6_0_OR_GREATER
         var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
@@ -263,7 +263,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, CancellationToken cancellationToken = default)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var type = typeof(T);
 #if NET6_0_OR_GREATER
         if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync(cancellationToken);
@@ -305,7 +305,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
 #if NET6_0_OR_GREATER
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
@@ -337,7 +337,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings options)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var stream = await httpContent.ReadAsStreamAsync();
         var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
         return (T)serializer.ReadObject(stream);
@@ -353,7 +353,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings options = null)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var stream = await httpContent.ReadAsStreamAsync();
         var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
         return (T)serializer.ReadObject(stream);
@@ -368,8 +368,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<object> DeserializeAsync(this HttpContent httpContent, XmlObjectSerializer deserializer)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-        if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
+        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
         var stream = await httpContent.ReadAsStreamAsync();
         return deserializer.ReadObject(stream);
     }
@@ -384,8 +384,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, Func<string, T> deserializer)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-        if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
+        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
         var str = await httpContent.ReadAsStringAsync();
         return deserializer(str);
     }
@@ -400,7 +400,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static ValueTask<T> DeserializeJsonAsync<T>(this WebResponse webResponse, JsonSerializerOptions options = null)
     {
-        if (webResponse == null) throw new ArgumentNullException(nameof(webResponse), "webResponse should not be null.");
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
         using var stream = webResponse.GetResponseStream();
         return JsonSerializer.DeserializeAsync<T>(stream, options);
     }
@@ -417,7 +417,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings options, CancellationToken cancellationToken)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
         var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
         return (T)serializer.ReadObject(stream);
@@ -434,7 +434,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings options, CancellationToken cancellationToken)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
         var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
         return (T)serializer.ReadObject(stream);
@@ -450,8 +450,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<object> DeserializeAsync(this HttpContent httpContent, XmlObjectSerializer deserializer, CancellationToken cancellationToken)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-        if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
+        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
         return deserializer.ReadObject(stream);
     }
@@ -467,8 +467,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, Func<string, T> deserializer, CancellationToken cancellationToken)
     {
-        if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-        if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
+        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
         var str = await httpContent.ReadAsStringAsync(cancellationToken);
         return deserializer(str);
     }
@@ -484,7 +484,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static ValueTask<T> DeserializeJsonAsync<T>(this WebResponse webResponse, JsonSerializerOptions options, CancellationToken cancellationToken)
     {
-        if (webResponse == null) throw new ArgumentNullException(nameof(webResponse), "webResponse should not be null.");
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
         using var stream = webResponse.GetResponseStream();
         return JsonSerializer.DeserializeAsync<T>(stream, options, cancellationToken);
     }
@@ -500,7 +500,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static T DeserializeJson<T>(this WebResponse webResponse, DataContractJsonSerializerSettings options)
     {
-        if (webResponse == null) throw new ArgumentNullException(nameof(webResponse), "webResponse should not be null.");
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
         using var stream = webResponse.GetResponseStream();
         var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
         return (T)serializer.ReadObject(stream);
@@ -516,7 +516,7 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static T DeserializeXml<T>(this WebResponse webResponse, DataContractSerializerSettings options = null)
     {
-        if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
         using var stream = webResponse.GetResponseStream();
         var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
         return (T)serializer.ReadObject(stream);
@@ -531,8 +531,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static object Deserialize(this WebResponse webResponse, XmlObjectSerializer serializer)
     {
-        if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
-        if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
+        if (serializer == null) throw ObjectConvert.ArgumentNull(nameof(serializer));
         using var stream = webResponse.GetResponseStream();
         return serializer.ReadObject(stream);
     }
@@ -548,8 +548,8 @@ public static class HttpClientExtensions
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeAsync<T>(this WebResponse webResponse, Func<string, T> deserializer, Encoding encoding = null)
     {
-        if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
-        if (deserializer == null) throw new ArgumentNullException(nameof(deserializer));
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
+        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
         using var stream = webResponse.GetResponseStream();
         using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
         var str = await reader.ReadToEndAsync();
@@ -747,7 +747,7 @@ public static class HttpClientExtensions
     /// <returns>The retry result.</returns>
     public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, Exception> needThrow, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
     {
-        if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
+        if (httpClient == null) throw ObjectConvert.ArgumentNull(nameof(httpClient));
         return await Tasks.RetryExtensions.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
         {
             return await httpClient.SendAsync(request, completionOption, cancellation);
@@ -765,7 +765,7 @@ public static class HttpClientExtensions
     /// <returns>The retry result.</returns>
     public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, Exception> needThrow, CancellationToken cancellationToken = default)
     {
-        if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
+        if (httpClient == null) throw ObjectConvert.ArgumentNull(nameof(httpClient));
         return await Tasks.RetryExtensions.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
         {
             return await httpClient.SendAsync(request, cancellation);

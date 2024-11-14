@@ -248,7 +248,7 @@ public static class HashUtility
         if (name == HashAlgorithmName.SHA256) return SHA256.Create();
         if (name == HashAlgorithmName.SHA1) return SHA1.Create();
         if (name == HashAlgorithmName.SHA384) return SHA384.Create();
-        if (string.IsNullOrWhiteSpace(name.Name)) throw new ArgumentException("name.Name should not be null or empty.", nameof(name));
+        Text.StringExtensions.AssertNotWhiteSpace("name.Name", name.Name);
         return (name.Name.ToUpperInvariant().Replace("-", string.Empty)) switch
         {
             "SHA3512" or "KECCAK512" or "SHA3" => SHA3Managed.Create512(),

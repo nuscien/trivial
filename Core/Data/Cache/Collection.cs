@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Text;
 
 namespace Trivial.Data;
 
@@ -79,13 +80,14 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// </summary>
     /// <param name="id">The identifier.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">id was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">id was null.</exception>
+    /// <exception cref="ArgumentException">id was empty or consists only of white-space characters.</exception>
     /// <exception cref="KeyNotFoundException">The identifier does not exist.</exception>
     public T this[string id]
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
+            StringExtensions.AssertNotWhiteSpace(nameof(id), id);
             var info = GetInfo(id);
             if (info == null) throw new KeyNotFoundException("The identifier does not exist.");
             return info.Value;
@@ -93,7 +95,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
 
         set
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
+            StringExtensions.AssertNotWhiteSpace(nameof(id), id);
             items[id] = new DataCacheItemInfo<T>(id, value);
             RemoveExpiredAuto();
         }

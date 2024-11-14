@@ -128,15 +128,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="value">The value.</param>
     /// <param name="key">The additional key.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, [CallerMemberName] string key = null)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
-                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
-            return false;
-        }
-
+        if (!AssertPropertyKey(key)) return false;
         var exist = cache.TryGetValue(key, out var v);
         if (exist && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
@@ -157,15 +153,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="notify">The notification function.</param>
     /// <param name="key">The additional key.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, Action<string, object, bool, object> notify, [CallerMemberName] string key = null)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
-                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
-            return false;
-        }
-
+        if (!AssertPropertyKey(key)) return false;
         var exist = cache.TryGetValue(key, out var v);
         if (exist && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
@@ -187,15 +179,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="notify">The notification function.</param>
     /// <param name="key">The additional key.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, Action<object> notify, [CallerMemberName] string key = null)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
-                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
-            return false;
-        }
-
+        if (!AssertPropertyKey(key)) return false;
         var exist = cache.TryGetValue(key, out var v);
         if (exist && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
@@ -280,15 +268,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="key">The key.</param>
     /// <param name="value">The value.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetProperty(string key, object value)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
-                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
-            return false;
-        }
-
+        if (!AssertPropertyKey(key)) return false;
         var exist = cache.TryGetValue(key, out var v);
         if (exist && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
@@ -328,15 +312,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The key.</param>
     /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool RemoveProperty(string key)
     {
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
-                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
-            return false;
-        }
-
+        if (!AssertPropertyKey(key)) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
         {
             if (PropertyChanged is null)
@@ -529,6 +509,14 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     {
         propertyChanged?.Invoke(this, new(key));
         PropertyChanged?.Invoke(this, new(oldValue, newValue, method, key));
+    }
+
+    private bool AssertPropertyKey(string key)
+    {
+        if (!string.IsNullOrWhiteSpace(key)) return true;
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+            throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
+        return false;
     }
 }
 

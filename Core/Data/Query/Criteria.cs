@@ -90,9 +90,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator &(CollectionCriteria x, ICriteria y)
-    {
-        return And(x, y);
-    }
+        => And(x, y);
 
     /// <summary>
     /// AND operator for criteria.
@@ -101,9 +99,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator &(ICriteria x, CollectionCriteria y)
-    {
-        return And(x, y);
-    }
+        => And(x, y);
 
     /// <summary>
     /// AND operator for criteria.
@@ -112,9 +108,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator &(CollectionCriteria x, CollectionCriteria y)
-    {
-        return And(x, y);
-    }
+        => And(x, y);
 
     /// <summary>
     /// OR operator for criteria.
@@ -123,9 +117,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator |(CollectionCriteria x, ICriteria y)
-    {
-        return Or(x, y);
-    }
+        => Or(x, y);
 
     /// <summary>
     /// OR operator for criteria.
@@ -134,9 +126,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator |(ICriteria x, CollectionCriteria y)
-    {
-        return Or(x, y);
-    }
+        => Or(x, y);
 
     /// <summary>
     /// OR operator for criteria.
@@ -145,9 +135,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator |(CollectionCriteria x, CollectionCriteria y)
-    {
-        return Or(x, y);
-    }
+        => Or(x, y);
 
     /// <summary>
     /// Creates a collection criteria with AND operation.
@@ -191,13 +179,11 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
         if (criteria == null || criteria.CriteriaType == CriteriaType.All) return true;
         if (criteria.CriteriaType == CriteriaType.Collection)
         {
-            var col = criteria as IEnumerable<ICriteria>;
-            if (col != null && col.Count() == 0) return true;
+            if (criteria is IEnumerable<ICriteria> col && !col.Any()) return true;
         }
         else if (criteria.CriteriaType == CriteriaType.Property)
         {
-            var prop = criteria as PropertyCriteria;
-            if (prop != null
+            if (criteria is PropertyCriteria prop
                 && prop.Condition.ValueIsNull
                 && (prop.Condition.Operator == DbCompareOperator.Contains || prop.Condition.Operator == DbCompareOperator.StartsWith || prop.Condition.Operator == DbCompareOperator.EndsWith))
                 return true;
@@ -326,13 +312,11 @@ public sealed class PropertyCriteria : ICriteria
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-    {
-        return string.Format(
+        => string.Format(
             CultureInfo.InvariantCulture,
             "[{0}] {1}",
-            Name != null ? Name : "[empty]",
+            Name ?? "[empty]",
             Condition != null ? Condition.ToString() : "null");
-    }
 
     /// <summary>
     /// Converts given basic compare operator to database compare operator.

@@ -10,6 +10,7 @@ using System.Xml;
 using System.Xml.Linq;
 
 using Trivial.Collection;
+using Trivial.Reflection;
 using Trivial.Text;
 
 namespace Trivial.Security;
@@ -385,7 +386,7 @@ public static class RSAParametersConvert
     public static byte[] Encrypt(this RSA rsa, string data, RSAEncryptionPadding padding, Encoding encoding = null)
     {
         if (data == null) return null;
-        if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+        if (rsa == null) throw ObjectConvert.ArgumentNull(nameof(rsa));
         return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(data), padding);
     }
 
@@ -400,7 +401,7 @@ public static class RSAParametersConvert
     public static byte[] Encrypt(this RSA rsa, SecureString data, RSAEncryptionPadding padding, Encoding encoding = null)
     {
         if (data == null) return null;
-        if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+        if (rsa == null) throw ObjectConvert.ArgumentNull(nameof(rsa));
         return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringExtensions.ToUnsecureString(data)), padding);
     }
 
@@ -415,7 +416,7 @@ public static class RSAParametersConvert
     public static string DecryptText(this RSA rsa, byte[] data, RSAEncryptionPadding padding, Encoding encoding = null)
     {
         if (data == null) return null;
-        if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+        if (rsa == null) throw ObjectConvert.ArgumentNull(nameof(rsa));
         return (encoding ?? Encoding.UTF8).GetString(rsa.Decrypt(data, padding));
     }
 
@@ -430,7 +431,7 @@ public static class RSAParametersConvert
     public static string DecryptText(this RSA rsa, string base64, RSAEncryptionPadding padding, Encoding encoding = null)
     {
         if (base64 == null) return null;
-        if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+        if (rsa == null) throw ObjectConvert.ArgumentNull(nameof(rsa));
         return (encoding ?? Encoding.UTF8).GetString(rsa.Decrypt(Convert.FromBase64String(base64), padding));
     }
 

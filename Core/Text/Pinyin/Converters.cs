@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using Trivial.Reflection;
 
 namespace Trivial.Text
 {
@@ -196,8 +197,8 @@ namespace Trivial.Text
         /// <exception cref="ArgumentException">s was empty.</exception>
         public static PinyinInitials ParseInitial(string s)
         {
-            if (s == null) throw new ArgumentNullException(nameof(s), "s was null.");
-            if (s.Length < 1) throw new ArgumentNullException(nameof(s), "s was empty.");
+            if (s == null) throw ObjectConvert.ArgumentNull(nameof(s));
+            if (s.Length < 1) throw new ArgumentException("s should not be empty.", nameof(s));
             var r = TryParseInitial(s);
             if (r.HasValue) return r.Value;
             throw new FormatException("s was not in correct format.", new ArgumentException("s should be a Pinyin initial.", nameof(s)));
@@ -307,7 +308,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentException">s was empty.</exception>
         public static PinyinFinals ParseFinal(string s)
         {
-            if (s == null) throw new ArgumentNullException(nameof(s), "s should not be null.");
+            if (s == null) throw ObjectConvert.ArgumentNull(nameof(s));
             if (s.Length < 1) throw new ArgumentException("s should not be empty.", nameof(s));
             var r = TryParseFinal(s);
             if (r.HasValue) return r.Value;

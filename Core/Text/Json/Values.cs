@@ -171,8 +171,8 @@ public static class JsonValues
     /// <exception cref="ArgumentNullException">source or predicate is null.</exception>
     public static IEnumerable<BaseJsonValueNode> Where(this IEnumerable<BaseJsonValueNode> source, Func<JsonValueKind, object, int, bool> predicate)
     {
-        if (source == null) throw new ArgumentNullException(nameof(source), "source was null.");
-        if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");
+        if (source == null) throw ObjectConvert.ArgumentNull(nameof(source));
+        if (predicate == null) throw ObjectConvert.ArgumentNull(nameof(predicate));
         var index = -1;
         foreach (var value in source)
         {
@@ -1195,7 +1195,7 @@ public static class JsonValues
     /// <exception cref="ArgumentNullException">predicate is null.</exception>
     public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, Func<string, int, bool, JsonValueKind, bool> predicate) where T : IJsonValueNode
     {
-        if (predicate is null) throw new ArgumentNullException(nameof(predicate), "predicate should not be null.");
+        if (predicate is null) throw ObjectConvert.ArgumentNull(nameof(predicate));
         if (collection == null) yield break;
         var i = -1;
         foreach (var item in collection)
@@ -1215,7 +1215,7 @@ public static class JsonValues
     /// <exception cref="ArgumentNullException">predicate is null.</exception>
     public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, Func<string, JsonValueKind, bool> predicate) where T : IJsonValueNode
     {
-        if (predicate is null) throw new ArgumentNullException(nameof(predicate), "predicate should not be null.");
+        if (predicate is null) throw ObjectConvert.ArgumentNull(nameof(predicate));
         if (collection == null) yield break;
         var i = -1;
         foreach (var item in collection)

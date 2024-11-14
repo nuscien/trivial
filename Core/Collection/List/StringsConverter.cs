@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Net;
 using Trivial.Text;
@@ -54,7 +55,9 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
-    /// <param name="encoding">The encoding; or null, by default, if uses UTF-8.</param>
+    /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
+    /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
+    /// <exception cref="ArgumentException">stream is not writable.</exception>
     public static void WriteTo(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
     {
         if (col == null || stream == null) return;
@@ -73,8 +76,10 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
-    /// <param name="encoding">The encoding; or null, by default, if uses UTF-8.</param>
+    /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
     /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
+    /// <exception cref="ArgumentException">stream is not writable.</exception>
     public static async Task WriteToAsync(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
     {
         if (col == null || stream == null) return;
@@ -93,8 +98,10 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
-    /// <param name="encoding">The encoding; or null, by default, if uses UTF-8.</param>
+    /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
     /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
+    /// <exception cref="ArgumentException">stream is not writable.</exception>
     public static async Task WriteToAsync(this IAsyncEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
     {
         if (col == null || stream == null) return;

@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Trivial.IO;
+using Trivial.Reflection;
 using Trivial.Text;
 
 namespace Trivial.Net;
@@ -239,7 +240,7 @@ public class ServerSentEventInfo
     /// <exception cref="ObjectDisposedException">The stream was closed.</exception>
     public void WriteTo(Stream stream, Encoding encoding = null)
     {
-        if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
+        if (stream == null) throw ObjectConvert.ArgumentNull(nameof(stream));
         if (!stream.CanWrite) throw new NotSupportedException("The stream does not support writing.");
         var s = ToResponseString(true);
         encoding ??= Encoding.UTF8;
@@ -272,7 +273,7 @@ public class ServerSentEventInfo
     /// <exception cref="ObjectDisposedException">The stream writer was closed.</exception>
     public void WriteTo(StreamWriter writer)
     {
-        if (writer == null) throw new ArgumentNullException(nameof(writer), "writer should not be null.");
+        if (writer == null) throw ObjectConvert.ArgumentNull(nameof(writer));
         writer.Write(ToResponseString(true));
     }
 

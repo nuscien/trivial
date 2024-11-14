@@ -29,7 +29,7 @@ public static class ObjectConvert
     /// <exception cref="OverflowException">value was outside the range of the underlying type of the specific type to convert.</exception>
     public static object Invoke(Type type, object value)
     {
-        if (type == null) throw new ArgumentNullException(nameof(type), "type should not be null.");
+        if (type == null) throw ArgumentNull(nameof(type));
         if (type == typeof(string))
         {
             if (value is Stream streamValue)
@@ -44,7 +44,7 @@ public static class ObjectConvert
         if (value == null)
         {
             if (type.IsClass || IsNullableValueType(type)) return null;
-            throw new ArgumentNullException(nameof(value), "value should not be null.");
+            throw ArgumentNull(nameof(value));
         }
 
         var objectType = value.GetType();
@@ -407,7 +407,7 @@ public static class ObjectConvert
     /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
     public static T Resolve<T>(this ISingletonResolver resolver)
     {
-        if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
+        if (resolver == null) throw ArgumentNull(nameof(resolver));
         return resolver.Resolve<T>(null);
     }
 
@@ -421,7 +421,7 @@ public static class ObjectConvert
     /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
     public static object Resolve(this ISingletonResolver resolver, Type type, string key = null)
     {
-        if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
+        if (resolver == null) throw ArgumentNull(nameof(resolver));
         var resolverType = typeof(ISingletonResolver);
         var method = resolverType.GetMethod("Resolve", new[] { typeof(string) });
         var genericMethod = method.MakeGenericMethod(new [] { type });

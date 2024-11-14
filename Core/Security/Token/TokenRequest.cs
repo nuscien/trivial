@@ -612,13 +612,13 @@ public class ClientTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <returns>The object parsed returned.</returns>
-    /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
     /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
     public static TokenRequest<ClientTokenRequestBody> Parse(string s)
     {
-        if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
+        StringExtensions.AssertNotWhiteSpace(nameof(s), s);
         var q = QueryData.Parse(s);
         var body = new ClientTokenRequestBody();
         body.Fill(q);
@@ -779,13 +779,13 @@ public class CodeTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <returns>The object parsed returned.</returns>
-    /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
     /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
     public static CodeTokenRequest Parse(string s)
     {
-        if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
+        StringExtensions.AssertNotWhiteSpace(nameof(s), s);
         var q = QueryData.Parse(s);
         var body = new CodeTokenRequestBody();
         body.Fill(q);
@@ -1038,13 +1038,13 @@ public class RefreshTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <returns>The object parsed returned.</returns>
-    /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
     /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
     public static TokenRequest<RefreshTokenRequestBody> Parse(string s)
     {
-        if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
+        StringExtensions.AssertNotWhiteSpace(nameof(s), s);
         var q = QueryData.Parse(s);
         var body = new RefreshTokenRequestBody();
         body.Fill(q);
@@ -1344,13 +1344,13 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <returns>The object parsed returned.</returns>
-    /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
     /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
     public static TokenRequest<PasswordTokenRequestBody> Parse(string s)
     {
-        if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
+        StringExtensions.AssertNotWhiteSpace(nameof(s), s);
         var q = QueryData.Parse(s);
         var body = new PasswordTokenRequestBody();
         body.Fill(q);

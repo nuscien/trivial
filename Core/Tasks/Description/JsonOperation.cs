@@ -159,7 +159,7 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <exception cref="ArgumentNullException">method should not be null.</exception>
     public static JsonOperationDescription Create(MethodInfo method, string id = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
     {
-        if (method == null) throw new ArgumentNullException(nameof(method), "method was null.");
+        if (method == null) throw ObjectConvert.ArgumentNull(nameof(method));
         var desc = StringExtensions.GetDescription(method);
         var info = JsonValues.CreateDescriptionByAttribute(method);
         if (info != null)

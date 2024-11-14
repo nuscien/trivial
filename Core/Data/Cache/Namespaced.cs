@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Text;
 
 namespace Trivial.Data;
 
@@ -80,13 +81,14 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">id was null, empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">id was null.</exception>
+    /// <exception cref="ArgumentException">id was empty or consists only of white-space characters.</exception>
     /// <exception cref="KeyNotFoundException">The identifier does not exist.</exception>
     public T this[string ns, string id]
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
+            StringExtensions.AssertNotWhiteSpace(nameof(id), id);
             var info = GetInfo(ns, id);
             if (info == null) throw new KeyNotFoundException("The identifier does not exist.");
             return info.Value;
@@ -94,8 +96,8 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
 
         set
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-            else items[GetIdWithPrefix(ns, id)] = new DataCacheItemInfo<T>(ns, id, value);
+            StringExtensions.AssertNotWhiteSpace(nameof(id), id);
+            items[GetIdWithPrefix(ns, id)] = new DataCacheItemInfo<T>(ns, id, value);
             RemoveExpiredAuto();
         }
     }

@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -403,7 +404,7 @@ public static class Numbers
     /// <returns>A number parsed.</returns>
     public static int ParseToInt32(string s, int radix)
     {
-        if (s == null) throw new ArgumentNullException(nameof(s), "s should not be null.");
+        if (s == null) throw ObjectConvert.ArgumentNull(nameof(s));
         if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
         if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
         if (TryParseToInt32(s, radix, out var result)) return result;
@@ -425,7 +426,7 @@ public static class Numbers
     /// <returns>A number parsed.</returns>
     public static long ParseToInt64(string s, int radix)
     {
-        if (s == null) throw new ArgumentNullException(nameof(s), "s should not be null.");
+        if (s == null) throw ObjectConvert.ArgumentNull(nameof(s));
         if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
         if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
         if (TryParseToInt64(s, radix, out var result)) return result;

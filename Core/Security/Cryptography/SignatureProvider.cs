@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Trivial.Collection;
+using Trivial.Text;
 
 namespace Trivial.Security;
 
@@ -340,10 +341,11 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
+    /// <exception cref="ArgumentNullException">secret was null.</exception>
+    /// <exception cref="ArgumentException">secret was empty or consists only of white-space characters.</exception>
     private static RSASignatureProvider Create(string secret, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
     {
-        if (string.IsNullOrWhiteSpace(secret))
-            throw new ArgumentNullException(nameof(secret), "secret should not be null, empty or consists only of white-space characters.");
+        StringExtensions.AssertNotWhiteSpace(nameof(secret), secret);
         var p = RSAParametersConvert.Parse(secret);
         return p == null
             ? throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.")

@@ -1384,37 +1384,22 @@ public static partial class ListExtensions
         {
             i++;
             var vA = padding;
-            var skip = true;
             if (hasA)
             {
                 hasA = a.MoveNext();
-                if (hasA)
-                {
-                    skip = false;
-                    vA = a.Current;
-                }
-                else
-                {
-                    a.Dispose();
-                }
+                if (hasA) vA = a.Current;
+                else a.Dispose();
             }
 
             var vB = padding;
             if (hasB)
             {
                 hasB = b.MoveNext();
-                if (hasB)
-                {
-                    skip = false;
-                    vB = b.Current;
-                }
-                else
-                {
-                    b.Dispose();
-                }
+                if (hasB) vB = b.Current;
+                else b.Dispose();
             }
 
-            if (skip) yield break;
+            if (!hasA && !hasB) yield break;
             yield return callback(vA, hasA, vB, hasB, i);
         }
     }

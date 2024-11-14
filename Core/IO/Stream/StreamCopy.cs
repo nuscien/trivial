@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 
 namespace Trivial.IO;
 
@@ -53,9 +54,9 @@ public static class StreamCopy
     /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
     public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long> progress = null, CancellationToken cancellationToken = default)
     {
-        if (source == null) throw new ArgumentNullException(nameof(source), "source should not be null.");
+        if (source == null) throw ObjectConvert.ArgumentNull(nameof(source));
         if (!source.CanRead) throw new NotSupportedException("The source stream should be readable.");
-        if (destination == null) throw new ArgumentNullException(nameof(destination));
+        if (destination == null) throw ObjectConvert.ArgumentNull(nameof(destination));
         if (!destination.CanWrite) throw new NotSupportedException("The destination stream should be writable.");
         if (bufferSize < 0) throw new ArgumentOutOfRangeException(nameof(bufferSize), "The buffer size should not be negative");
 

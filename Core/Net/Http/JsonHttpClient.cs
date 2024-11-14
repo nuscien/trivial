@@ -20,6 +20,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Trivial.Reflection;
 using Trivial.Web;
 
 namespace Trivial.Net;
@@ -283,7 +284,7 @@ public class JsonHttpClient<T>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public async Task<T> SendAsync(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
     {
-        if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null.");
+        if (request == null) throw ObjectConvert.ArgumentNull(nameof(request));
         if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
         var client = Client ?? new HttpClient();
         var timeout = Timeout;

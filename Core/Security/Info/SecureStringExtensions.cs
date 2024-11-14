@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using Trivial.Reflection;
 
 namespace Trivial.Security;
 
@@ -19,7 +20,7 @@ public static class SecureStringExtensions
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
     public static void AppendString(this SecureString obj, IEnumerable<char> value)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         if (value == null) return;
         foreach (var c in value)
         {
@@ -35,7 +36,7 @@ public static class SecureStringExtensions
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
     public static void AppendString(this SecureString obj, StringBuilder value)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         if (value == null) return;
         for (var i = 0; i < value.Length; i++)
         {
@@ -51,7 +52,7 @@ public static class SecureStringExtensions
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
     public static void AppendString(this SecureString obj, SecureString value)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         if (value == null) return;
         var str = value.ToUnsecureString();
         foreach (var c in str)
@@ -69,7 +70,7 @@ public static class SecureStringExtensions
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
     public static void AppendString(this SecureString obj, byte[] value, Encoding encoding = null)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         if (value == null) return;
         foreach (var c in (encoding ?? Encoding.UTF8).GetChars(value))
         {
@@ -86,7 +87,7 @@ public static class SecureStringExtensions
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
     public static void AppendFormat(this SecureString obj, string value, params object[] args)
     {
-        if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         if (string.IsNullOrEmpty(value)) return;
         value = string.Format(value, args);
         foreach (var c in value)

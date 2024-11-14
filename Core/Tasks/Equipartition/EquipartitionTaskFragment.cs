@@ -361,9 +361,11 @@ public partial class EquipartitionTask
         /// Parses from a JSON string.
         /// </summary>
         /// <param name="s">The string to parse.</param>
+        /// <exception cref="ArgumentNullException">s was null.</exception>
+        /// <exception cref="ArgumentException">s was empty or consists only of white-space characters.</exception>
         public static Fragment Parse(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "str should not be null or empty.");
+            StringExtensions.AssertNotWhiteSpace(nameof(s), s);
             s = s.Trim();
             if (s.IndexOf("<") == 0)
             {
