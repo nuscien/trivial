@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 namespace Trivial.Reflection;
 
 /// <summary>
-/// Factory set.
+/// A set of factory used to register and resolve instance.
 /// </summary>
-public class FactorySet
+public sealed class FactorySet
 {
     /// <summary>
     /// Reader writer lcok slim.
     /// </summary>
-    private readonly ReaderWriterLockSlim slim = new ();
+    private readonly ReaderWriterLockSlim slim = new();
 
     /// <summary>
     /// Cache.
     /// </summary>
-    private readonly Dictionary<Type, object> factories = new ();
+    private readonly Dictionary<Type, object> factories = new();
 
     /// <summary>
     /// Deconstructor.
@@ -142,10 +142,16 @@ public class FactorySet
     public T Create<T>()
     {
         var h = GetFactory<T>();
-        if (h is null)
-            throw new NotSupportedException("The factory of the instance has not been registered yet.");
-        return h();
+        return h is null ? throw new NotSupportedException("The factory of the instance has not been registered yet.") : h();
     }
+
+    /// <summary>
+    /// Gets the resolver for the specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of the instance.</typeparam>
+    /// <returns>An object resolver.</returns>
+    public IObjectResolver<T> GetResolver<T>()
+        => new FactoryObjectResolver<T>(Create<T>);
 
     /// <summary>
     /// Creates an instance of the specific type using the async factory registered.
@@ -182,14 +188,13 @@ public class FactorySet
     /// <param name="key">The key.</param>
     /// <returns>A factory set instance resolved.</returns>
     public static FactorySet Instance(string key = null)
-    {
-        return SingletonResolver.Instance.EnsureResolve<FactorySet>(key);
-    }
+        => SingletonResolver.Instance.EnsureResolve<FactorySet>(key);
 }
 
 /// <summary>
-/// Routed factory.
+/// A factory of a specific type with backup factory supported.
 /// </summary>
+/// <typeparam name="T">The type of instance created by the factory.</typeparam>
 public class RoutedFactory<T>
 {
     /// <summary>

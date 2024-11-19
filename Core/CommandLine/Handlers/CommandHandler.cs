@@ -84,9 +84,7 @@ public abstract class BaseCommandHandler : ICommandHandler
     /// <param name="args">The arguments data.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     protected virtual void OnGetHelp(CommandArguments args, CommandConversationContext context)
-    {
-        Console.WriteLine(Description);
-    }
+        => Console.WriteLine(Description);
 
     /// <summary>
     /// Processes.
@@ -98,9 +96,10 @@ public abstract class BaseCommandHandler : ICommandHandler
     async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
         if (IsDisabled) return;
-        await Task.Run(() => { }, cancellationToken);
+        await Task.CompletedTask;
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
             OnProcess(args, context);
         }
         catch (Exception ex)
@@ -409,7 +408,7 @@ public class CommandVerbHandler<T> : ICommandHandler
     Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
         var instance = factory();
-        if (instance is null) return Task.Run(() => { }, cancellationToken);
+        if (instance is null) return Task.CompletedTask;
         return instance.ProcessAsync(args ?? new CommandArguments(string.Empty), context, cancellationToken);
     }
 

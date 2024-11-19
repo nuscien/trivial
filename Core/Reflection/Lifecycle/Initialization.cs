@@ -84,7 +84,7 @@ public class Initialization
         try
         {
             if (HasInit) return;
-            await OnInitAsync();
+            await Task.CompletedTask;
             HasInit = true;
         }
         finally
@@ -109,7 +109,7 @@ public class Initialization
     /// </summary>
     /// <returns>The async task returned.</returns>
     protected virtual Task OnInitAsync()
-        => init != null ? init() : Task.Run(() => { });
+        => init != null ? init() : Task.CompletedTask;
 
     /// <summary>
     /// Processes on initialization has finished.

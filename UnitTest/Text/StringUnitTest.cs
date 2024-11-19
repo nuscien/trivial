@@ -52,5 +52,10 @@ public class StringUnitTest
         Assert.AreEqual("\"", finder.Before(1));
         Assert.AreEqual("\"", finder.Value);
         Assert.IsTrue(finder.IsEnd);
+
+        Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning to you", " ", " to", false, 6));
+        Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", true));
+        Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning to you", " ", " to", StringComparison.OrdinalIgnoreCase, false, 6));
+        Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", StringComparison.OrdinalIgnoreCase, true));
     }
 }

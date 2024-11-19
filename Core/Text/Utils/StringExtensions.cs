@@ -17,37 +17,6 @@ using Trivial.Reflection;
 namespace Trivial.Text;
 
 /// <summary>
-/// Letter cases.
-/// </summary>
-public enum Cases : byte
-{
-    /// <summary>
-    /// Keep original.
-    /// </summary>
-    Original = 0,
-
-    /// <summary>
-    /// Uppercase.
-    /// </summary>
-    Upper = 1,
-
-    /// <summary>
-    /// Lowercase.
-    /// </summary>
-    Lower = 2,
-
-    /// <summary>
-    /// First letter uppercase and rest keeping original.
-    /// </summary>
-    Capitalize = 3,
-
-    /// <summary>
-    /// First letter lowercase and rest keeping original.
-    /// </summary>
-    Uncapitalize = 4
-}
-
-/// <summary>
 /// The string extension and helper.
 /// </summary>
 public static class StringExtensions
@@ -118,27 +87,28 @@ public static class StringExtensions
     /// </summary>
     /// <param name="text">The original string.</param>
     /// <param name="length">The count of a line.</param>
-    /// <param name="newLine">The optional newline string.</param>
+    /// <param name="newLine">The optional newline string; or null, by default, to use the newline defined for current environment.</param>
     /// <returns>A new text with line break.</returns>
     public static string BreakLines(string text, int length, string newLine = null)
     {
         var idx = 0;
         var len = text.Length;
         var str = new StringBuilder();
+        newLine ??= Environment.NewLine;
         while (idx < len)
         {
             if (idx > 0)
             {
-                str.Append(newLine ?? Environment.NewLine);
+                str.Append(newLine);
             }
 
             if (idx + length >= len)
             {
-                str.Append(text.Substring(idx));
+                AppendSubstring(str, text, idx);
             }
             else
             {
-                str.Append(text.Substring(idx, length));
+                AppendSubstring(str, text, idx, length);
             }
 
             idx += length;
@@ -580,6 +550,21 @@ public static class StringExtensions
     /// </summary>
     /// <param name="values">The string values.</param>
     /// <returns>The first item which is not empty; or null if no match.</returns>
+    public static string GetIfNotEmpty(params ReadOnlySpan<string> values)
+    {
+        foreach (var item in values)
+        {
+            if (!string.IsNullOrEmpty(item)) return item;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the first item which is not empty.
+    /// </summary>
+    /// <param name="values">The string values.</param>
+    /// <returns>The first item which is not empty; or null if no match.</returns>
     public static string GetIfNotEmpty(IEnumerable<string> values)
     {
         if (values == null) return null;
@@ -599,6 +584,23 @@ public static class StringExtensions
     public static string GetIfNotEmptyTrimmed(params string[] values)
     {
         if (values == null) return null;
+        string s;
+        foreach (var item in values)
+        {
+            s = item?.Trim();
+            if (!string.IsNullOrEmpty(s)) return s;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the first item which is not empty after trimming.
+    /// </summary>
+    /// <param name="values">The string values.</param>
+    /// <returns>The first item which is not empty after trimming; or null if no match.</returns>
+    public static string GetIfNotEmptyTrimmed(params ReadOnlySpan<string> values)
+    {
         string s;
         foreach (var item in values)
         {
@@ -1091,6 +1093,20 @@ public static class StringExtensions
 
         return sb.ToString();
     }
+
+    internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex)
+#if NET6_0_OR_GREATER
+        => sb.Append(input.AsSpan(startIndex));
+#else
+        => sb.Append(input.Substring(startIndex));
+#endif
+
+    internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex, int length)
+#if NET6_0_OR_GREATER
+        => sb.Append(input.AsSpan(startIndex, length));
+#else
+        => sb.Append(input.Substring(startIndex, length));
+#endif
 
     private static string ToUpper(string source, CultureInfo culture)
         => culture == null ? source.ToUpper() : source.ToUpper(culture);

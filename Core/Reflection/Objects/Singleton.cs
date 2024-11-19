@@ -647,7 +647,7 @@ public class SingletonResolver : BaseSingletonResolver
 /// The item client for singleton resolver.
 /// </summary>
 /// <typeparam name="T">The type of the model.</typeparam>
-public class SingletonResolverItem<T>
+public class SingletonResolverItem<T> : IObjectResolver<T>
 {
     private readonly SemaphoreSlim locker = new (1, 1);
     private Func<Task<T>> resolver;
@@ -785,6 +785,13 @@ public class SingletonResolverItem<T>
     {
         resolver = resolve;
     }
+
+    /// <summary>
+    /// Gets the instance.
+    /// </summary>
+    /// <returns>The instance.</returns>
+    T IObjectResolver<T>.GetInstance()
+        => GetResult();
 }
 
 /// <summary>

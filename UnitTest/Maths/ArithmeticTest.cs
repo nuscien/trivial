@@ -261,6 +261,12 @@ public class ArithmeticTest
         Assert.AreEqual(4, c.Count);
         Assert.AreEqual(-4, c[0]);
         Assert.AreEqual(4, c[3]);
+        var d = Random(1000009);
+        var e = Random(1000007);
+        var f = Arithmetic.Plus(d, e);
+        Assert.AreEqual(d.Length, f.Length);
+        Assert.AreEqual(d.First() + e.First(), f.First());
+        Assert.AreEqual(d.Last(), f.Last());
     }
 
     /// <summary>
@@ -352,5 +358,17 @@ public class ArithmeticTest
         Assert.IsNull(BooleanOperations.Calculate(SequenceBooleanOperator.First, null));
         Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.True, col));
         Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.False, col));
+    }
+
+    private static int[] Random(int count)
+    {
+        var random = new Random();
+        var nums = new int[count];
+        for (int i = 0; i < count; i++)
+        {
+            nums[i] = random.Next(1_000_000_000);
+        }
+
+        return nums;
     }
 }

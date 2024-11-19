@@ -22,7 +22,8 @@ namespace Trivial.Security
             {
                 ScopeString = "test plain"
             };
-            await Task.Run(() => { }, cancellationToken);
+            await Task.CompletedTask;
+            cancellationToken.ThrowIfCancellationRequested();
             var tokenUrl = codeTokenReq.ToJsonString();
             codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
             tokenUrl = codeTokenReq.ToQueryData().ToString();

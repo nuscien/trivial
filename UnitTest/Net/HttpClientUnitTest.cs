@@ -35,11 +35,8 @@ namespace Trivial.Net
             oauth.Scope.Add("another");
             Assert.AreEqual("test another", oauth.ScopeString);
             oauth.ScopeString = "query";
-            var oneSec = TimeSpan.FromSeconds(1);
-            oauth.Timeout = oneSec;
             Assert.AreEqual(1, oauth.Scope.Count);
             var client = oauth.Create<JsonModel>();
-            Assert.AreEqual(oneSec, client.Timeout);
         }
 
         /// <summary>

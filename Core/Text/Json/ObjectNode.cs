@@ -1509,7 +1509,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         {
             if (t == typeof(JsonObjectNode) || t == typeof(BaseJsonValueNode) || t == typeof(IJsonValueNode)) return (T)(object)this;
             if (t == typeof(JsonDocument)) return (T)(object)(JsonDocument)this;
-            if (t == typeof(System.Text.Json.Nodes.JsonObject)) return (T)(object)(System.Text.Json.Nodes.JsonObject)this;
+            if (t == typeof(JsonObject)) return (T)(object)(System.Text.Json.Nodes.JsonObject)this;
             if (t == typeof(string)) return (T)(object)ToString();
             throw new ArgumentException("The key was empty.");
         }

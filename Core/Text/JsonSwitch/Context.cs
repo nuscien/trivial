@@ -272,6 +272,23 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
+    /// <param name="otherRouters">The other router instances.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase router, params ReadOnlySpan<BaseJsonSwitchCase> otherRouters)
+    {
+        router?.Process(new(this), AfterTest, null);
+        foreach (var item in otherRouters)
+        {
+            item?.Process(new(this), AfterTest, null);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
     /// <param name="routers">The instance collection of the JSON switch-case router.</param>
     /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Case(IEnumerable<BaseJsonSwitchCase> routers)
@@ -326,6 +343,23 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     {
         router?.Process(new(this), AfterTest, null);
         if (otherRouters is null) return this;
+        foreach (var item in otherRouters)
+        {
+            item?.Process(new(this), AfterTest, null);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
+    /// <param name="otherRouters">The other router instances.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase<TArgs> router, params ReadOnlySpan<BaseJsonSwitchCase<TArgs>> otherRouters)
+    {
+        router?.Process(new(this), AfterTest, null);
         foreach (var item in otherRouters)
         {
             item?.Process(new(this), AfterTest, null);

@@ -357,9 +357,7 @@ public static partial class ListExtensions
     /// <returns>The value. The first one for multiple values.</returns>
     /// <exception cref="IndexOutOfRangeException">index is less than 0, or is equals to or greater than the length of the values of the specific key.</exception>
     public static TValue GetValue<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, int index)
-    {
-        return GetValues(list, key).ToList()[index];
-    }
+        => GetValues(list, key).ToList()[index];
 
     /// <summary>
     /// Gets the value by a specific key.
@@ -632,6 +630,24 @@ public static partial class ListExtensions
     /// <param name="keys">The keys to remove.</param>
     /// <returns>The number of elements removed from the key value pairs.</returns>
     public static int Remove<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, params TKey[] keys)
+    {
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
+        var count = 0;
+        foreach (var key in keys)
+        {
+            count = key == null ? list.RemoveAll(item => item.Key == null) : list.RemoveAll(item => key.Equals(item.Key));
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Removes all the elements by the specific key.
+    /// </summary>
+    /// <param name="list">The key value pairs.</param>
+    /// <param name="keys">The keys to remove.</param>
+    /// <returns>The number of elements removed from the key value pairs.</returns>
+    public static int Remove<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, params ReadOnlySpan<TKey> keys)
     {
         if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         var count = 0;
@@ -1059,6 +1075,7 @@ public static partial class ListExtensions
     /// <returns>A synchronized list.</returns>
     public static IList<T> ToSynchronizedList<T>(List<T> list, object syncRoot, bool useSource)
         => new ConcurrentList<T>(syncRoot, list, useSource);
+
     /// <summary>
     /// Determines whether it contains the property only with the specific key.
     /// </summary>

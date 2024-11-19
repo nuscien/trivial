@@ -60,9 +60,7 @@ public static class RetryExtensions
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
     public static Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Action action, params Type[] exceptionTypesForRetry)
-    {
-        return ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
-    }
+        => ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
 
     /// <summary>
     /// Processes an action with this retry policy.
@@ -76,7 +74,7 @@ public static class RetryExtensions
     {
         var result = new RetryResult();
         if (action == null) return result;
-        if (needThrow == null) needThrow = ex => ex;
+        needThrow ??= ex => ex;
         var retry = policy?.CreateInstance() ?? new InternalRetryInstance();
         while (true)
         {
@@ -128,9 +126,7 @@ public static class RetryExtensions
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
     public static Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Func<CancellationToken, Task> action, params Type[] exceptionTypesForRetry)
-    {
-        return ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
-    }
+        => ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
 
     /// <summary>
     /// Processes an action with this retry policy.
@@ -141,9 +137,7 @@ public static class RetryExtensions
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
     public static Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Func<CancellationToken, Task> action, CancellationToken cancellationToken, params Type[] exceptionTypesForRetry)
-    {
-        return ProcessAsync(policy, action, HitException(exceptionTypesForRetry), cancellationToken);
-    }
+        => ProcessAsync(policy, action, HitException(exceptionTypesForRetry), cancellationToken);
 
     /// <summary>
     /// Processes an action with this retry policy.
@@ -157,7 +151,7 @@ public static class RetryExtensions
     {
         var result = new RetryResult<T>();
         if (action == null) return result;
-        if (needThrow == null) needThrow = ex => ex;
+        needThrow ??= ex => ex;
         var retry = policy?.CreateInstance() ?? new InternalRetryInstance();
         while (true)
         {
@@ -210,9 +204,7 @@ public static class RetryExtensions
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
     public static Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<T>> action, params Type[] exceptionTypesForRetry)
-    {
-        return ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
-    }
+        => ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
 
     /// <summary>
     /// Processes an action with this retry policy.
@@ -223,9 +215,7 @@ public static class RetryExtensions
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
     public static Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<T>> action, CancellationToken cancellationToken, params Type[] exceptionTypesForRetry)
-    {
-        return ProcessAsync(policy, action, HitException(exceptionTypesForRetry), cancellationToken);
-    }
+        => ProcessAsync(policy, action, HitException(exceptionTypesForRetry), cancellationToken);
 
     /// <summary>
     /// Processes an action with this retry policy.
@@ -318,13 +308,10 @@ public static class RetryExtensions
     /// <param name="policy">The retry policy.</param>
     /// <returns>A retry record instance.</returns>
     public static RetryInstance CreateInstance(IRetryPolicy policy)
-    {
-        return policy?.CreateInstance() ?? new InternalRetryInstance();
-    }
+        => policy?.CreateInstance() ?? new InternalRetryInstance();
 
-    private static Func<Exception, Exception> HitException(params Type[] exceptionTypesForRetry)
-    {
-        return ex =>
+    private static Func<Exception, Exception> HitException(Type[] exceptionTypesForRetry)
+        => ex =>
         {
             var exType = ex.GetType();
             foreach (var item in exceptionTypesForRetry)
@@ -334,5 +321,4 @@ public static class RetryExtensions
 
             return ex;
         };
-    }
 }

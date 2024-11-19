@@ -545,6 +545,19 @@ public class ConsoleText
     public void AppendFormat(string format, params object[] args)
         => Content.AppendFormat(format, args);
 
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Appends the string returned by processing a composite format string, which contains zero or more format items, to this instance. Each format item is replaced by the string representation of a corresponding argument in a parameter array.
+    /// </summary>
+    /// <param name="format">A composite format string.</param>
+    /// <param name="args">An array of objects to format.</param>
+    /// <exception cref="ArgumentNullException">format or args is null.</exception>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than 0 (zero), or greater than or equal to the length of the args array.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The length of the expanded string would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public void AppendFormat(string format, params ReadOnlySpan<object> args)
+        => Content.AppendFormat(format, args);
+#endif
+
     /// <summary>
     /// Returns a string with ANSI escape sequences that represents the content.
     /// </summary>

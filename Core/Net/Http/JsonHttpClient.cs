@@ -226,25 +226,9 @@ public class JsonHttpClient<T>
     public Func<string, T> Deserializer { get; set; }
 
     /// <summary>
-    /// Gets or sets the HTTP client.
+    /// Gets or sets the HTTP client resolver.
     /// </summary>
-    public HttpClient Client { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value inidcating whether need create new HTTP client instance per request when the property Client is null.
-    /// </summary>
-    public bool IsNewHttpClientByDefault { get; set; }
-
-    /// <summary>
-    /// Gets or sets the timespan to wait before the request times out.
-    /// </summary>
-    public TimeSpan? Timeout { get; set; }
-
-    /// <summary>
-    /// Gets or sets The maximum number of bytes to buffer when reading the response content.
-    /// The default value for this property is 2 gigabytes.
-    /// </summary>
-    public long? MaxResponseContentBufferSize { get; set; }
+    public IObjectResolver<HttpClient> HttpClientResolver { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether still need serialize the result even if it fails to send request.
@@ -271,6 +255,35 @@ public class JsonHttpClient<T>
     }
 
     /// <summary>
+    /// Gets HTTP client instance.
+    /// </summary>
+    /// <returns>The HTTP client instance.</returns>
+    public HttpClient GetHttpClient()
+    {
+        var resolver = HttpClientResolver;
+        if (resolver is null)
+        {
+            var ready = new InstanceObjectRef<HttpClient>(new());
+            if (HttpClientResolver is null)
+            {
+                HttpClientResolver = ready;
+                resolver = ready;
+            }
+            else
+            {
+                resolver = HttpClientResolver;
+                if (resolver is null)
+                {
+                    HttpClientResolver = ready;
+                    resolver = ready;
+                }
+            }
+        }
+
+        return resolver.GetInstance() ?? new();
+    }
+
+    /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
     /// </summary>
     /// <param name="request">The HTTP request message.</param>
@@ -285,32 +298,7 @@ public class JsonHttpClient<T>
     public async Task<T> SendAsync(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
     {
         if (request == null) throw ObjectConvert.ArgumentNull(nameof(request));
-        if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
-        var client = Client ?? new HttpClient();
-        var timeout = Timeout;
-        if (timeout.HasValue)
-        {
-            try
-            {
-                client.Timeout = timeout.Value;
-            }
-            catch (ArgumentException)
-            {
-            }
-        }
-
-        var maxBufferSize = MaxResponseContentBufferSize;
-        if (maxBufferSize.HasValue)
-        {
-            try
-            {
-                client.MaxResponseContentBufferSize = maxBufferSize.Value;
-            }
-            catch (ArgumentException)
-            {
-            }
-        }
-
+        var client = GetHttpClient();
         Sending?.Invoke(this, new SendingEventArgs(request));
         cancellationToken.ThrowIfCancellationRequested();
         OnSend(request);

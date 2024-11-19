@@ -84,6 +84,30 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     }
 
     /// <summary>
+    /// Initializes a new instance of the CollectionCriteria class.
+    /// </summary>
+    /// <param name="op">The collection operator for each item.</param>
+    /// <param name="items">The items to add.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public CollectionCriteria(CriteriaBooleanOperator op, IEnumerable<ICriteria> items)
+    {
+        Operator = op;
+        if (items is not null) AddRange(items);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the CollectionCriteria class.
+    /// </summary>
+    /// <param name="op">The collection operator for each item.</param>
+    /// <param name="items">The items to add.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public CollectionCriteria(CriteriaBooleanOperator op, ReadOnlySpan<ICriteria> items)
+    {
+        Operator = op;
+        foreach (var item in items) Add(item);
+    }
+
+    /// <summary>
     /// AND operator for criteria.
     /// </summary>
     /// <param name="x">Criteria x.</param>
@@ -154,6 +178,30 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     }
 
     /// <summary>
+    /// Creates a collection criteria with AND operation.
+    /// </summary>
+    /// <param name="criterias">The criterias.</param>
+    /// <returns>A collection criteria</returns>
+    public static CollectionCriteria And(IEnumerable<ICriteria> criterias)
+    {
+        var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.And };
+        if (criterias != null) cri.AddRange(criterias);
+        return cri;
+    }
+
+    /// <summary>
+    /// Creates a collection criteria with AND operation.
+    /// </summary>
+    /// <param name="criterias">The criterias.</param>
+    /// <returns>A collection criteria</returns>
+    public static CollectionCriteria And(ReadOnlySpan<ICriteria> criterias)
+    {
+        var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.And };
+        foreach (var c in criterias) cri.Add(c);
+        return cri;
+    }
+
+    /// <summary>
     /// Creates a collection criteria with Or operation.
     /// </summary>
     /// <param name="criteriaA">Criteria A.</param>
@@ -166,6 +214,30 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
         if (criteriaA != null) cri.Add(criteriaA);
         if (criteriaB != null) cri.Add(criteriaB);
         if (criterias != null && criterias.Length > 0) cri.AddRange(criterias);
+        return cri;
+    }
+
+    /// <summary>
+    /// Creates a collection criteria with Or operation.
+    /// </summary>
+    /// <param name="criterias">The criterias.</param>
+    /// <returns>A collection criteria</returns>
+    public static CollectionCriteria Or(IEnumerable<ICriteria> criterias)
+    {
+        var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.Or };
+        if (criterias != null) cri.AddRange(criterias);
+        return cri;
+    }
+
+    /// <summary>
+    /// Creates a collection criteria with Or operation.
+    /// </summary>
+    /// <param name="criterias">The criterias.</param>
+    /// <returns>A collection criteria</returns>
+    public static CollectionCriteria Or(ReadOnlySpan<ICriteria> criterias)
+    {
+        var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.Or };
+        foreach (var c in criterias) cri.Add(c);
         return cri;
     }
 

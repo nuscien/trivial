@@ -82,19 +82,40 @@ public static class SecureStringExtensions
     /// Appends a string into a secure string instance.
     /// </summary>
     /// <param name="obj">The secure string instance.</param>
-    /// <param name="value">The string to append.</param>
+    /// <param name="format">A composite format string to append with args.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
-    public static void AppendFormat(this SecureString obj, string value, params object[] args)
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public static void AppendFormat(this SecureString obj, string format, params object[] args)
     {
         if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
-        if (string.IsNullOrEmpty(value)) return;
-        value = string.Format(value, args);
-        foreach (var c in value)
+        if (string.IsNullOrEmpty(format)) return;
+        format = string.Format(format, args);
+        foreach (var c in format)
         {
             obj.AppendChar(c);
         }
     }
+
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Appends a string into a secure string instance.
+    /// </summary>
+    /// <param name="obj">The secure string instance.</param>
+    /// <param name="format">A composite format string to append with args.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
+    public static void AppendFormat(this SecureString obj, string format, params ReadOnlySpan<object> args)
+    {
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
+        if (string.IsNullOrEmpty(format)) return;
+        format = string.Format(format, args);
+        foreach (var c in format)
+        {
+            obj.AppendChar(c);
+        }
+    }
+#endif
 
     /// <summary>
     /// Converts a string to a secure string instance.

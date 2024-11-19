@@ -169,9 +169,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
     /// <param name="additionalKeys">The additional keys including alias and short name.</param>
     /// <returns>A set of parameter.</returns>
     public CommandParameters Get(string key, params string[] additionalKeys)
-    {
-        return Get(key, additionalKeys as IEnumerable<string>);
-    }
+        => Get(key, additionalKeys as IEnumerable<string>);
 
     /// <summary>
     /// Gets the specific parameters by key.

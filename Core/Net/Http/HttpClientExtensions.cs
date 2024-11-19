@@ -29,6 +29,73 @@ public static class HttpClientExtensions
     public const int DefaultBlockSize = 4194304; // 4M
 
     /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The instance.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClient value)
+        => new InstanceObjectRef<HttpClient>(value);
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value)
+        => new InstanceObjectRef<HttpClient>(value is null ? new() : new(value));
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
+    /// <param name="disposeHandler">true if the inner handler should be disposed when the HTTP client is disposed; otherwise, false, to reuse the inner handler.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value, bool disposeHandler)
+        => new InstanceObjectRef<HttpClient>(new(value, disposeHandler));
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The instance.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(Lazy<HttpClient> value)
+        => new LazyObjectRef<HttpClient>(value);
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="timeout">The duration to wait before the request times out.</param>
+    /// <param name="maxResponseContentBufferSize">The maximum number of bytes to buffer when reading the response content; or null, by defaule, 2 gigabytes.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(TimeSpan timeout, long? maxResponseContentBufferSize = null)
+    {
+        var client = new HttpClient()
+        {
+            Timeout = timeout
+        };
+        if (maxResponseContentBufferSize.HasValue) client.MaxResponseContentBufferSize = maxResponseContentBufferSize.Value;
+        return new InstanceObjectRef<HttpClient>(client);
+    }
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
+    /// <param name="disposeHandler">true if the inner handler should be disposed when the HTTP client is disposed; otherwise, false, to reuse the inner handler.</param>
+    /// <param name="timeout">The duration to wait before the request times out.</param>
+    /// <param name="maxResponseContentBufferSize">The maximum number of bytes to buffer when reading the response content; or null, by defaule, 2 gigabytes.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value, bool disposeHandler, TimeSpan timeout, long? maxResponseContentBufferSize = null)
+    {
+        var client = new HttpClient(value, disposeHandler)
+        {
+            Timeout = timeout
+        };
+        if (maxResponseContentBufferSize.HasValue) client.MaxResponseContentBufferSize = maxResponseContentBufferSize.Value;
+        return new InstanceObjectRef<HttpClient>(client);
+    }
+
+    /// <summary>
     /// Loads the HTTP content into a stream of bytes and copies it to the stream object provided as the stream parameter.
     /// </summary>
     /// <param name="httpContent">The http response content.</param>
@@ -38,9 +105,7 @@ public static class HttpClientExtensions
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static Task CopyToAsync(this HttpContent httpContent, Stream destination, IProgress<long> progress = null, CancellationToken cancellationToken = default)
-    {
-        return CopyToAsync(httpContent, destination, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
-    }
+        => CopyToAsync(httpContent, destination, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
 
     /// <summary>
     /// Loads the HTTP content into a stream of bytes and copies it to the stream object provided as the stream parameter.

@@ -279,7 +279,8 @@ public class RetryTask<T> where T : IRetryPolicy
     /// <returns>An asynchronous operation instance.</returns>
     protected virtual Task OnProcessAsync(CancellationToken cancellationToken)
     {
-        return Task.Run(() => { }, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.CompletedTask;
     }
 }
 

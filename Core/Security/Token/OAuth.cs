@@ -214,24 +214,16 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public Func<QueryData, bool> TokenRequestInfoValidator { get; set; }
 
     /// <summary>
-    /// Gets or sets the HTTP web client handler for sending message.
-    /// But token resolving will not use this.
+    /// Gets or sets the HTTP client resolver.
     /// </summary>
     [JsonIgnore]
-    public HttpClientHandler HttpClientHandler { get; set; }
+    public IObjectResolver<HttpClient> HttpClientResolver { get; set; }
 
     /// <summary>
-    /// Gets or sets the timespan to wait before the request times out.
+    /// Gets or sets the HTTP client resolver for authorization logic; or null, to use HttpClientResolver property.
     /// </summary>
     [JsonIgnore]
-    public TimeSpan? Timeout { get; set; }
-
-    /// <summary>
-    /// Gets or sets the maximum number of bytes to buffer when reading the response content.
-    /// The default value for this property is 2 gigabytes.
-    /// </summary>
-    [JsonIgnore]
-    public long? MaxResponseContentBufferSize { get; set; }
+    public IObjectResolver<HttpClient> AuthorizationHttpClientResolver { get; set; }
 
     /// <summary>
     /// Gets the date and time of token resolved.
@@ -247,10 +239,10 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <returns>A new JSON HTTP client.</returns>
     public virtual JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
     {
-        var httpClient = new JsonHttpClient<T>();
-        if (HttpClientHandler != null) httpClient.Client = new HttpClient(HttpClientHandler, false);
-        httpClient.Timeout = Timeout;
-        httpClient.MaxResponseContentBufferSize = MaxResponseContentBufferSize;
+        var httpClient = new JsonHttpClient<T>
+        {
+            HttpClientResolver = HttpClientResolver,
+        };
         httpClient.Sending += (sender, ev) =>
         {
             WriteAuthenticationHeaderValue(ev.RequestMessage.Headers);
@@ -273,7 +265,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <param name="scope">The additional scope.</param>
     /// <returns>A token request instance with given body and the current app secret information.</returns>
     public TokenRequest<T> CreateTokenRequest<T>(T body, IEnumerable<string> scope = null) where T : TokenRequestBody
-        => new TokenRequest<T>(body, appInfo, scope);
+        => new(body, appInfo, scope);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -286,7 +278,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
     {
         if (request == null) throw ObjectConvert.ArgumentNull(nameof(request));
-        var client = CreateHttpClient();
+        var client = GetHttpClient();
         WriteAuthenticationHeaderValue(request.Headers);
         Sending?.Invoke(this, new SendingEventArgs(request));
         return client.SendAsync(request, cancellationToken);
@@ -304,7 +296,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
     {
         if (request == null) throw ObjectConvert.ArgumentNull(nameof(request));
-        var client = CreateHttpClient();
+        var client = GetHttpClient();
         WriteAuthenticationHeaderValue(request.Headers);
         Sending?.Invoke(this, new SendingEventArgs(request));
         return client.SendAsync(request, completionOption, cancellationToken);
@@ -319,9 +311,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public Task<T> SendAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken = default)
-    {
-        return Create<T>().SendAsync(request, cancellationToken);
-    }
+        => Create<T>().SendAsync(request, cancellationToken);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -333,9 +323,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
-    {
-        return Create<T>().SendAsync(request, callback, cancellationToken);
-    }
+        => Create<T>().SendAsync(request, callback, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -616,8 +604,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
         var httpClient = new JsonHttpClient<TokenInfo>
         {
             SerializeEvenIfFailed = true,
-            Timeout = Timeout,
-            MaxResponseContentBufferSize = MaxResponseContentBufferSize
+            HttpClientResolver = AuthorizationHttpClientResolver ?? HttpClientResolver
         };
         httpClient.Received += (sender, ev) =>
         {
@@ -648,8 +635,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
         var httpClient = new JsonHttpClient<T>
         {
             SerializeEvenIfFailed = true,
-            Timeout = Timeout,
-            MaxResponseContentBufferSize = MaxResponseContentBufferSize
+            HttpClientResolver = AuthorizationHttpClientResolver ?? HttpClientResolver
         };
         httpClient.Received += (sender, ev) =>
         {
@@ -675,34 +661,29 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// Creats an HTTP web client.
     /// </summary>
     /// <returns>The HTTP web client.</returns>
-    private HttpClient CreateHttpClient()
+    private HttpClient GetHttpClient()
     {
-        var client = HttpClientHandler != null ? new HttpClient(HttpClientHandler, false) : new HttpClient();
-        var timeout = Timeout;
-        if (timeout.HasValue)
+        var resolver = HttpClientResolver;
+        if (resolver is null)
         {
-            try
+            var ready = new InstanceObjectRef<HttpClient>(new());
+            if (HttpClientResolver is null)
             {
-                client.Timeout = timeout.Value;
+                HttpClientResolver = ready;
+                resolver = ready;
             }
-            catch (ArgumentException)
+            else
             {
+                resolver = HttpClientResolver;
+                if (resolver is null)
+                {
+                    HttpClientResolver = ready;
+                    resolver = ready;
+                }
             }
         }
 
-        var maxBufferSize = MaxResponseContentBufferSize;
-        if (maxBufferSize.HasValue)
-        {
-            try
-            {
-                client.MaxResponseContentBufferSize = maxBufferSize.Value;
-            }
-            catch (ArgumentException)
-            {
-            }
-        }
-
-        return client;
+        return resolver.GetInstance() ?? new();
     }
 }
 
@@ -821,27 +802,6 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
         {
             oauth.TokenResolved -= value;
         }
-    }
-
-    /// <summary>
-    /// Gets or sets the timespan to wait before the request times out.
-    /// </summary>
-    [JsonIgnore]
-    public TimeSpan? Timeout
-    {
-        get => oauth.Timeout;
-        set => oauth.Timeout = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the maximum number of bytes to buffer when reading the response content.
-    /// The default value for this property is 2 gigabytes.
-    /// </summary>
-    [JsonIgnore]
-    public long? MaxResponseContentBufferSize
-    {
-        get => oauth.MaxResponseContentBufferSize;
-        set => oauth.MaxResponseContentBufferSize = value;
     }
 
     /// <summary>

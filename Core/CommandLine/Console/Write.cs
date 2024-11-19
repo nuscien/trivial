@@ -69,6 +69,21 @@ public sealed partial class StyleConsole
     /// Writes the specified string value to the standard output stream.
     /// Note it may not flush immediately.
     /// </summary>
+    /// <param name="content">The text content collection.</param>
+    public void Append(ReadOnlySpan<ConsoleText> content)
+    {
+        foreach (var item in content)
+        {
+            if (item != null) col.Add(item);
+        }
+
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
@@ -178,6 +193,122 @@ public sealed partial class StyleConsole
         col.AddRange(list);
         OnAppend();
     }
+
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args)));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(ConsoleTextStyle style, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(ConsoleColor foreground, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(Color foreground, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(Color foreground, Color background, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Append(IConsoleTextPrettier style, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        if (style == null)
+        {
+            Append(s, args);
+            return;
+        }
+
+        var list = style.CreateTextCollection(args.Length == 0 ? s : string.Format(s, args));
+        if (list == null) return;
+        col.AddRange(list);
+        OnAppend();
+    }
+#endif
 
     /// <summary>
     /// Writes the specified string value to the standard output stream.
@@ -1339,6 +1470,21 @@ public sealed partial class StyleConsole
     /// Writes the specified string value to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="content">The text content collection.</param>
+    public void Write(ReadOnlySpan<ConsoleText> content)
+    {
+        foreach (var item in content)
+        {
+            if (item != null) col.Add(item);
+        }
+
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
@@ -1448,6 +1594,123 @@ public sealed partial class StyleConsole
         col.AddRange(list);
         Flush();
     }
+
+#if NET9_0_OR_GREATER
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(ConsoleTextStyle style, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(ConsoleColor foreground, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(Color foreground, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(Color foreground, Color background, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(IConsoleTextPrettier style, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        if (style == null)
+        {
+            Write(s, args);
+            return;
+        }
+
+        var list = style.CreateTextCollection(args.Length == 0 ? s : string.Format(s, args));
+        if (list == null) return;
+        col.AddRange(list);
+        Flush();
+    }
+#endif
 
     /// <summary>
     /// Writes the specified string value to the standard output stream.
@@ -2602,6 +2865,22 @@ public sealed partial class StyleConsole
 
     /// <summary>
     /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="content">The text content collection.</param>
+    public void WriteLine(ReadOnlySpan<ConsoleText> content)
+    {
+        foreach (var item in content)
+        {
+            if (item != null) col.Add(item);
+        }
+
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
     /// </summary>
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
@@ -2713,6 +2992,122 @@ public sealed partial class StyleConsole
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
+
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// </summary>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(string s, params ReadOnlySpan<object> args)
+    {
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args)));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(ConsoleTextStyle style, string s, params ReadOnlySpan<object> args)
+    {
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(ConsoleColor foreground, string s, params ReadOnlySpan<object> args)
+    {
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, string s, params ReadOnlySpan<object> args)
+    {
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(Color foreground, string s, params ReadOnlySpan<object> args)
+    {
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(Color foreground, Color background, string s, params ReadOnlySpan<object> args)
+    {
+        col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void WriteLine(IConsoleTextPrettier style, string s, params ReadOnlySpan<object> args)
+    {
+        if (s == null) return;
+        if (style == null)
+        {
+            WriteLine(s, args);
+            return;
+        }
+
+        var list = style.CreateTextCollection(args.Length == 0 ? s : string.Format(s, args));
+        if (list == null) return;
+        col.AddRange(list);
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+#endif
 
     /// <summary>
     /// Writes the specified string value, followed by the current line terminator, to the standard output stream.

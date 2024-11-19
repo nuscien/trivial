@@ -48,8 +48,6 @@ namespace Trivial.Text
             var s = "a'a'a~ Wo3men2 zuo2ri4 doU1zai去 yīQǐ kan4 Wang1Waŋ1ㄨㄤ¯ nE, ni上ne轻?  Ẑesh4 Miao1miAo¯Miao1r ma?";
             s = PinyinMarks.Format(s);
             Assert.AreEqual("A'a'a~ Wǒmén zuórì dōuzài yīqǐ kàn Wāngwāngwāng ne, nǐne? Zheshì Miāomiāomiāor ma?", s);
-            Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning to you", " ", " to", false, 6));
-            Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", true));
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Collection;
 using Trivial.Text;
 
 namespace Trivial.Maths;
@@ -16,17 +18,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<int> Plus(IEnumerable<int> a, IEnumerable<int> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA + numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0, Plus);
+
+    private static int Plus(int itemA, bool hasA, int itemB, bool hasB, int i)
+        => itemA + itemB;
 
     /// <summary>
     /// Pluses each item in 3-4 collections by index.
@@ -98,16 +93,69 @@ public static partial class Arithmetic
     {
         a ??= Array.Empty<int>();
         b ??= Array.Empty<int>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new int[count];
-        for (var i = 0; i < count; i++)
+        var c = new int[Math.Max(a.Length, b.Length)];
+#if NET8_0_OR_GREATER
+        if (!Vector<int>.IsSupported || (a.Length < 1000 && b.Length < 1000))
         {
-            var numA = i >= a.Length ? 0 : a[i];
-            var numB = i >= b.Length ? 0 : b[i];
-            c[i] = numA + numB;
+            PlusByArray(c, 0, a, b);
+            return c;
         }
 
+        var step = Vector<int>.Count;
+        if (step < 4)
+        {
+            PlusByArray(c, 0, a, b);
+            return c;
+        }
+
+        var count = Math.Min(a.Length, b.Length);
+        count -= count % step;
+        for (int i = 0; i < count; i += step)
+        {
+            var vA = new Vector<int>(a, i);
+            var vB = new Vector<int>(b, i);
+            var result = vA + vB;
+            result.CopyTo(c, i);
+        }
+
+        PlusByArray(c, count, a, b);
         return c;
+#else
+        PlusByArray(c, 0, a, b);
+        return c;
+#endif
+    }
+
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="c">The output array.</param>
+    /// <param name="start">The zero-based index to start enumerate in the input arrays.</param>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items plused.</returns>
+    public static void PlusByArray(int[] c, int start, int[] a, int[] b)
+    {
+        var count = Math.Min(a.Length, b.Length);
+        for (var i = start; i < count; i++)
+        {
+            c[i] = a[i] + b[i];
+        }
+
+        if (a.Length > b.Length)
+        {
+            for (var i = b.Length; i < a.Length; i++)
+            {
+                c[i] = a[i];
+            }
+        }
+        else if (a.Length < b.Length)
+        {
+            for (var i = a.Length; i < b.Length; i++)
+            {
+                c[i] = b[i];
+            }
+        }
     }
 
     /// <summary>
