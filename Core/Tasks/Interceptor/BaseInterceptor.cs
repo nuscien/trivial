@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Trivial.Tasks;
@@ -14,7 +15,11 @@ public abstract class BaseInterceptor<T>
     /// <summary>
     /// The locker.
     /// </summary>
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
     private readonly object locker = new();
+#endif
 
     /// <summary>
     /// The count of latest request.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Trivial.Collection;
@@ -32,21 +33,7 @@ public static partial class Arithmetic
     /// <param name="d">Additional collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<int> Plus(IEnumerable<int> a, IEnumerable<int> b, IEnumerable<int> c, IEnumerable<int> d = null)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var colC = c?.ToList() ?? new();
-        var colD = d?.ToList() ?? new();
-        var count = Math.Max(Math.Max(colA.Count, colB.Count), Math.Max(colC.Count, colD.Count));
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            var numC = i >= colC.Count ? 0 : colC[i];
-            var numD = i >= colD.Count ? 0 : colD[i];
-            yield return numA + numB + numC + numD;
-        }
-    }
+        => Compute(a, b, c, d, 0, Plus);
 
     /// <summary>
     /// Pluses each item in 2 collections by index.
@@ -56,17 +43,7 @@ public static partial class Arithmetic
     /// <param name="c">Additional number to plus.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<int> Plus(IEnumerable<int> a, IEnumerable<int> b, int c)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA + numB + c;
-        }
-    }
+        => Compute(a, b, c, 0, Plus);
 
     /// <summary>
     /// Pluses a number and each item in a collection.
@@ -75,13 +52,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<int> Plus(IEnumerable<int> a, int b)
-    {
-        if (a == null) yield break;
-        foreach (var item in a)
-        {
-            yield return item + b;
-        }
-    }
+        => Compute(a, b, Plus);
 
     /// <summary>
     /// Pluses each item in 2 arrays by index.
@@ -90,73 +61,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items plused.</returns>
     public static int[] Plus(int[] a, int[] b)
-    {
-        a ??= Array.Empty<int>();
-        b ??= Array.Empty<int>();
-        var c = new int[Math.Max(a.Length, b.Length)];
-#if NET8_0_OR_GREATER
-        if (!Vector<int>.IsSupported || (a.Length < 1000 && b.Length < 1000))
-        {
-            PlusByArray(c, 0, a, b);
-            return c;
-        }
-
-        var step = Vector<int>.Count;
-        if (step < 4)
-        {
-            PlusByArray(c, 0, a, b);
-            return c;
-        }
-
-        var count = Math.Min(a.Length, b.Length);
-        count -= count % step;
-        for (int i = 0; i < count; i += step)
-        {
-            var vA = new Vector<int>(a, i);
-            var vB = new Vector<int>(b, i);
-            var result = vA + vB;
-            result.CopyTo(c, i);
-        }
-
-        PlusByArray(c, count, a, b);
-        return c;
-#else
-        PlusByArray(c, 0, a, b);
-        return c;
-#endif
-    }
+        => Compute(a, b, 0, Plus, Plus);
 
     /// <summary>
     /// Pluses each item in 2 arrays by index.
     /// </summary>
-    /// <param name="c">The output array.</param>
-    /// <param name="start">The zero-based index to start enumerate in the input arrays.</param>
     /// <param name="a">Left array.</param>
     /// <param name="b">Right array.</param>
     /// <returns>An array with items plused.</returns>
-    public static void PlusByArray(int[] c, int start, int[] a, int[] b)
-    {
-        var count = Math.Min(a.Length, b.Length);
-        for (var i = start; i < count; i++)
-        {
-            c[i] = a[i] + b[i];
-        }
+    public static int[] Plus(ReadOnlySpan<int> a, ReadOnlySpan<int> b)
+        => Compute(a, b, 0, Plus, Plus);
 
-        if (a.Length > b.Length)
-        {
-            for (var i = b.Length; i < a.Length; i++)
-            {
-                c[i] = a[i];
-            }
-        }
-        else if (a.Length < b.Length)
-        {
-            for (var i = a.Length; i < b.Length; i++)
-            {
-                c[i] = b[i];
-            }
-        }
-    }
+    private static int Plus(int a, int b)
+        => a + b;
+
+    private static Vector<int> Plus(Vector<int> a, Vector<int> b)
+        => a + b;
 
     /// <summary>
     /// Minuses each item in 2 collections by index.
@@ -165,17 +85,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<int> Minus(IEnumerable<int> a, IEnumerable<int> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA - numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0, Minus);
+
+    private static int Minus(int itemA, bool hasA, int itemB, bool hasB, int i)
+        => itemA - itemB;
 
     /// <summary>
     /// Minuses.
@@ -184,13 +97,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<int> Minus(IEnumerable<int> a, int b)
-    {
-        if (a == null) yield break;
-        foreach (var item in a)
-        {
-            yield return item - b;
-        }
-    }
+        => Compute(a, b, Minus);
 
     /// <summary>
     /// Minuses.
@@ -214,20 +121,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items ,inused.</returns>
     public static int[] Minus(int[] a, int[] b)
-    {
-        a ??= Array.Empty<int>();
-        b ??= Array.Empty<int>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new int[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0 : a[i];
-            var numB = i >= b.Length ? 0 : b[i];
-            c[i] = numA - numB;
-        }
+        => Compute(a, b, 0, Minus, Minus);
 
-        return c;
-    }
+    /// <summary>
+    /// Minuses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items ,inused.</returns>
+    public static int[] Minus(ReadOnlySpan<int> a, ReadOnlySpan<int> b)
+        => Compute(a, b, 0, Minus, Minus);
+
+    private static int Minus(int a, int b)
+        => a - b;
+
+    private static Vector<int> Minus(Vector<int> a, Vector<int> b)
+        => a - b;
 
     /// <summary>
     /// Negates all items in the given collection.
@@ -267,17 +176,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<long> Plus(IEnumerable<long> a, IEnumerable<long> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0L : colA[i];
-            var numB = i >= colB.Count ? 0L : colB[i];
-            yield return numA + numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0L, Plus);
+
+    private static long Plus(long itemA, bool hasA, long itemB, bool hasB, int i)
+        => itemA + itemB;
 
     /// <summary>
     /// Pluses each item in 3-4 collections by index.
@@ -288,21 +190,7 @@ public static partial class Arithmetic
     /// <param name="d">Additional collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<long> Plus(IEnumerable<long> a, IEnumerable<long> b, IEnumerable<long> c, IEnumerable<long> d = null)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var colC = c?.ToList() ?? new();
-        var colD = d?.ToList() ?? new();
-        var count = Math.Max(Math.Max(colA.Count, colB.Count), Math.Max(colC.Count, colD.Count));
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0L : colA[i];
-            var numB = i >= colB.Count ? 0L : colB[i];
-            var numC = i >= colC.Count ? 0L : colC[i];
-            var numD = i >= colD.Count ? 0L : colD[i];
-            yield return numA + numB + numC + numD;
-        }
-    }
+        => Compute(a, b, c, d, 0L, Plus);
 
     /// <summary>
     /// Pluses each item in 2 collections by index.
@@ -312,17 +200,7 @@ public static partial class Arithmetic
     /// <param name="c">Additional number to plus.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<long> Plus(IEnumerable<long> a, IEnumerable<long> b, long c)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0L : colA[i];
-            var numB = i >= colB.Count ? 0L : colB[i];
-            yield return numA + numB + c;
-        }
-    }
+        => Compute(a, b, c, 0L, Plus);
 
     /// <summary>
     /// Pluses a number and each item in a collection.
@@ -331,13 +209,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<long> Plus(IEnumerable<long> a, long b)
-    {
-        if (a == null) yield break;
-        foreach (var item in a)
-        {
-            yield return item + b;
-        }
-    }
+        => Compute(a, b, Plus);
 
     /// <summary>
     /// Pluses each item in 2 arrays by index.
@@ -346,20 +218,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items plused.</returns>
     public static long[] Plus(long[] a, long[] b)
-    {
-        a ??= Array.Empty<long>();
-        b ??= Array.Empty<long>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new long[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0L : a[i];
-            var numB = i >= b.Length ? 0L : b[i];
-            c[i] = numA + numB;
-        }
+        => Compute(a, b, 0L, Plus, Plus);
 
-        return c;
-    }
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items plused.</returns>
+    public static long[] Plus(ReadOnlySpan<long> a, ReadOnlySpan<long> b)
+        => Compute(a, b, 0L, Plus, Plus);
+
+    private static long Plus(long a, long b)
+        => a + b;
+
+    private static Vector<long> Plus(Vector<long> a, Vector<long> b)
+        => a + b;
 
     /// <summary>
     /// Minuses each item in 2 collections by index.
@@ -368,17 +242,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<long> Minus(IEnumerable<long> a, IEnumerable<long> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA - numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0L, Minus);
+
+    private static long Minus(long itemA, bool hasA, long itemB, bool hasB, int i)
+        => itemA - itemB;
 
     /// <summary>
     /// Minuses.
@@ -387,13 +254,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<long> Minus(IEnumerable<long> a, long b)
-    {
-        if (a == null) yield break;
-        foreach (var item in a)
-        {
-            yield return item - b;
-        }
-    }
+        => Compute(a, b, Minus);
 
     /// <summary>
     /// Minuses.
@@ -417,20 +278,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items ,inused.</returns>
     public static long[] Minus(long[] a, long[] b)
-    {
-        a ??= Array.Empty<long>();
-        b ??= Array.Empty<long>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new long[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0 : a[i];
-            var numB = i >= b.Length ? 0 : b[i];
-            c[i] = numA - numB;
-        }
+        => Compute(a, b, 0L, Minus, Minus);
 
-        return c;
-    }
+    /// <summary>
+    /// Minuses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items ,inused.</returns>
+    public static long[] Minus(ReadOnlySpan<long> a, ReadOnlySpan<long> b)
+        => Compute(a, b, 0L, Minus, Minus);
+
+    private static long Minus(long a, long b)
+        => a - b;
+
+    private static Vector<long> Minus(Vector<long> a, Vector<long> b)
+        => a - b;
 
     /// <summary>
     /// Negates all items in the given collection.
@@ -470,17 +333,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<float> Plus(IEnumerable<float> a, IEnumerable<float> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0f : colA[i];
-            var numB = i >= colB.Count ? 0f : colB[i];
-            yield return numA + numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0f, Plus);
+
+    private static float Plus(float itemA, bool hasA, float itemB, bool hasB, int i)
+        => itemA + itemB;
 
     /// <summary>
     /// Pluses each item in 3-4 collections by index.
@@ -491,21 +347,7 @@ public static partial class Arithmetic
     /// <param name="d">Additional collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<float> Plus(IEnumerable<float> a, IEnumerable<float> b, IEnumerable<float> c, IEnumerable<float> d = null)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var colC = c?.ToList() ?? new();
-        var colD = d?.ToList() ?? new();
-        var count = Math.Max(Math.Max(colA.Count, colB.Count), Math.Max(colC.Count, colD.Count));
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0f : colA[i];
-            var numB = i >= colB.Count ? 0f : colB[i];
-            var numC = i >= colC.Count ? 0f : colC[i];
-            var numD = i >= colD.Count ? 0f : colD[i];
-            yield return numA + numB + numC + numD;
-        }
-    }
+        => Compute(a, b, c, d, 0f, Plus);
 
     /// <summary>
     /// Pluses each item in 2 collections by index.
@@ -515,18 +357,7 @@ public static partial class Arithmetic
     /// <param name="c">Additional number to plus.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<float> Plus(IEnumerable<float> a, IEnumerable<float> b, float c)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        if (float.IsNaN(c)) c = 0f;
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0f : colA[i];
-            var numB = i >= colB.Count ? 0f : colB[i];
-            yield return numA + numB + c;
-        }
-    }
+        => Compute(a, b, float.IsNaN(c) ? 0f : c, 0f, Plus);
 
     /// <summary>
     /// Pluses a number and each item in a collection.
@@ -535,14 +366,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<float> Plus(IEnumerable<float> a, float b)
-    {
-        if (a == null) yield break;
-        if (float.IsNaN(b)) b = 0f;
-        foreach (var item in a)
-        {
-            yield return item + b;
-        }
-    }
+        => Compute(a, float.IsNaN(b) ? 0f : b, Plus);
 
     /// <summary>
     /// Pluses each item in 2 arrays by index.
@@ -551,20 +375,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items plused.</returns>
     public static float[] Plus(float[] a, float[] b)
-    {
-        a ??= Array.Empty<float>();
-        b ??= Array.Empty<float>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new float[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0f : a[i];
-            var numB = i >= b.Length ? 0f : b[i];
-            c[i] = numA + numB;
-        }
+        => Compute(a, b, 0f, Plus, Plus);
 
-        return c;
-    }
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items plused.</returns>
+    public static float[] Plus(ReadOnlySpan<float> a, ReadOnlySpan<float> b)
+        => Compute(a, b, 0f, Plus, Plus);
+
+    private static float Plus(float a, float b)
+        => a + b;
+
+    private static Vector<float> Plus(Vector<float> a, Vector<float> b)
+        => a + b;
 
     /// <summary>
     /// Minuses each item in 2 collections by index.
@@ -573,17 +399,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<float> Minus(IEnumerable<float> a, IEnumerable<float> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0f : colA[i];
-            var numB = i >= colB.Count ? 0f : colB[i];
-            yield return numA - numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0f, Minus);
+
+    private static float Minus(float itemA, bool hasA, float itemB, bool hasB, int i)
+        => itemA - itemB;
 
     /// <summary>
     /// Minuses.
@@ -592,14 +411,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<float> Minus(IEnumerable<float> a, float b)
-    {
-        if (a == null) yield break;
-        if (float.IsNaN(b)) b = 0f;
-        foreach (var item in a)
-        {
-            yield return item - b;
-        }
-    }
+        => Compute(a, float.IsNaN(b) ? 0f : b, Minus);
 
     /// <summary>
     /// Minuses.
@@ -624,20 +436,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items ,inused.</returns>
     public static float[] Minus(float[] a, float[] b)
-    {
-        a ??= Array.Empty<float>();
-        b ??= Array.Empty<float>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new float[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0f : a[i];
-            var numB = i >= b.Length ? 0f : b[i];
-            c[i] = numA - numB;
-        }
+        => Compute(a, b, 0f, Minus, Minus);
 
-        return c;
-    }
+    /// <summary>
+    /// Minuses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items ,inused.</returns>
+    public static float[] Minus(ReadOnlySpan<float> a, ReadOnlySpan<float> b)
+        => Compute(a, b, 0f, Minus, Minus);
+
+    private static float Minus(float a, float b)
+        => a - b;
+
+    private static Vector<float> Minus(Vector<float> a, Vector<float> b)
+        => a - b;
 
     /// <summary>
     /// Negates all items in the given collection.
@@ -677,17 +491,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<double> Plus(IEnumerable<double> a, IEnumerable<double> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0d : colA[i];
-            var numB = i >= colB.Count ? 0d : colB[i];
-            yield return numA + numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0d, Plus);
+
+    private static double Plus(double itemA, bool hasA, double itemB, bool hasB, int i)
+        => itemA + itemB;
 
     /// <summary>
     /// Pluses each item in 3-4 collections by index.
@@ -698,21 +505,7 @@ public static partial class Arithmetic
     /// <param name="d">Additional collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<double> Plus(IEnumerable<double> a, IEnumerable<double> b, IEnumerable<double> c, IEnumerable<double> d = null)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var colC = c?.ToList() ?? new();
-        var colD = d?.ToList() ?? new();
-        var count = Math.Max(Math.Max(colA.Count, colB.Count), Math.Max(colC.Count, colD.Count));
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0d : colA[i];
-            var numB = i >= colB.Count ? 0d : colB[i];
-            var numC = i >= colC.Count ? 0d : colC[i];
-            var numD = i >= colD.Count ? 0d : colD[i];
-            yield return numA + numB + numC + numD;
-        }
-    }
+        => Compute(a, b, c, d, 0d, Plus);
 
     /// <summary>
     /// Pluses each item in 2 collections by index.
@@ -722,18 +515,7 @@ public static partial class Arithmetic
     /// <param name="c">Additional number to plus.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<double> Plus(IEnumerable<double> a, IEnumerable<double> b, double c)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        if (double.IsNaN(c)) c = 0d;
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0d : colA[i];
-            var numB = i >= colB.Count ? 0d : colB[i];
-            yield return numA + numB + c;
-        }
-    }
+        => Compute(a, b, double.IsNaN(c) ? 0d : c, 0d, Plus);
 
     /// <summary>
     /// Pluses a number and each item in a collection.
@@ -742,14 +524,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<double> Plus(IEnumerable<double> a, double b)
-    {
-        if (a == null) yield break;
-        if (double.IsNaN(b)) b = 0d;
-        foreach (var item in a)
-        {
-            yield return item + b;
-        }
-    }
+        => Compute(a, double.IsNaN(b) ? 0d : b, Plus);
 
     /// <summary>
     /// Pluses each item in 2 arrays by index.
@@ -758,20 +533,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items plused.</returns>
     public static double[] Plus(double[] a, double[] b)
-    {
-        a ??= Array.Empty<double>();
-        b ??= Array.Empty<double>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new double[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0d : a[i];
-            var numB = i >= b.Length ? 0d : b[i];
-            c[i] = numA + numB;
-        }
+        => Compute(a, b, 0d, Plus, Plus);
 
-        return c;
-    }
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items plused.</returns>
+    public static double[] Plus(ReadOnlySpan<double> a, ReadOnlySpan<double> b)
+        => Compute(a, b, 0d, Plus, Plus);
+
+    private static double Plus(double a, double b)
+        => a + b;
+
+    private static Vector<double> Plus(Vector<double> a, Vector<double> b)
+        => a + b;
 
     /// <summary>
     /// Minuses each item in 2 collections by index.
@@ -780,17 +557,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<double> Minus(IEnumerable<double> a, IEnumerable<double> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0d : colA[i];
-            var numB = i >= colB.Count ? 0d : colB[i];
-            yield return numA - numB;
-        }
-    }
+        => ListExtensions.Select(a, b, 0d, Minus);
+
+    private static double Minus(double itemA, bool hasA, double itemB, bool hasB, int i)
+        => itemA - itemB;
 
     /// <summary>
     /// Minuses.
@@ -799,14 +569,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<double> Minus(IEnumerable<double> a, double b)
-    {
-        if (a == null) yield break;
-        if (double.IsNaN(b)) b = 0d;
-        foreach (var item in a)
-        {
-            yield return item - b;
-        }
-    }
+        => Compute(a, double.IsNaN(b) ? 0d : b, Minus);
 
     /// <summary>
     /// Minuses.
@@ -831,20 +594,22 @@ public static partial class Arithmetic
     /// <param name="b">Right array.</param>
     /// <returns>An array with items ,inused.</returns>
     public static double[] Minus(double[] a, double[] b)
-    {
-        a ??= Array.Empty<double>();
-        b ??= Array.Empty<double>();
-        var count = Math.Max(a.Length, b.Length);
-        var c = new double[count];
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= a.Length ? 0d : a[i];
-            var numB = i >= b.Length ? 0d : b[i];
-            c[i] = numA - numB;
-        }
+        => Compute(a, b, 0d, Minus, Minus);
 
-        return c;
-    }
+    /// <summary>
+    /// Minuses each item in 2 arrays by index.
+    /// </summary>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <returns>An array with items ,inused.</returns>
+    public static double[] Minus(ReadOnlySpan<double> a, ReadOnlySpan<double> b)
+        => Compute(a, b, 0d, Minus, Minus);
+
+    private static double Minus(double a, double b)
+        => a - b;
+
+    private static Vector<double> Minus(Vector<double> a, Vector<double> b)
+        => a - b;
 
     /// <summary>
     /// Negates all items in the given collection.
@@ -884,17 +649,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<decimal> Plus(IEnumerable<decimal> a, IEnumerable<decimal> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA + numB;
-        }
-    }
+        => ListExtensions.Select(a, b, decimal.Zero, Plus);
+
+    private static decimal Plus(decimal itemA, bool hasA, decimal itemB, bool hasB, int i)
+        => itemA + itemB;
 
     /// <summary>
     /// Pluses each item in 3-4 collections by index.
@@ -905,21 +663,7 @@ public static partial class Arithmetic
     /// <param name="d">Additional collection.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<decimal> Plus(IEnumerable<decimal> a, IEnumerable<decimal> b, IEnumerable<decimal> c, IEnumerable<decimal> d = null)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var colC = c?.ToList() ?? new();
-        var colD = d?.ToList() ?? new();
-        var count = Math.Max(Math.Max(colA.Count, colB.Count), Math.Max(colC.Count, colD.Count));
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            var numC = i >= colC.Count ? 0 : colC[i];
-            var numD = i >= colD.Count ? 0 : colD[i];
-            yield return numA + numB + numC + numD;
-        }
-    }
+        => Compute(a, b, c, d, decimal.Zero, Plus);
 
     /// <summary>
     /// Pluses each item in 2 collections by index.
@@ -929,17 +673,7 @@ public static partial class Arithmetic
     /// <param name="c">Additional number to plus.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<decimal> Plus(IEnumerable<decimal> a, IEnumerable<decimal> b, decimal c)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA + numB + c;
-        }
-    }
+        => Compute(a, b, c, decimal.Zero, Plus);
 
     /// <summary>
     /// Pluses a number and each item in a collection.
@@ -948,13 +682,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<decimal> Plus(IEnumerable<decimal> a, decimal b)
-    {
-        if (a == null) yield break;
-        foreach (var item in a)
-        {
-            yield return item + b;
-        }
-    }
+        => Compute(a, b, Plus);
 
     /// <summary>
     /// Pluses each item in 2 arrays by index.
@@ -970,13 +698,16 @@ public static partial class Arithmetic
         var c = new decimal[count];
         for (var i = 0; i < count; i++)
         {
-            var numA = i >= a.Length ? 0 : a[i];
-            var numB = i >= b.Length ? 0 : b[i];
+            var numA = i >= a.Length ? decimal.Zero : a[i];
+            var numB = i >= b.Length ? decimal.Zero : b[i];
             c[i] = numA + numB;
         }
 
         return c;
     }
+
+    private static decimal Plus(decimal a, decimal b)
+        => a + b;
 
     /// <summary>
     /// Minuses each item in 2 collections by index.
@@ -985,17 +716,10 @@ public static partial class Arithmetic
     /// <param name="b">Right collection.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<decimal> Minus(IEnumerable<decimal> a, IEnumerable<decimal> b)
-    {
-        var colA = a?.ToList() ?? new();
-        var colB = b?.ToList() ?? new();
-        var count = Math.Max(colA.Count, colB.Count);
-        for (var i = 0; i < count; i++)
-        {
-            var numA = i >= colA.Count ? 0 : colA[i];
-            var numB = i >= colB.Count ? 0 : colB[i];
-            yield return numA - numB;
-        }
-    }
+        => ListExtensions.Select(a, b, decimal.Zero, Minus);
+
+    private static decimal Minus(decimal itemA, bool hasA, decimal itemB, bool hasB, int i)
+        => itemA - itemB;
 
     /// <summary>
     /// Minuses.
@@ -1004,13 +728,7 @@ public static partial class Arithmetic
     /// <param name="b">Right number.</param>
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<decimal> Minus(IEnumerable<decimal> a, decimal b)
-    {
-        if (a == null) yield break;
-        foreach (var item in a)
-        {
-            yield return item - b;
-        }
-    }
+        => Compute(a, b, Minus);
 
     /// <summary>
     /// Minuses.
@@ -1041,13 +759,16 @@ public static partial class Arithmetic
         var c = new decimal[count];
         for (var i = 0; i < count; i++)
         {
-            var numA = i >= a.Length ? 0 : a[i];
-            var numB = i >= b.Length ? 0 : b[i];
+            var numA = i >= a.Length ? decimal.Zero : a[i];
+            var numB = i >= b.Length ? decimal.Zero : b[i];
             c[i] = numA - numB;
         }
 
         return c;
     }
+
+    private static decimal Minus(decimal a, decimal b)
+        => a - b;
 
     /// <summary>
     /// Negates all items in the given collection.
@@ -1372,5 +1093,235 @@ public static partial class Arithmetic
         }
 
         return c;
+    }
+
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <param name="vectorCompute">The handler to compute 2 vectors.</param>
+    /// <returns>An array with items plused.</returns>
+    private static T[] Compute<T>(T[] a, T[] b, T defaultValue, Func<T, T, T> compute, Func<Vector<T>, Vector<T>, Vector<T>> vectorCompute) where T : struct
+    {
+        a ??= Array.Empty<T>();
+        b ??= Array.Empty<T>();
+        var c = new T[Math.Max(a.Length, b.Length)];
+#if NET8_0_OR_GREATER
+        if (!Vector<T>.IsSupported || (a.Length < 1000 && b.Length < 1000))
+        {
+            ComputeByArray(c, 0, a, b, defaultValue, compute);
+            return c;
+        }
+
+        var step = Vector<T>.Count;
+        if (step < 4)
+        {
+            ComputeByArray(c, 0, a, b, defaultValue, compute);
+            return c;
+        }
+
+        var count = Math.Min(a.Length, b.Length);
+        count -= count % step;
+        for (var i = 0; i < count; i += step)
+        {
+            var vA = new Vector<T>(a, i);
+            var vB = new Vector<T>(b, i);
+            var result = vectorCompute(vA, vB);
+            result.CopyTo(c, i);
+        }
+
+        ComputeByArray(c, count, a, b, defaultValue, compute);
+        return c;
+#else
+        ComputeByArray(c, 0, a, b, defaultValue, compute);
+        return c;
+#endif
+    }
+
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <param name="vectorCompute">The handler to compute 2 vectors.</param>
+    /// <returns>An array with items plused.</returns>
+    private static T[] Compute<T>(ReadOnlySpan<T> a, ReadOnlySpan<T> b, T defaultValue, Func<T, T, T> compute, Func<Vector<T>, Vector<T>, Vector<T>> vectorCompute) where T : struct
+    {
+        var c = new T[Math.Max(a.Length, b.Length)];
+#if NET8_0_OR_GREATER
+        if (!Vector<T>.IsSupported || (a.Length < 1000 && b.Length < 1000))
+        {
+            ComputeByArray(c, 0, a, b, defaultValue, compute);
+            return c;
+        }
+
+        var step = Vector<T>.Count;
+        if (step < 4)
+        {
+            ComputeByArray(c, 0, a, b, defaultValue, compute);
+            return c;
+        }
+
+        var count = Math.Min(a.Length, b.Length);
+        count -= count % step;
+        for (var i = 0; i < count; i += step)
+        {
+            var vA = new Vector<T>(a.Slice(i));
+            var vB = new Vector<T>(b.Slice(i));
+            var result = vectorCompute(vA, vB);
+            result.CopyTo(c, i);
+        }
+
+        ComputeByArray(c, count, a, b, defaultValue, compute);
+        return c;
+#else
+        ComputeByArray(c, 0, a, b, defaultValue, compute);
+        return c;
+#endif
+    }
+
+    /// <summary>
+    /// Pluses a number and each item in a collection.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="a">Left collection.</param>
+    /// <param name="b">Right number.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <returns>A collection with items plused.</returns>
+    private static IEnumerable<T> Compute<T>(IEnumerable<T> a, T b, Func<T, T, T> compute) where T : struct
+    {
+        if (a == null) yield break;
+        foreach (var item in a)
+        {
+            yield return compute(item, b);
+        }
+    }
+
+    /// <summary>
+    /// Pluses each item in 3-4 collections by index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="a">Left collection.</param>
+    /// <param name="b">Middle collection.</param>
+    /// <param name="c">Right collection.</param>
+    /// <param name="d">Additional collection.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <returns>A collection with items plused.</returns>
+    private static IEnumerable<T> Compute<T>(IEnumerable<T> a, IEnumerable<T> b, IEnumerable<T> c, IEnumerable<T> d, T defaultValue, Func<T, T, T> compute)
+    {
+        var colA = ListExtensions.ToList(a, true);
+        var colB = ListExtensions.ToList(b, true);
+        var colC = ListExtensions.ToList(c, true);
+        var colD = ListExtensions.ToList(d, true);
+        var count = Math.Max(Math.Max(colA.Count, colB.Count), Math.Max(colC.Count, colD.Count));
+        for (var i = 0; i < count; i++)
+        {
+            var numA = i >= colA.Count ? defaultValue : colA[i];
+            var numB = i >= colB.Count ? defaultValue : colB[i];
+            var numC = i >= colC.Count ? defaultValue : colC[i];
+            var numD = i >= colD.Count ? defaultValue : colD[i];
+            yield return compute(compute(compute(numA, numB), numC), numD);
+        }
+    }
+
+    /// <summary>
+    /// Pluses each item in 2 collections by index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="a">Left collection.</param>
+    /// <param name="b">Right collection.</param>
+    /// <param name="c">Additional number to plus.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <returns>A collection with items plused.</returns>
+    private static IEnumerable<T> Compute<T>(IEnumerable<T> a, IEnumerable<T> b, T c, T defaultValue, Func<T, T, T> compute)
+    {
+        var colA = ListExtensions.ToList(a, true);
+        var colB = ListExtensions.ToList(b, true);
+        var count = Math.Max(colA.Count, colB.Count);
+        for (var i = 0; i < count; i++)
+        {
+            var numA = i >= colA.Count ? defaultValue : colA[i];
+            var numB = i >= colB.Count ? defaultValue : colB[i];
+            yield return compute(compute(numA, numB), c);
+        }
+    }
+
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="c">The output array.</param>
+    /// <param name="start">The zero-based index to start enumerate in the input arrays.</param>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <returns>An array with items plused.</returns>
+    private static void ComputeByArray<T>(T[] c, int start, T[] a, T[] b, T defaultValue, Func<T, T, T> compute)
+    {
+        var count = Math.Min(a.Length, b.Length);
+        for (var i = start; i < count; i++)
+        {
+            c[i] = compute(a[i], b[i]);
+        }
+
+        if (a.Length > b.Length)
+        {
+            for (var i = b.Length; i < a.Length; i++)
+            {
+                c[i] = compute(a[i], defaultValue);
+            }
+        }
+        else if (a.Length < b.Length)
+        {
+            for (var i = a.Length; i < b.Length; i++)
+            {
+                c[i] = compute(defaultValue, b[i]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Pluses each item in 2 arrays by index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="c">The output array.</param>
+    /// <param name="start">The zero-based index to start enumerate in the input arrays.</param>
+    /// <param name="a">Left array.</param>
+    /// <param name="b">Right array.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="compute">The handler to compute 2 values.</param>
+    /// <returns>An array with items plused.</returns>
+    private static void ComputeByArray<T>(T[] c, int start, ReadOnlySpan<T> a, ReadOnlySpan<T> b, T defaultValue, Func<T, T, T> compute)
+    {
+        var count = Math.Min(a.Length, b.Length);
+        for (var i = start; i < count; i++)
+        {
+            c[i] = compute(a[i], b[i]);
+        }
+
+        if (a.Length > b.Length)
+        {
+            for (var i = b.Length; i < a.Length; i++)
+            {
+                c[i] = compute(a[i], defaultValue);
+            }
+        }
+        else if (a.Length < b.Length)
+        {
+            for (var i = a.Length; i < b.Length; i++)
+            {
+                c[i] = compute(defaultValue, b[i]);
+            }
+        }
     }
 }

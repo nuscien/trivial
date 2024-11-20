@@ -28,6 +28,10 @@ public class JsonUnitTest
 
         Assert.AreEqual(9, json.Keys.Count());
         Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));
+        Assert.IsTrue(json.GetValue("str-a") is JsonStringNode);
+        var sn = json.GetValue("str-a") as JsonStringNode;
+        Assert.AreEqual("hijklmn", (string)sn);
+        Assert.AreEqual("hijklmn", ((StringBuilder)sn).ToString());
         Assert.AreEqual("hijklmn", json.GetValue<string>("str-a"));
         Assert.AreEqual("rst", json.GetStringValue("str-b"));
         Assert.AreEqual("uvw", json.GetStringValue("str-c"));

@@ -20,15 +20,19 @@ namespace Trivial.Collection;
 internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged, INotifyCollectionChanged
 {
     private readonly List<T> list;
+#if NET9_0_OR_GREATER
+    private readonly Lock locker;
+#else
     private readonly object locker;
+#endif
 
     /// <summary>
     /// Initializes a new instance of the ConcurrentList class.
     /// </summary>
     public ConcurrentList()
     {
-        locker = new object();
-        list = new List<T>();
+        locker = new();
+        list = new();
     }
 
     /// <summary>
@@ -37,24 +41,24 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
     public ConcurrentList(IEnumerable<T> collection)
     {
-        locker = new object();
+        locker = new();
         if (collection is null)
         {
-            list = new List<T>();
+            list = new();
             return;
         }
 
         try
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (NullReferenceException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (InvalidOperationException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
     }
 
@@ -64,12 +68,16 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
     /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
     /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
+#if NET9_0_OR_GREATER
+    public ConcurrentList(Lock syncRoot, IEnumerable<T> collection, bool useSource = false)
+#else
     public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource = false)
+#endif
     {
-        locker = syncRoot ?? new object();
+        locker = syncRoot ?? new();
         if (collection is null)
         {
-            list = new List<T>();
+            list = new();
             return;
         }
 

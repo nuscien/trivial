@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace Trivial.Reflection;
 
@@ -213,7 +214,11 @@ internal class LazyObjectRef<T>(Lazy<T> lazy) : IObjectRef, IObjectRef<T>, IObje
 /// </summary>
 internal class FactoryObjectRef : IObjectRef
 {
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
     private readonly object locker = new();
+#endif
     private readonly Func<object> f;
     private bool isInit;
     private object value;
@@ -248,7 +253,11 @@ internal class FactoryObjectRef : IObjectRef
 /// <typeparam name="T">The type of the value.</typeparam>
 internal class FactoryObjectRef<T> : IObjectRef, IObjectRef<T>, IObjectResolver<T>
 {
-    private readonly object locker = new ();
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
+    private readonly object locker = new();
+#endif
     private readonly Func<T> f;
     private bool isInit;
     private T value;

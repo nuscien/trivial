@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -33,7 +34,11 @@ namespace Trivial.Collection
             list.RemoveAll(ele => ele.Length == 3 && ele.StartsWith("4"));
             Assert.AreEqual(300, list.Count);
 
+#if NET9_0_OR_GREATER
+        var list2 = ListExtensions.ToSynchronizedList(list, new Lock());
+#else
             var list2 = ListExtensions.ToSynchronizedList(list, new object());
+#endif
             Assert.AreEqual(300, list2.Count);
             list2.Add("abcdefg");
             Assert.AreEqual("abcdefg", list2.Last());

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Trivial.Data;
@@ -21,7 +22,11 @@ public sealed partial class StyleConsole
     /// <summary>
     /// The lock.
     /// </summary>
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
     private readonly object locker = new();
+#endif
 
     /// <summary>
     /// The cache.

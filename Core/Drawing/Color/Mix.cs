@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -379,7 +380,7 @@ public static partial class ColorCalculator
     {
         if (a.A == b.A)
             return Color.FromArgb(
-                Math.Max(a.A, b.A),
+                a.A,
                 ToChannel((a.R + b.R) / 2),
                 ToChannel((a.G + b.G) / 2),
                 ToChannel((a.B + b.B) / 2));

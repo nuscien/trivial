@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Web;
 
 using Trivial.CommandLine;
@@ -1062,7 +1063,11 @@ public static partial class ListExtensions
     /// <param name="list">The source collection.</param>
     /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
     /// <returns>A synchronized list.</returns>
+#if NET9_0_OR_GREATER
+    public static IList<T> ToSynchronizedList<T>(IEnumerable<T> list, Lock syncRoot)
+#else
     public static IList<T> ToSynchronizedList<T>(IEnumerable<T> list, object syncRoot)
+#endif
         => new ConcurrentList<T>(syncRoot, list);
 
     /// <summary>
@@ -1073,7 +1078,11 @@ public static partial class ListExtensions
     /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
     /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
     /// <returns>A synchronized list.</returns>
+#if NET9_0_OR_GREATER
+    public static IList<T> ToSynchronizedList<T>(List<T> list, Lock syncRoot, bool useSource)
+#else
     public static IList<T> ToSynchronizedList<T>(List<T> list, object syncRoot, bool useSource)
+#endif
         => new ConcurrentList<T>(syncRoot, list, useSource);
 
     /// <summary>
@@ -1419,5 +1428,11 @@ public static partial class ListExtensions
             if (!hasA && !hasB) yield break;
             yield return callback(vA, hasA, vB, hasB, i);
         }
+    }
+
+    internal static List<T> ToList<T>(IEnumerable<T> col, bool create)
+    {
+        if (col is null) return create ? new() : null;
+        return col is List<T> list ? list : col.ToList();
     }
 }

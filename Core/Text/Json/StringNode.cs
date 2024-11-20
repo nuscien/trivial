@@ -753,6 +753,13 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         => ToJsonArray([separator], options, trimEachItem);
 
     /// <summary>
+    /// Creates a new read-only span over the string value.
+    /// </summary>
+    /// <returns>The read-only span representation of the string.</returns>
+    public ReadOnlySpan<char> AsSpan()
+        => Value == null ? ReadOnlySpan<char>.Empty : Value.AsSpan();
+
+    /// <summary>
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
@@ -1591,7 +1598,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
     public static explicit operator System.Text.Json.Nodes.JsonNode(JsonStringNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
+        => System.Text.Json.Nodes.JsonValue.Create(json?.Value);
 
     /// <summary>
     /// Converts to JSON node.
@@ -1599,7 +1606,23 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
     public static explicit operator System.Text.Json.Nodes.JsonValue(JsonStringNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
+        => System.Text.Json.Nodes.JsonValue.Create(json?.Value);
+
+    /// <summary>
+    /// Converts to read-only span of char.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A read-only span of char.</returns>
+    public static explicit operator ReadOnlySpan<char>(JsonStringNode json)
+        => json?.Value == null ? ReadOnlySpan<char>.Empty : json.Value.AsSpan();
+
+    /// <summary>
+    /// Converts to string builder.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A string.</returns>
+    public static explicit operator StringBuilder(JsonStringNode json)
+        => json?.Value == null ? null : new StringBuilder(json.Value);
 
     /// <summary>
     /// Indicates whether the specified string is null or an empty string ("").

@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Xml.Linq;
 
 using Trivial.Data;
@@ -24,8 +25,12 @@ namespace Trivial.Tasks;
 /// </summary>
 public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>
 {
-    private readonly object locker = new ();
-    private readonly List<Fragment> fragments = new ();
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
+    private readonly object locker = new();
+#endif
+    private readonly List<Fragment> fragments = new();
     private string desc;
 
     /// <summary>

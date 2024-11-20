@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Xml.Linq;
 
 using Trivial.Data;
@@ -24,7 +25,11 @@ namespace Trivial.Tasks;
 /// </summary>
 public class EquipartitionTaskContainer
 {
-    private readonly object locker = new object();
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
+    private readonly object locker = new();
+#endif
     private readonly Dictionary<string, List<EquipartitionTask>> cache = new Dictionary<string, List<EquipartitionTask>>();
 
     /// <summary>

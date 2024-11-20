@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Trivial.Collection;
 
 namespace Trivial.Text;
@@ -550,3 +551,519 @@ public class StringFinder
     }
 #pragma warning restore IDE0057
 }
+
+///// <summary>
+///// The string finder.
+///// </summary>
+//[DebuggerDisplay("{Offset} → {Value} → {RestLength}")]
+//public class CharMemoryFinder
+//{
+//#pragma warning disable IDE0057
+//    /// <summary>
+//    /// Initializes a new instance of the CharMemoryFinder class.
+//    /// </summary>
+//    /// <param name="s">The source string.</param>
+//    public CharMemoryFinder(string s)
+//    {
+//        Rest = Source = s?.AsMemory() ?? ReadOnlyMemory<char>.Empty;
+//        Value = Previous = ReadOnlyMemory<char>.Empty;
+//    }
+
+//    /// <summary>
+//    /// Initializes a new instance of the CharMemoryFinder class.
+//    /// </summary>
+//    /// <param name="s">The source string.</param>
+//    public CharMemoryFinder(ReadOnlyMemory<char> s)
+//    {
+//        Rest = Source = s;
+//        Value = Previous = ReadOnlyMemory<char>.Empty;
+//    }
+
+//    /// <summary>
+//    /// Initializes a new instance of the CharMemoryFinder class.
+//    /// </summary>
+//    /// <param name="s">The source string.</param>
+//    public CharMemoryFinder(StringBuilder s)
+//        : this(s?.ToString())
+//    {
+//    }
+
+//    /// <summary>
+//    /// Gets the source chars.
+//    /// </summary>
+//    public ReadOnlyMemory<char> Source { get; }
+
+//    /// <summary>
+//    /// Gets the rest chars.
+//    /// </summary>
+//    public ReadOnlyMemory<char> Rest { get; private set; }
+
+//    /// <summary>
+//    /// Gets the previous sub-chars.
+//    /// </summary>
+//    public ReadOnlyMemory<char> Previous { get; private set; }
+
+//    /// <summary>
+//    /// Gets the sub-chars to get for current request.
+//    /// </summary>
+//    public ReadOnlyMemory<char> Value { get; private set; }
+
+//    /// <summary>
+//    /// Gets the offset of the chars.
+//    /// </summary>
+//    public int Offset { get; private set; }
+
+//    /// <summary>
+//    /// Gets a value indicating whether the rest is empty.
+//    /// </summary>
+//    public bool IsEnd => Rest.IsEmpty;
+
+//    /// <summary>
+//    /// Gets the length of rest chars.
+//    /// </summary>
+//    public int RestLength => Rest.Length;
+
+//    /// <summary>
+//    /// Gets the sub-string to get for current request.
+//    /// </summary>
+//    /// <returns>A string matched.</returns>
+//    public string GetValue()
+//        => Value.Span.ToString();
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="offset">The zero-based offset.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> PreviewBefore(string q, out int offset)
+//    {
+//        if (string.IsNullOrEmpty(q))
+//        {
+//            offset = Offset;
+//            return ReadOnlyMemory<char>.Empty;
+//        }
+
+//        var s = Rest;
+//        var index = StringExtensions.IndexOf(s.Span, q);
+//        if (index < 0)
+//        {
+//            Value = ReadOnlyMemory<char>.Empty;
+//            offset = Source.Length;
+//            return ReadOnlyMemory<char>.Empty;
+//        }
+
+//        var value = Rest.Slice(0, index);
+//        offset = Offset + index;
+//        return value;
+//    }
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <param name="offset">The zero-based offset.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(string q, bool skip, out int offset)
+//    {
+//        if (string.IsNullOrEmpty(q))
+//        {
+//            offset = Offset;
+//            return ReadOnlyMemory<char>.Empty;
+//        }
+
+//        Previous = Value;
+//        var s = Rest;
+//        var index = StringExtensions.IndexOf(s.Span, q);
+//        if (index < 0)
+//        {
+//            Value = ReadOnlyMemory<char>.Empty;
+//            offset = Offset = Source.Length;
+//            return ReadOnlyMemory<char>.Empty;
+//        }
+
+//        var value = Rest.Slice(0, index);
+//        if (skip) index += q.Length;
+//        offset = Offset + index;
+//        Offset = offset;
+//        Rest = Rest.Slice(index);
+//        return Value = value;
+//    }
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="offset">The zero-based offset.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(string q, out int offset)
+//        => Before(q, false, out offset);
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(string q, bool skip = false)
+//        => Before(q, skip, out _);
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <param name="offset">The zero-based offset.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(char q, bool skip, out int offset)
+//        => Before(q.ToString(), skip, out offset);
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="offset">The zero-based offset.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(char q, out int offset)
+//        => Before(q, false, out offset);
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(char q, bool skip = false)
+//        => Before(q, skip, out _);
+
+//    /// <summary>
+//    /// Gets the sub-string before a search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="index">The zero-based index of the search string in the rest string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Before(int index, bool skip = false)
+//    {
+//        Previous = Value;
+//        if (index == 0)
+//        {
+//            if (skip && Rest.Length > 0)
+//            {
+//                Offset++;
+//                Rest = Rest.Slice(1);
+//            }
+
+//            return Value = ReadOnlyMemory<char>.Empty;
+//        }
+
+//        Offset += index;
+//        if (index < 0)
+//        {
+//            if (Offset < 0) Offset = 0;
+//            Rest = Source.Slice(Offset);
+//            if (skip && Rest.Length > 0)
+//            {
+//                Offset++;
+//                Rest = Rest.Slice(1);
+//            }
+
+//            return Value = ReadOnlyMemory<char>.Empty;
+//        }
+
+//        if (index >= Rest.Length)
+//        {
+//            Offset = Source.Length;
+//            var rest = Rest;
+//            Rest = ReadOnlyMemory<char>.Empty;
+//            return Value = rest;
+//        }
+
+//        var value = Rest.Slice(0, index);
+//        if (skip)
+//        {
+//            index++;
+//            Offset++;
+//        }
+
+//        Rest = Rest.Slice(index);
+//        return Value = value;
+//    }
+
+//    /// <summary>
+//    /// Moves offsets before a specific search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <param name="value">The sub-string.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    public bool BeforeIfContains(string q, bool skip, out ReadOnlyMemory<char> value)
+//    {
+//        if (string.IsNullOrEmpty(q))
+//        {
+//            value = null;
+//            return false;
+//        }
+
+//        Previous = Value;
+//        var s = Rest;
+//        var index = StringExtensions.IndexOf(s.Span, q);
+//        if (index < 0)
+//        {
+//            value = null;
+//            return false;
+//        }
+
+//        value = Value = Rest.Slice(0, index);
+//        if (skip) index += q.Length;
+//        Offset += index;
+//        Rest = Rest.Slice(index);
+//        return true;
+//    }
+
+//    /// <summary>
+//    /// Moves offsets before a specific search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string collection.</param>
+//    /// <param name="rule">The matching rule.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <param name="value">The sub-string.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    /// <exception cref="NotSupportedException">rule is not supported.</exception>
+//    public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule, bool skip, out ReadOnlyMemory<char> value)
+//    {
+//        if (q == null)
+//        {
+//            value = null;
+//            return false;
+//        }
+
+//        switch (rule)
+//        {
+//            case StringsMatchingRules.Sequence:
+//                foreach (var item in q)
+//                {
+//                    if (BeforeIfContains(item, skip, out value)) return true;
+//                }
+
+//                break;
+//            case StringsMatchingRules.None:
+//                break;
+//            case StringsMatchingRules.Front:
+//                {
+//                    var col = IndexOf(q).Where(i => i >= 0).ToList();
+//                    if (col.Count < 1) break;
+//                    value = Before(col.Min(), skip);
+//                    return true;
+//                }
+//            case StringsMatchingRules.Rear:
+//                {
+//                    var col = IndexOf(q).Where(i => i >= 0).ToList();
+//                    if (col.Count < 1) break;
+//                    value = Before(col.Max(), skip);
+//                    return true;
+//                }
+//        }
+
+//        value = null;
+//        return false;
+//    }
+
+//    /// <summary>
+//    /// Moves offsets before a specific search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="value">The sub-string.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    public bool BeforeIfContains(string q, out ReadOnlyMemory<char> value)
+//        => BeforeIfContains(q, false, out value);
+
+//    /// <summary>
+//    /// Moves offsets before a specific search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="rule">The matching rule.</param>
+//    /// <param name="value">The sub-string.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    /// <exception cref="NotSupportedException">rule is not supported.</exception>
+//    public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule, out ReadOnlyMemory<char> value)
+//        => BeforeIfContains(q, rule, false, out value);
+
+//    /// <summary>
+//    /// Moves offsets before a specific search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    public bool BeforeIfContains(string q, bool skip = false)
+//        => BeforeIfContains(q, skip, out _);
+
+//    /// <summary>
+//    /// Moves offsets before a specific search string. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string collection.</param>
+//    /// <param name="rule">The matching rule.</param>
+//    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    /// <exception cref="NotSupportedException">rule is not supported.</exception>
+//    public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule = StringsMatchingRules.Sequence, bool skip = false)
+//        => BeforeIfContains(q, rule, skip, out _);
+
+//    /// <summary>
+//    /// Read next character.
+//    /// </summary>
+//    /// <returns>The character; or \0 if at the end.</returns>
+//    public char Read()
+//        => Read(out var c) ? c : '\0';
+
+//    /// <summary>
+//    /// Read next character.
+//    /// </summary>
+//    /// <returns>The character; or \0 if at the end.</returns>
+//    public bool Read(out char c)
+//    {
+//        var rest = Rest;
+//        if (rest.IsEmpty)
+//        {
+//            c = '\0';
+//            return false;
+//        }
+
+//        Previous = Value;
+//        c = rest.Span[0];
+//        Value = rest.Slice(0, 1);
+//        Offset++;
+//        Rest = rest.Slice(1);
+//        return true;
+//    }
+
+//    /// <summary>
+//    /// Gets the sub-string until that a search string appears. The search string is in the sub-string returned.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="offset">The zero-based offset.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Until(string q, out int offset)
+//    {
+//        var s = Rest;
+//        var index = StringExtensions.IndexOf(s.Span, q) + q.Length;
+//        Previous = Value;
+//        if (index < 0)
+//        {
+//            Value = ReadOnlyMemory<char>.Empty;
+//            offset = Offset = Source.Length;
+//            return ReadOnlyMemory<char>.Empty;
+//        }
+
+//        var value = Rest.Slice(0, index);
+//        offset = Offset + index;
+//        Offset = offset;
+//        Rest = Rest.Slice(index);
+//        return Value = value;
+//    }
+
+//    /// <summary>
+//    /// Gets the sub-string until that a search string appears. The search string is in the sub-string returned.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <returns>The sub-string.</returns>
+//    public ReadOnlyMemory<char> Until(string q)
+//        => Until(q, out _);
+
+//    /// <summary>
+//    /// Moves offsets until a specific search string appeared. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <param name="value">The sub-string.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    public bool UntilIfContains(string q, out ReadOnlyMemory<char> value)
+//    {
+//        var s = Rest;
+//        var index = StringExtensions.IndexOf(s.Span, q) + q.Length;
+//        Previous = Value;
+//        if (index < 0)
+//        {
+//            value = ReadOnlyMemory<char>.Empty;
+//            return false;
+//        }
+
+//        value = Value = Rest.Slice(0, index);
+//        Offset += index;
+//        Rest = Rest.Slice(index);
+//        return true;
+//    }
+
+//    /// <summary>
+//    /// Moves offsets until a specific search string appeared. The search string is in the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+//    public bool UntilIfContains(string q)
+//        => UntilIfContains(q, out _);
+
+//    /// <summary>
+//    /// Clears the value to empty string.
+//    /// </summary>
+//    public void ClearValue()
+//    {
+//        Previous = Value;
+//        Value = ReadOnlyMemory<char>.Empty;
+//    }
+
+//    /// <summary>
+//    /// Tests a value indicating whether a specific string occurs within the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <returns>true if contains the search string in the rest string; otherwise, false.</returns>
+//    public bool Contains(string q)
+//        => StringExtensions.IndexOf(Rest.Span, q) >= 0;
+
+//    /// <summary>
+//    /// Tests a value indicating whether a specific string occurs within the rest string.
+//    /// </summary>
+//    /// <param name="q">The search string.</param>
+//    /// <returns>true if contains the search string in the rest string; otherwise, false.</returns>
+//    public bool Contains(char q)
+//        => Rest.Span.IndexOf(q) >= 0;
+
+//    /// <summary>
+//    /// Reports the zero-based index of the first occurrence of the specified string in the rest string.
+//    /// </summary>
+//    /// <param name="q">The string to seek.</param>
+//    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+//    public int IndexOf(string q)
+//        => StringExtensions.IndexOf(Rest.Span, q);
+
+//    /// <summary>
+//    /// Reports the zero-based index of the first occurrence of the specified string in the rest string.
+//    /// </summary>
+//    /// <param name="q">The string to seek.</param>
+//    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+//    public int IndexOf(char q)
+//        => Rest.Span.IndexOf(q);
+
+//    /// <summary>
+//    /// Reports the zero-based index of the first occurrence of the specified string in the rest string.
+//    /// </summary>
+//    /// <param name="q">The string to seek.</param>
+//    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+//    public IEnumerable<int> IndexOf(IEnumerable<string> q)
+//    {
+//        var span = Rest.Span;
+//        foreach (var item in q)
+//        {
+//            yield return StringExtensions.IndexOf(span, item);
+//        }
+//    }
+
+//    /// <summary>
+//    /// Resets the state.
+//    /// </summary>
+//    public void Reset()
+//    {
+//        Offset = 0;
+//        Rest = Source;
+//        Value = Previous = ReadOnlyMemory<char>.Empty;
+//    }
+//#pragma warning restore IDE0057
+//}

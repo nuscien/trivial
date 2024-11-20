@@ -146,7 +146,11 @@ public abstract class ObservableTask<T>
     /// <summary>
     /// The locker.
     /// </summary>
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
     private readonly object locker = new();
+#endif
 
     /// <summary>
     /// The processing task instance.

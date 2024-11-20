@@ -213,7 +213,11 @@ public class SingletonResolver : BaseSingletonResolver
     /// <summary>
     /// The locker.
     /// </summary>
-    private readonly object locker = new ();
+#if NET9_0_OR_GREATER
+    private readonly Lock locker = new();
+#else
+    private readonly object locker = new();
+#endif
 
     /// <summary>
     /// Cache.
@@ -800,10 +804,14 @@ public class SingletonResolverItem<T> : IObjectResolver<T>
 /// <typeparam name="T">The type of value.</typeparam>
 public class SingletonKeeper<T>
 {
-    private readonly SemaphoreSlim semaphoreSlim = new (1, 1);
+    private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     private readonly Func<Task<T>> renew;
-    private readonly List<Action<T>> callbacks = new ();
-    private readonly object callbackLocker = new ();
+    private readonly List<Action<T>> callbacks = new();
+#if NET9_0_OR_GREATER
+    private readonly Lock callbackLocker = new();
+#else
+    private readonly object callbackLocker = new();
+#endif
     private DateTime? disabled;
 
     /// <summary>

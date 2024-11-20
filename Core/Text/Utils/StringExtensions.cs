@@ -138,11 +138,11 @@ public static class StringExtensions
 
             if (idx + length >= len)
             {
-                str.Append(text.Substring(idx));
+                str.AppendSubstring(text, idx);
             }
             else
             {
-                str.Append(text.Substring(idx, length));
+                str.AppendSubstring(text, idx, length);
             }
 
             idx += length;
@@ -167,7 +167,7 @@ public static class StringExtensions
             yield return source;
             yield break;
         }
-
+        
         var index = 0;
         if (options == StringSplitOptions.None)
         {
@@ -398,6 +398,98 @@ public static class StringExtensions
     /// <returns>A new string collection that each item has been trimmed.</returns>
     public static IEnumerable<string> TrimForEach(this IEnumerable<string> source, char[] trimChars)
         => source?.Select(s => s.Trim(trimChars));
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified read-only memory of char.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="value">A string to seek.</param>
+    /// <param name="startOffset">The search starting position.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not.</returns>
+    public static int IndexOf(ReadOnlySpan<char> source, string value, int startOffset = 0)
+    {
+        if (string.IsNullOrEmpty(value)) return -1;
+        var test = 0;
+        for (var i = startOffset; i < source.Length; i++)
+        {
+            if (source[i] != value[test])
+            {
+                test = 0;
+                continue;
+            }
+
+            test++;
+            if (test >= value.Length) return i;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified read-only memory of char.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="value">A string to seek.</param>
+    /// <param name="startOffset">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not.</returns>
+    public static int IndexOf(ReadOnlySpan<char> source, string value, int startOffset, int count)
+    {
+        if (string.IsNullOrEmpty(value)) return -1;
+        var test = 0;
+        var len = Math.Min(startOffset + count, source.Length);
+        for (var i = startOffset; i < len; i++)
+        {
+            if (source[i] != value[test])
+            {
+                test = 0;
+                continue;
+            }
+
+            test++;
+            if (test >= value.Length) return i;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified read-only memory of char.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="value">A char to seek.</param>
+    /// <param name="startOffset">The search starting position.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not.</returns>
+    public static int IndexOf(ReadOnlySpan<char> source, char value, int startOffset = 0)
+    {
+        for (var i = startOffset; i < source.Length; i++)
+        {
+            if (source[i] != value) continue;
+            return i;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified read-only memory of char.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="value">A char to seek.</param>
+    /// <param name="startOffset">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not.</returns>
+    public static int IndexOf(ReadOnlySpan<char> source, char value, int startOffset, int count)
+    {
+        var len = Math.Min(startOffset + count, source.Length);
+        for (var i = startOffset; i < len; i++)
+        {
+            if (source[i] != value) continue;
+            return i;
+        }
+
+        return -1;
+    }
 
     /// <summary>
     /// Gets the indent string.
