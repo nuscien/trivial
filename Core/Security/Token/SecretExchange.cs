@@ -137,14 +137,6 @@ public class RSASecretExchange : ICloneable
     public class JsonWebTokenPayload : Security.JsonWebTokenPayload
     {
         /// <summary>
-        /// Gets or sets the optional user identifer.
-        /// </summary>
-        [DataMember(Name = "uid", EmitDefaultValue = false)]
-        [JsonPropertyName("uid")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string UserId { get; set; }
-
-        /// <summary>
         /// Gets or sets the token or the token encrypted if supports.
         /// </summary>
         [DataMember(Name = "val", EmitDefaultValue = false)]
@@ -153,11 +145,10 @@ public class RSASecretExchange : ICloneable
         public string Value { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the value is encrypted.
+        /// Gets a value indicating whether the value is encrypted.
         /// </summary>
-        [DataMember(Name = "ien")]
-        [JsonPropertyName("ien")]
-        public bool IsEncrypted { get; set; }
+        [JsonIgnore]
+        public bool IsEncrypted => !string.IsNullOrWhiteSpace(CurrentEncryptId);
 
         /// <summary>
         /// Gets or sets the optional current encrypt key identifier if has.
@@ -191,7 +182,8 @@ public class RSASecretExchange : ICloneable
         /// <returns>true if read succeeded; otherwise, false.</returns>
         public bool Read(RSASecretExchange rsa, Func<string, RSAParameters?> encryptKeyResolver = null)
         {
-            if (!IsEncrypted || string.IsNullOrWhiteSpace(CurrentEncryptId))
+            var isEncrypted = IsEncrypted;
+            if (!isEncrypted)
             {
                 rsa.SetSecret(Value);
             }
@@ -201,8 +193,8 @@ public class RSASecretExchange : ICloneable
             }
 
             rsa.DecryptSecret(Value, true);
-            if (!string.IsNullOrWhiteSpace(UserId)) rsa.EntityId = UserId;
-            if (string.IsNullOrWhiteSpace(ExpectFutureEncryptId) || (!IsEncrypted && ExpectFutureEncryptId == rsa.Id))
+            if (!string.IsNullOrWhiteSpace(Subject)) rsa.EntityId = Subject;
+            if (string.IsNullOrWhiteSpace(ExpectFutureEncryptId) || (!isEncrypted && ExpectFutureEncryptId == rsa.Id))
             {
                 rsa.EncryptKeyId = null;
                 rsa.EncryptKey = null;
@@ -581,7 +573,7 @@ public class RSASecretExchange : ICloneable
         {
             return new()
             {
-                UserId = EntityId,
+                Subject = EntityId,
                 Value = Secret?.ToUnsecureString(),
                 ExpectFutureEncryptId = EncryptKeyId
             };
@@ -591,7 +583,7 @@ public class RSASecretExchange : ICloneable
         {
             return new()
             {
-                UserId = EntityId,
+                Subject = EntityId,
                 Value = Secret?.ToUnsecureString(),
                 ExpectFutureEncryptId = Id,
                 IssuedAt = DateTime.Now
@@ -601,9 +593,8 @@ public class RSASecretExchange : ICloneable
         return new()
         {
             CurrentEncryptId = EncryptKeyId,
-            UserId = EntityId,
+            Subject = EntityId,
             Value = EncryptSecret(),
-            IsEncrypted = IsSecure,
             ExpectFutureEncryptId = Id,
             IssuedAt = DateTime.Now
         };

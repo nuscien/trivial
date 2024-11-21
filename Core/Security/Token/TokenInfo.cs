@@ -18,6 +18,7 @@ using System.Text.Json.Serialization;
 
 using Trivial.Text;
 using Trivial.Data;
+using Trivial.Collection;
 
 namespace Trivial.Security;
 
@@ -170,6 +171,122 @@ public class TokenInfo
     /// The token type.
     /// </summary>
     public const string BearerTokenType = "Bearer";
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    public TokenInfo()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="tokenType">The token type.</param>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="accessToken">The access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(string tokenType, string userId, string accessToken, IEnumerable<string> scope = null)
+    {
+        TokenType = tokenType;
+        UserId = userId;
+        AccessToken = accessToken;
+        Scope = ListExtensions.ToList(scope, false);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+    {
+        Scope = ListExtensions.ToList(scope, false);
+        TokenType = BearerTokenType;
+        if (jwt?.Payload == null) return;
+        AccessToken = jwt.ToEncodedString();
+        UserId = jwt.Payload.Subject;
+        var expiration = jwt.Payload.Expiration;
+        if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<RSASecretExchange.JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+    {
+        Scope = ListExtensions.ToList(scope, false);
+        TokenType = BearerTokenType;
+        if (jwt?.Payload == null) return;
+        AccessToken = jwt.ToEncodedString();
+        UserId = jwt.Payload.Subject;
+        var expiration = jwt.Payload.Expiration;
+        if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="tokenType">The token type.</param>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="accessToken">The access token.</param>
+    /// <param name="expires">The expiration in second.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(string tokenType, string userId, string accessToken, int expires, string refreshToken = null, IEnumerable<string> scope = null)
+        : this(tokenType, userId, accessToken, scope)
+    {
+        ExpiredInSecond = expires;
+        RefreshToken = refreshToken;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="tokenType">The token type.</param>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="accessToken">The access token.</param>
+    /// <param name="expires">The expiration time span.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(string tokenType, string userId, string accessToken, TimeSpan expires, string refreshToken = null, IEnumerable<string> scope = null)
+        : this(tokenType, userId, accessToken, scope)
+    {
+        ExpiredAfter = expires;
+        RefreshToken = refreshToken;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="errorCode">The error code.</param>
+    /// <param name="errorUri">The URI of error information.</param>
+    /// <param name="errorDescription">The description of the error.</param>
+    public TokenInfo(string errorCode, Uri errorUri, string errorDescription = null)
+    {
+        ErrorCode = errorCode;
+        ErrorUri = errorUri;
+        ErrorDescription = errorDescription;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="tokenType">The token type.</param>
+    /// <param name="accessToken">The access token.</param>
+    /// <param name="expires">The expiration time span.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected TokenInfo(string tokenType, string accessToken, TimeSpan expires, string refreshToken = null, IEnumerable<string> scope = null)
+    {
+        TokenType = TokenType;
+        AccessToken = accessToken;
+        ExpiredAfter = expires;
+        RefreshToken = refreshToken;
+        Scope = ListExtensions.ToList(scope, false);
+    }
 
     /// <summary>
     /// Gets or sets the access token.
@@ -390,16 +507,22 @@ public class TokenInfo
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
     /// </summary>
+    /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
+    public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        => ToAuthenticationHeaderValue(Cases.Original, Cases.Original);
+
+    /// <summary>
+    /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
+    /// </summary>
     /// <param name="schemeCase">The scheme case.</param>
     /// <param name="parameterCase">The parameter case.</param>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
-    public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
-        => AccessToken != null
-            ? new AuthenticationHeaderValue(
-                StringExtensions.ToSpecificCaseInvariant(TokenType, schemeCase),
-                StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase))
-            : new AuthenticationHeaderValue(
-                StringExtensions.ToSpecificCaseInvariant(TokenType, schemeCase));
+    public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase, Cases parameterCase = Cases.Original)
+    {
+        if (string.IsNullOrEmpty(TokenType)) return null;
+        var scheme = StringExtensions.ToSpecificCaseInvariant(TokenType, schemeCase);
+        return AccessToken == null ? new(scheme) : new(scheme, StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase));
+    }
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
@@ -521,4 +644,98 @@ public class TokenContainer
             : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
         return true;
     }
+}
+
+/// <summary>
+/// The access token response information with user model.
+/// </summary>
+/// <typeparam name="T">The type of user model.</typeparam>
+public abstract class BaseAccountTokenInfo<T> : TokenInfo
+{
+    private T userCache;
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="errorCode">The error code.</param>
+    /// <param name="errorUri">The URI of error information.</param>
+    /// <param name="errorDescription">The description of the error.</param>
+    protected BaseAccountTokenInfo(string errorCode, Uri errorUri, string errorDescription = null)
+        : base(errorCode, errorUri, errorDescription)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="accessToken">The access token.</param>
+    /// <param name="expires">The expiration time span.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, string accessToken, TimeSpan expires, string refreshToken = null, IEnumerable<string> scope = null)
+        : base(BearerTokenType, accessToken, expires, refreshToken, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="tokenType">The token type.</param>
+    /// <param name="user">The user entity.</param>
+    /// <param name="accessToken">The access token.</param>
+    /// <param name="expires">The expiration time span.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(string tokenType, T user, string accessToken, TimeSpan expires, string refreshToken = null, IEnumerable<string> scope = null)
+        : base(tokenType, accessToken, expires, refreshToken, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Gets or sets the user entity.
+    /// </summary>
+    [JsonPropertyName("user")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public T User
+    {
+        get
+        {
+            return userCache;
+        }
+
+        set
+        {
+            var id = value is null ? null : GetUserId(value);
+            userCache = value;
+            base.UserId = id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the user identifer.
+    /// </summary>
+    public override string UserId
+    {
+        get
+        {
+            return base.UserId;
+        }
+
+        set
+        {
+            if (value == base.UserId) return;
+            userCache = default;
+            base.UserId = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the user identifier from the entity.
+    /// </summary>
+    /// <param name="User">The user entity.</param>
+    /// <returns>The user identifier.</returns>
+    protected abstract string GetUserId(T User);
 }

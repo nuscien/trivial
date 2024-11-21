@@ -516,11 +516,15 @@ public class ServerSentEventInfo
     /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
     /// <exception cref="ObjectDisposedException">The response was closed.</exception>
-    public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpResponseMessage response)
+    public static async IAsyncEnumerable<ServerSentEventInfo> ParseAsync(HttpResponseMessage response)
     {
         var content = response?.Content;
         var resp = content == null ? null : await content.ReadAsStreamAsync();
-        return Parse(resp);
+        var col = ParseAsync(resp);
+        await foreach (var item in col)
+        {
+            yield return item;
+        }
     }
 
     /// <summary>
@@ -532,26 +536,17 @@ public class ServerSentEventInfo
     /// <exception cref="InvalidOperationException">The request message was already sent by the HTTP client instance.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
-    public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpRequestMessage request, HttpClient http = null)
+    public static async IAsyncEnumerable<ServerSentEventInfo> ParseAsync(HttpRequestMessage request, HttpClient http = null)
     {
         var resp = await (http ?? new HttpClient()).SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-        return await ParseAsync(resp);
+        var col = ParseAsync(resp);
+        await foreach (var item in col)
+        {
+            yield return item;
+        }
     }
 
 #if NET6_0_OR_GREATER
-    /// <summary>
-    /// Parses server-sent event record.
-    /// </summary>
-    /// <param name="response">The HTTP response message.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
-    /// <returns>A collection of server-sent event record.</returns>
-    public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
-    {
-        var content = response?.Content;
-        var resp = content == null ? null : await content.ReadAsStreamAsync(cancellationToken);
-        return Parse(resp);
-    }
-
     /// <summary>
     /// Parses server-sent event record.
     /// </summary>
@@ -564,4 +559,84 @@ public class ServerSentEventInfo
         return Parse(resp);
     }
 #endif
+
+    /// <summary>
+    /// Parses server-sent event record.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <returns>A collection of server-sent event record.</returns>
+    /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
+    /// <exception cref="IOException">An I/O error occured.</exception>
+    /// <exception cref="ObjectDisposedException">The stream was closed.</exception>
+    public static IAsyncEnumerable<ServerSentEventInfo> ParseAsync(Stream stream, Encoding encoding = null)
+    {
+        var lines = stream.ReadLinesAsync(encoding ?? Encoding.UTF8);
+        return ParseAsync(lines);
+    }
+
+    /// <summary>
+    /// Parses server-sent event record.
+    /// </summary>
+    /// <param name="lines">The input lines.</param>
+    /// <returns>A collection of server-sent event record.</returns>
+    public static async IAsyncEnumerable<ServerSentEventInfo> ParseAsync(IAsyncEnumerable<string> lines)
+    {
+        if (lines == null) yield break;
+        ServerSentEventInfo record = null;
+        string key = null;
+        await foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                key = null;
+                if (record != null)
+                {
+                    yield return record;
+                    record = null;
+                }
+
+                continue;
+            }
+
+            var keyIndex = line.IndexOf(':');
+            if (keyIndex < 0)
+            {
+                if (key == "data")
+                {
+                    record ??= new();
+                    record.SetValue(key, string.IsNullOrEmpty(record.DataString) ? line : string.Concat(record.DataString, Environment.NewLine, line));
+                }
+                else if (key == string.Empty)
+                {
+                    record ??= new();
+                    record.SetValue(key, string.IsNullOrEmpty(record.Comment) ? line : string.Concat(record.Comment, Environment.NewLine, line));
+                }
+                else
+                {
+                    key = null;
+                }
+
+                continue;
+            }
+
+            if (keyIndex + 1 == line.Length) continue;
+            record ??= new();
+            var l = line.Substring(keyIndex + 1);
+            if (l.Length > 1 && l.FirstOrDefault() == ' ') l = l.Substring(1);
+            if (keyIndex == 0)
+            {
+                key = string.Empty;
+                record.SetValue(key, string.IsNullOrEmpty(record.Comment) ? l : string.Concat(record.Comment, Environment.NewLine, l));
+                continue;
+            }
+
+            var currentKey = line.Substring(0, keyIndex).Trim().ToLowerInvariant();
+            if (currentKey == key && record.TryGetValue(key, out var l2)) l = string.Concat(l2, Environment.NewLine, l);
+            key = currentKey;
+            record.SetValue(key, l);
+        }
+
+        if (record != null) yield return record;
+    }
 }

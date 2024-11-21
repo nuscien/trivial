@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -226,9 +227,7 @@ public class TokenRequest
     /// </summary>
     /// <returns>A string in JSON format.</returns>
     public virtual string ToJsonString()
-    {
-        return ToJsonObject()?.ToString() ?? "{}";
-    }
+        => ToJsonObject()?.ToString() ?? "{}";
 
     /// <summary>
     /// Returns a string that represents the current object.
@@ -236,7 +235,7 @@ public class TokenRequest
     /// <returns>A query string of the token request but without client secret.</returns>
     public override string ToString()
     {
-        var data = ToQueryData() ?? new QueryData();
+        var data = ToQueryData() ?? new();
         data.Remove(TokenRequestBody.ClientSecretProperty);
         return data.ToString();
     }
@@ -538,7 +537,7 @@ internal sealed class QueryDataTokenRequestBody : TokenRequestBody
     /// <param name="q">The query data.</param>
     public QueryDataTokenRequestBody(QueryData q) : base(q[GrantTypeProperty])
     {
-        query = q ?? new QueryData();
+        query = q ?? new();
     }
 
     /// <summary>
@@ -600,11 +599,25 @@ public class ClientTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <param name="q">The query data.</param>
     /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
         if (q == null) return;
         var grantType = q[GrantTypeProperty];
         if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
+    }
+
+    /// <summary>
+    /// Creates the token request body.
+    /// </summary>
+    /// <param name="q">The query data used to fill properties.</param>
+    /// <returns>The object parsed returned.</returns>
+    /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
+    internal static ClientTokenRequestBody Create(QueryData q)
+    {
+        var body = new ClientTokenRequestBody();
+        body.Fill(q);
+        return body;
     }
 
     /// <summary>
@@ -623,23 +636,6 @@ public class ClientTokenRequestBody : TokenRequestBody
         var body = new ClientTokenRequestBody();
         body.Fill(q);
         return new TokenRequest<ClientTokenRequestBody>(body, q);
-    }
-
-    /// <summary>
-    /// Registers a token request handler into a route.
-    /// </summary>
-    /// <typeparam name="T">The type of entity.</typeparam>
-    /// <param name="route">The token request route.</param>
-    /// <param name="h">A token request handler.</param>
-    public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<ClientTokenRequestBody>, Task<(T, TokenInfo)>> h)
-    {
-        if (route == null || h == null) return;
-        route.Register(ClientCredentialsGrantType, q =>
-        {
-            var body = new ClientTokenRequestBody();
-            body.Fill(q);
-            return new TokenRequest<ClientTokenRequestBody>(body, q);
-        }, h);
     }
 }
 
@@ -759,6 +755,7 @@ public class CodeTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <param name="q">The query data.</param>
     /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
         if (q == null) return;
@@ -775,6 +772,19 @@ public class CodeTokenRequestBody : TokenRequestBody
     }
 
     /// <summary>
+    /// Creates the token request body.
+    /// </summary>
+    /// <param name="q">The query data used to fill properties.</param>
+    /// <returns>The object parsed returned.</returns>
+    /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
+    internal static CodeTokenRequestBody Create(QueryData q)
+    {
+        var body = new CodeTokenRequestBody();
+        body.Fill(q);
+        return body;
+    }
+
+    /// <summary>
     /// Parses a string to code access token request.
     /// </summary>
     /// <param name="s">The string to parse.</param>
@@ -783,182 +793,13 @@ public class CodeTokenRequestBody : TokenRequestBody
     /// <exception cref="ArgumentException">s was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
     /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-    public static CodeTokenRequest Parse(string s)
+    public static TokenRequest<CodeTokenRequestBody> Parse(string s)
     {
         StringExtensions.AssertNotWhiteSpace(nameof(s), s);
         var q = QueryData.Parse(s);
         var body = new CodeTokenRequestBody();
         body.Fill(q);
-        return new CodeTokenRequest(body, q);
-    }
-
-    /// <summary>
-    /// Registers a token request handler into a route.
-    /// </summary>
-    /// <typeparam name="T">The type of entity.</typeparam>
-    /// <param name="route">The token request route.</param>
-    /// <param name="h">A token request handler.</param>
-    public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<CodeTokenRequestBody>, Task<(T, TokenInfo)>> h)
-    {
-        if (route == null || h == null) return;
-        route.Register(AuthorizationCodeGrantType, q =>
-        {
-            var body = new CodeTokenRequestBody();
-            body.Fill(q);
-            return new TokenRequest<CodeTokenRequestBody>(body, q);
-        }, h);
-    }
-}
-
-/// <summary>
-/// The access token resolver request.
-/// </summary>
-[DataContract]
-public class CodeTokenRequest : TokenRequest<CodeTokenRequestBody>
-{
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="tokenRequest">The token request.</param>
-    public CodeTokenRequest(TokenRequest<CodeTokenRequestBody> tokenRequest) : base(tokenRequest)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="body">The request body.</param>
-    /// <param name="appId">The client id and secret key.</param>
-    /// <param name="scope">The scope.</param>
-    public CodeTokenRequest(CodeTokenRequestBody body, AppAccessingKey appId, IEnumerable<string> scope = null) : base(body, appId, scope)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="body">The request body.</param>
-    /// <param name="id">The client id.</param>
-    /// <param name="secret">The client secret key.</param>
-    /// <param name="scope">The scope.</param>
-    public CodeTokenRequest(CodeTokenRequestBody body, string id, string secret = null, IEnumerable<string> scope = null) : base(body, id, secret, scope)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="body">The request body.</param>
-    /// <param name="id">The client id.</param>
-    /// <param name="secret">The client secret key.</param>
-    /// <param name="scope">The scope.</param>
-    public CodeTokenRequest(CodeTokenRequestBody body, string id, SecureString secret, IEnumerable<string> scope = null) : base(body, id, secret, scope)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="body">The request body.</param>
-    /// <param name="clientCredentials">The client credentials and scope query data.</param>
-    public CodeTokenRequest(CodeTokenRequestBody body, QueryData clientCredentials) : base(body, clientCredentials)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="code">The authorization code.</param>
-    /// <param name="redirectUri">The redirect URI.</param>
-    /// <param name="id">The client id.</param>
-    /// <param name="secret">The client secret key.</param>
-    /// <param name="scope">The scope.</param>
-    public CodeTokenRequest(string code, Uri redirectUri, string id, string secret = null, IEnumerable<string> scope = null) : base(new CodeTokenRequestBody
-    {
-        Code = code,
-        RedirectUri = redirectUri
-    }, id, secret, scope)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CodeTokenRequest class.
-    /// </summary>
-    /// <param name="code">The authorization code.</param>
-    /// <param name="redirectUri">The redirect URI.</param>
-    /// <param name="id">The client id.</param>
-    /// <param name="secret">The client secret key.</param>
-    /// <param name="scope">The scope.</param>
-    public CodeTokenRequest(string code, Uri redirectUri, string id, SecureString secret, IEnumerable<string> scope = null) : base(new CodeTokenRequestBody
-    {
-        Code = code,
-        RedirectUri = redirectUri
-    }, id, secret, scope)
-    {
-    }
-
-    /// <summary>
-    /// Gets the authorization code.
-    /// </summary>
-    [JsonIgnore]
-    public string Code
-    {
-        get => Body?.Code;
-        set => Body.Code = value;
-    }
-
-    /// <summary>
-    /// Gets the redirect URI.
-    /// </summary>
-    [JsonIgnore]
-    public Uri RedirectUri
-    {
-        get => Body?.RedirectUri;
-        set => Body.RedirectUri = value;
-    }
-
-    /// <summary>
-    /// Gets the service provider.
-    /// </summary>
-    [JsonIgnore]
-    public string ServiceProvider
-    {
-        get => Body?.ServiceProvider;
-        set => Body.ServiceProvider = value;
-    }
-
-    /// <summary>
-    /// Gets the login URI.
-    /// </summary>
-    /// <param name="uri">The base URI.</param>
-    /// <param name="responseType"></param>
-    /// <param name="state"></param>
-    /// <returns></returns>
-    public Uri GetLoginUri(Uri uri, string responseType, string state)
-    {
-        var data = new QueryData
-        {
-            { CodeTokenRequestBody.ResponseType, responseType },
-            { TokenRequestBody.ClientIdProperty, ClientId },
-            { CodeTokenRequestBody.RedirectUriProperty, Body?.RedirectUri?.OriginalString },
-            { TokenInfo.ScopeProperty, ScopeString },
-            { CodeTokenRequestBody.StateProperty, state }
-        };
-        return new Uri(data.ToString(uri.OriginalString));
-    }
-
-    /// <summary>
-    /// Parses a string to code access token request.
-    /// </summary>
-    /// <param name="s">The string to parse.</param>
-    /// <returns>The object parsed returned.</returns>
-    /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
-    /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
-    /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-    public static CodeTokenRequest Parse(string s)
-    {
-        return CodeTokenRequestBody.Parse(s);
+        return new TokenRequest<CodeTokenRequestBody>(body, q);
     }
 }
 
@@ -1024,6 +865,7 @@ public class RefreshTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <param name="q">The query data.</param>
     /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
         if (q == null) return;
@@ -1031,6 +873,19 @@ public class RefreshTokenRequestBody : TokenRequestBody
         if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
         var refreshToken = q[TokenInfo.RefreshTokenProperty];
         if (refreshToken != null) RefreshToken = refreshToken;
+    }
+
+    /// <summary>
+    /// Creates the token request body.
+    /// </summary>
+    /// <param name="q">The query data used to fill properties.</param>
+    /// <returns>The object parsed returned.</returns>
+    /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
+    internal static RefreshTokenRequestBody Create(QueryData q)
+    {
+        var body = new RefreshTokenRequestBody();
+        body.Fill(q);
+        return body;
     }
 
     /// <summary>
@@ -1049,23 +904,6 @@ public class RefreshTokenRequestBody : TokenRequestBody
         var body = new RefreshTokenRequestBody();
         body.Fill(q);
         return new TokenRequest<RefreshTokenRequestBody>(body, q);
-    }
-
-    /// <summary>
-    /// Registers a token request handler into a route.
-    /// </summary>
-    /// <typeparam name="T">The type of entity.</typeparam>
-    /// <param name="route">The token request route.</param>
-    /// <param name="h">A token request handler.</param>
-    public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<RefreshTokenRequestBody>, Task<(T, TokenInfo)>> h)
-    {
-        if (route == null || h == null) return;
-        route.Register(RefreshTokenGrantType, q =>
-        {
-            var body = new RefreshTokenRequestBody();
-            body.Fill(q);
-            return new TokenRequest<RefreshTokenRequestBody>(body, q);
-        }, h);
     }
 }
 
@@ -1271,7 +1109,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <returns>A string in JSON format.</returns>
     internal protected override JsonObjectNode ToJsonObject()
     {
-        var json = base.ToJsonObject() ?? new JsonObjectNode();
+        var json = base.ToJsonObject() ?? new();
         json.SetValue(PasswordProperty, Password.ToUnsecureString());
         return json;
     }
@@ -1281,6 +1119,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// </summary>
     /// <param name="q">The query data.</param>
     /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
         if (q == null) return;
@@ -1292,6 +1131,19 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
         if (password != null) Password = password == string.Empty ? null : password.ToSecure();
         var ldap = q[LdapProperty];
         if (ldap != null) Ldap = ldap;
+    }
+
+    /// <summary>
+    /// Creates the token request body.
+    /// </summary>
+    /// <param name="q">The query data used to fill properties.</param>
+    /// <returns>The object parsed returned.</returns>
+    /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
+    internal static PasswordTokenRequestBody Create(QueryData q)
+    {
+        var body = new PasswordTokenRequestBody();
+        body.Fill(q);
+        return body;
     }
 
     /// <summary>
@@ -1335,9 +1187,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <returns>The password token request.</returns>
     /// <exception cref="FormatException">The token value is invalid.</exception>
     public static PasswordTokenRequestBody CreateByBasicToken(AuthenticationHeaderValue token, Encoding encoding = null)
-    {
-        return CreateByBasicToken(token?.Parameter, encoding);
-    }
+        => CreateByBasicToken(token?.Parameter, encoding);
 
     /// <summary>
     /// Parses a string to code access token request.
@@ -1355,137 +1205,5 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
         var body = new PasswordTokenRequestBody();
         body.Fill(q);
         return new TokenRequest<PasswordTokenRequestBody>(body, q);
-    }
-
-    /// <summary>
-    /// Registers a token request handler into a route.
-    /// </summary>
-    /// <typeparam name="T">The type of entity.</typeparam>
-    /// <param name="route">The token request route.</param>
-    /// <param name="h">A token request handler.</param>
-    public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<PasswordTokenRequestBody>, Task<(T, TokenInfo)>> h)
-    {
-        if (route == null || h == null) return;
-        route.Register(PasswordGrantType, q =>
-        {
-            var body = new PasswordTokenRequestBody();
-            body.Fill(q);
-            return new TokenRequest<PasswordTokenRequestBody>(body, q);
-        }, h);
-    }
-}
-
-/// <summary>
-/// The server route of token request handler.
-/// </summary>
-/// <typeparam name="T">The type of account information.</typeparam>
-public class TokenRequestRoute<T>
-{
-    /// <summary>
-    /// The handlers.
-    /// </summary>
-    private readonly Dictionary<string, Func<QueryData, Task<(T, TokenInfo)>>> handlers = new();
-
-    /// <summary>
-    /// Adds or removes the event handler after signing in.
-    /// </summary>
-    public event DataEventHandler<SelectionRelationship<T, TokenInfo>> SignedIn;
-
-    /// <summary>
-    /// Registers a handler.
-    /// </summary>
-    /// <param name="grantType">The grant type.</param>
-    /// <param name="h">The handler.</param>
-    public void Register(string grantType, Func<QueryData, Task<(T, TokenInfo)>> h)
-    {
-        handlers[grantType] = h;
-    }
-
-    /// <summary>
-    /// Registers a handler.
-    /// </summary>
-    /// <param name="grantType">The grant type.</param>
-    /// <param name="h">The handler.</param>
-    public void Register(string grantType, Func<TokenRequest, Task<(T, TokenInfo)>> h)
-    {
-        handlers[grantType] = q =>
-        {
-            var info = new TokenRequest(q);
-            return h(info);
-        };
-    }
-
-    /// <summary>
-    /// Registers a handler.
-    /// </summary>
-    /// <param name="grantType">The grant type.</param>
-    /// <param name="tokenRequestFactory">The token request factory.</param>
-    /// <param name="h">The handler.</param>
-    public void Register<TTokenRequest>(string grantType, Func<QueryData, TTokenRequest> tokenRequestFactory, Func<TTokenRequest, Task<(T, TokenInfo)>> h) where TTokenRequest : TokenRequest
-    {
-        handlers[grantType] = q =>
-        {
-            var info = tokenRequestFactory(q);
-            if (info == null) return Task.FromResult<(T, TokenInfo)>((default, null));
-            return h(info);
-        };
-    }
-
-    /// <summary>
-    /// Signs in.
-    /// </summary>
-    /// <param name="tokenRequest">The token request information.</param>
-    /// <returns>A token information.</returns>
-    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest tokenRequest)
-    {
-        var q = tokenRequest?.ToQueryData();
-        return SignInAsync(q);
-    }
-
-    /// <summary>
-    /// Signs in.
-    /// </summary>
-    /// <param name="s">The token request information.</param>
-    /// <returns>A token information.</returns>
-    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(string s)
-    {
-        var q = QueryData.Parse(s);
-        return SignInAsync(q);
-    }
-
-    /// <summary>
-    /// Signs in.
-    /// </summary>
-    /// <param name="q">The token request information.</param>
-    /// <returns>A token information.</returns>
-    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(QueryData q)
-    {
-        if (q == null) return null;
-        var grantType = q[TokenRequestBody.GrantTypeProperty];
-        if (string.IsNullOrWhiteSpace(grantType)) return null;
-        if (!handlers.TryGetValue(grantType, out var h)) return null;
-        var token = await h(q);
-        var info = new SelectionRelationship<T, TokenInfo>(token);
-        SignedIn?.Invoke(this, new DataEventArgs<SelectionRelationship<T, TokenInfo>>(info));
-        return info;
-    }
-
-    /// <summary>
-    /// Signs in.
-    /// </summary>
-    /// <param name="utf8Stream">The UTF-8 stream input.</param>
-    /// <returns>The login response.</returns>
-    /// <exception cref="ArgumentException">stream does not support reading.</exception>
-    /// <exception cref="IOException">An I/O error occurs.</exception>
-    /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
-    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream)
-    {
-        string input;
-        using (var reader = new StreamReader(utf8Stream, Encoding.UTF8))
-        {
-            input = await reader.ReadToEndAsync();
-        }
-
-        return await SignInAsync(input);
     }
 }

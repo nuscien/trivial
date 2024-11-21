@@ -556,12 +556,200 @@ public class CharsReader : TextReader
     /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
     public static IEnumerable<string> ReadLines(System.IO.Compression.ZipArchive zip, string entryName, Encoding encoding, bool removeEmptyLine = false)
     {
-        var entry = zip?.GetEntry(entryName);
-        if (entry == null) throw new FileNotFoundException("file is not found.");
+        var entry = (zip?.GetEntry(entryName)) ?? throw new FileNotFoundException("file is not found.");
         using var stream = entry.Open();
         return ReadLines(stream, encoding, removeEmptyLine);
     }
+
+    /// <summary>
+    /// Reads lines from a specific stream.
+    /// </summary>
+    /// <param name="zip">The zip file.</param>
+    /// <param name="entryName">A path, relative to the root of the archive, that identifies the entry to retrieve.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream reader.</returns>
+    /// <exception cref="ArgumentNullException">file was null.</exception>
+    /// <exception cref="FileNotFoundException">file was not found.</exception>
+    /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+    /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+    /// <exception cref="IOException">An I/O error occurs.</exception>
+    /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+    /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+    /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(System.IO.Compression.ZipArchive zip, string entryName, Encoding encoding, bool removeEmptyLine = false)
+    {
+        var entry = (zip?.GetEntry(entryName)) ?? throw new FileNotFoundException("file is not found.");
+        using var stream = entry.Open();
+        return ReadLinesAsync(stream, encoding, removeEmptyLine);
+    }
 #endif
+
+    /// <summary>
+    /// Reads lines from a specific stream reader.
+    /// </summary>
+    /// <param name="reader">The stream reader.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream reader.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="IOException">An I/O error occurs.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(TextReader reader, bool removeEmptyLine = false)
+        => ReadLinesAsync(reader, null, removeEmptyLine);
+
+    /// <summary>
+    /// Reads lines from a specific stream reader.
+    /// </summary>
+    /// <param name="reader">The stream reader.</param>
+    /// <param name="onReadToEnd">The handler occurred on reading to end.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream reader.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="IOException">An I/O error occurs.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static async IAsyncEnumerable<string> ReadLinesAsync(TextReader reader, Action<bool> onReadToEnd, bool removeEmptyLine = false)
+    {
+        if (reader == null) yield break;
+        var isSucc = false;
+        try
+        {
+            if (removeEmptyLine)
+            {
+                while (true)
+                {
+                    var line = await reader.ReadLineAsync();
+                    if (line == null) break;
+                    if (string.IsNullOrEmpty(line)) continue;
+                    yield return line;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    var line = await reader.ReadLineAsync();
+                    if (line == null) break;
+                    yield return line;
+                }
+            }
+
+            isSucc = true;
+        }
+        finally
+        {
+            onReadToEnd?.Invoke(isSucc);
+        }
+    }
+
+    /// <summary>
+    /// Reads lines from a specific stream.
+    /// </summary>
+    /// <param name="stream">The stream to read.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream.</returns>
+    /// <exception cref="ArgumentNullException">stream was null.</exception>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(Stream stream, Encoding encoding, bool removeEmptyLine = false)
+    {
+        if (stream == null) throw ObjectConvert.ArgumentNull(nameof(stream));
+        var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+        var hasDisposed = false;
+        return ReadLinesAsync(reader, isSucc =>
+        {
+            if (hasDisposed) return;
+            hasDisposed = true;
+            reader.Dispose();
+        }, removeEmptyLine);
+    }
+
+    /// <summary>
+    /// Reads lines from a specific byte collection.
+    /// </summary>
+    /// <param name="bytes">The byte collection to read.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream.</returns>
+    /// <exception cref="ArgumentNullException">stream was null.</exception>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(IAsyncEnumerable<byte> bytes, Encoding encoding, bool removeEmptyLine = false)
+        => ReadLinesAsync(ReadCharsAsync(bytes, encoding), removeEmptyLine);
+
+    /// <summary>
+    /// Reads lines from a specific stream collection.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Lines from the specific stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
+        => ReadLinesAsync(ReadCharsAsync(streams, encoding, closeStream), removeEmptyLine);
+
+    /// <summary>
+    /// Reads lines from a specific stream collection.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Lines from the specific stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(IAsyncEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
+        => ReadLinesAsync(ReadCharsAsync(streams, encoding, closeStream), removeEmptyLine);
+
+    /// <summary>
+    /// Reads lines from a specific charactor collection.
+    /// </summary>
+    /// <param name="chars">The charactors to read.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific charactor collection.</returns>
+    public async static IAsyncEnumerable<string> ReadLinesAsync(IAsyncEnumerable<char> chars, bool removeEmptyLine = false)
+    {
+        if (chars == null) yield break;
+        var wasR = false;
+        var str = new StringBuilder();
+        await foreach (var c in chars)
+        {
+            if (wasR)
+            {
+                wasR = false;
+                if (c == '\n') continue;
+            }
+
+            if (c == '\r') wasR = true;
+            if (!wasR && c != '\n')
+            {
+                str.Append(c);
+                continue;
+            }
+
+            if (removeEmptyLine && str.Length == 0) continue;
+            yield return str.ToString();
+            str.Clear();
+        }
+
+        if (removeEmptyLine && str.Length == 0) yield break;
+        yield return str.ToString();
+    }
+
+    /// <summary>
+    /// Reads lines from a specific stream collection.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Lines from the specific stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
+        => ReadLinesAsync(ReadCharsAsync(streams, encoding, closeStream), removeEmptyLine);
 
     /// <summary>
     /// Reads characters from the stream and advances the position within each stream to the end.
@@ -695,6 +883,165 @@ public class CharsReader : TextReader
     /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
     public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
         => ReadChars(StreamCopy.ToStreamCollection(streams), encoding, closeStream);
+
+    /// <summary>
+    /// Reads characters from the bytes and advances the position within each stream to the end.
+    /// </summary>
+    /// <param name="bytes">The byte collection to read.</param>
+    /// <param name="encoding">The encoding to read text.</param>
+    /// <returns>Bytes from the stream.</returns>
+    public static async IAsyncEnumerable<char> ReadCharsAsync(IAsyncEnumerable<byte> bytes, Encoding encoding = null)
+    {
+        if (bytes == null) yield break;
+        var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
+        var pos = -1;
+        var count = 12;
+        var buffer = new byte[count];
+        await foreach (var b in bytes)
+        {
+            pos++;
+            buffer[pos] = b;
+            if (pos < 11) continue;
+            var len = decoder.GetCharCount(buffer, 0, count);
+            var chars = new char[len];
+            decoder.GetChars(buffer, 0, count, chars, 0);
+            pos = -1;
+            foreach (var c in chars)
+            {
+                yield return c;
+            }
+        }
+
+        if (pos > -1)
+        {
+            count = pos + 1;
+            var len = decoder.GetCharCount(buffer, 0, count);
+            var chars = new char[len];
+            decoder.GetChars(buffer, 0, count, chars, 0);
+            foreach (var c in chars)
+            {
+                yield return c;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads characters from the streams and advances the position within each stream to the end.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="encoding">The encoding to read text.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Bytes from the stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<char> ReadCharsAsync(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
+        => ReadCharsAsync(streams, null, encoding, closeStream);
+
+    /// <summary>
+    /// Reads characters from the streams and advances the position within each stream to the end.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="encoding">The encoding to read text.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Bytes from the stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<char> ReadCharsAsync(IAsyncEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
+        => ReadCharsAsync(streams, null, encoding, closeStream);
+
+    /// <summary>
+    /// Reads characters from the streams and advances the position within each stream to the end.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="onStreamReadToEnd">A callback occurred on read to end per stream.</param>
+    /// <param name="encoding">The encoding to read text.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Bytes from the stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public async static IAsyncEnumerable<char> ReadCharsAsync(IEnumerable<Stream> streams, Action<Stream> onStreamReadToEnd, Encoding encoding = null, bool closeStream = false)
+    {
+        if (streams == null) yield break;
+        var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
+        var buffer = new byte[12];
+        foreach (var stream in streams)
+        {
+            if (stream == null) continue;
+            try
+            {
+                while (true)
+                {
+                    var count = await stream.ReadAsync(buffer, 0, buffer.Length);
+                    if (count == 0) break;
+                    var len = decoder.GetCharCount(buffer, 0, count);
+                    var chars = new char[len];
+                    decoder.GetChars(buffer, 0, count, chars, 0);
+                    foreach (var c in chars)
+                    {
+                        yield return c;
+                    }
+                }
+            }
+            finally
+            {
+                onStreamReadToEnd?.Invoke(stream);
+                if (closeStream) stream.Close();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads characters from the streams and advances the position within each stream to the end.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="onStreamReadToEnd">A callback occurred on read to end per stream.</param>
+    /// <param name="encoding">The encoding to read text.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Bytes from the stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public async static IAsyncEnumerable<char> ReadCharsAsync(IAsyncEnumerable<Stream> streams, Action<Stream> onStreamReadToEnd, Encoding encoding = null, bool closeStream = false)
+    {
+        if (streams == null) yield break;
+        var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
+        var buffer = new byte[12];
+        await foreach (var stream in streams)
+        {
+            if (stream == null) continue;
+            try
+            {
+                while (true)
+                {
+                    var count = stream.Read(buffer, 0, buffer.Length);
+                    if (count == 0) break;
+                    var len = decoder.GetCharCount(buffer, 0, count);
+                    var chars = new char[len];
+                    decoder.GetChars(buffer, 0, count, chars, 0);
+                    foreach (var c in chars)
+                    {
+                        yield return c;
+                    }
+                }
+            }
+            finally
+            {
+                onStreamReadToEnd?.Invoke(stream);
+                if (closeStream) stream.Close();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads characters from the streams and advances the position within each stream to the end.
+    /// </summary>
+    /// <param name="streams">The stream collection to read.</param>
+    /// <param name="encoding">The encoding to read text.</param>
+    /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+    /// <returns>Bytes from the stream collection.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<char> ReadCharsAsync(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
+        => ReadCharsAsync(StreamCopy.ToStreamCollection(streams), encoding, closeStream);
 
     /// <summary>
     /// Converts a string to a memory stream.

@@ -21,6 +21,7 @@ using Trivial.Data;
 using Trivial.Maths;
 using Trivial.Net;
 using Trivial.Reflection;
+using Trivial.Security;
 using Trivial.Web;
 
 namespace Trivial.Text;
@@ -9090,6 +9091,16 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         if (rightValue is null || leftValue is null) return true;
         return !leftValue.Equals(rightValue);
     }
+
+    /// <summary>
+    /// Creates a JSON web token.
+    /// leftValue + rightValue
+    /// </summary>
+    /// <param name="json">The left value for addition operator.</param>
+    /// <param name="signature">The right value for addition operator.</param>
+    /// <returns>A result after addition.</returns>
+    public static JsonWebToken<JsonObjectNode> operator +(JsonObjectNode json, ISignatureProvider signature)
+        => new(json, signature);
 
     /// <summary>
     /// Tries to get the value of the specific property.

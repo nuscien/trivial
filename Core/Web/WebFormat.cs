@@ -578,12 +578,6 @@ public static partial class WebFormat
             return str => (T)(object)str;
         }
 
-        if (t == typeof(IEnumerable<ServerSentEventInfo>))
-        {
-            if (ignoreJsonDoc) return null;
-            return str => (T)(object)ServerSentEventInfo.Parse(str);
-        }
-
         return null;
     }
 

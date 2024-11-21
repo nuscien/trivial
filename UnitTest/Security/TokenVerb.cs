@@ -15,7 +15,7 @@ namespace Trivial.Security
 
         protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
         {
-            var codeTokenReq = new CodeTokenRequest(new CodeTokenRequestBody
+            var codeTokenReq = new TokenRequest<CodeTokenRequestBody>(new CodeTokenRequestBody
             {
                 Code = "hijklmn\r\nopq\trst"
             }, "abcd", "efg")
@@ -25,11 +25,11 @@ namespace Trivial.Security
             await Task.CompletedTask;
             cancellationToken.ThrowIfCancellationRequested();
             var tokenUrl = codeTokenReq.ToJsonString();
-            codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
+            codeTokenReq = CodeTokenRequestBody.Parse(tokenUrl);
             tokenUrl = codeTokenReq.ToQueryData().ToString();
-            codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
+            codeTokenReq = CodeTokenRequestBody.Parse(tokenUrl);
             tokenUrl = codeTokenReq.ToJsonString();
-            codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
+            codeTokenReq = CodeTokenRequestBody.Parse(tokenUrl);
             Console.WriteLine(codeTokenReq.ToQueryData().ToString());
             Console.WriteLine();
 

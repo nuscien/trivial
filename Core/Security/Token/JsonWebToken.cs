@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using Trivial.Reflection;
@@ -13,7 +14,7 @@ using Trivial.Web;
 namespace Trivial.Security;
 
 /// <summary>
-/// Json web token model.
+/// JSON web token model.
 /// </summary>
 /// <typeparam name="T">The type of payload.</typeparam>
 public class JsonWebToken<T>
@@ -249,9 +250,7 @@ public class JsonWebToken<T>
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
-        {
-            return ToString().GetHashCode();
-        }
+            => ToString().GetHashCode();
 
         /// <summary>
         /// Refreshs the cache.
@@ -274,6 +273,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
     /// <exception cref="FormatException">jwt was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">Deserialize failed.</exception>
     public static JsonWebToken<T> Parse(string jwt, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
@@ -326,6 +326,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
     /// <exception cref="FormatException">jwt was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">Deserialize failed.</exception>
     public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
@@ -377,6 +378,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
     /// <exception cref="FormatException">The access token was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">Deserialize failed.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
@@ -406,6 +408,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
     /// <exception cref="FormatException">The access token was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">Deserialize failed.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, ISignatureProvider algorithm, bool verify = true)
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
@@ -631,7 +634,7 @@ public class JsonWebTokenPayload
 
     /// <summary>
     /// Gets or sets the optional subject.
-    /// This claim identifies the principal that is the subject of the JWT.The claims in a JWT are normally statements about the subject.
+    /// This claim identifies the principal that is the subject of the JWT. The claims in a JWT are normally statements about the subject.
     /// The subject value MUST either be scoped to be locally unique in the context of the issuer or be globally unique.
     /// The processing of this claim is generally application specific.
     /// Its value is a case-sensitive string containing a string or a URI.
@@ -741,11 +744,19 @@ public class JsonWebTokenPayload
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-    {
-        return StringExtensions.ToJson(this, new System.Text.Json.JsonSerializerOptions
+        => StringExtensions.ToJson(this, new System.Text.Json.JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
-    }
+
+    /// <summary>
+    /// Creates a JSON web token.
+    /// leftValue + rightValue
+    /// </summary>
+    /// <param name="payload">The left value for addition operator.</param>
+    /// <param name="signature">The right value for addition operator.</param>
+    /// <returns>A result after addition.</returns>
+    public static JsonWebToken<JsonWebTokenPayload> operator +(JsonWebTokenPayload payload, ISignatureProvider signature)
+        => new(payload, signature);
 #pragma warning restore IDE0057
 }

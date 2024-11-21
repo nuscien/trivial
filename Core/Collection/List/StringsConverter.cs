@@ -58,17 +58,22 @@ public static partial class ListExtensions
     /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
     /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
     /// <exception cref="ArgumentException">stream is not writable.</exception>
-    public static void WriteTo(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
+    public static int WriteTo(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
     {
-        if (col == null || stream == null) return;
+        if (col == null || stream == null) return 0;
         var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
+        var i = 0;
         foreach (var item in col)
         {
             if (item == null) continue;
+            if (i > 0) writer.Write('\n');
             writer.Write(item.ToResponseString(true));
             writer.Write('\n');
             writer.Flush();
+            i++;
         }
+
+        return i;
     }
 
     /// <summary>
@@ -80,17 +85,22 @@ public static partial class ListExtensions
     /// <returns>A task that represents the asynchronous write operation.</returns>
     /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
     /// <exception cref="ArgumentException">stream is not writable.</exception>
-    public static async Task WriteToAsync(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
+    public static async Task<int> WriteToAsync(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
     {
-        if (col == null || stream == null) return;
+        if (col == null || stream == null) return 0;
         var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
+        var i = 0;
         foreach (var item in col)
         {
             if (item == null) continue;
+            if (i > 0) writer.Write('\n');
             await writer.WriteAsync(item.ToResponseString(true));
             writer.Write('\n');
             await writer.FlushAsync();
+            i++;
         }
+
+        return i;
     }
 
     /// <summary>
@@ -102,17 +112,22 @@ public static partial class ListExtensions
     /// <returns>A task that represents the asynchronous write operation.</returns>
     /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
     /// <exception cref="ArgumentException">stream is not writable.</exception>
-    public static async Task WriteToAsync(this IAsyncEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
+    public static async Task<int> WriteToAsync(this IAsyncEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
     {
-        if (col == null || stream == null) return;
+        if (col == null || stream == null) return 0;
         var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
+        var i = 0;
         await foreach (var item in col)
         {
             if (item == null) continue;
+            if (i > 0) writer.Write('\n');
             await writer.WriteAsync(item.ToResponseString(true));
             writer.Write('\n');
             await writer.FlushAsync();
+            i++;
         }
+
+        return i;
     }
 
     /// <summary>

@@ -21,6 +21,7 @@ class Program
         dispatcher.Register<Maths.MathsVerb>("maths");
         dispatcher.Register<Security.TokenClientVerb>("token");
         dispatcher.Register<Net.HttpClientVerb>("http");
+        dispatcher.Register<Net.DemoServerClientVerb>("server");
         dispatcher.Register<Tasks.RetryVerb>("retry");
         dispatcher.Register<Text.CsvVerb>("csv");
         return dispatcher.ProcessAsync();

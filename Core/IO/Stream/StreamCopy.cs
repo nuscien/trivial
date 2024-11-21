@@ -219,6 +219,39 @@ public static class StreamCopy
     }
 
     /// <summary>
+    /// Reads lines from a specific stream reader.
+    /// </summary>
+    /// <param name="reader">The stream reader.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream reader.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="IOException">An I/O error occurs.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static IAsyncEnumerable<string> ReadLinesAsync(this TextReader reader, bool removeEmptyLine = false)
+        => CharsReader.ReadLinesAsync(reader, removeEmptyLine);
+
+    /// <summary>
+    /// Reads lines from a specific stream reader.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <param name="encoding">The stream encoding.</param>
+    /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+    /// <returns>Lines from the specific stream reader.</returns>
+    /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+    /// <exception cref="IOException">An I/O error occurs.</exception>
+    /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+    public static async IAsyncEnumerable<string> ReadLinesAsync(this Stream stream, Encoding encoding = null, bool removeEmptyLine = false)
+    {
+        if (stream == null || !stream.CanRead) yield break;
+        using var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding);
+        var lines = ReadLinesAsync(reader, removeEmptyLine);
+        await foreach (var line in lines)
+        {
+            yield return line;
+        }
+    }
+
+    /// <summary>
     /// Converts a stream paging resolver to a stream collection.
     /// </summary>
     /// <param name="streams">A stream paging resolver.</param>

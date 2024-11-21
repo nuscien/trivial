@@ -308,7 +308,7 @@ public class JsonHttpClient<T>
         {
             var result = await Tasks.RetryExtensions.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
             {
-                resp = await client.SendAsync(request, cancellationToken);
+                resp = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                     throw FailedHttpException.Create(resp);
                 var obj = Deserializer != null
