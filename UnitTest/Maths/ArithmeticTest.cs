@@ -111,6 +111,13 @@ public class ArithmeticTest
         Assert.AreEqual(9.0, Arithmetic.Max(2, 9.0, 3, 4, 5, 6));
         Assert.AreEqual(9.0, Arithmetic.Max(9, 7.0, 1));
         Assert.AreEqual(9.0, Arithmetic.Max(9, 7.0, 3, 4, 1, 2));
+
+        // Sign
+        Assert.AreEqual(1, Arithmetic.Hardsign(100));
+        Assert.AreEqual(-1, Arithmetic.Hardsign(-200));
+        Assert.AreEqual(0, Arithmetic.Hardsign(0));
+        Assert.AreEqual(0d, Arithmetic.Softsign(0));
+        Assert.AreEqual(0f, Arithmetic.SoftsignF(0));
     }
 
     /// <summary>

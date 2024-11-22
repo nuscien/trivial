@@ -12,7 +12,7 @@ using Trivial.Text;
 
 namespace Trivial.Net;
 
-class HttpClientVerb : CommandLine.BaseCommandVerb
+class HttpClientVerb : BaseCommandVerb
 {
     [DataContract]
     internal class NameAndDescription
@@ -84,7 +84,7 @@ class HttpClientVerb : CommandLine.BaseCommandVerb
     }
 }
 
-class DemoServerClientVerb : CommandLine.BaseCommandVerb
+class DemoServerClientVerb : BaseCommandVerb
 {
     public const string url = "http://localhost:5090/Test/";
 

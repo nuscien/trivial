@@ -18,9 +18,7 @@ internal class InternalRetryInstance : RetryInstance
     /// </summary>
     /// <returns>A time span for next retry; or null, if no more retry.</returns>
     protected override TimeSpan? GetNextSpan()
-    {
-        return next?.Invoke();
-    }
+        => next?.Invoke();
 }
 
 /// <summary>
@@ -124,18 +122,13 @@ public class RetryResult<T> : RetryResult
 /// <summary>
 /// Retry event argument.
 /// </summary>
-public class RetryEventArgs : EventArgs
+/// <param name="processTime">The processing date time list.</param>
+public class RetryEventArgs(IReadOnlyList<DateTime> processTime) : EventArgs
 {
-    /// <summary>
-    /// Initializes a new instance of the RetryEventArgs class.
-    /// </summary>
-    /// <param name="processTime">The processing date time list.</param>
-    public RetryEventArgs(IReadOnlyList<DateTime> processTime) => ProcessTime = processTime;
-
     /// <summary>
     /// Gets the processing date time list.
     /// </summary>
-    public IReadOnlyList<DateTime> ProcessTime { get; }
+    public IReadOnlyList<DateTime> ProcessTime { get; } = processTime;
 }
 
 /// <summary>

@@ -25,7 +25,7 @@ public interface IRetryPolicy
 /// You can create this retry policy to process the specific handler within the specific times
 /// with the specific time span between two processing.
 /// </remarks>
-public class LinearRetryPolicy : IRetryPolicy
+public sealed class LinearRetryPolicy : IRetryPolicy
 {
     /// <summary>
     /// Initializes a new instance of the CustomizedRetryPolicy class.
@@ -84,6 +84,22 @@ public class LinearRetryPolicy : IRetryPolicy
             return TimeSpan.FromTicks(Increase.Ticks * len + Interval.Ticks);
         };
         return retry;
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var sb = new StringBuilder("RetryPolicy = Linear & Interval = ");
+        if (Increase.Ticks > 0)
+        {
+            sb.Append(Increase.ToString());
+            sb.Append(" × n + ");
+        }
+
+        sb.Append(Interval.ToString());
+        sb.Append(" & MaxCount = ");
+        sb.Append(Count);
+        return sb.ToString();
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -8,6 +9,7 @@ namespace Trivial.Reflection;
 /// <summary>
 /// The breadcrumb for node.
 /// </summary>
+[DebuggerDisplay("{Current}")]
 public class NodePathBreadcrumb
 {
     /// <summary>

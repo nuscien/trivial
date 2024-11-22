@@ -40,6 +40,59 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Tests object reference.
+        /// </summary>
+        [TestMethod]
+        public void TestObjectRef()
+        {
+            var s = "test text";
+            IObjectRef r1 = new ObjectRef(s);
+            Assert.IsTrue(r1.IsValueCreated);
+            Assert.AreEqual(s, r1.Value);
+            Assert.IsTrue(r1.IsValueCreated);
+            IObjectRef<string> r2 = new ObjectRef<string>(s);
+            Assert.IsTrue(r2.IsValueCreated);
+            Assert.AreEqual(s, r2.Value);
+            Assert.IsTrue(r2.IsValueCreated);
+            r1 = new ObjectRef(r1);
+            Assert.IsTrue(r1.IsValueCreated);
+            Assert.AreEqual(s, r1.Value);
+            Assert.IsTrue(r1.IsValueCreated);
+            r2 = new ObjectRef<string>(r2);
+            Assert.IsTrue(r2.IsValueCreated);
+            Assert.AreEqual(s, r2.Value);
+            Assert.IsTrue(r2.IsValueCreated);
+            r1 = ObjectRef.Create(s);
+            Assert.IsTrue(r1.IsValueCreated);
+            Assert.AreEqual(s, r1.Value);
+            Assert.IsTrue(r1.IsValueCreated);
+            r2 = ObjectRef<string>.Create(s);
+            Assert.IsTrue(r2.IsValueCreated);
+            Assert.AreEqual(s, r2.Value);
+            Assert.IsTrue(r2.IsValueCreated);
+            r2 = ObjectRef<string>.Create(new Lazy<string>(() => s));
+            Assert.IsFalse(r2.IsValueCreated);
+            Assert.AreEqual(s, r2.Value);
+            Assert.IsTrue(r2.IsValueCreated);
+            r1 = ObjectRef.Create(() => s);
+            Assert.IsFalse(r1.IsValueCreated);
+            Assert.AreEqual(s, r1.Value);
+            Assert.IsTrue(r1.IsValueCreated);
+            r2 = ObjectRef<string>.Create(() => s);
+            Assert.IsFalse(r2.IsValueCreated);
+            Assert.AreEqual(s, r2.Value);
+            Assert.IsTrue(r2.IsValueCreated);
+            r1 = new ObjectRef(r1);
+            Assert.IsTrue(r1.IsValueCreated);
+            Assert.AreEqual(s, r1.Value);
+            Assert.IsTrue(r1.IsValueCreated);
+            r2 = new ObjectRef<string>(r2);
+            Assert.IsTrue(r2.IsValueCreated);
+            Assert.AreEqual(s, r2.Value);
+            Assert.IsTrue(r2.IsValueCreated);
+        }
+
+        /// <summary>
         /// Tests observable properties instance.
         /// </summary>
         [TestMethod]

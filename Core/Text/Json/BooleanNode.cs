@@ -462,7 +462,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public static JsonIntegerNode operator |(JsonBooleanNode leftValue, JsonIntegerNode rightValue)
     {
         if (rightValue is null) return new JsonIntegerNode(leftValue?.Value == true ? 1 : 0);
-        return leftValue?.Value == true ? new JsonIntegerNode(rightValue.Value + 1) : rightValue;
+        return leftValue?.Value == true ? new(rightValue.Value + 1) : rightValue;
     }
 
     /// <summary>
@@ -474,7 +474,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public static JsonIntegerNode operator |(JsonBooleanNode leftValue, JsonDoubleNode rightValue)
     {
         if (rightValue is null) return new JsonIntegerNode(leftValue?.Value == true ? 1 : 0);
-        return new JsonIntegerNode(leftValue?.Value == true ? ((long)Math.Floor(rightValue.Value) + 1) : (long)Math.Floor(rightValue.Value));
+        return new(leftValue?.Value == true ? ((long)Math.Floor(rightValue.Value) + 1) : (long)Math.Floor(rightValue.Value));
     }
 
     /// <summary>
@@ -486,7 +486,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public static JsonIntegerNode operator |(JsonBooleanNode leftValue, JsonDecimalNode rightValue)
     {
         if (rightValue is null) return new JsonIntegerNode(leftValue?.Value == true ? 1 : 0);
-        return new JsonIntegerNode(leftValue?.Value == true ? ((long)Math.Floor(rightValue.Value) + 1) : (long)Math.Floor(rightValue.Value));
+        return new(leftValue?.Value == true ? ((long)Math.Floor(rightValue.Value) + 1) : (long)Math.Floor(rightValue.Value));
     }
 
     /// <summary>
@@ -496,7 +496,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// <param name="rightValue">The right value.</param>
     /// <returns>A number.</returns>
     public static JsonIntegerNode operator |(JsonBooleanNode leftValue, string rightValue)
-        => leftValue?.Value == true ? 1 : 0;
+        => leftValue?.Value == true ? new(1) : new(0);
 
     /// <summary>
     /// Or operation.

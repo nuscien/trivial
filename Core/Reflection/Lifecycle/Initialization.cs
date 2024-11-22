@@ -64,7 +64,7 @@ public class Initialization
     /// <summary>
     /// Ensures it has initialized.
     /// </summary>
-    /// <returns>The async task returned.</returns>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task EnsureInitAsync()
     {
         if (HasInit || semaphoreSlim == null) return;
@@ -107,7 +107,7 @@ public class Initialization
     /// <summary>
     /// Processes the initialization handler.
     /// </summary>
-    /// <returns>The async task returned.</returns>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected virtual Task OnInitAsync()
         => init != null ? init() : Task.CompletedTask;
 
@@ -121,7 +121,7 @@ public class Initialization
     /// <summary>
     /// Waits for initialization.
     /// </summary>
-    /// <returns>The async task returned.</returns>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected async Task WaitInitAsync()
     {
         if (semaphoreSlim == null) return;
@@ -185,7 +185,7 @@ public class Initialization
     /// Disposes the semaphore slim.
     /// </summary>
     /// <param name="delay">The time span to wait before completing the returned task.</param>
-    /// <returns>The async task returned.</returns>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     /// <exception cref="ArgumentOutOfRangeException">delay represents a negative time interval other than TimeSpan.FromMilliseconds(-1). -or- The delay argument's System.TimeSpan.TotalMilliseconds property is greater than System.Int32.MaxValue.</exception>
     protected async Task DisposeSemaphoreSlimAsync(TimeSpan delay)
     {

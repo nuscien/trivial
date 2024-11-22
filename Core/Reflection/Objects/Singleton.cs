@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -59,7 +60,7 @@ public abstract class BaseSingletonResolver : ISingletonResolver
     /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
     public T Resolve<T>(string key)
     {
-        if (key == null) key = string.Empty;
+        key ??= string.Empty;
         KeyedInstanceResolver<T> resolver = null;
         Exception exception = null;
         try
@@ -802,6 +803,7 @@ public class SingletonResolverItem<T> : IObjectResolver<T>
 /// Singleton keeper with optional renew ability in thread-safe mode.
 /// </summary>
 /// <typeparam name="T">The type of value.</typeparam>
+[DebuggerDisplay("{ValueToDisplay}")]
 public class SingletonKeeper<T>
 {
     private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
@@ -914,14 +916,17 @@ public class SingletonKeeper<T>
     public TimeSpan LockRenewSpan { get; set; } = TimeSpan.Zero;
 
     /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => HasCache ? Cache : Tasks.TaskStates.Pending;
+
+    /// <summary>
     /// Gets the instance.
     /// It will load from cache if it does not expired; otherwise, renew one, and then return.
     /// </summary>
     /// <returns>The instance.</returns>
     public Task<T> GetAsync()
-    {
-        return GetAsync(0);
-    }
+        => GetAsync(0);
 
     /// <summary>
     /// Renews and gets the instance.
@@ -929,18 +934,14 @@ public class SingletonKeeper<T>
     /// <param name="forceToRenew">true if force to renew without available checking; otherwise, false.</param>
     /// <returns>The instance.</returns>
     public Task<T> RenewAsync(bool forceToRenew = false)
-    {
-        return GetAsync(forceToRenew ? 3 : 1);
-    }
+        => GetAsync(forceToRenew ? 3 : 1);
 
     /// <summary>
     /// Renews if can and gets the instance.
     /// </summary>
     /// <returns>The instance.</returns>
     public Task<T> RenewIfCanAsync()
-    {
-        return GetAsync(2);
-    }
+        => GetAsync(2);
 
     /// <summary>
     /// Freezes renew for a while.
@@ -961,17 +962,13 @@ public class SingletonKeeper<T>
     /// <param name="until">The time span to disable; then enable again.</param>
     /// <returns>The end date time to disable.</returns>
     public DateTime FreezeRenew(TimeSpan until)
-    {
-        return FreezeRenew(DateTime.Now + until);
-    }
+        => FreezeRenew(DateTime.Now + until);
 
     /// <summary>
     /// Unfreezes renew now.
     /// </summary>
     public void UnfreezeRenew()
-    {
-        disabled = null;
-    }
+        => disabled = null;
 
     /// <summary>
     /// Sets the cache flag as false.
@@ -1003,7 +1000,7 @@ public class SingletonKeeper<T>
     /// <returns>The timer.</returns>
     public System.Timers.Timer CreateRenewTimer(TimeSpan interval, Func<bool> isPaused = null)
     {
-        if (isPaused == null) isPaused = () => false;
+        isPaused ??= () => false;
         var timer = new System.Timers.Timer(interval.TotalMilliseconds);
         timer.Elapsed += (sender, ev) =>
         {
@@ -1027,17 +1024,13 @@ public class SingletonKeeper<T>
     /// </summary>
     /// <returns>true if valid; otherwise, false.</returns>
     protected virtual Task<bool> NeedRenewAsync()
-    {
-        return Task.FromResult(!HasCache);
-    }
+        => Task.FromResult(!HasCache);
 
     /// <summary>
     /// Disposes the semaphore slim.
     /// </summary>
     protected void DisposeSemaphoreSlim()
-    {
-        semaphoreSlim.Dispose();
-    }
+        => semaphoreSlim.Dispose();
 
     private async Task<T> GetAsync(int forceUpdate)
     {
@@ -1144,6 +1137,7 @@ public class SingletonKeeper<T>
 /// Thread-safe singleton renew timer.
 /// </summary>
 /// <typeparam name="T">The type of singleton</typeparam>
+[DebuggerDisplay("{ValueToDisplay}")]
 public class SingletonRenewTimer<T>
 {
     /// <summary>
@@ -1317,6 +1311,11 @@ public class SingletonRenewTimer<T>
     /// Gets the latest refresh completed date.
     /// </summary>
     public DateTime? RefreshDate => Keeper.RefreshDate;
+
+    /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => HasCache ? Cache : Tasks.TaskStates.Pending;
 
     /// <summary>
     /// Gets the instance.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Security;
 using System.Text;
@@ -50,6 +51,7 @@ public enum JsonSwitchCaseStates : byte
 /// <summary>
 /// The route context of JSON switch-case.
 /// </summary>
+[DebuggerDisplay("{StateInfoString}")]
 public class JsonSwitchCaseContext
 {
     /// <summary>
@@ -105,6 +107,11 @@ public class JsonSwitchCaseContext
     /// Gets the args.
     /// </summary>
     public object Args => Switch?.Args;
+
+    /// <summary>
+    /// Gets the state information string.
+    /// </summary>
+    internal string StateInfoString => $"JSON ValueKind = {ValueKind} & State = {State} ({TaskState})";
 
     /// <summary>
     /// Tries to set the argument object into the context.

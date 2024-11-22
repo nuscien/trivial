@@ -67,8 +67,8 @@ namespace Trivial.Security;
 ///       Server also need cache C-Key-Id and C-Key-Public with a mapping relationship with the token.
 ///     </item>
 ///     <item>
-///       Client uses C-Key-Id to find C-Key-Private to decrypt the secret.At next time,
-///       client sends the data and the secret encrypted by S-Key-Public with S-Key-Id.
+///       Client uses C-Key-Id to find C-Key-Private to decrypt the secret.
+///       At next time, client sends the data and the secret encrypted by S-Key-Public with S-Key-Id.
 ///     </item>
 ///     <item>
 ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the secret to authorize.

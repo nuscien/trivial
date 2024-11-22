@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Trivial.Text;
@@ -13,6 +15,7 @@ namespace Trivial.Text;
 /// <typeparam name="TNode">The type of JSON node.</typeparam>
 /// <typeparam name="TArgs">The type of context args.</typeparam>
 /// <typeparam name="TResult">The type of result converted.</typeparam>
+[DebuggerDisplay("{StateInfoString}")]
 public abstract class BaseJsonSwitchThen<TNode, TArgs, TResult> where TNode : IJsonValueNode
 {
     /// <summary>
@@ -47,9 +50,19 @@ public abstract class BaseJsonSwitchThen<TNode, TArgs, TResult> where TNode : IJ
     protected JsonSwitchContext<TNode, TArgs> Context { get; }
 
     /// <summary>
+    /// Gets the JSON value kind of the source.
+    /// </summary>
+    public JsonValueKind ValueKind => Context?.Source?.ValueKind ?? JsonValueKind.Undefined;
+
+    /// <summary>
     /// Gets the result; or default if fails.
     /// </summary>
     protected TResult Result { get; }
+
+    /// <summary>
+    /// Gets the state information string.
+    /// </summary>
+    internal string StateInfoString => $"JSON ValueKind = {ValueKind} & IsHitted = {IsHitted} ({GetResultType()})";
 
     /// <summary>
     /// Tries to get the result.
@@ -61,6 +74,13 @@ public abstract class BaseJsonSwitchThen<TNode, TArgs, TResult> where TNode : IJ
         result = Result;
         return IsHitted;
     }
+
+    /// <summary>
+    /// Gets the type of result.
+    /// </summary>
+    /// <returns>The type of result.</returns>
+    public Type GetResultType()
+        => Result is null ? typeof(TResult) : Result.GetType();
 
     /// <summary>
     /// Gets the result.

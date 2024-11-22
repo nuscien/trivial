@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Runtime;
@@ -17,6 +18,7 @@ namespace Trivial.Text;
 /// </summary>
 /// <typeparam name="TNode">The type of JSON node.</typeparam>
 /// <typeparam name="TArgs">The type of args.</typeparam>
+[DebuggerDisplay("{StateInfoString}")]
 public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, ICloneable where TNode : IJsonValueNode
 {
     /// <summary>
@@ -97,6 +99,11 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Gets a value indicating whether the switch is passed all cases.
     /// </summary>
     public bool IsPassed { get; private set; }
+
+    /// <summary>
+    /// Gets the state information string.
+    /// </summary>
+    internal string StateInfoString => $"JSON ValueKind = {ValueKind} & IsPassed = {IsPassed} ({Count})";
 
     /// <summary>
     /// Keeps available.

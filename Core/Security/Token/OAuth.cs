@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -35,6 +36,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// The locker.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private SemaphoreSlim slim;
 
     /// <summary>

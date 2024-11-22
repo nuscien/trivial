@@ -23,6 +23,9 @@ You can also get or set the property of JSON object as you want.
 ```csharp
 var num = json.GetInt32Value("prop-a"); // 1234
 var numStr = json.GetStringValue("prop-a"); // "1234"
+
+json.SetValue("prop-a", 5678);
+num = json.GetInt32Value("prop-a"); // 5678
 ```
 
 For scenarios of concurrency, you can enable thread-safe mode.

@@ -229,6 +229,22 @@ public class TokenInfo
     /// <summary>
     /// Initializes a new instance of the TokenInfo class.
     /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<JsonObjectNode> jwt, IEnumerable<string> scope = null)
+    {
+        Scope = ListExtensions.ToList(scope, false);
+        TokenType = BearerTokenType;
+        if (jwt?.Payload == null) return;
+        AccessToken = jwt.ToEncodedString();
+        UserId = jwt.Payload.TryGetStringTrimmedValue("sub", true);
+        var expiration = jwt.Payload.TryGetDateTimeValue("exp", true);
+        if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
     /// <param name="tokenType">The token type.</param>
     /// <param name="userId">The user identifier.</param>
     /// <param name="accessToken">The access token.</param>
@@ -738,4 +754,11 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// <param name="User">The user entity.</param>
     /// <returns>The user identifier.</returns>
     protected abstract string GetUserId(T User);
+
+    /// <summary>
+    /// Sets a new user identifier without validating user model.
+    /// </summary>
+    /// <param name="id">The new user identifier without validation.</param>
+    protected void ForceUpdateUserId(string id)
+        => base.UserId = id;
 }

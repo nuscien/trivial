@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace Trivial.Reflection;
@@ -42,6 +44,10 @@ public class ExceptionHandler
         /// Gets the catch handler.
         /// </summary>
         public ItemHandler Handler { get; private set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+            => string.Concat("Exception handler = ", Type);
     }
 
     /// <summary>
@@ -256,4 +262,8 @@ public class ExceptionHandler
     /// </summary>
     public void Clear()
         => list.Clear();
+
+    /// <inheritdoc />
+    public override string ToString()
+        => string.Concat("Exception handler = (", list.Count, TestAll ? " & test all" : string.Empty, ") ", string.Join(", ", list.Select(ele => ele?.Type?.ToString()).Where(ele => ele is not null).Distinct()));
 }

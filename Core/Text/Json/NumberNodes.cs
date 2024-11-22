@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
@@ -126,11 +127,13 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <summary>
     /// Gets a value indicating whether the value is negative.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public bool IsNegative => Value < 0;
 
     /// <summary>
     /// Gets a value indicating whether the current value is zero.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonIntegerNode>.IsZero => Value == 0L;
 
     /// <summary>
@@ -1565,11 +1568,13 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// <summary>
     /// Gets a value indicating whether the value is negative.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public bool IsNegative => Value < 0d;
 
     /// <summary>
     /// Gets a value indicating whether the current value is zero.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonDoubleNode>.IsZero => Value == 0d;
 
     /// <summary>
@@ -3088,11 +3093,13 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     /// <summary>
     /// Gets a value indicating whether the value is negative.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public bool IsNegative => Value < decimal.Zero;
 
     /// <summary>
     /// Gets a value indicating whether the current value is zero.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonDecimalNode>.IsZero => Value == decimal.Zero;
 
     /// <summary>

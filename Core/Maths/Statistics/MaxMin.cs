@@ -78,6 +78,148 @@ public static partial class StatisticalMethod
 
         return result;
     }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmax.</returns>
+    public static double[] Softmax(ReadOnlySpan<int> numbers)
+    {
+        var result = new double[numbers.Length];
+        var sum = 0d;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = Math.Exp(numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0d;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmax.</returns>
+    public static List<float> SoftmaxF(IEnumerable<int> numbers)
+    {
+        if (numbers == null) return null;
+        var result = new List<float>();
+        var sum = 0f;
+        foreach (var number in numbers)
+        {
+            var exp = MathF.Exp(number);
+            result.Add(exp);
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Count; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Count; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmax.</returns>
+    public static float[] SoftmaxF(int[] numbers)
+    {
+        if (numbers == null) return null;
+        var result = new float[numbers.Length];
+        var sum = 0f;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = MathF.Exp(numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmax.</returns>
+    public static float[] SoftmaxF(ReadOnlySpan<int> numbers)
+    {
+        var result = new float[numbers.Length];
+        var sum = 0f;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = MathF.Exp(numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+#endif
+
     /// <summary>
     /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
     /// </summary>
@@ -121,6 +263,40 @@ public static partial class StatisticalMethod
     public static double[] Softmax(double[] numbers)
     {
         if (numbers == null) return null;
+        var result = new double[numbers.Length];
+        var sum = 0d;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = Math.Exp(numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0d;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmax.</returns>
+    public static double[] Softmax(ReadOnlySpan<double> numbers)
+    {
         var result = new double[numbers.Length];
         var sum = 0d;
         for (var i = 0; i < numbers.Length; i++)
@@ -227,6 +403,254 @@ public static partial class StatisticalMethod
     }
 
     /// <summary>
+    /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmax.</returns>
+    public static float[] Softmax(ReadOnlySpan<float> numbers)
+    {
+        var result = new float[numbers.Length];
+        var sum = 0f;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+#if NET6_0_OR_GREATER
+            var exp = MathF.Exp(numbers[i]);
+#else
+            var exp = (float)Math.Exp(numbers[i]);
+#endif
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static List<double> Softmin(IEnumerable<int> numbers)
+    {
+        if (numbers == null) return null;
+        var result = new List<double>();
+        var sum = 0d;
+        foreach (var number in numbers)
+        {
+            var exp = Math.Exp(-number);
+            result.Add(exp);
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Count; i++)
+            {
+                result[i] = 0d;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Count; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static double[] Softmin(int[] numbers)
+    {
+        if (numbers == null) return null;
+        var result = new double[numbers.Length];
+        var sum = 0d;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = Math.Exp(-numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0d;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static double[] Softmin(ReadOnlySpan<int> numbers)
+    {
+        var result = new double[numbers.Length];
+        var sum = 0d;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = Math.Exp(-numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0d;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static List<float> SoftminF(IEnumerable<int> numbers)
+    {
+        if (numbers == null) return null;
+        var result = new List<float>();
+        var sum = 0f;
+        foreach (var number in numbers)
+        {
+            var exp = MathF.Exp(-number);
+            result.Add(exp);
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Count; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Count; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static float[] SoftminF(int[] numbers)
+    {
+        if (numbers == null) return null;
+        var result = new float[numbers.Length];
+        var sum = 0f;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = MathF.Exp(-numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static float[] SoftminF(ReadOnlySpan<int> numbers)
+    {
+        var result = new float[numbers.Length];
+        var sum = 0f;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = MathF.Exp(-numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+#endif
+
+    /// <summary>
     /// Converts a set of number to another calculated by softmin function.
     /// </summary>
     /// <param name="numbers">The input numbers.</param>
@@ -269,6 +693,40 @@ public static partial class StatisticalMethod
     public static double[] Softmin(double[] numbers)
     {
         if (numbers == null) return null;
+        var result = new double[numbers.Length];
+        var sum = 0d;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+            var exp = Math.Exp(-numbers[i]);
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0d)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0d;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static double[] Softmin(ReadOnlySpan<double> numbers)
+    {
         var result = new double[numbers.Length];
         var sum = 0d;
         for (var i = 0; i < numbers.Length; i++)
@@ -375,6 +833,44 @@ public static partial class StatisticalMethod
     }
 
     /// <summary>
+    /// Converts a set of number to another calculated by softmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by softmin.</returns>
+    public static float[] Softmin(ReadOnlySpan<float> numbers)
+    {
+        var result = new float[numbers.Length];
+        var sum = 0f;
+        for (var i = 0; i < numbers.Length; i++)
+        {
+#if NET6_0_OR_GREATER
+            var exp = MathF.Exp(-numbers[i]);
+#else
+            var exp = (float)Math.Exp(-numbers[i]);
+#endif
+            result[i] = exp;
+            sum += exp;
+        }
+
+        if (sum == 0f)
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] = 0f;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Converts a set of number to another calculated by hardmax function.
     /// </summary>
     /// <param name="numbers">The input numbers.</param>
@@ -443,6 +939,37 @@ public static partial class StatisticalMethod
     /// Converts a set of number to another calculated by hardmax function.
     /// </summary>
     /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by hardmax.</returns>
+    public static int[] Hardmax(ReadOnlySpan<int> numbers)
+    {
+        var result = new int[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value > number) continue;
+            if (value < number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? 1 : 0;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmax function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
     /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
     /// <returns>The output numbers calculated by hardmax.</returns>
     public static List<double> Hardmax(IEnumerable<int> numbers, bool equalDivisionMax)
@@ -483,6 +1010,39 @@ public static partial class StatisticalMethod
     public static double[] Hardmax(int[] numbers, bool equalDivisionMax)
     {
         if (numbers == null) return null;
+        var result = new double[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value > number) continue;
+            if (value < number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        var max = (equalDivisionMax && indexes.Count > 0) ? (1d / indexes.Count) : 1d;
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? max : 0d;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmax function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
+    /// <returns>The output numbers calculated by hardmax.</returns>
+    public static double[] Hardmax(ReadOnlySpan<int> numbers, bool equalDivisionMax)
+    {
         var result = new double[numbers.Length];
         if (numbers.Length < 1) return result;
         var value = numbers[0];
@@ -583,6 +1143,39 @@ public static partial class StatisticalMethod
     /// <param name="numbers">The input numbers.</param>
     /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
     /// <returns>The output numbers calculated by hardmax.</returns>
+    public static double[] Hardmax(ReadOnlySpan<double> numbers, bool equalDivisionMax = false)
+    {
+        var result = new double[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value > number) continue;
+            if (value < number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        var max = (equalDivisionMax && indexes.Count > 0) ? (1d / indexes.Count) : 1d;
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? max : 0d;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmax function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
+    /// <returns>The output numbers calculated by hardmax.</returns>
     public static List<float> Hardmax(IEnumerable<float> numbers, bool equalDivisionMax = false)
     {
         var col = numbers?.ToList();
@@ -621,6 +1214,39 @@ public static partial class StatisticalMethod
     public static float[] Hardmax(float[] numbers, bool equalDivisionMax = false)
     {
         if (numbers == null) return null;
+        var result = new float[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value > number) continue;
+            if (value < number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        var max = (equalDivisionMax && indexes.Count > 0) ? (1f / indexes.Count) : 1f;
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? max : 0f;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmax function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
+    /// <returns>The output numbers calculated by hardmax.</returns>
+    public static float[] Hardmax(ReadOnlySpan<float> numbers, bool equalDivisionMax = false)
+    {
         var result = new float[numbers.Length];
         if (numbers.Length < 1) return result;
         var value = numbers[0];
@@ -715,6 +1341,37 @@ public static partial class StatisticalMethod
     /// Converts a set of number to another calculated by hardmin function.
     /// </summary>
     /// <param name="numbers">The input numbers.</param>
+    /// <returns>The output numbers calculated by hardmin.</returns>
+    public static int[] Hardmin(ReadOnlySpan<int> numbers)
+    {
+        var result = new int[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value < number) continue;
+            if (value > number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? 1 : 0;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
     /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
     /// <returns>The output numbers calculated by hardmin.</returns>
     public static List<double> Hardmin(IEnumerable<int> numbers, bool equalDivisionMax)
@@ -755,6 +1412,39 @@ public static partial class StatisticalMethod
     public static double[] Hardmin(int[] numbers, bool equalDivisionMax)
     {
         if (numbers == null) return null;
+        var result = new double[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value < number) continue;
+            if (value > number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        var max = (equalDivisionMax && indexes.Count > 0) ? (1d / indexes.Count) : 1d;
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? max : 0d;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
+    /// <returns>The output numbers calculated by hardmin.</returns>
+    public static double[] Hardmin(ReadOnlySpan<int> numbers, bool equalDivisionMax)
+    {
         var result = new double[numbers.Length];
         if (numbers.Length < 1) return result;
         var value = numbers[0];
@@ -855,6 +1545,39 @@ public static partial class StatisticalMethod
     /// <param name="numbers">The input numbers.</param>
     /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
     /// <returns>The output numbers calculated by hardmin.</returns>
+    public static double[] Hardmin(ReadOnlySpan<double> numbers, bool equalDivisionMax = false)
+    {
+        var result = new double[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value < number) continue;
+            if (value > number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        var max = (equalDivisionMax && indexes.Count > 0) ? (1d / indexes.Count) : 1d;
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? max : 0d;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
+    /// <returns>The output numbers calculated by hardmin.</returns>
     public static List<float> Hardmin(IEnumerable<float> numbers, bool equalDivisionMax = false)
     {
         var col = numbers?.ToList();
@@ -893,6 +1616,39 @@ public static partial class StatisticalMethod
     public static float[] Hardmin(float[] numbers, bool equalDivisionMax = false)
     {
         if (numbers == null) return null;
+        var result = new float[numbers.Length];
+        if (numbers.Length < 1) return result;
+        var value = numbers[0];
+        var indexes = new List<int>
+        {
+            0
+        };
+        for (var j = 1; j < numbers.Length; j++)
+        {
+            var number = numbers[j];
+            if (value < number) continue;
+            if (value > number) indexes.Clear();
+            indexes.Add(j);
+            value = number;
+        }
+
+        var max = (equalDivisionMax && indexes.Count > 0) ? (1f / indexes.Count) : 1f;
+        for (var j = 0; j < numbers.Length; j++)
+        {
+            result[j] = indexes.Contains(j) ? max : 0f;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts a set of number to another calculated by hardmin function.
+    /// </summary>
+    /// <param name="numbers">The input numbers.</param>
+    /// <param name="equalDivisionMax">true if the maximum value will be equal division by all maximum elements but not one (1); otherwise, false.</param>
+    /// <returns>The output numbers calculated by hardmin.</returns>
+    public static float[] Hardmin(ReadOnlySpan<float> numbers, bool equalDivisionMax = false)
+    {
         var result = new float[numbers.Length];
         if (numbers.Length < 1) return result;
         var value = numbers[0];

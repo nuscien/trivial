@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
@@ -20,6 +21,7 @@ namespace Trivial.Text;
 /// The JSON value node base.
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
+[DebuggerDisplay("{Value}")]
 public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T> where T : IEquatable<T>
 {
     /// <summary>
@@ -34,6 +36,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     }
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected override object RawValue => Value;
 
     /// <summary>
@@ -274,6 +277,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     }
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected override object RawValue => DBNull.Value;
 
     /// <summary>

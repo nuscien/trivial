@@ -29,7 +29,7 @@ namespace Trivial.Security
                 Audience = new[] { "BackupOperator", "PowerUser" }
             };
             var hash = HashSignatureProvider.CreateHS512("key");
-            var jwt = new JsonWebToken<JsonWebTokenPayload>(payload, hash);
+            var jwt = payload + hash;
             Assert.AreEqual(true, jwt.CanSign);
             Assert.AreEqual(payload, jwt.Payload);
             Assert.AreEqual(hash.Name, jwt.AlgorithmName);

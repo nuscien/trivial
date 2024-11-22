@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Security;
@@ -435,16 +436,19 @@ public class JsonWebToken<T>
     /// <summary>
     /// The Jwt header model.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly JsonWebTokenHeader header;
 
     /// <summary>
     /// The header Base64Url encoded string.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string headerBase64Url;
 
     /// <summary>
     /// The signature cache.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string signatureCache;
 
     /// <summary>
@@ -599,6 +603,10 @@ public class JsonWebTokenHeader
     /// Gets the JSON web token header without signature algorithm.
     /// </summary>
     public static JsonWebTokenHeader NoAlgorithm => new() { AlgorithmName = "none" };
+
+    /// <inheritdoc />
+    public override string ToString()
+        => string.Concat("JWT header (alg=", AlgorithmName, ')');
 }
 
 /// <summary>
@@ -744,7 +752,7 @@ public class JsonWebTokenPayload
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-        => StringExtensions.ToJson(this, new System.Text.Json.JsonSerializerOptions
+        => StringExtensions.ToJson(this, new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });

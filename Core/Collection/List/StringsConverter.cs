@@ -56,6 +56,7 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
     /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
+    /// <returns>The count of server-sent event information writen.</returns>
     /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
     /// <exception cref="ArgumentException">stream is not writable.</exception>
     public static int WriteTo(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
@@ -82,7 +83,7 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
     /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
-    /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <returns>The count of server-sent event information writen.</returns>
     /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
     /// <exception cref="ArgumentException">stream is not writable.</exception>
     public static async Task<int> WriteToAsync(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
@@ -109,7 +110,7 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
     /// <param name="encoding">The encoding; or null, by default, uses UTF-8.</param>
-    /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <returns>The count of server-sent event information writen.</returns>
     /// <exception cref="InvalidOperationException">The stream is disposed.</exception>
     /// <exception cref="ArgumentException">stream is not writable.</exception>
     public static async Task<int> WriteToAsync(this IAsyncEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)

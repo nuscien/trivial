@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
@@ -44,6 +45,13 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// Gets the type of the current JSON value.
     /// </summary>
     public JsonValueKind ValueKind { get; }
+
+    /// <summary>
+    /// Gets the item value count.
+    /// It always return 0 because it is not an array or object.
+    /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public virtual int Count => 0;
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -106,12 +114,6 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// <inhertidoc />
     public override int GetHashCode()
         => (RawValue ?? DBNull.Value).GetHashCode();
-
-    /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
-    /// </summary>
-    public virtual int Count => 0;
 
     /// <summary>
     /// Tests if the specific value kind is the one matched.

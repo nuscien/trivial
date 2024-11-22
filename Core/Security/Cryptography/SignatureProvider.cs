@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -770,7 +771,11 @@ public class KeyedSignatureProvider : ISignatureProvider
     public byte[] Sign(Stream value)
     {
         var bytes = new byte[value.Length];
+#if NET8_0_OR_GREATER
+        value.ReadExactly(bytes);
+#else
         value.Read(bytes, 0, bytes.Length);
+#endif
         value.Seek(0, SeekOrigin.Begin);
         return sign(bytes, secretBytes);
     }
@@ -798,7 +803,11 @@ public class KeyedSignatureProvider : ISignatureProvider
     {
         if (data == null || !data.CanRead) return false;
         var bytes = new byte[data.Length];
+#if NET8_0_OR_GREATER
+        data.ReadExactly(bytes);
+#else
         data.Read(bytes, 0, bytes.Length);
+#endif
         data.Seek(0, SeekOrigin.Begin);
         return verify != null
             ? verify(bytes, signature, secretBytes)

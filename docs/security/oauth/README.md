@@ -50,8 +50,10 @@ var model = new JsonWebTokenPayload
     Issuer = "example"
 };
 
-// Create a JWT instance.
-var jwt = new JsonWebToken<JsonWebTokenPayload>(model, sign);
+// Create a JWT instance
+// by plusing a JsonwWebTokenPayload (or a JsonObjectNode)
+// and the signature provider instance.
+var jwt = model + sign;
 
 // Get the JWT string encoded.
 var jwtStr = jwt.ToEncodedString();
@@ -98,16 +100,16 @@ See [JWT.IO](https://jwt.io/) to test JWT or get details.
 
 ## Token request route
 
-For server side, you can use or inherit class `TokenRequestRoute<T>` to parse and process the token info request.
+In server side, you can use or inherit class `TokenRequestRoute<T>` to parse and process the token info request.
 
 ```csharp
 // Create a route and register the handlers.
 var route = new TokenRequestRoute<UserInfo>();
-PasswordTokenRequestBody.Register(route, async req =>
+route.Register(async (PasswordTokenRequestBody req) =>
 {
     return await UserManager.LoginByPasswordAsync(req.UserName, req.Password);
 });
-RefreshTokenRequestBody.Register(route, async req =>
+route.Register(async (RefreshTokenRequestBody req) =>
 {
     return await UserManager.LoginByRefreshTokenAsync(req.RefreshToken);
 });

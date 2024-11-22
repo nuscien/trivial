@@ -57,6 +57,21 @@ public class SendingEventArgs : EventArgs
     /// Gets the HTTP request message.
     /// </summary>
     public HttpRequestMessage RequestMessage { get; }
+
+    /// <summary>
+    /// Gets the request URI.
+    /// </summary>
+    public Uri RequestUri => RequestMessage?.RequestUri;
+
+    /// <summary>
+    /// Gets the HTTP request method.
+    /// </summary>
+    public HttpMethod Method => RequestMessage.Method ?? HttpMethod.Get;
+
+    /// <summary>
+    /// Gets the HTTP version used.
+    /// </summary>
+    public Version HttpVersion => RequestMessage.Version;
 }
 
 /// <summary>

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -144,6 +145,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     public event KeyValueEventHandler<string, BaseJsonValueNode> PropertyChanged;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private PropertyChangedEventHandler notifyPropertyChanged;
     event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
     {
@@ -161,41 +163,49 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Gets the number of elements contained in the System.Collections.Generic.ICollection`1
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
     public override int Count => store.Count;
 
     /// <summary>
     /// Gets a collection containing the property keys of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ICollection<string> Keys => store.Keys;
 
     /// <summary>
     /// Gets a collection containing the property keys of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<string> IReadOnlyDictionary<string, IJsonValueNode>.Keys => store.Keys;
 
     /// <summary>
     /// Gets a collection containing the property keys of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<string> IReadOnlyDictionary<string, BaseJsonValueNode>.Keys => store.Keys;
 
     /// <summary>
     /// Gets a collection containing the property values of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ICollection<BaseJsonValueNode> Values => store.Values;
 
     /// <summary>
     /// Gets a collection containing the property values of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     ICollection<IJsonValueNode> IDictionary<string, IJsonValueNode>.Values => store.Select(ele => (ele.Value ?? JsonValues.Null) as IJsonValueNode).ToList();
 
     /// <summary>
     /// Gets a collection containing the property values of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<IJsonValueNode> IReadOnlyDictionary<string, IJsonValueNode>.Values => store.Values;
 
     /// <summary>
     /// Gets a collection containing the property values of the object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<BaseJsonValueNode> IReadOnlyDictionary<string, BaseJsonValueNode>.Values => store.Values;
 
     /// <summary>
@@ -208,7 +218,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     public string Id
     {
-        get => TryGetStringValue("$id")?.Trim();
+        get => TryGetStringTrimmedValue("$id", true);
         set => SetValueOrRemove("$id", value);
     }
 
@@ -226,13 +236,14 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     public string TypeDiscriminator
     {
-        get => TryGetStringValue("$type");
+        get => TryGetStringTrimmedValue("$type", true);
         set => SetValueOrRemove("$type", value);
     }
 
     /// <summary>
     /// Gets or sets the subschema/definitions of the JSON object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public JsonObjectNode LocalDefinitions
     {
         get => TryGetObjectValue("$defs");
@@ -242,6 +253,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Gets or sets the comment of the JSON object.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public string CommentValue
     {
         get => TryGetStringValue("$comment");
@@ -1524,6 +1536,52 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <summary>
+    /// Tries get the identifier.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The identifier found; or null, if non-exists.</returns>
+    public string TryGetId(out string key)
+        => TryGetId(out key, out _);
+
+    /// <summary>
+    /// Tries to get the identifier in compatible mode.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>The identifier found; or null, if non-exists.</returns>
+    public string TryGetId(out string key, out JsonValueKind kind)
+    {
+        if (TryGetStringTrimmedValue("$id", out var id, out var idKind) && !string.IsNullOrEmpty(id))
+        {
+            key = "$id";
+            kind = idKind;
+            return id;
+        }
+
+        if (TryGetStringTrimmedValue("id", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "id";
+            return id;
+        }
+
+        if (TryGetStringTrimmedValue("ID", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "ID";
+            return id;
+        }
+
+        if (TryGetStringTrimmedValue("_id", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "_id";
+            return id;
+        }
+
+        key = "$id";
+        kind = idKind;
+        return null;
+    }
+
+    /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -1559,14 +1617,14 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
 
         if (data is null)
         {
-            kind = JsonValueKind.Undefined;
+            kind = JsonValueKind.Null;
             value = null;
             return true;
         }
 
         if (data is IJsonValueNode<string> str)
         {
-            kind = JsonValueKind.String;
+            kind = str.Value == null ? JsonValueKind.Null : JsonValueKind.String;
             value = str.Value;
             return true;
         }
@@ -1766,13 +1824,23 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result trimmed.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetStringTrimmedValue(string key, out string result)
+        => TryGetStringTrimmedValue(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result trimmed.</param>
+    /// <param name="kind">The JSON value kind of the property.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringTrimmedValue(string key, out string result, out JsonValueKind kind)
     {
-        if (!TryGetStringValue(key, out var r))
+        if (!TryGetStringValue(key, out var r, out kind))
         {
             result = default;
             return false;
         }
-        
+
         result = r?.Trim();
         return true;
     }

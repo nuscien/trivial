@@ -140,6 +140,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private PropertyChangedEventHandler notifyPropertyChanged;
     event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
     {
@@ -160,11 +161,13 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <summary>
     /// Gets the number of elements contained in the array.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
     public override int Count => store.Count;
 
     /// <summary>
     /// Gets the number of elements contained in the array.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public int Length => store.Count;
 
     /// <summary>

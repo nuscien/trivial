@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
+using Trivial.Tasks;
 
 namespace Trivial.Reflection;
 
@@ -15,6 +17,11 @@ public interface IObjectRef
     /// Gets the value.
     /// </summary>
     object Value { get; }
+
+    /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    bool IsValueCreated { get; }
 }
 
 /// <summary>
@@ -32,6 +39,7 @@ public interface IObjectRef<T> : IObjectRef
 /// <summary>
 /// Object reference.
 /// </summary>
+[DebuggerDisplay("{ValueToDisplay}")]
 public sealed class ObjectRef : IObjectRef
 {
     private readonly IObjectRef reference;
@@ -40,7 +48,7 @@ public sealed class ObjectRef : IObjectRef
     /// Initializes a new instance of the ObjectRef class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public ObjectRef(IObjectRef value) => reference = value;
+    public ObjectRef(IObjectRef value) => reference = value ?? new InstanceObjectRef(null);
 
     /// <summary>
     /// Initializes a new instance of the ObjectRef class.
@@ -57,7 +65,18 @@ public sealed class ObjectRef : IObjectRef
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public object Value => reference.Value;
+
+    /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    public bool IsValueCreated => reference.IsValueCreated;
+
+    /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => reference.IsValueCreated ? reference.Value : TaskStates.Pending;
 
     /// <summary>
     /// Initializes a new instance of the ObjectRef class.
@@ -75,7 +94,8 @@ public sealed class ObjectRef : IObjectRef
 /// <summary>
 /// The object reference to maintain a singleton.
 /// </summary>
-public sealed class ObjectRef<T> : IObjectRef<T>, IObjectRef, IObjectResolver<T>
+[DebuggerDisplay("{ValueToDisplay}")]
+public sealed class ObjectRef<T> : IObjectRef<T>, IObjectResolver<T>
 {
     private readonly IObjectRef<T> reference;
 
@@ -83,7 +103,7 @@ public sealed class ObjectRef<T> : IObjectRef<T>, IObjectRef, IObjectResolver<T>
     /// Initializes a new instance of the ObjectRef class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public ObjectRef(IObjectRef<T> value) => reference = value;
+    public ObjectRef(IObjectRef<T> value) => reference = value ?? new InstanceObjectRef<T>(default);
 
     /// <summary>
     /// Initializes a new instance of the ObjectRef class.
@@ -106,12 +126,24 @@ public sealed class ObjectRef<T> : IObjectRef<T>, IObjectRef, IObjectResolver<T>
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public T Value => reference.Value;
 
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     object IObjectRef.Value => reference.Value;
+
+    /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    public bool IsValueCreated => reference.IsValueCreated;
+
+    /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => reference.IsValueCreated ? reference.Value : TaskStates.Pending;
 
     /// <summary>
     /// Gets the instance.
@@ -154,12 +186,18 @@ public sealed class ObjectRef<T> : IObjectRef<T>, IObjectRef, IObjectResolver<T>
 /// Instance object reference.
 /// </summary>
 /// <param name="value">The value.</param>
+[DebuggerDisplay("{Value}")]
 internal class InstanceObjectRef(object value) : IObjectRef
 {
     /// <summary>
     /// Gets the value.
     /// </summary>
     public object Value { get; } = value;
+
+    /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    public bool IsValueCreated => true;
 }
 
 /// <summary>
@@ -167,11 +205,13 @@ internal class InstanceObjectRef(object value) : IObjectRef
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
 /// <param name="value">The value.</param>
+[DebuggerDisplay("{Value}")]
 internal class InstanceObjectRef<T>(T value) : InstanceObjectRef(value), IObjectRef<T>, IObjectResolver<T>
 {
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public new T Value { get; } = value;
 
     /// <summary>
@@ -187,19 +227,32 @@ internal class InstanceObjectRef<T>(T value) : InstanceObjectRef(value), IObject
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
 /// <param name="lazy">The lazy initialization.</param>
-internal class LazyObjectRef<T>(Lazy<T> lazy) : IObjectRef, IObjectRef<T>, IObjectResolver<T>
+[DebuggerDisplay("{ValueToDisplay}")]
+internal class LazyObjectRef<T>(Lazy<T> lazy) : IObjectRef<T>, IObjectResolver<T>
 {
     private readonly Lazy<T> value = lazy;
 
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public T Value => value.Value;
 
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     object IObjectRef.Value => value.Value;
+
+    /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    public bool IsValueCreated => value.IsValueCreated;
+
+    /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => value.IsValueCreated ? value.Value : TaskStates.Pending;
 
     /// <summary>
     /// Gets the instance.
@@ -212,15 +265,19 @@ internal class LazyObjectRef<T>(Lazy<T> lazy) : IObjectRef, IObjectRef<T>, IObje
 /// <summary>
 /// Object reference for thread safe factory.
 /// </summary>
+[DebuggerDisplay("{ValueToDisplay}")]
 internal class FactoryObjectRef : IObjectRef
 {
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();
 #endif
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly Func<object> f;
-    private bool isInit;
+
     private object value;
 
     /// <summary>
@@ -230,18 +287,31 @@ internal class FactoryObjectRef : IObjectRef
     public FactoryObjectRef(Func<object> factory) => f = factory;
 
     /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    public bool IsValueCreated { get; private set; }
+
+    /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => IsValueCreated ? Value : TaskStates.Pending;
+
+    /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public object Value
     {
         get
         {
-            if (isInit) return value;
+            if (IsValueCreated) return value;
             lock (locker)
             {
-                if (isInit) return value;
-                isInit = true;
-                return value = f();
+                if (IsValueCreated) return value;
+                var obj = f();
+                if (IsValueCreated) return value;
+                IsValueCreated = true;
+                return value = obj;
             }
         }
     }
@@ -251,15 +321,18 @@ internal class FactoryObjectRef : IObjectRef
 /// Object reference for thread safe factory.
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
-internal class FactoryObjectRef<T> : IObjectRef, IObjectRef<T>, IObjectResolver<T>
+[DebuggerDisplay("{ValueToDisplay}")]
+internal class FactoryObjectRef<T> : IObjectRef<T>, IObjectResolver<T>
 {
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();
 #endif
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly Func<T> f;
-    private bool isInit;
+
     private T value;
 
     /// <summary>
@@ -271,15 +344,18 @@ internal class FactoryObjectRef<T> : IObjectRef, IObjectRef<T>, IObjectResolver<
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public T Value
     {
         get
         {
-            if (isInit) return value;
+            if (IsValueCreated) return value;
             lock (locker)
             {
-                if (isInit) return value;
-                isInit = true;
+                if (IsValueCreated) return value;
+                var obj = f();
+                if (IsValueCreated) return value;
+                IsValueCreated = true;
                 return value = f();
             }
         }
@@ -288,7 +364,18 @@ internal class FactoryObjectRef<T> : IObjectRef, IObjectRef<T>, IObjectResolver<
     /// <summary>
     /// Gets the value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     object IObjectRef.Value => Value;
+
+    /// <summary>
+    /// Gets a value that indicates whether a value has been created for this instance.
+    /// </summary>
+    public bool IsValueCreated { get; private set; }
+
+    /// <summary>
+    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// </summary>
+    internal object ValueToDisplay => IsValueCreated ? Value : TaskStates.Pending;
 
     /// <summary>
     /// Gets the instance.

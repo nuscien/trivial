@@ -6,4 +6,4 @@ In `Trivial.Security` namespace of `Trivial.dll` [library](../).
 - [RSA](./rsa)
 - [Hash](./hash)
 - [Symmetric](./symmetric)
-- [Secure string](./secure-string)
+- [Secure string](./string)

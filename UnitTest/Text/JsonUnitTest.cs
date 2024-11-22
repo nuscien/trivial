@@ -391,6 +391,26 @@ public class JsonUnitTest
         json.Id = null;
         Assert.IsNull(json.Id);
         Assert.IsFalse(json.ContainsKey("$id"));
+
+        //var s = new List<JsonObjectNode>
+        //{
+        //    json,
+        //    new()
+        //    {
+        //        { "test", "jsonl" }
+        //    }
+        //}.ToJsonlString();
+        //using var stream2 = new MemoryStream();
+        //using var streamWriter = new StreamWriter(stream2, Encoding.UTF8);
+        //streamWriter.Write(s);
+        //streamWriter.Flush();
+        //stream2.Position = 0;
+        //json = JsonObjectNode.Parse(stream2);
+        //Assert.IsNotNull(json);
+        //Assert.IsTrue(json.ContainsKey("host"));
+        //json = JsonObjectNode.Parse(stream2);
+        //Assert.IsNotNull(json);
+        //Assert.AreEqual("jsonl", json.GetValue<string>("test"));
     }
 
     /// <summary>

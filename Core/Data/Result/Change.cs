@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
@@ -270,12 +271,39 @@ public class ChangeEventArgs<T> : EventArgs
         ChangeMethods.Remove => true,
         _ => false
     };
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        sb.Append(Method.ToString());
+        if (!string.IsNullOrWhiteSpace(Key))
+        {
+            sb.Append(" & Key = ");
+            sb.Append(Key);
+        }
+
+        if (NewValue is not null)
+        {
+            sb.Append(" & NewValue = ");
+            sb.Append(NewValue);
+        }
+
+        if (OldValue is not null)
+        {
+            sb.Append(" & OldValue = ");
+            sb.Append(OldValue);
+        }
+
+        return sb.ToString();
+    }
 }
 
 /// <summary>
 /// The event arguments with data.
 /// </summary>
 /// <typeparam name="T">The type of the state.</typeparam>
+[DebuggerDisplay("Data")]
 public class DataEventArgs<T> : EventArgs
 {
     /// <summary>
@@ -344,6 +372,10 @@ public class KeyValueEventArgs<TKey, TValue> : EventArgs
     /// Gets the value.
     /// </summary>
     public TValue Value { get; }
+
+    /// <inheritdoc />
+    public override string ToString()
+        => string.Concat("Key = ", Key, " & Value = ", Value);
 
     /// <summary>
     /// Converts to key value pair.
