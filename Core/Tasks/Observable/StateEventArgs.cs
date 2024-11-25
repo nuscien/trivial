@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Trivial.Tasks;
@@ -23,24 +24,22 @@ public delegate void ResultEventHandler<T>(object sender, ResultEventArgs<T> e);
 /// <summary>
 /// The event arguments with message.
 /// </summary>
-public class MessageEventArgs : EventArgs
+/// <param name="message">The additional message.</param>
+[DebuggerDisplay("{Message}")]
+public class MessageEventArgs(string message = null) : EventArgs
 {
-    /// <summary>
-    /// Initializes a new instance of the MessageEventArgs class.
-    /// </summary>
-    /// <param name="message">The additional message.</param>
-    public MessageEventArgs(string message = null) => Message = message;
 
     /// <summary>
     /// Gets the additional message.
     /// </summary>
-    public string Message { get; }
+    public string Message { get; } = message;
 }
 
 /// <summary>
 /// The event arguments with state.
 /// </summary>
 /// <typeparam name="T">The type of the state.</typeparam>
+[DebuggerDisplay("{State}")]
 public class StateEventArgs<T> : MessageEventArgs
 {
     /// <summary>

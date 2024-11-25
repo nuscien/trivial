@@ -12,36 +12,35 @@ using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
 
-namespace Trivial.Security
+namespace Trivial.Security;
+
+/// <summary>
+/// Cryptography unit test.
+/// </summary>
+[TestClass]
+public class CryptographyUnitTest
 {
     /// <summary>
-    /// Cryptography unit test.
+    /// Tests RSA converter.
     /// </summary>
-    [TestClass]
-    public class CryptographyUnitTest
+    [TestMethod]
+    public void TestRsa()
     {
-        /// <summary>
-        /// Tests RSA converter.
-        /// </summary>
-        [TestMethod]
-        public void TestRsa()
-        {
-            var source = "Test RSA data";
-            var key = RSA.Create().ExportParameters(true);
-            var pem = key.ToPublicPEMString();
-            var param = RSAParametersConvert.Parse(pem);
-            var rsa = RSA.Create(param.Value);
-            var encrypt = rsa.Encrypt(source, RSAEncryptionPadding.Pkcs1);
-            Assert.IsNotNull(encrypt);
-            var str = ObjectConvert.ToHexString(encrypt);
-            Assert.IsNotNull(str);
-            pem = key.ToPrivatePEMString(true);
-            param = RSAParametersConvert.Parse(pem);
-            Assert.IsTrue(param.HasValue);
-            rsa = RSA.Create(param.Value);
-            var bytes = ObjectConvert.FromHexString(str);
-            var value = rsa.DecryptText(bytes, RSAEncryptionPadding.Pkcs1);
-            Assert.AreEqual(source, value);
-        }
+        var source = "Test RSA data";
+        var key = RSA.Create().ExportParameters(true);
+        var pem = key.ToPublicPEMString();
+        var param = RSAParametersConvert.Parse(pem);
+        var rsa = RSA.Create(param.Value);
+        var encrypt = rsa.Encrypt(source, RSAEncryptionPadding.Pkcs1);
+        Assert.IsNotNull(encrypt);
+        var str = ObjectConvert.ToHexString(encrypt);
+        Assert.IsNotNull(str);
+        pem = key.ToPrivatePEMString(true);
+        param = RSAParametersConvert.Parse(pem);
+        Assert.IsTrue(param.HasValue);
+        rsa = RSA.Create(param.Value);
+        var bytes = ObjectConvert.FromHexString(str);
+        var value = rsa.DecryptText(bytes, RSAEncryptionPadding.Pkcs1);
+        Assert.AreEqual(source, value);
     }
 }

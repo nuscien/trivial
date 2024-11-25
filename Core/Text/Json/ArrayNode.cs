@@ -140,8 +140,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private PropertyChangedEventHandler notifyPropertyChanged;
+    private event PropertyChangedEventHandler notifyPropertyChanged;
     event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
     {
         add

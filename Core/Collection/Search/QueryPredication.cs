@@ -21,38 +21,31 @@ public class QueryPredication<T>
     /// The information of the filter.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public class FilterInfo<TValue>
+    /// <param name="value">The value.</param>
+    /// <param name="source">The querable source.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="q">The query data.</param>
+    public class FilterInfo<TValue>(TValue value, IQueryable<T> source, string key, QueryData q)
     {
-        /// <summary>
-        /// Initializes a new instance of the FilterInfo class.
-        /// </summary>
-        public FilterInfo(TValue value, IQueryable<T> source, string key, QueryData q)
-        {
-            Value = value;
-            Source = source;
-            Key = key;
-            Q = q;
-        }
-
         /// <summary>
         /// Gets the value.
         /// </summary>
-        public TValue Value { get; }
+        public TValue Value { get; } = value;
 
         /// <summary>
         /// Gets the queryable source.
         /// </summary>
-        public IQueryable<T> Source { get; }
+        public IQueryable<T> Source { get; } = source;
 
         /// <summary>
         /// Gets the key.
         /// </summary>
-        public string Key { get; }
+        public string Key { get; } = key;
 
         /// <summary>
         /// Gets the query data.
         /// </summary>
-        public QueryData Q { get; }
+        public QueryData Q { get; } = q;
 
         /// <summary>
         /// Gets a value indicating whether the key is in the query data.

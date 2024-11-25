@@ -175,7 +175,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// </summary>
     public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-    private PropertyChangedEventHandler notifyPropertyChanged;
+    private event PropertyChangedEventHandler notifyPropertyChanged;
     event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
     {
         add

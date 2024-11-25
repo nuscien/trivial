@@ -11,6 +11,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
@@ -19,7 +20,6 @@ using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
-using static System.Net.WebRequestMethods;
 
 namespace Trivial.Security;
 
@@ -32,7 +32,7 @@ public class TokenRequestRoute<T>
     /// <summary>
     /// The handlers.
     /// </summary>
-    private readonly Dictionary<string, Func<QueryData, Task<SelectionRelationship<T, TokenInfo>>>> handlers = new();
+    private readonly Dictionary<string, Func<QueryData, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>>> handlers = new();
 
     /// <summary>
     /// Adds or removes the event handler after signing in.
@@ -44,7 +44,7 @@ public class TokenRequestRoute<T>
     /// </summary>
     /// <param name="grantType">The grant type.</param>
     /// <param name="h">The handler.</param>
-    public void Register(string grantType, Func<QueryData, Task<SelectionRelationship<T, TokenInfo>>> h)
+    public void Register(string grantType, Func<QueryData, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
         => handlers[grantType] = h;
 
     /// <summary>
@@ -52,11 +52,11 @@ public class TokenRequestRoute<T>
     /// </summary>
     /// <param name="grantType">The grant type.</param>
     /// <param name="h">The handler.</param>
-    public void Register(string grantType, Func<TokenRequest, Task<SelectionRelationship<T, TokenInfo>>> h)
-        => handlers[grantType] = q =>
+    public void Register(string grantType, Func<TokenRequest, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
+        => handlers[grantType] = (q, cancellationToken) =>
         {
             var info = new TokenRequest(q);
-            return h(info);
+            return h(info, cancellationToken);
         };
 
     /// <summary>
@@ -65,68 +65,68 @@ public class TokenRequestRoute<T>
     /// <param name="grantType">The grant type.</param>
     /// <param name="tokenRequestFactory">The token request factory.</param>
     /// <param name="h">The handler.</param>
-    public void Register<TTokenRequest>(string grantType, Func<QueryData, TTokenRequest> tokenRequestFactory, Func<TTokenRequest, Task<SelectionRelationship<T, TokenInfo>>> h) where TTokenRequest : TokenRequest
-        => handlers[grantType] = q =>
+    public void Register<TTokenRequest>(string grantType, Func<QueryData, TTokenRequest> tokenRequestFactory, Func<TTokenRequest, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h) where TTokenRequest : TokenRequest
+        => handlers[grantType] = (q, cancellationToken) =>
         {
             var info = tokenRequestFactory(q);
             if (info == null) return Task.FromResult<SelectionRelationship<T, TokenInfo>>(new());
-            return h(info);
+            return h(info, cancellationToken);
         };
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<ClientTokenRequestBody>, Task<SelectionRelationship<T, TokenInfo>>> h)
+    public void Register(Func<TokenRequest<ClientTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
         => Register(ClientTokenRequestBody.ClientCredentialsGrantType, ClientTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<CodeTokenRequestBody>, Task<SelectionRelationship<T, TokenInfo>>> h)
+    public void Register(Func<TokenRequest<CodeTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
         => Register(CodeTokenRequestBody.AuthorizationCodeGrantType, CodeTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<RefreshTokenRequestBody>, Task<SelectionRelationship<T, TokenInfo>>> h)
+    public void Register(Func<TokenRequest<RefreshTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
         => Register(RefreshTokenRequestBody.RefreshTokenGrantType, RefreshTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<PasswordTokenRequestBody>, Task<BaseAccountTokenInfo<T>>> h)
+    public void Register(Func<TokenRequest<PasswordTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
         => Register(PasswordTokenRequestBody.PasswordGrantType, PasswordTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<ClientTokenRequestBody>, Task<BaseAccountTokenInfo<T>>> h)
+    public void Register(Func<TokenRequest<ClientTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
         => Register(ClientTokenRequestBody.ClientCredentialsGrantType, ClientTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<CodeTokenRequestBody>, Task<BaseAccountTokenInfo<T>>> h)
+    public void Register(Func<TokenRequest<CodeTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
         => Register(CodeTokenRequestBody.AuthorizationCodeGrantType, CodeTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<RefreshTokenRequestBody>, Task<BaseAccountTokenInfo<T>>> h)
+    public void Register(Func<TokenRequest<RefreshTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
         => Register(RefreshTokenRequestBody.RefreshTokenGrantType, RefreshTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<PasswordTokenRequestBody>, Task<SelectionRelationship<T, TokenInfo>>> h)
+    public void Register(Func<TokenRequest<PasswordTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
         => Register(PasswordTokenRequestBody.PasswordGrantType, PasswordTokenRequestBody.Create, h);
 
     /// <summary>
@@ -134,10 +134,10 @@ public class TokenRequestRoute<T>
     /// </summary>
     /// <param name="grantType">The grant type.</param>
     /// <param name="h">The handler.</param>
-    public void Register(string grantType, Func<QueryData, Task<BaseAccountTokenInfo<T>>> h)
-        => handlers[grantType] = async q =>
+    public void Register(string grantType, Func<QueryData, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
+        => handlers[grantType] = async (q, cancellationToken) =>
         {
-            var resp = await h(q);
+            var resp = await h(q, cancellationToken);
             return new(resp.User, resp);
         };
 
@@ -147,7 +147,7 @@ public class TokenRequestRoute<T>
     /// <param name="grantType">The grant type.</param>
     /// <param name="h">The handler.</param>
     public void Register(string grantType, Func<TokenRequest, Task<BaseAccountTokenInfo<T>>> h)
-        => handlers[grantType] = async q =>
+        => handlers[grantType] = async (q, cancellationToken) =>
         {
             var info = new TokenRequest(q);
             var resp = await h(info);
@@ -161,7 +161,7 @@ public class TokenRequestRoute<T>
     /// <param name="tokenRequestFactory">The token request factory.</param>
     /// <param name="h">The handler.</param>
     public void Register<TTokenRequest>(string grantType, Func<QueryData, TTokenRequest> tokenRequestFactory, Func<TTokenRequest, Task<BaseAccountTokenInfo<T>>> h) where TTokenRequest : TokenRequest
-        => handlers[grantType] = async q =>
+        => handlers[grantType] = async (q, cancellationToken) =>
         {
             var info = tokenRequestFactory(q);
             if (info == null) return new();
@@ -173,43 +173,57 @@ public class TokenRequestRoute<T>
     /// Signs in.
     /// </summary>
     /// <param name="tokenRequest">The token request information.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A token information.</returns>
-    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest tokenRequest)
+    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest tokenRequest, CancellationToken cancellationToken = default)
     {
         var q = tokenRequest?.ToQueryData();
-        return SignInAsync(q);
+        return SignInAsync(q, cancellationToken);
     }
 
     /// <summary>
     /// Signs in.
     /// </summary>
     /// <param name="s">The token request information.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A token information.</returns>
-    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(string s)
+    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(string s, CancellationToken cancellationToken = default)
     {
         var q = QueryData.Parse(s);
-        return SignInAsync(q);
+        return SignInAsync(q, cancellationToken);
+    }
+
+    /// <summary>
+    /// Signs in.
+    /// </summary>
+    /// <param name="s">The token request information.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>A token information.</returns>
+    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(ReadOnlySpan<char> s, CancellationToken cancellationToken = default)
+    {
+        var q = QueryData.Parse(s);
+        return SignInAsync(q, cancellationToken);
     }
 
     /// <summary>
     /// Signs in.
     /// </summary>
     /// <param name="q">The token request information.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A token information.</returns>
-    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(QueryData q)
+    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(QueryData q, CancellationToken cancellationToken = default)
     {
         if (q == null) return null;
         var grantType = q[TokenRequestBody.GrantTypeProperty];
         if (string.IsNullOrWhiteSpace(grantType)) return null;
-        if (!handlers.TryGetValue(grantType, out var h)) return grantType switch
+        var info = handlers.TryGetValue(grantType, out var h) ? await h(q, cancellationToken) : grantType.ToLowerInvariant() switch
         {
-            ClientTokenRequestBody.ClientCredentialsGrantType => await TokenInfoExtensions.ProcessAsync(q, ClientTokenRequestBody.Create, SignInAsync),
-            CodeTokenRequestBody.AuthorizationCodeGrantType => await TokenInfoExtensions.ProcessAsync(q, CodeTokenRequestBody.Create, SignInAsync),
-            RefreshTokenRequestBody.RefreshTokenGrantType => await TokenInfoExtensions.ProcessAsync(q, RefreshTokenRequestBody.Create, SignInAsync),
-            PasswordTokenRequestBody.PasswordGrantType => await TokenInfoExtensions.ProcessAsync(q, PasswordTokenRequestBody.Create, SignInAsync),
+            ClientTokenRequestBody.ClientCredentialsGrantType => await TokenInfoExtensions.ProcessAsync(q, ClientTokenRequestBody.Create, SignInAsync, cancellationToken),
+            CodeTokenRequestBody.AuthorizationCodeGrantType => await TokenInfoExtensions.ProcessAsync(q, CodeTokenRequestBody.Create, SignInAsync, cancellationToken),
+            RefreshTokenRequestBody.RefreshTokenGrantType => await TokenInfoExtensions.ProcessAsync(q, RefreshTokenRequestBody.Create, SignInAsync, cancellationToken),
+            PasswordTokenRequestBody.PasswordGrantType => await TokenInfoExtensions.ProcessAsync(q, PasswordTokenRequestBody.Create, SignInAsync, cancellationToken),
             _ => null
         };
-        var info = await h(q);
         if (info is not null) SignedIn?.Invoke(this, new DataEventArgs<SelectionRelationship<T, TokenInfo>>(info));
         return info;
     }
@@ -218,52 +232,61 @@ public class TokenRequestRoute<T>
     /// Signs in.
     /// </summary>
     /// <param name="utf8Stream">The UTF-8 stream input.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The login response.</returns>
     /// <exception cref="ArgumentException">stream does not support reading.</exception>
     /// <exception cref="IOException">An I/O error occurs.</exception>
     /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
-    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream)
+    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream, CancellationToken cancellationToken)
     {
         if (utf8Stream == null) return null;
         string input;
         using (var reader = new StreamReader(utf8Stream, Encoding.UTF8))
         {
+#if NET8_0_OR_GREATER
+            input = await reader.ReadToEndAsync(cancellationToken);
+#else
             input = await reader.ReadToEndAsync();
+#endif
         }
 
-        return await SignInAsync(input);
+        return await SignInAsync(input, cancellationToken);
     }
 
     /// <summary>
     /// Signs in.
     /// </summary>
     /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The login response.</returns>
-    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<ClientTokenRequestBody> request)
+    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<ClientTokenRequestBody> request, CancellationToken cancellationToken)
         => EmptyAsync();
 
     /// <summary>
     /// Signs in.
     /// </summary>
     /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The login response.</returns>
-    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<CodeTokenRequestBody> request)
+    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<CodeTokenRequestBody> request, CancellationToken cancellationToken)
         => EmptyAsync();
 
     /// <summary>
     /// Signs in.
     /// </summary>
     /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The login response.</returns>
-    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<RefreshTokenRequestBody> request)
+    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<RefreshTokenRequestBody> request, CancellationToken cancellationToken)
         => EmptyAsync();
 
     /// <summary>
     /// Signs in.
     /// </summary>
     /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The login response.</returns>
-    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<PasswordTokenRequestBody> request)
+    protected virtual Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest<PasswordTokenRequestBody> request, CancellationToken cancellationToken)
         => EmptyAsync();
 
     /// <summary>
@@ -273,10 +296,10 @@ public class TokenRequestRoute<T>
     /// <param name="grantType">The grant type.</param>
     /// <param name="factory">The factory of token request body.</param>
     /// <param name="h">A token request handler.</param>
-    private void Register<TRequestBody>(string grantType, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, Task<SelectionRelationship<T, TokenInfo>>> h) where TRequestBody : TokenRequestBody
+    private void Register<TRequestBody>(string grantType, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h) where TRequestBody : TokenRequestBody
     {
         if (h == null) return;
-        Register(grantType, q => TokenInfoExtensions.ProcessAsync(q, factory, h));
+        Register(grantType, (q, cancellationToken) => TokenInfoExtensions.ProcessAsync(q, factory, h, cancellationToken));
     }
 
     /// <summary>
@@ -286,10 +309,10 @@ public class TokenRequestRoute<T>
     /// <param name="grantType">The grant type.</param>
     /// <param name="factory">The factory of token request body.</param>
     /// <param name="h">A token request handler.</param>
-    private void Register<TRequestBody>(string grantType, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, Task<BaseAccountTokenInfo<T>>> h) where TRequestBody : TokenRequestBody
+    private void Register<TRequestBody>(string grantType, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h) where TRequestBody : TokenRequestBody
     {
         if (h == null) return;
-        Register(grantType, q => TokenInfoExtensions.ProcessAsync(q, factory, h));
+        Register(grantType, (q, cancellationToken) => TokenInfoExtensions.ProcessAsync(q, factory, h, cancellationToken));
     }
 
     /// <summary>
@@ -313,7 +336,7 @@ public static class TokenInfoExtensions
     /// <param name="responseType">The response type.</param>
     /// <param name="state">The state.</param>
     /// <returns>The login URI.</returns>
-    public static Uri GetLoginUri(TokenRequest<CodeTokenRequestBody> request, Uri uri, string responseType, string state)
+    public static Uri GetLoginUri(this TokenRequest<CodeTokenRequestBody> request, Uri uri, string responseType, string state)
     {
         if (request?.Body is null) return null;
         var data = new QueryData
@@ -335,13 +358,14 @@ public static class TokenInfoExtensions
     /// <param name="q">The input query data.</param>
     /// <param name="factory">The factory of token request body.</param>
     /// <param name="h">A token request handler.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
-    internal static Task<SelectionRelationship<TUser, TokenInfo>> ProcessAsync<TUser, TRequestBody>(QueryData q, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, Task<SelectionRelationship<TUser, TokenInfo>>> h) where TRequestBody : TokenRequestBody
+    internal static Task<SelectionRelationship<TUser, TokenInfo>> ProcessAsync<TUser, TRequestBody>(QueryData q, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, CancellationToken, Task<SelectionRelationship<TUser, TokenInfo>>> h, CancellationToken cancellationToken) where TRequestBody : TokenRequestBody
     {
         if (h is null) return Task.FromResult<SelectionRelationship<TUser, TokenInfo>>(new());
         var body = factory(q);
         var req = new TokenRequest<TRequestBody>(body, q);
-        return h(req);
+        return h(req, cancellationToken);
     }
 
     /// <summary>
@@ -352,13 +376,14 @@ public static class TokenInfoExtensions
     /// <param name="q">The input query data.</param>
     /// <param name="factory">The factory of token request body.</param>
     /// <param name="h">A token request handler.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
-    internal static async Task<SelectionRelationship<TUser, TokenInfo>> ProcessAsync<TUser, TRequestBody>(QueryData q, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, Task<BaseAccountTokenInfo<TUser>>> h) where TRequestBody : TokenRequestBody
+    internal static async Task<SelectionRelationship<TUser, TokenInfo>> ProcessAsync<TUser, TRequestBody>(QueryData q, Func<QueryData, TRequestBody> factory, Func<TokenRequest<TRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<TUser>>> h, CancellationToken cancellationToken) where TRequestBody : TokenRequestBody
     {
         if (h is null) return new();
         var body = factory(q);
         var req = new TokenRequest<TRequestBody>(body, q);
-        var resp = await h(req);
+        var resp = await h(req, cancellationToken);
         return new(resp.User, resp);
     }
 }

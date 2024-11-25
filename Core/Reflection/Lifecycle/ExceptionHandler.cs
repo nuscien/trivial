@@ -22,28 +22,20 @@ public class ExceptionHandler
     /// <summary>
     /// The item of exception handlers registered.
     /// </summary>
-    public class Item
+    /// <param name="type">The exception type.</param>
+    /// <param name="handler">The catch handler.</param>
+    public class Item(Type type, ExceptionHandler.ItemHandler handler)
     {
-        /// <summary>
-        /// Initializes a new instance of the ExceptionHandler.Item class.
-        /// </summary>
-        /// <param name="type">The exception type.</param>
-        /// <param name="handler">The catch handler.</param>
-        public Item(Type type, ItemHandler handler)
-        {
-            Type = type;
-            Handler = handler;
-        }
 
         /// <summary>
         /// Gets the exception type.
         /// </summary>
-        public Type Type { get; private set; }
+        public Type Type { get; private set; } = type;
 
         /// <summary>
         /// Gets the catch handler.
         /// </summary>
-        public ItemHandler Handler { get; private set; }
+        public ItemHandler Handler { get; private set; } = handler;
 
         /// <inheritdoc />
         public override string ToString()
@@ -53,13 +45,8 @@ public class ExceptionHandler
     /// <summary>
     /// The item of exception handlers registered.
     /// </summary>
-    public class Item<T> : Item, IEquatable<object>, IEquatable<Item>, IEquatable<Item<T>> where T : Exception
-    {
-        /// <summary>
-        /// Initializes a new instance of the ExceptionHandler.Item class.
-        /// </summary>
-        /// <param name="handler">The catch handler.</param>
-        public Item(Func<T, Exception> handler) : base(typeof(T), (Exception ex, out bool handled) =>
+    /// <param name="handler">The catch handler.</param>
+    public class Item<T>(Func<T, Exception> handler) : Item(typeof(T), (Exception ex, out bool handled) =>
         {
             if (ex is T exConverted)
             {
@@ -69,15 +56,13 @@ public class ExceptionHandler
 
             handled = false;
             return ex;
-        })
-        {
-            Handler = handler;
-        }
+        }), IEquatable<object>, IEquatable<Item>, IEquatable<Item<T>> where T : Exception
+    {
 
         /// <summary>
         /// Gets the catch handler.
         /// </summary>
-        public new Func<T, Exception> Handler { get; private set; }
+        public new Func<T, Exception> Handler { get; private set; } = handler;
 
         /// <summary>
         /// Tests if the given item equals the current one.

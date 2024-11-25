@@ -282,13 +282,22 @@ public class QueryData : StringKeyValuePairs
     }
 
     /// <summary>
+    /// Parses a string to the query data.
+    /// </summary>
+    /// <param name="query">The query string.</param>
+    /// <param name="append">true if append instead of override; otherwise, false.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <returns>The count of query item added.</returns>
+    /// <exception cref="FormatException">The format is not correct.</exception>
+    public int ParseSet(ReadOnlySpan<char> query, bool append = false, Encoding encoding = null)
+        => ParseSet(query.ToString(), append, encoding);
+
+    /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A query string.</returns>
     public override string ToString()
-    {
-        return ToString(DefaultEncoding);
-    }
+        => ToString(DefaultEncoding);
 
     /// <summary>
     /// Returns a string that represents the current object.
@@ -359,9 +368,7 @@ public class QueryData : StringKeyValuePairs
     /// <param name="mediaType">The optional media type to use for the content. Or null for default.</param>
     /// <returns>A string HTTP request content.</returns>
     public StringContent ToStringContent(Encoding encoding = null, string mediaType = null)
-    {
-        return new StringContent(ToString(), encoding ?? DefaultEncoding ?? Encoding.UTF8, mediaType ?? "application/x-www-form-urlencoded");
-    }
+        => new(ToString(), encoding ?? DefaultEncoding ?? Encoding.UTF8, mediaType ?? "application/x-www-form-urlencoded");
 
     /// <summary>
     /// Parses a string to the query data.
@@ -370,6 +377,19 @@ public class QueryData : StringKeyValuePairs
     /// <returns>A query data instance.</returns>
     /// <exception cref="FormatException">The format is not correct.</exception>
     public static QueryData Parse(string query)
+    {
+        var q = new QueryData();
+        q.ParseSet(query);
+        return q;
+    }
+
+    /// <summary>
+    /// Parses a string to the query data.
+    /// </summary>
+    /// <param name="query">The query string.</param>
+    /// <returns>A query data instance.</returns>
+    /// <exception cref="FormatException">The format is not correct.</exception>
+    public static QueryData Parse(ReadOnlySpan<char> query)
     {
         var q = new QueryData();
         q.ParseSet(query);

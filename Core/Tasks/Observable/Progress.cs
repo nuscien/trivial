@@ -337,9 +337,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// Reports the progress update to 100%. It means that runs succeeded.
     /// </summary>
     public void Succeed()
-    {
-        Report(1);
-    }
+        => Report(1);
 
     /// <summary>
     /// Stops and marks as error.
@@ -370,11 +368,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
     {
-        if (IsCompleted)
-        {
-            return IsSuccessful ? "√" : $"× ({Value:#0.0%})";
-        }
-
+        if (IsCompleted) return IsSuccessful ? "√" : $"× ({Value:#0.0%})";
         return Value.ToString("#0.0%");
     }
 
@@ -384,9 +378,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="progress">The progress result value.</param>
     /// <returns>The current value of the updated progress.</returns>
     public static explicit operator double(OneProgress progress)
-    {
-        return progress == null ? 0 : progress.Value;
-    }
+        => progress == null ? 0 : progress.Value;
 
     /// <summary>
     /// Converts the progress result to a floating-point number.
@@ -394,9 +386,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="progress">The progress result value.</param>
     /// <returns>The current value of the updated progress.</returns>
     public static explicit operator float(OneProgress progress)
-    {
-        return progress == null ? 0 : (float)progress.Value;
-    }
+        => progress == null ? 0 : (float)progress.Value;
 
     /// <summary>
     /// Converts the progress result to a boolean value.
@@ -404,7 +394,5 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="progress">The progress result value.</param>
     /// <returns>A value indicating whether it is completed.</returns>
     public static explicit operator bool(OneProgress progress)
-    {
-        return progress != null && progress.IsCompleted;
-    }
+        => progress != null && progress.IsCompleted;
 }

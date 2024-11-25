@@ -1,14 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AccessTokenResponse.cs" company="Nanchang Jinchen Software Co., Ltd.">
-//   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
-// </copyright>
-// <summary>
-//   The access token response information.
-// </summary>
-// <author>Kingcean Tuan</author>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;

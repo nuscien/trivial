@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Runtime.Versioning;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using Trivial.Collection;
@@ -88,6 +90,22 @@ public class HashSignatureProvider : ISignatureProvider
     }
 
     /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    public static HashSignatureProvider CreateHS512(SecureString secret)
+        => CreateHS512(secret?.ToUnsecureString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    public static HashSignatureProvider CreateHS512(ReadOnlySpan<char> secret)
+        => CreateHS512(secret.ToString());
+
+    /// <summary>
     /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
     /// </summary>
     /// <param name="secret">The secret.</param>
@@ -108,6 +126,22 @@ public class HashSignatureProvider : ISignatureProvider
         var a = new HMACSHA384(secret);
         return new(a, "HS384", true);
     }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    public static HashSignatureProvider CreateHS384(SecureString secret)
+        => CreateHS384(secret?.ToUnsecureString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    public static HashSignatureProvider CreateHS384(ReadOnlySpan<char> secret)
+        => CreateHS384(secret.ToString());
 
     /// <summary>
     /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
@@ -132,6 +166,22 @@ public class HashSignatureProvider : ISignatureProvider
     }
 
     /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    public static HashSignatureProvider CreateHS256(SecureString secret)
+        => CreateHS256(secret?.ToUnsecureString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    public static HashSignatureProvider CreateHS256(ReadOnlySpan<char> secret)
+        => CreateHS256(secret.ToString());
+
+    /// <summary>
     /// Creates a hash signature provider using SHA-512 hash algorithm of SHA-2 family.
     /// </summary>
     /// <param name="shortName">true if use short name; otherwise, false.</param>
@@ -154,6 +204,134 @@ public class HashSignatureProvider : ISignatureProvider
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA256(bool shortName = false)
         => new(SHA256.Create(), shortName ? "S256" : "SHA256", true);
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3512(string secret)
+    {
+        var a = new HMACSHA3_512(Encoding.ASCII.GetBytes(secret ?? string.Empty));
+        return new(a, "HS3512", true);
+    }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3512(byte[] secret)
+    {
+        var a = new HMACSHA3_512(secret);
+        return new(a, "HS3512", true);
+    }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3512(SecureString secret)
+        => CreateHS3512(secret?.ToUnsecureString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3512(ReadOnlySpan<char> secret)
+        => CreateHS3512(secret.ToString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3384(string secret)
+    {
+        var a = new HMACSHA3_384(Encoding.ASCII.GetBytes(secret ?? string.Empty));
+        return new(a, "HS3384", true);
+    }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3384(byte[] secret)
+    {
+        var a = new HMACSHA3_384(secret);
+        return new(a, "HS3384", true);
+    }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3384(SecureString secret)
+        => CreateHS3384(secret?.ToUnsecureString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-384 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3384(ReadOnlySpan<char> secret)
+        => CreateHS3384(secret.ToString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3256(string secret)
+    {
+        var a = new HMACSHA3_256(Encoding.ASCII.GetBytes(secret ?? string.Empty));
+        return new(a, "HS3256", true);
+    }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3256(byte[] secret)
+    {
+        var a = new HMACSHA3_256(secret);
+        return new(a, "HS3256", true);
+    }
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3256(SecureString secret)
+        => CreateHS3256(secret?.ToUnsecureString());
+
+    /// <summary>
+    /// Creates a hash signature provider using HMAC SHA-256 keyed hash algorithm.
+    /// </summary>
+    /// <param name="secret">The secret.</param>
+    /// <returns>A keyed hash signature provider.</returns>
+    [SupportedOSPlatform("windows10.0.25324")]
+    public static HashSignatureProvider CreateHS3256(ReadOnlySpan<char> secret)
+        => CreateHS3256(secret.ToString());
+#endif
 
     /// <summary>
     /// Creates a hash signature provider using SHA-3-512 hash algorithm.

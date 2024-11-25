@@ -354,10 +354,8 @@ public class JsonWebToken<T>
             }
         }
 
-        var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
-        if (header == null) throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
-        var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]);
-        if (payload == null) throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
+        var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]) ?? throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
+        var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]) ?? throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
         var obj = new JsonWebToken<T>(payload, algorithm)
         {
             headerBase64Url = arr[0],

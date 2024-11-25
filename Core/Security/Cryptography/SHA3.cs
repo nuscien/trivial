@@ -20,13 +20,13 @@ internal class SHA3Managed : HashAlgorithm
         => new(224);
 
     public static SHA3Managed Create256()
-        => new(256);
+        => new(256); //SHA3_256.Create();
 
     public static SHA3Managed Create384()
-        => new(384);
+        => new(384); //SHA3_384.Create();
 
     public static SHA3Managed Create512()
-        => new(512);
+        => new(512); //SHA3_512.Create();
 
     public const int KeccakB = 1600;
     public const int KeccakNumberOfRounds = 24;
@@ -42,7 +42,7 @@ internal class SHA3Managed : HashAlgorithm
     protected SHA3Managed(int hashBitLength)
     {
         if (hashBitLength != 224 && hashBitLength != 256 && hashBitLength != 384 && hashBitLength != 512)
-            throw new ArgumentException("hashBitLength must be 224, 256, 384, or 512", nameof(hashBitLength));
+            throw new ArgumentOutOfRangeException("hashBitLength must be 224, 256, 384, or 512", nameof(hashBitLength));
         Initialize();
         HashSizeValue = hashBitLength;
         switch (hashBitLength)
@@ -60,7 +60,7 @@ internal class SHA3Managed : HashAlgorithm
                 KeccakR = 576;
                 break;
         }
-        RoundConstants = new ulong[]
+        RoundConstants = new[]
         {
             0x0000000000000001UL,
             0x0000000000008082UL,
@@ -135,7 +135,6 @@ internal class SHA3Managed : HashAlgorithm
         var utemps = new ulong[stride];
         if (buffLength == sizeInBytes) throw new InvalidOperationException("Unexpected error that the internal buffer is full.");
         AddToBuffer(array, ref ibStart, ref cbSize);
-
         if (buffLength == sizeInBytes)
         {
             Buffer.BlockCopy(buffer, 0, utemps, 0, sizeInBytes);
@@ -423,7 +422,5 @@ internal class SHA3Managed : HashAlgorithm
     }
 
     private static ulong Rol(ulong a, int offset)
-    {
-        return ((a) << (offset % KeccakLaneSizeInBits)) ^ ((a) >> (KeccakLaneSizeInBits - (offset % KeccakLaneSizeInBits)));
-    }
+        => ((a) << (offset % KeccakLaneSizeInBits)) ^ ((a) >> (KeccakLaneSizeInBits - (offset % KeccakLaneSizeInBits)));
 }

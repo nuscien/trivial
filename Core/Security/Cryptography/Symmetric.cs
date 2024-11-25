@@ -91,8 +91,8 @@ public static class SymmetricUtility
 
             // Create the streams used for encryption.
             using var msEncrypt = new MemoryStream();
-            using CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt, encoding ?? Encoding.UTF8))
+            using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+            using (var swEncrypt = new StreamWriter(csEncrypt, encoding ?? Encoding.UTF8))
             {
                 // Write all data to the stream.
                 swEncrypt.Write(plainText);

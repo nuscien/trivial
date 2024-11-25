@@ -56,7 +56,7 @@ public sealed class LinearRetryPolicy : IRetryPolicy
     public LinearRetryPolicy(int count, TimeSpan interval, TimeSpan increase) : this(count, interval) => Increase = increase;
 
     /// <summary>
-    /// The retry count.
+    /// The maximum count of retry operation.
     /// </summary>
     public int Count { get; set; } = 0;
 

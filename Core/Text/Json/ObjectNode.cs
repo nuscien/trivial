@@ -96,11 +96,11 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             {
                 SetValue(prop.Name, arr);
             }
-            else if (prop.Value is System.Text.Json.Nodes.JsonObject json2)
+            else if (prop.Value is JsonObject json2)
             {
                 SetValue(prop.Name, json2);
             }
-            else if (prop.Value is System.Text.Json.Nodes.JsonArray arr2)
+            else if (prop.Value is JsonArray arr2)
             {
                 SetValue(prop.Name, arr2);
             }
@@ -145,8 +145,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     public event KeyValueEventHandler<string, BaseJsonValueNode> PropertyChanged;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private PropertyChangedEventHandler notifyPropertyChanged;
+    private event PropertyChangedEventHandler notifyPropertyChanged;
     event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
     {
         add

@@ -83,37 +83,6 @@ public class SelectionItem<T>
 /// <summary>
 /// The collection selection input information.
 /// </summary>
-public class SelectionData : SelectionData<object>
-{
-    /// <summary>
-    /// Enumartes for each item in the list.
-    /// </summary>
-    /// <typeparam name="T">The type of list item.</typeparam>
-    /// <param name="col">The collection.</param>
-    /// <param name="callback">The for each callback.</param>
-    /// <param name="offset">The offset.</param>
-    /// <param name="count">The count.</param>
-    /// <returns>The index.</returns>
-    internal static int Some<T>(IList<T> col, Func<T, int, int, bool> callback, int offset = 0, int? count = null)
-    {
-        if (callback == null) return -1;
-        var len = col.Count;
-        if (count.HasValue) len = Math.Min(count.Value + offset, len);
-        var j = 0;
-        for (var i = Math.Max(offset, 0); i < len; i++)
-        {
-            var item = col[i];
-            if (callback(item, i, j)) return i;
-            j++;
-        }
-
-        return -1;
-    }
-}
-
-/// <summary>
-/// The collection selection input information.
-/// </summary>
 /// <typeparam name="T">The type of data.</typeparam>
 public class SelectionData<T>
 {

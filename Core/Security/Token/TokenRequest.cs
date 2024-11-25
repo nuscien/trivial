@@ -390,9 +390,7 @@ public class AppAccessingKey
     /// </summary>
     /// <returns>A System.String that represents the current AppAccessingKey.</returns>
     public override string ToString()
-    {
-        return Id ?? string.Empty;
-    }
+        => Id ?? string.Empty;
 }
 
 /// <summary>
@@ -438,9 +436,7 @@ public abstract class TokenRequestBody
     /// <param name="name">The property name.</param>
     /// <returns>The value of the specific property.</returns>
     public virtual string Property(string name)
-    {
-        return ToQueryData()?[name];
-    }
+        => ToQueryData()?[name];
 
     /// <summary>
     /// Gets the query data.
@@ -475,7 +471,7 @@ public abstract class TokenRequestBody
         return JsonObjectNode.Parse(json);
     }
 
-    private (string, bool) GetNumberValueString(object obj, Type type)
+    private static (string, bool) GetNumberValueString(object obj, Type type)
     {
         if (obj == null) return (null, false);
         if (type == typeof(string) || type == typeof(StringBuilder)) return (obj.ToString(), true);
@@ -545,9 +541,7 @@ internal sealed class QueryDataTokenRequestBody : TokenRequestBody
     /// </summary>
     /// <returns>A query data.</returns>
     public override QueryData ToQueryData()
-    {
-        return query;
-    }
+        => query;
 
     /// <summary>
     /// Gets the JSON format string.
@@ -1031,9 +1025,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <param name="schemeCase">The scheme case.</param>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current user name and password information.</returns>
     public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original)
-    {
-        return ToAuthenticationHeaderValue(null, schemeCase);
-    }
+        => ToAuthenticationHeaderValue(null, schemeCase);
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
@@ -1073,7 +1065,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <returns>A query data.</returns>
     public override QueryData ToQueryData()
     {
-        var query = base.ToQueryData() ?? new QueryData();
+        var query = base.ToQueryData() ?? new();
         query[PasswordProperty] = Password.ToUnsecureString();
         return query;
     }
@@ -1086,7 +1078,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <returns>A network credential object.</returns>
     public NetworkCredential GetCredential(Uri uri, string authType)
     {
-        if (credential is null) credential = new NetworkCredential(UserName, Password);
+        credential ??= new NetworkCredential(UserName, Password);
         return credential.GetCredential(uri, authType);
     }
 
@@ -1099,7 +1091,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <returns>A network credential object.</returns>
     public NetworkCredential GetCredential(string host, int port, string authType)
     {
-        if (credential is null) credential = new NetworkCredential(UserName, Password);
+        credential ??= new NetworkCredential(UserName, Password);
         return credential.GetCredential(host, port, authType);
     }
 

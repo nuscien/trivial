@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
@@ -246,6 +247,7 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     /// Gets or sets the keywords.
     /// </summary>
     [JsonIgnore]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IReadOnlyList<string> IConciseModel.Keywords => Keywords;
 
     /// <summary>

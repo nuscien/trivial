@@ -47,7 +47,7 @@ public class CommandConversationContext
     /// <summary>
     /// Gets the shared data.
     /// </summary>
-    public JsonObjectNode Data { get; } = new JsonObjectNode();
+    public JsonObjectNode Data { get; } = new();
 
     /// <summary>
     /// Gets some of verb description registered.
