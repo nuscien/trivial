@@ -9,9 +9,10 @@
     <PackageId>Trivial</PackageId>
     <Description>A library providing lots of useful utilities, models and services, including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, JSON converters, CSV parser, numerals, coordinates, angle, arithmetic, sets, colors, etc.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/main/Materials/logo.png</PackageIconUrl>
-    <PackageTags>tasks interceptor numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
+    <PackageTags>tasks interceptor numerals json oauth2 jwt csv-parser stream pem coordinates uri</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,6 +29,9 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <PackageReference Include="System.Text.Json" Version="6.0.11" />
   </ItemGroup>
+  <!--<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />

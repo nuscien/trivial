@@ -159,7 +159,7 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
 /// <summary>
 /// The base description for JSON schema node.
 /// </summary>
-[JsonConverter(typeof(JsonNodeSchemaConverter))]
+[JsonConverter(typeof(JsonValueNodeConverter.SchemaConverter))]
 public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
 {
     /// <summary>

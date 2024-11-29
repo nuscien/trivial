@@ -251,6 +251,18 @@ public class JsonUnitTest
         Assert.IsNotNull(json);
         Assert.AreEqual(9, json.Keys.Count);
         Assert.AreEqual(jsonStr, json.ToString());
+        json = JsonSerializer.Deserialize<JsonObjectNode>(jsonStr);
+        Assert.IsNotNull(json);
+        Assert.AreEqual(9, json.Keys.Count);
+
+        jsonStr = JsonSerializer.Serialize(json.ToDictionary());
+        var dict = JsonSerializer.Deserialize<Dictionary<string, BaseJsonValueNode>>(jsonStr);
+        json.Clear();
+        Assert.AreEqual(0, json.Count);
+        json.SetRange(dict);
+        Assert.AreEqual(9, json.Keys.Count);
+        dict.Clear();
+        Assert.AreEqual(9, json.Keys.Count);
 
         Assert.IsFalse(jsonArray.IsNull(0));
         Assert.IsTrue(jsonArray.IsNullOrUndefined(100));
@@ -392,25 +404,19 @@ public class JsonUnitTest
         Assert.IsNull(json.Id);
         Assert.IsFalse(json.ContainsKey("$id"));
 
-        //var s = new List<JsonObjectNode>
-        //{
-        //    json,
-        //    new()
-        //    {
-        //        { "test", "jsonl" }
-        //    }
-        //}.ToJsonlString();
-        //using var stream2 = new MemoryStream();
-        //using var streamWriter = new StreamWriter(stream2, Encoding.UTF8);
-        //streamWriter.Write(s);
-        //streamWriter.Flush();
-        //stream2.Position = 0;
-        //json = JsonObjectNode.Parse(stream2);
-        //Assert.IsNotNull(json);
-        //Assert.IsTrue(json.ContainsKey("host"));
-        //json = JsonObjectNode.Parse(stream2);
-        //Assert.IsNotNull(json);
-        //Assert.AreEqual("jsonl", json.GetValue<string>("test"));
+        var bytes = "null {}\n{ \"test\": \"jsonl\", \"num\": 6789 } 3.14 \r\n [0,2,5,false,true]"u8;
+        var jsonl = JsonArrayNode.Parse(bytes);
+#if NET9_0_OR_GREATER || NET462_OR_GREATER
+        Assert.AreEqual(5, jsonl.Count);
+        Assert.AreEqual(JsonValueKind.Null, jsonl[0].ValueKind);
+        Assert.AreEqual(3.14, jsonl[3].As<double>());
+        Assert.AreEqual(0, (jsonl[1] as JsonObjectNode).Count);
+        json = jsonl[2] as JsonObjectNode;
+        Assert.IsTrue(json.ContainsKey("test"));
+        Assert.AreEqual(6789, json.TryGetInt32Value("num"));
+#else
+        Assert.IsNull(jsonl);
+#endif
     }
 
     /// <summary>

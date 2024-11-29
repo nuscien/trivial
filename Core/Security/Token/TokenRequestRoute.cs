@@ -351,6 +351,41 @@ public static class TokenInfoExtensions
     }
 
     /// <summary>
+    /// Creates a JSON web token instance.
+    /// </summary>
+    /// <typeparam name="T">The type of payload.</typeparam>
+    /// <param name="header">The customized header; or null, to generate automatically by default policy.</param>
+    /// <param name="payload">The payload of JSON web token.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>An instance of the JSON web token.</returns>
+    public static JsonWebToken<T> CreateJsonWebToken<T>(JsonWebTokenHeader header, T payload, ISignatureProvider sign)
+        => new(header, payload, sign);
+
+    /// <summary>
+    /// Creates a JSON web token instance.
+    /// </summary>
+    /// <typeparam name="T">The type of payload.</typeparam>
+    /// <param name="payload">The payload of JSON web token.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>An instance of the JSON web token.</returns>
+    public static JsonWebToken<T> CreateJsonWebToken<T>(T payload, ISignatureProvider sign)
+        => new(payload, sign);
+
+    /// <summary>
+    /// Creates a JSON web token instance.
+    /// </summary>
+    /// <param name="payload">The payload of JSON web token.</param>
+    /// <param name="fill">The handler to fill additional properties or update current ones to payload.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>An instance of the JSON web token.</returns>
+    public static JsonWebToken<JsonObjectNode> CreateJsonWebToken(JsonWebTokenPayload payload, Action<JsonObjectNode> fill, ISignatureProvider sign)
+    {
+        var obj = JsonObjectNode.ConvertFrom(payload) ?? new();
+        fill?.Invoke(obj);
+        return new(obj, sign);
+    }
+
+    /// <summary>
     /// Processes a token request handler into a route.
     /// </summary>
     /// <typeparam name="TUser">The type of entity.</typeparam>

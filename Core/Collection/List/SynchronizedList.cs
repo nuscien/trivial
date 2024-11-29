@@ -27,8 +27,8 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// </summary>
     public SynchronizedList()
     {
-        slim = new ReaderWriterLockSlim();
-        list = new List<T>();
+        slim = new();
+        list = new();
     }
 
     /// <summary>
@@ -40,21 +40,21 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
         slim = new ReaderWriterLockSlim();
         if (collection is null)
         {
-            list = new List<T>();
+            list = new();
             return;
         }
 
         try
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (NullReferenceException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (InvalidOperationException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
     }
 
@@ -69,7 +69,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
         slim = new ReaderWriterLockSlim(recursionPolicy);
         if (collection is null)
         {
-            list = new List<T>();
+            list = new();
             return;
         }
 
@@ -89,15 +89,15 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
 
         try
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (NullReferenceException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (InvalidOperationException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
     }
 

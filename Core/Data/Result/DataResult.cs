@@ -18,6 +18,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using Trivial.Data;
+using Trivial.Reflection;
 using Trivial.Security;
 using Trivial.Text;
 
@@ -28,7 +30,7 @@ namespace Trivial.Data;
 /// </summary>
 [DataContract]
 [Guid("FFF9B1F6-12E5-44B1-BAC4-3CB9C78F02BF")]
-public class MessageResult
+public class MessageResult : BaseObservableProperties
 {
     /// <summary>
     /// Initializes a new instance of the MessageResult class.
@@ -54,7 +56,11 @@ public class MessageResult
     [JsonPropertyName("message")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The additional message for this operation. It could be an error message, a status description or a notice text. This can be null if no such information.")]
-    public string Message { get; set; }
+    public string Message 
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets or sets the tracking identifier which is used to mark a transaction of operation process..
@@ -63,11 +69,16 @@ public class MessageResult
     [JsonPropertyName("track")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("A tracking ID to mark the transaction of operation process.")]
-    public string TrackingId { get; set; }
+    public string TrackingId
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets or sets the additional optional tag.
     /// </summary>
+    /// <remarks>The property is used for caller information and is not under observable.</remarks>
     [JsonIgnore]
     public object Tag { get; set; }
 
@@ -124,7 +135,11 @@ public class DataResult<T> : MessageResult
     [DataMember(Name = "data")]
     [JsonPropertyName("data")]
     [Description("The data content of the result.")]
-    public T Data { get; set; }
+    public T Data
+    {
+        get => GetCurrentProperty<T>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets a value indicating whether the data is null.
@@ -136,7 +151,8 @@ public class DataResult<T> : MessageResult
     /// Gets the type of the data.
     /// </summary>
     /// <returns>The type of the data.</returns>
-    public Type GetDataType() => Data?.GetType() ?? typeof(T);
+    public Type GetDataType()
+        => Data?.GetType() ?? typeof(T);
 
     /// <summary>
     /// Serializes the data to JSON format string.
@@ -192,7 +208,11 @@ public class DataResult<TData, TInfo> : DataResult<TData>
     [JsonPropertyName("info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The additional information of the result.")]
-    public TInfo AdditionalInfo { get; set; }
+    public TInfo AdditionalInfo
+    {
+        get => GetCurrentProperty<TInfo>();
+        set => SetCurrentProperty(value);
+    }
 }
 
 /// <summary>
@@ -234,7 +254,11 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
     [DataMember(Name = "components")]
     [JsonPropertyName("components")]
     [Description("The components for reference.")]
-    public JsonObjectNode Components { get; set; }
+    public JsonObjectNode Components
+    {
+        get => GetCurrentProperty<JsonObjectNode>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets the value of the specific property.
@@ -391,396 +415,6 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
 /// <summary>
 /// The collection result.
 /// </summary>
-public interface ICollectionResult<T>
-{
-    /// <summary>
-    /// Gets the message.
-    /// It could be an error message, a status description or a notice text. This can be null if no such information.
-    /// </summary>
-    public string Message { get; }
-
-    /// <summary>
-    /// Gets the result collection.
-    /// </summary>
-    public IEnumerable<T> Data { get; }
-
-    /// <summary>
-    /// Gets the offset of the result; or null, if no such information.
-    /// </summary>
-    public int? Offset { get; }
-
-    /// <summary>
-    /// Gets the total count; or null, if no such information.
-    /// </summary>
-    public int? TotalCount { get; }
-}
-
-/// <summary>
-/// The collection result.
-/// </summary>
-[DataContract]
-[Guid("382B9940-024E-4493-B166-B49B6045AA38")]
-public class CollectionResult<T> : MessageResult, ICollectionResult<T>
-{
-    /// <summary>
-    /// Initializes a new instance of the CollectionResult class.
-    /// </summary>
-    public CollectionResult()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CollectionResult class.
-    /// </summary>
-    /// <param name="message">The message.</param>
-    public CollectionResult(string message)
-        : base(message)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CollectionResult class.
-    /// </summary>
-    /// <param name="col">The result collection.</param>
-    /// <param name="offset">The optional offset of the result.</param>
-    /// <param name="count">The optional total count.</param>
-    public CollectionResult(IEnumerable<T> col, int? offset = null, int? count = null)
-    {
-        if (col is not List<T> list) list = new(col);
-        Data = list;
-        Offset = offset;
-        TotalCount = count;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CollectionResult class.
-    /// </summary>
-    /// <param name="col">The result collection.</param>
-    /// <param name="message">The message.</param>
-    public CollectionResult(IEnumerable<T> col, string message)
-        : base(message)
-    {
-        if (col is not List<T> list) list = new(col);
-        Data = list;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the CollectionResult class.
-    /// </summary>
-    /// <param name="col">The result collection.</param>
-    /// <param name="offset">The optional offset of the result.</param>
-    /// <param name="message">The message.</param>
-    /// <param name="count">The optional total count.</param>
-    public CollectionResult(IEnumerable<T> col, int offset, string message, int? count = null)
-        : this(col, message)
-    {
-        Offset = offset;
-        TotalCount = count;
-    }
-
-    /// <summary>
-    /// Gets or sets the offset of the result; or null, if no such information.
-    /// </summary>
-    [DataMember(Name = "offset", EmitDefaultValue = false)]
-    [JsonPropertyName("offset")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The record offset of the result collection.")]
-    public int? Offset { get; set; }
-
-    /// <summary>
-    /// Gets or sets the total count; or null, if no such information.
-    /// </summary>
-    [DataMember(Name = "count", EmitDefaultValue = false)]
-    [JsonPropertyName("count")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The count of the result collection. It can be null if no such information.")]
-    public int? TotalCount { get; set; }
-
-    /// <summary>
-    /// Gets the count of current result.
-    /// </summary>
-    [JsonIgnore]
-    public virtual int CurrentCount => Data?.Count ?? 0;
-
-    /// <summary>
-    /// Gets or sets the result collection.
-    /// </summary>
-    [DataMember(Name = "col")]
-    [JsonPropertyName("col")]
-    [Description("The data collection of the result.")]
-    public List<T> Data { get; set; }
-
-    /// <summary>
-    /// Gets the result collection.
-    /// </summary>
-    IEnumerable<T> ICollectionResult<T>.Data => Data;
-
-    /// <summary>
-    /// Gets or sets the additional info.
-    /// </summary>
-    [DataMember(Name = "info")]
-    [JsonPropertyName("info")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The additional information of the result.")]
-    public JsonObjectNode AdditionalInfo { get; set; }
-
-    /// <summary>
-    /// Tries to get the specific one.
-    /// </summary>
-    /// <param name="index">The index.</param>
-    /// <param name="startFromOffset">true if the index is based on offset; otherwise, false.</param>
-    /// <returns>The item.</returns>
-    public T TryGetValue(int index, bool startFromOffset = false)
-        => TryGetValue(index, startFromOffset, out var result) ? result : default;
-
-    /// <summary>
-    /// Tries to get the specific one.
-    /// </summary>
-    /// <param name="index">The index.</param>
-    /// <param name="startFromOffset">true if the index is based on offset; otherwise, false.</param>
-    /// <param name="result">The item to get.</param>
-    /// <returns>true if has; otherwise, false.</returns>
-    public bool TryGetValue(int index, bool startFromOffset, out T result)
-    {
-        if (startFromOffset)
-        {
-            try
-            {
-                if (Offset.HasValue) index -= Offset.Value;
-            }
-            catch (NullReferenceException)
-            {
-            }
-        }
-
-        var col = Data;
-        if (index < 0 || col == null)
-        {
-            result = default;
-            return false;
-        }
-
-        try
-        {
-            if (index < col.Count)
-            {
-                result = col[index];
-                return true;
-            }
-        }
-        catch (ArgumentException)
-        {
-        }
-        catch (NullReferenceException)
-        {
-        }
-
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the specific one.
-    /// </summary>
-    /// <param name="index">The index.</param>
-    /// <param name="result">The item to get.</param>
-    /// <returns>true if has; otherwise, false.</returns>
-    public bool TryGetValue(int index, out T result)
-        => TryGetValue(index, false, out result);
-
-    /// <summary>
-    /// Returns the first element of the sequence that satisfies a condition or a default value if no such element is found.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>default(T) if source is empty or if no element passes the test specified by predicate; otherwise, the first element in source that passes the test specified by predicate.</returns>
-    public T FirstOrDefault(Func<T, bool> predicate)
-    {
-        var col = Data;
-        if (col == null) return default;
-        return predicate != null ? col.FirstOrDefault(predicate) : col.FirstOrDefault();
-    }
-
-    /// <summary>
-    /// Returns the last element of the sequence that satisfies a condition or a default value if no such element is found.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>default(T) if source is empty or if no element passes the test specified by predicate; otherwise, the last element in source that passes the test specified by predicate.</returns>
-    public T LastOrDefault(Func<T, bool> predicate)
-    {
-        var col = Data;
-        if (col == null) return default;
-        return predicate != null ? col.LastOrDefault(predicate) : col.LastOrDefault();
-    }
-
-    /// <summary>
-    /// Filters a sequence of values based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>An collection that contains elements from the input sequence that satisfy the condition.</returns>
-    public IEnumerable<T> Where(Func<T, bool> predicate)
-    {
-        var col = Data;
-        if (col == null) return new List<T>();
-        return col.Where(predicate);
-    }
-
-    /// <summary>
-    /// Filters a sequence of values based on a predicate.
-    /// </summary>
-    /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>An collection that contains elements from the input sequence that satisfy the condition.</returns>
-    public IEnumerable<T> Where(Func<T, int, bool> predicate)
-    {
-        var col = Data;
-        if (col == null) return new List<T>();
-        return col.Where(predicate);
-    }
-}
-
-/// <summary>
-/// The data result.
-/// </summary>
-[DataContract]
-[Guid("B1B2F7C1-F8D1-4A69-9E5A-543C2FCB75A5")]
-public class JsonCollectionResult : CollectionResult<JsonObjectNode>
-{
-    /// <summary>
-    /// Initializes a new instance of the JsonCollectionResult class.
-    /// </summary>
-    public JsonCollectionResult()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonCollectionResult class.
-    /// </summary>
-    /// <param name="data">The data.</param>
-    public JsonCollectionResult(IEnumerable<JsonObjectNode> data)
-        : base(data)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonCollectionResult class.
-    /// </summary>
-    /// <param name="col">The result collection.</param>
-    /// <param name="offset">The optional offset of the result.</param>
-    /// <param name="count">The optional total count.</param>
-    public JsonCollectionResult(IEnumerable<JsonObjectNode> col, int? offset = null, int? count = null)
-        : base(col, offset, count)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonCollectionResult class.
-    /// </summary>
-    /// <param name="data">The data.</param>
-    /// <param name="message">The message.</param>
-    public JsonCollectionResult(IEnumerable<JsonObjectNode> data, string message)
-        : base(data, message)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonCollectionResult class.
-    /// </summary>
-    /// <param name="col">The result collection.</param>
-    /// <param name="offset">The optional offset of the result.</param>
-    /// <param name="message">The message.</param>
-    /// <param name="count">The optional total count.</param>
-    public JsonCollectionResult(IEnumerable<JsonObjectNode> col, int offset, string message, int? count = null)
-        : base(col, offset, message, count)
-    {
-    }
-
-    /// <summary>
-    /// Gets or sets the components.
-    /// </summary>
-    [DataMember(Name = "components")]
-    [JsonPropertyName("components")]
-    [Description("The components for reference.")]
-    public JsonObjectNode Components { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating whether the data is null.
-    /// </summary>
-    [JsonIgnore]
-    public bool IsNull => Data is null;
-
-    /// <summary>
-    /// Tries to get the value of the specific index and sub-property.
-    /// </summary>
-    /// <param name="index">The index.</param>
-    /// <param name="subKey">The sub-key of the previous property.</param>
-    /// <param name="keyPath">The additional property key path.</param>
-    /// <returns>The value.</returns>
-    public BaseJsonValueNode TryGetValue(int index, string subKey, params string[] keyPath)
-    {
-        var v = TryGetValue(index);
-        if (v is null) return null;
-        var path = new List<string>
-        {
-            subKey
-        };
-        path.AddRange(keyPath);
-        return v.TryGetValue(path);
-    }
-
-    /// <summary>
-    /// Gets schema.
-    /// </summary>
-    /// <param name="key">The schema key.</param>
-    /// <returns>The schema information.</returns>
-    public JsonObjectNode GetSchema(string key)
-        => string.IsNullOrWhiteSpace(key) ? null : GetComponent("schemas")?.TryGetObjectValue(key);
-
-    /// <summary>
-    /// Gets reference object.
-    /// </summary>
-    /// <param name="type">The type or group key of the resource.</param>
-    /// <param name="id">The identifier of the object.</param>
-    /// <returns>The reference object.</returns>
-    public JsonObjectNode GetReferenceObject(string type, string id)
-    {
-        if (string.IsNullOrWhiteSpace(id)) return null;
-        var components = GetComponents();
-        if (components == null) return null;
-        var valueKind = components.GetValueKind(type);
-        var json = valueKind switch
-        {
-            JsonValueKind.Object => components.TryGetObjectValue(type)?.TryGetObjectValue(id),
-            JsonValueKind.Array => components.TryGetArrayValue(type)?.TryGetObjectValueById(id),
-            _ => null,
-        };
-        if (json == null) return null;
-        var refPath = json.TryGetStringValue("$ref");
-        if (refPath == null) return json;
-        return JsonObjectNode.TryGetRefObjectValue(null, json, ToJson());
-    }
-
-    internal JsonObjectNode GetComponents()
-        => Components;
-
-    internal JsonObjectNode GetComponent(string key)
-    {
-        var dict = GetComponents();
-        return string.IsNullOrWhiteSpace(key) ? dict : dict?.TryGetObjectValue(key);
-    }
-
-    internal JsonObjectNode ToJson()
-        => new()
-        {
-            { "track", TrackingId },
-            { "message", Message },
-            { "data", Data },
-            { "info", AdditionalInfo },
-            { "components", Components }
-        };
-}
-
-/// <summary>
-/// The collection result.
-/// </summary>
 [DataContract]
 [Guid("ED51EAB1-B281-46EF-9AFD-7B4E75EF9F4D")]
 public class ErrorMessageResult : MessageResult
@@ -861,7 +495,11 @@ public class ErrorMessageResult : MessageResult
     [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The error code.")]
-    public string ErrorCode { get; set; }
+    public string ErrorCode
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets or sets the URL of help link.
@@ -870,7 +508,11 @@ public class ErrorMessageResult : MessageResult
     [JsonPropertyName("link")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The help link URL for the error details.")]
-    public string LinkUrl { get; set; }
+    public string LinkUrl
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets or sets the offset of the result.
@@ -879,7 +521,11 @@ public class ErrorMessageResult : MessageResult
     [JsonPropertyName("details")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The error details.")]
-    public List<string> Details { get; set; }
+    public List<string> Details
+    {
+        get => GetCurrentProperty<List<string>>();
+        set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Gets or sets the additional info.
@@ -888,5 +534,9 @@ public class ErrorMessageResult : MessageResult
     [JsonPropertyName("info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The additional information of the result.")]
-    public JsonObjectNode AdditionalInfo { get; set; }
+    public JsonObjectNode AdditionalInfo
+    {
+        get => GetCurrentProperty<JsonObjectNode>();
+        set => SetCurrentProperty(value);
+    }
 }

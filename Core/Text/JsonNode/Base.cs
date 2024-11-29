@@ -25,6 +25,7 @@ namespace Trivial.Text;
 /// <summary>
 /// The JSON value node base.
 /// </summary>
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ValueConverter))]
 public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueNode>, IConvertible
 {
     /// <summary>
@@ -173,6 +174,12 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             throw new InvalidOperationException(ex.Message, ex);
         }
     }
+
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public abstract void WriteTo(Utf8JsonWriter writer);
 
     /// <summary>
     /// Converts to a specific type.

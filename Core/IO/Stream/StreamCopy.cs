@@ -210,7 +210,7 @@ public static class StreamCopy
     public static IEnumerable<string> ReadLines(this Stream stream, Encoding encoding = null, bool removeEmptyLine = false)
     {
         if (stream == null || !stream.CanRead) yield break;
-        using var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding);
+        var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding);
         var lines = ReadLines(reader, removeEmptyLine);
         foreach (var line in lines)
         {
@@ -243,7 +243,7 @@ public static class StreamCopy
     public static async IAsyncEnumerable<string> ReadLinesAsync(this Stream stream, Encoding encoding = null, bool removeEmptyLine = false)
     {
         if (stream == null || !stream.CanRead) yield break;
-        using var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding);
+        var reader = encoding == null ? new StreamReader(stream) : new StreamReader(stream, encoding);
         var lines = ReadLinesAsync(reader, removeEmptyLine);
         await foreach (var line in lines)
         {

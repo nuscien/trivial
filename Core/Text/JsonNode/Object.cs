@@ -31,8 +31,8 @@ namespace Trivial.Text;
 /// Represents a specific JSON object.
 /// </summary>
 [Serializable]
-[JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, IJsonValueNode>, IDictionary<string, BaseJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
+[JsonConverter(typeof(JsonValueNodeConverter.ObjectConverter))]
+public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
 #if NET8_0_OR_GREATER
     , IParsable<JsonObjectNode>
 #endif
@@ -4158,6 +4158,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
+    /// <param name="removeIfNull">true if remove the property if value is null; otherwise, false, to set null value.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, int? value, bool removeIfNull)
+    {
+        AssertKey(key);
+        if (value.HasValue) SetProperty(key, new JsonIntegerNode(value.Value));
+        else if (removeIfNull) RemoveProperty(key);
+        else SetProperty(key, JsonValues.Null);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
@@ -4230,6 +4246,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
+    /// <param name="removeIfNull">true if remove the property if value is null; otherwise, false, to set null value.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, long? value, bool removeIfNull)
+    {
+        AssertKey(key);
+        if (value.HasValue) SetProperty(key, new JsonIntegerNode(value.Value));
+        else if (removeIfNull) RemoveProperty(key);
+        else SetProperty(key, JsonValues.Null);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
@@ -4270,6 +4302,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
+    /// <param name="removeIfNull">true if remove the property if value is null; otherwise, false, to set null value.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, float? value, bool removeIfNull)
+    {
+        AssertKey(key);
+        if (value.HasValue && !float.IsNaN(value.Value)) SetProperty(key, new JsonDoubleNode(value.Value));
+        else if (removeIfNull) RemoveProperty(key);
+        else SetProperty(key, JsonValues.Null);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, float? value)
@@ -4295,6 +4343,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
+    /// <param name="removeIfNull">true if remove the property if value is null; otherwise, false, to set null value.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, double? value, bool removeIfNull)
+    {
+        AssertKey(key);
+        if (value.HasValue && !double.IsNaN(value.Value)) SetProperty(key, new JsonDoubleNode(value.Value));
+        else if (removeIfNull) RemoveProperty(key);
+        else SetProperty(key, JsonValues.Null);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, double? value)
@@ -4313,6 +4377,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
         AssertKey(key);
         SetProperty(key, new JsonDecimalNode(value));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="removeIfNull">true if remove the property if value is null; otherwise, false, to set null value.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, decimal? value, bool removeIfNull)
+    {
+        AssertKey(key);
+        if (value.HasValue) SetProperty(key, new JsonDecimalNode(value.Value));
+        else if (removeIfNull) RemoveProperty(key);
+        else SetProperty(key, JsonValues.Null);
     }
 
     /// <summary>
@@ -7780,7 +7860,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Writes this instance to the specified writer as a JSON value.
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
-    public void WriteTo(Utf8JsonWriter writer)
+    public override void WriteTo(Utf8JsonWriter writer)
     {
         if (writer == null) return;
         writer.WriteStartObject();

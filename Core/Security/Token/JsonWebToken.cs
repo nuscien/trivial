@@ -130,9 +130,7 @@ public class JsonWebToken<T>
         /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
         /// <returns>true if valid; otherwise, false.</returns>
         public bool IsSameSignatureAlgorithmName(ISignatureProvider algorithm, bool caseSensitive = false)
-        {
-            return IsSameSignatureAlgorithmName(algorithm?.Name, caseSensitive);
-        }
+            => IsSameSignatureAlgorithmName(algorithm?.Name, caseSensitive);
 
         /// <summary>
         /// Verifies the JSON web token.
@@ -462,6 +460,22 @@ public class JsonWebToken<T>
         {
             AlgorithmName = sign.Name
         } : JsonWebTokenHeader.NoAlgorithm;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JwtModel class.
+    /// </summary>
+    /// <param name="header">The header.</param>
+    /// <param name="payload">The payload.</param>
+    /// <param name="sign">The signature provider.</param>
+    internal JsonWebToken(JsonWebTokenHeader header, T payload, ISignatureProvider sign)
+    {
+        Payload = payload;
+        signature = sign;
+        this.header = header ?? (sign != null ? new JsonWebTokenHeader
+        {
+            AlgorithmName = sign.Name
+        } : JsonWebTokenHeader.NoAlgorithm);
     }
 
     /// <summary>

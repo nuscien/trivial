@@ -254,6 +254,30 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     public abstract System.Text.Json.Nodes.JsonValue ToJsonValue();
 
     /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+    {
+        if (writer is null) return;
+        var type = typeof(T);
+        if (Value is null) writer.WriteNullValue();
+        else if (type == typeof(string)) writer.WriteStringValue((string)(object)Value);
+        else if (type == typeof(long)) writer.WriteNumberValue((long)(object)Value);
+        else if (type == typeof(double)) writer.WriteNumberValue((double)(object)Value);
+        else if (type == typeof(decimal)) writer.WriteNumberValue((decimal)(object)Value);
+        else if (type == typeof(bool)) writer.WriteBooleanValue((bool)(object)Value);
+        else if (type == typeof(int)) writer.WriteNumberValue((int)(object)Value);
+        else if (type == typeof(float)) writer.WriteNumberValue((float)(object)Value);
+        else if (type == typeof(short)) writer.WriteNumberValue((short)(object)Value);
+        else if (type == typeof(DateTime)) writer.WriteStringValue((DateTime)(object)Value);
+        else if (type == typeof(DateTimeOffset)) writer.WriteStringValue((DateTimeOffset)(object)Value);
+        else if (type == typeof(Guid)) writer.WriteStringValue((Guid)(object)Value);
+        else if (type == typeof(Uri)) writer.WriteStringValue(((Uri)(object)Value).OriginalString);
+        else writer.WriteStringValue(Value.ToString());
+    }
+
+    /// <summary>
     /// Converts to JSON node.
     /// </summary>
     /// <param name="json">The JSON value.</param>
@@ -326,6 +350,13 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <returns>A hash code for the current instance.</returns>
     public override int GetHashCode() => ValueKind.GetHashCode();
+
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+        => writer?.WriteNullValue();
 
     /// <summary>
     /// Tries to get the value of the element as a boolean.

@@ -97,15 +97,15 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
 
         try
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (NullReferenceException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
         catch (InvalidOperationException)
         {
-            list = new List<T>(collection);
+            list = new(collection);
         }
     }
 

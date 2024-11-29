@@ -448,7 +448,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Processes.
     /// </summary>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CancellationToken cancellationToken = default)
     {
         CommandArguments a = null;
@@ -478,7 +478,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(string args, CancellationToken cancellationToken = default)
         => ProcessAsync(new CommandArguments(args), null, cancellationToken);
 
@@ -487,7 +487,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(string[] args, CancellationToken cancellationToken = default)
         => ProcessAsync(new CommandArguments(args), null, cancellationToken);
 
@@ -496,7 +496,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CommandArguments args, CancellationToken cancellationToken = default)
         => ProcessAsync(args, null, cancellationToken);
 

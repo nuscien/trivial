@@ -32,8 +32,8 @@ namespace Trivial.Text;
 /// Represents a specific JSON array.
 /// </summary>
 [Serializable]
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<IJsonValueNode>, IReadOnlyList<BaseJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ArrayConverter))]
+public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
 #if NET8_0_OR_GREATER
     , IParsable<JsonArrayNode>, IAdditionOperators<JsonArrayNode, JsonArrayNode, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<BaseJsonValueNode>, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<IJsonValueNode>, JsonArrayNode>
 #endif
@@ -1684,7 +1684,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         foreach (var item in store)
         {
             if (item is not JsonObjectNode json) continue;
-            if (json.Id?.Trim() != id && json.TryGetStringTrimmedValue("id") != id) continue;
+            if (json.TryGetId(out _) != id) continue;
             result = json;
             return true;
         }
@@ -3937,7 +3937,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Writes this instance to the specified writer as a JSON value.
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
-    public void WriteTo(Utf8JsonWriter writer)
+    public override void WriteTo(Utf8JsonWriter writer)
     {
         if (writer == null) return;
         writer.WriteStartArray();
@@ -5397,6 +5397,44 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static JsonArrayNode Parse(Stream utf8Json, JsonDocumentOptions options = default)
         => JsonDocument.Parse(utf8Json, options);
+
+    /// <summary>
+    /// Parses JSON list.
+    /// </summary>
+    /// <param name="utf8Json">The UTF-8 encoded JSON text to process.</param>
+    /// <returns>The list of JSON node instance.</returns>
+    public static JsonArrayNode Parse(ReadOnlySpan<byte> utf8Json)
+    {
+#if NET9_0_OR_GREATER || NET462_OR_GREATER
+        var reader = new Utf8JsonReader(utf8Json, new()
+        {
+            AllowMultipleValues = true,
+            CommentHandling = JsonCommentHandling.Skip
+        });
+        var arr = new JsonArrayNode();
+        var firstCheck = true;
+        while (reader.Read())
+        {
+            if (firstCheck)
+            {
+                if (reader.TokenType == JsonTokenType.StartArray)
+                    return JsonValues.Parse(ref reader, true) as JsonArrayNode;
+                firstCheck = false;
+            }
+
+            var item = JsonValues.Parse(ref reader, true);
+            arr.store.Add(item);
+        }
+
+        return arr;
+#else
+        var reader = new Utf8JsonReader(utf8Json, new()
+        {
+            CommentHandling = JsonCommentHandling.Skip
+        });
+        return JsonValues.Parse(ref reader, false) as JsonArrayNode;
+#endif
+    }
 
 #if NET8_0_OR_GREATER
     static JsonArrayNode IParsable<JsonArrayNode>.Parse(string s, IFormatProvider provider)

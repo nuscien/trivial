@@ -17,7 +17,7 @@ namespace Trivial.Text;
 /// <summary>
 /// Represents a specific JSON string value.
 /// </summary>
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.StringConverter))]
 public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IEquatable<char>, IReadOnlyList<char>
 #if NET8_0_OR_GREATER
     , IAdditionOperators<JsonStringNode, IJsonValueNode<string>, JsonStringNode>, IAdditionOperators<JsonStringNode, string, JsonStringNode>

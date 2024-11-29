@@ -245,17 +245,15 @@ public abstract class ObservableTask<T>
     /// <summary>
     /// Processes or waits.
     /// </summary>
-    /// <returns>The processing task instance.</returns>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessOrWaitAsync()
-    {
-        return ProcessOrWaitAsync(CancellationToken.None);
-    }
+        => ProcessOrWaitAsync(CancellationToken.None);
 
     /// <summary>
     /// Processes or waits.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token for current waiting.</param>
-    /// <returns>The processing task instance.</returns>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
     public async Task ProcessOrWaitAsync(CancellationToken cancellationToken)
     {
         var canWork = false;

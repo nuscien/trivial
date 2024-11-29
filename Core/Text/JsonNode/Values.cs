@@ -18,6 +18,7 @@ using Trivial.Data;
 using Trivial.Reflection;
 using Trivial.Tasks;
 using Trivial.Web;
+using System.Buffers;
 
 namespace Trivial.Text;
 
@@ -52,6 +53,63 @@ public static class JsonValues
     /// JSON undefined.
     /// </summary>
     public static readonly BaseJsonValueNode Undefined = new JsonNullNode(JsonValueKind.Undefined);
+
+    /// <summary>
+    /// Parses JSON.
+    /// </summary>
+    /// <param name="reader">The UTF-8 JSON reader.</param>
+    /// <returns>The JSON node instance.</returns>
+    public static BaseJsonValueNode Parse(ref Utf8JsonReader reader)
+        => Parse(ref reader, false);
+
+    /// <summary>
+    /// Parses JSON.
+    /// </summary>
+    /// <param name="reader">The UTF-8 JSON reader.</param>
+    /// <param name="hasRead">true if do not read next but parse directly; otherwise, false.</param>
+    /// <returns>The JSON node instance.</returns>
+    internal static BaseJsonValueNode Parse(ref Utf8JsonReader reader, bool hasRead)
+    {
+        if (!hasRead && !reader.Read()) return null;
+        SkipComments(ref reader);
+        return reader.TokenType switch
+        {
+            JsonTokenType.Null => Null,
+            JsonTokenType.StartObject => new JsonObjectNode(ref reader),
+            JsonTokenType.StartArray => JsonArrayNode.ParseValue(ref reader),
+            JsonTokenType.String => new JsonStringNode(reader.GetString()),
+            JsonTokenType.Number => reader.TryGetInt64(out var int64v) ? new JsonIntegerNode(int64v) : new JsonDoubleNode(reader.GetDouble()),
+            JsonTokenType.True => JsonBooleanNode.True,
+            JsonTokenType.False => JsonBooleanNode.False,
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// Parses JSON.
+    /// </summary>
+    /// <param name="json">The UTF-8 encoded JSON text to process.</param>
+    /// <param name="options">Options that define customized behavior of the UTF-8 JSON reader that differs from the JSON RFC (for example, how to handle comments or maximum depth allowed when reading). By default, the reader follows the JSON RFC strictly; comments within the JSON are invalid, and the maximum depth is 64.</param>
+    /// <returns>The JSON node instance.</returns>
+    public static BaseJsonValueNode Parse(ReadOnlySpan<byte> json, JsonReaderOptions options)
+    {
+        var reader = new Utf8JsonReader(json, options);
+        if (!reader.Read()) return null;
+        return Parse(ref reader);
+    }
+
+    /// <summary>
+    /// Parses JSON.
+    /// </summary>
+    /// <param name="json">The UTF-8 encoded JSON text to process.</param>
+    /// <param name="options">Options that define customized behavior of the UTF-8 JSON reader that differs from the JSON RFC (for example, how to handle comments or maximum depth allowed when reading). By default, the reader follows the JSON RFC strictly; comments within the JSON are invalid, and the maximum depth is 64.</param>
+    /// <returns>The JSON node instance.</returns>
+    public static BaseJsonValueNode Parse(ReadOnlySequence<byte> json, JsonReaderOptions options)
+    {
+        var reader = new Utf8JsonReader(json, options);
+        if (!reader.Read()) return null;
+        return Parse(ref reader);
+    }
 
     /// <summary>
     /// Converts from JSON document.

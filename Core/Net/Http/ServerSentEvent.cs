@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Data;
 using Trivial.IO;
 using Trivial.Reflection;
 using Trivial.Text;
@@ -360,7 +361,7 @@ public class ServerSentEventInfo
         }
     }
 
-    private void AppendProperty(StringBuilder sb, string key, string value, bool newLineN)
+    private static void AppendProperty(StringBuilder sb, string key, string value, bool newLineN)
     {
         if (string.IsNullOrWhiteSpace(value)) return;
         var lines = value.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -402,11 +403,11 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="stream">The input stream.</param>
-    /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <param name="encoding">The optional encoding; default is UTF-8.</param>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
     /// <exception cref="ObjectDisposedException">The stream was closed.</exception>
@@ -417,10 +418,10 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="reader">The input stream.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     /// <exception cref="NotSupportedException">Cannot write the information to the stream writer.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
     /// <exception cref="ObjectDisposedException">The stream writer was closed.</exception>
@@ -431,10 +432,10 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="s">The input string.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     public static IEnumerable<ServerSentEventInfo> Parse(string s)
     {
         if (string.IsNullOrEmpty(s)) Parse(null as IEnumerable<string>);
@@ -444,10 +445,10 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="lines">The input lines.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     public static IEnumerable<ServerSentEventInfo> Parse(IEnumerable<string> lines)
     {
         if (lines == null) yield break;
@@ -491,7 +492,12 @@ public class ServerSentEventInfo
             if (keyIndex + 1 == line.Length) continue;
             record ??= new();
             var l = line.Substring(keyIndex + 1);
-            if (l.Length > 1 && l.FirstOrDefault() == ' ') l = l.Substring(1);
+            if (l.Length > 0)
+            {
+                var firstChar = l.First();
+                if (firstChar == ' ' || firstChar == '\t') l = l.Substring(1);
+            }
+
             if (keyIndex == 0)
             {
                 key = string.Empty;
@@ -509,10 +515,10 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="response">The HTTP response message.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
     /// <exception cref="ObjectDisposedException">The response was closed.</exception>
@@ -528,11 +534,11 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="request">The HTTP request message.</param>
     /// <param name="http">The HTTP client.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     /// <exception cref="InvalidOperationException">The request message was already sent by the HTTP client instance.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
@@ -548,11 +554,11 @@ public class ServerSentEventInfo
 
 #if NET6_0_OR_GREATER
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="response">The HTTP response message.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     public static IEnumerable<ServerSentEventInfo> Parse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         var resp = response?.Content?.ReadAsStream(cancellationToken);
@@ -561,11 +567,11 @@ public class ServerSentEventInfo
 #endif
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="stream">The input stream.</param>
-    /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <param name="encoding">The optional encoding; default is UTF-8.</param>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
     /// <exception cref="IOException">An I/O error occured.</exception>
     /// <exception cref="ObjectDisposedException">The stream was closed.</exception>
@@ -576,10 +582,10 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
-    /// Parses server-sent event record.
+    /// Parses Server-Sent Event record.
     /// </summary>
     /// <param name="lines">The input lines.</param>
-    /// <returns>A collection of server-sent event record.</returns>
+    /// <returns>A collection of Server-Sent Event record.</returns>
     public static async IAsyncEnumerable<ServerSentEventInfo> ParseAsync(IAsyncEnumerable<string> lines)
     {
         if (lines == null) yield break;

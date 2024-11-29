@@ -27,7 +27,7 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
 /// <summary>
 /// Represents a specific JSON integer number value.
 /// </summary>
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.IntegerConverter))]
 public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonIntegerNode>
 #if NET8_0_OR_GREATER
     , IParsable<JsonIntegerNode>, IUnaryNegationOperators<JsonIntegerNode, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, long, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, int, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, long, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, int, JsonIntegerNode>
@@ -1442,7 +1442,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
 /// <summary>
 /// Represents a specific JSON double float number value.
 /// </summary>
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.DoubleConverter))]
 public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDoubleNode>
 #if NET8_0_OR_GREATER
     , IParsable<JsonDoubleNode>, IUnaryNegationOperators<JsonDoubleNode, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, double, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, double, JsonDoubleNode>
@@ -2967,7 +2967,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
 /// <summary>
 /// Represents a specific JSON decimal float number value.
 /// </summary>
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.DecimalConverter))]
 public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDecimalNode>
 #if NET8_0_OR_GREATER
     , IParsable<JsonDecimalNode>, IUnaryNegationOperators<JsonDecimalNode, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, decimal, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, decimal, JsonDecimalNode>

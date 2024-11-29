@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 
 using Trivial.CommandLine;
@@ -1139,6 +1141,39 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public async static IAsyncEnumerable<JsonObjectNode> ToJsonObjectNodesAsync(this IAsyncEnumerable<ServerSentEventInfo> collection)
+    {
+        if (collection == null) yield break;
+        await foreach (var item in collection)
+        {
+            if (item == null) yield return null;
+            yield return (JsonObjectNode)item;
+        }
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public async static Task<JsonArrayNode> ToJsonArrayNodeAsync(this IAsyncEnumerable<ServerSentEventInfo> collection)
+    {
+        if (collection == null) return null;
+        var list = ToJsonObjectNodesAsync(collection);
+        var arr = new JsonArrayNode();
+        await foreach (var item in list)
+        {
+            arr.Add(item);
+        }
+
+        return arr;
+    }
+
+    /// <summary>
     /// Raises on the specific key.
     /// </summary>
     /// <param name="collection">The source collection.</param>
@@ -1175,6 +1210,46 @@ public static partial class ListExtensions
             yield return item;
         }
     }
+
+
+    /// <summary>
+    /// Raises on the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="eventName">The event name.</param>
+    /// <param name="callback">The callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public async static IAsyncEnumerable<ServerSentEventInfo> OnAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo> callback)
+    {
+        if (collection == null || callback == null) yield break;
+        await foreach (var item in collection)
+        {
+            if (item == null) continue;
+            if (item.EventName == eventName) callback(item);
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Raises on the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="eventName">The event name.</param>
+    /// <param name="callback">The callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public async static IAsyncEnumerable<ServerSentEventInfo> OnAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo, int> callback)
+    {
+        if (collection == null || callback == null) yield break;
+        var i = -1;
+        await foreach (var item in collection)
+        {
+            i++;
+            if (item == null) continue;
+            if (item.EventName == eventName) callback(item, i);
+            yield return item;
+        }
+    }
+
 
     internal static IEnumerable<TResult> Select<TItem, TResult>(IEnumerable<TItem> leftValue, IEnumerable<TItem> rightValue, TItem padding, Func<TItem, bool, TItem, bool, int, TResult> callback)
     {

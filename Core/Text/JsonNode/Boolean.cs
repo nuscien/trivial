@@ -12,7 +12,7 @@ namespace Trivial.Text;
 /// <summary>
 /// Represents a specific JSON boolean value.
 /// </summary>
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.BooleanConverter))]
 public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
 #if NET8_0_OR_GREATER
     , IParsable<JsonBooleanNode>
