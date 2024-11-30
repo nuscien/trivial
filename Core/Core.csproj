@@ -33,9 +33,7 @@
   <!--<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>-->
-  <ItemGroup>
-    <Content Include="Logo.ico" />
-  </ItemGroup>
+
   <ItemGroup>
     <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
   </ItemGroup>
