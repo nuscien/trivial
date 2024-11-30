@@ -275,6 +275,7 @@ public static partial class WebFormat
             "rtx" => Text.StringExtensions.RichTextMIME,
             "sgml" or "sgm" => "text/sgml",
             "vcf" => "text/x-vcard",
+            "jcf" => "text/x-jcard",
             "vtt" => "text/vtt",
             "diff" or "patch" => "text/x-diff",
             "323" => "text/h323",
@@ -378,6 +379,11 @@ public static partial class WebFormat
             "gz" => "application/gzip",
             "br" => "application/brotli",
             "tgz" or "tar.gz" => "application/tar+gzip",
+            "xz" or "txz" => "application/x-xz-compressed-tar",
+            "bz" or "tbz" => "application/x-bzip1-compressed-tar",
+            "bz2" or "tbz2" or "tb2" => "application/x-bzip2-compressed-tar",
+            "bz3" or "tbz3" => "application/x-bzip3-compressed-tar",
+            "bz4" or "tbz4" => "application/x-bzip4-compressed-tar",
             "z" => "application/x-compress",
 
             // Others
