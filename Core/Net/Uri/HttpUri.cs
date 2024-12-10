@@ -288,17 +288,13 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// </summary>
     /// <param name="uri">The instance to convert.</param>
     public static explicit operator Uri(HttpUri uri)
-    {
-        return uri?.ToUri();
-    }
+        => uri?.ToUri();
 
     /// <summary>
     /// Converts to a URI object.
     /// </summary>
     /// <param name="uri">The instance to convert.</param>
     public static implicit operator HttpUri(Uri uri)
-    {
-        return uri != null ? Parse(uri.ToString()) : null;
-    }
+        => uri != null ? Parse(uri.ToString()) : null;
 #pragma warning restore IDE0057
 }

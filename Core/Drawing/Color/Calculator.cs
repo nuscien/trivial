@@ -171,7 +171,7 @@ public static partial class ColorCalculator
     /// <param name="value">The source color value.</param>
     /// <returns>The color to reverse.</returns>
     public static Color Invert(Color value)
-        => Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
+        => Color.FromArgb(value.A, byte.MaxValue - value.R, byte.MaxValue - value.G, byte.MaxValue - value.B);
 
     /// <summary>
     /// Inverts RGB.
@@ -181,7 +181,7 @@ public static partial class ColorCalculator
     /// <returns>The color to reverse.</returns>
     public static Color Invert(Color value, double ratio)
     {
-        if (ratio >= 1) return Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
+        if (ratio >= 1) return Color.FromArgb(value.A, byte.MaxValue - value.R, byte.MaxValue - value.G, byte.MaxValue - value.B);
         if (ratio <= 0) return value;
         var a = 255 * ratio;
         var b = 1 - 2 * ratio;
@@ -199,7 +199,7 @@ public static partial class ColorCalculator
     /// <returns>The color to reverse.</returns>
     public static Color Invert(Color value, float ratio)
     {
-        if (ratio >= 1) return Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
+        if (ratio >= 1) return Color.FromArgb(value.A, byte.MaxValue - value.R, byte.MaxValue - value.G, byte.MaxValue - value.B);
         if (ratio <= 0) return value;
         var a = 255 * ratio;
         var b = 1 - 2 * ratio;

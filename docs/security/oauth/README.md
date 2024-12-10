@@ -47,11 +47,12 @@ var sign = HashSignatureProvider.CreateHS512("a secret string");
 var model = new JsonWebTokenPayload
 {
     Id = Guid.NewGuid().ToString("n"),
+    Subject = "user-or-other-subject-id",
     Issuer = "example"
 };
 
 // Create a JWT instance
-// by plusing a JsonwWebTokenPayload (or a JsonObjectNode)
+// by plusing a JsonWebTokenPayload (or a JsonObjectNode)
 // and the signature provider instance.
 var jwt = model + sign;
 
@@ -105,14 +106,10 @@ In server side, you can use or inherit class `TokenRequestRoute<T>` to parse and
 ```csharp
 // Create a route and register the handlers.
 var route = new TokenRequestRoute<UserInfo>();
-route.Register(async (PasswordTokenRequestBody req) =>
-{
-    return await UserManager.LoginByPasswordAsync(req.UserName, req.Password);
-});
-route.Register(async (RefreshTokenRequestBody req) =>
-{
-    return await UserManager.LoginByRefreshTokenAsync(req.RefreshToken);
-});
+route.Register((PasswordTokenRequestBody req, CancellationToken cancellationToken)
+    => UserManager.LoginByPasswordAsync(req.UserName, req.Password));
+route.Register((RefreshTokenRequestBody req, CancellationToken cancellationToken)
+    => UserManager.LoginByRefreshTokenAsync(req.RefreshToken));
 
 // Then you can handle following login request.
 var resp = await route.SignInAsync(tokenReq);

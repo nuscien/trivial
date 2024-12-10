@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
@@ -295,7 +295,7 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
@@ -588,7 +588,7 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
@@ -886,7 +886,7 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
@@ -1045,7 +1045,7 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
@@ -1209,7 +1209,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
@@ -1378,7 +1378,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
 /// <typeparam name="T2">The type of action handler argument 2.</typeparam>

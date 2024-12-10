@@ -870,6 +870,14 @@ public static class StringExtensions
         return new string(list.ToArray());
     }
 
+    internal static string ToString(ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        if (start == 0 && count == null)
+            return value.ToString();
+        var list = count.HasValue ? value.Slice(start, count.Value) : value.Slice(start);
+        return list.ToString();
+    }
+
     internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
     {
         if (value != null)

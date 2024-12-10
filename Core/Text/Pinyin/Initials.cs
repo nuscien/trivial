@@ -14,6 +14,10 @@ namespace Trivial.Text;
 /// <summary>
 /// The Pinyin initials.
 /// </summary>
+/// <remarks>
+/// ㄅㄆㄇㄈ ㄉㄊㄋㄌ ㄍㄎㄏ ㄐㄑㄒ
+/// ㄓㄔㄕ ㄖ ㄗㄘㄙ 丨ㄨ
+/// </remarks>
 public enum PinyinInitials : byte
 {
     /// <summary>
@@ -122,12 +126,14 @@ public enum PinyinInitials : byte
     S = 21,
 
     /// <summary>
-    /// Initial Y (丨 y). This is not a standard initial.
+    /// Initial Y (丨 y).
+    /// This is not a standard initial.
     /// </summary>
     Y = 22,
 
     /// <summary>
-    /// Initial W (ㄨ w). This is not a standard initial.
+    /// Initial W (ㄨ w).
+    /// This is not a standard initial.
     /// </summary>
     W = 23
 }

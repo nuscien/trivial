@@ -129,6 +129,13 @@ public class ColorUnitTest
         Assert.AreEqual(50, color.R);
         Assert.AreEqual(50, color.G);
         Assert.AreEqual(50, color.B);
+
+        var colors = CreateArray(10);
+        colors = ColorCalculator.Opacity(colors, 12).ToArray();
+        for (var i = 0; i < colors.Length; i++)
+        {
+            Assert.IsTrue(colors[i].A <= 12);
+        }
     }
 
     private static Color[] CreateArray(int count)

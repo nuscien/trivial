@@ -211,6 +211,15 @@ public struct Latitude : IEquatable<Latitude>
         }
 
         /// <summary>
+        /// Gets the geolocation.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <returns>The geolocation.</returns>
+        public static Geolocation.Model operator &(Model latitude, Longitude.Model longitude)
+            => new(latitude, longitude);
+
+        /// <summary>
         /// Converts a latitude to its model.
         /// </summary>
         /// <param name="value">The instance.</param>
@@ -419,6 +428,15 @@ public struct Latitude : IEquatable<Latitude>
         if (value is null) return new Latitude();
         return new Latitude(value.Degrees);
     }
+
+    /// <summary>
+    /// Gets the geolocation.
+    /// </summary>
+    /// <param name="latitude">The latitude.</param>
+    /// <param name="longitude">The longitude.</param>
+    /// <returns>The geolocation.</returns>
+    public static Geolocation operator &(Latitude latitude, Longitude longitude)
+        => new(latitude, longitude);
 
     private static double GetDegrees(Latitudes type, double degrees)
     {
@@ -670,6 +688,15 @@ public struct Longitude : IEquatable<Longitude>
             if (ReferenceEquals(leftValue, rightValue)) return false;
             return leftValue is null || !leftValue.Equals(rightValue);
         }
+
+        /// <summary>
+        /// Gets the geolocation.
+        /// </summary>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="latitude">The latitude.</param>
+        /// <returns>The geolocation.</returns>
+        public static Geolocation.Model operator &(Model longitude, Latitude.Model latitude)
+            => new(latitude, longitude);
 
         /// <summary>
         /// Converts a longitude to its model.
@@ -936,6 +963,15 @@ public struct Longitude : IEquatable<Longitude>
         if (value is null) return new Longitude();
         return new Longitude(value.Degrees);
     }
+
+    /// <summary>
+    /// Gets the geolocation.
+    /// </summary>
+    /// <param name="longitude">The longitude.</param>
+    /// <param name="latitude">The latitude.</param>
+    /// <returns>The geolocation.</returns>
+    public static Geolocation operator &(Longitude longitude, Latitude latitude)
+        => new(latitude, longitude);
 
     private static double GetDegrees(Longitudes type, double degrees)
     {

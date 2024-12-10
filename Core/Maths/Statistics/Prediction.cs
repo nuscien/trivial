@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Collection;
 
 namespace Trivial.Maths;
 
@@ -18,7 +19,7 @@ public static partial class StatisticalMethod
     /// <returns>The data set predicted.</returns>
     public static IEnumerable<string> NaiveBayes(IEnumerable<string> classes, int[,] xTrain, string[] yTrain, int[,] xTest)
     {
-        var input = new List<string>(classes);
+        var input = ListExtensions.ToList(classes, false);
         var classProb = input.ToDictionary(cls => cls, cls => Math.Log(yTrain.Count(label => label == cls) / (double)yTrain.Length));
         var wordProb = new Dictionary<string, double[]>();
         foreach (var cls in input)
@@ -44,7 +45,7 @@ public static partial class StatisticalMethod
     /// <param name="yTrain">The train data set y.</param>
     /// <param name="xTest">The test data set x.</param>
     /// <returns>The data set predicted.</returns>
-    public static IEnumerable<string> NaiveBayes(string[] classes, int[,] xTrain, string[] yTrain, int[,] xTest)
+    public static string[] NaiveBayes(string[] classes, int[,] xTrain, string[] yTrain, int[,] xTest)
         => NaiveBayes(classes as IEnumerable<string>, xTrain, yTrain, xTest).ToArray();
 
     /// <summary>

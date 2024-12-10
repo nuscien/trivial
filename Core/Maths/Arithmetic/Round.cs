@@ -122,6 +122,33 @@ public static partial class Arithmetic
     /// <param name="value">A collection with floating-point numbers to be rounded.</param>
     /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
     /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Round(ReadOnlySpan<double> value)
+        => Round(value, Round);
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Round(ReadOnlySpan<float> value)
+        => Round(value, Round);
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Round(ReadOnlySpan<decimal> value)
+        => Round(value, Round);
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
     public static IEnumerable<long> RoundLong(IEnumerable<double> value)
         => Round(value, RoundLong);
 
@@ -168,6 +195,33 @@ public static partial class Arithmetic
     /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
     /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
     public static long[] RoundLong(decimal[] value)
+        => Round(value, RoundLong);
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] RoundLong(ReadOnlySpan<double> value)
+        => Round(value, RoundLong);
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] RoundLong(ReadOnlySpan<float> value)
+        => Round(value, RoundLong);
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] RoundLong(ReadOnlySpan<decimal> value)
         => Round(value, RoundLong);
 
     /// <summary>
@@ -284,6 +338,33 @@ public static partial class Arithmetic
     /// <param name="value">A collection with floating-point numbers.</param>
     /// <returns>The largest integral value less than or equal to input value.</returns>
     /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Floor(ReadOnlySpan<double> value)
+        => Round(value, Floor);
+
+    /// <summary>
+    /// Floors a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers.</param>
+    /// <returns>The largest integral value less than or equal to input value.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Floor(ReadOnlySpan<float> value)
+        => Round(value, Floor);
+
+    /// <summary>
+    /// Floors a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers.</param>
+    /// <returns>The largest integral value less than or equal to input value.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Floor(ReadOnlySpan<decimal> value)
+        => Round(value, Floor);
+
+    /// <summary>
+    /// Floors a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers.</param>
+    /// <returns>The largest integral value less than or equal to input value.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
     public static IEnumerable<long> FloorLong(IEnumerable<double> value)
         => Round(value, FloorLong);
 
@@ -330,6 +411,33 @@ public static partial class Arithmetic
     /// <returns>The largest integral value less than or equal to input value.</returns>
     /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
     public static long[] FloorLong(decimal[] value)
+        => Round(value, FloorLong);
+
+    /// <summary>
+    /// Floors a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers.</param>
+    /// <returns>The largest integral value less than or equal to input value.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] FloorLong(ReadOnlySpan<double> value)
+        => Round(value, FloorLong);
+
+    /// <summary>
+    /// Floors a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers.</param>
+    /// <returns>The largest integral value less than or equal to input value.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] FloorLong(ReadOnlySpan<float> value)
+        => Round(value, FloorLong);
+
+    /// <summary>
+    /// Floors a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers.</param>
+    /// <returns>The largest integral value less than or equal to input value.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] FloorLong(ReadOnlySpan<decimal> value)
         => Round(value, FloorLong);
 
     /// <summary>
@@ -446,6 +554,33 @@ public static partial class Arithmetic
     /// <param name="value">A collection with floating-point numbers to be rounded.</param>
     /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
     /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Ceiling(ReadOnlySpan<double> value)
+        => Round(value, Ceiling);
+
+    /// <summary>
+    /// Ceilings a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Ceiling(ReadOnlySpan<float> value)
+        => Round(value, Ceiling);
+
+    /// <summary>
+    /// Ceilings a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static int[] Ceiling(ReadOnlySpan<decimal> value)
+        => Round(value, Ceiling);
+
+    /// <summary>
+    /// Ceilings a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
     public static IEnumerable<long> CeilingLong(IEnumerable<double> value)
         => Round(value, CeilingLong);
 
@@ -495,6 +630,33 @@ public static partial class Arithmetic
         => Round(value, CeilingLong);
 
     /// <summary>
+    /// Ceilings a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] CeilingLong(ReadOnlySpan<double> value)
+        => Round(value, CeilingLong);
+
+    /// <summary>
+    /// Ceilings a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] CeilingLong(ReadOnlySpan<float> value)
+        => Round(value, CeilingLong);
+
+    /// <summary>
+    /// Ceilings a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <returns>The smallest integral value that is greater than or equal to input value.en and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    public static long[] CeilingLong(ReadOnlySpan<decimal> value)
+        => Round(value, CeilingLong);
+
+    /// <summary>
     /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
     /// </summary>
     /// <param name="value">A collection with floating-point numbers to be rounded.</param>
@@ -520,6 +682,24 @@ public static partial class Arithmetic
     private static T2[] Round<T1, T2>(T1[] value, Func<T1, T2> round)
     {
         if (value == null) return null;
+        var arr = new T2[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            arr[i] = round(value[i]);
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Rounds a collection of floating-point value to the nearest integral values, and rounds midpoint values to the nearest even numbers.
+    /// </summary>
+    /// <param name="value">A collection with floating-point numbers to be rounded.</param>
+    /// <param name="round">The round function.</param>
+    /// <returns>The integer nearest input value. If the fractional component of input value is halfway between two integers, one of which is even and the other odd, then the even number is returned.</returns>
+    /// <exception cref="OverflowException">One of the value at least is less the minimum number supported or greater than the maximum number supported.</exception>
+    private static T2[] Round<T1, T2>(ReadOnlySpan<T1> value, Func<T1, T2> round)
+    {
         var arr = new T2[value.Length];
         for (var i = 0; i < value.Length; i++)
         {

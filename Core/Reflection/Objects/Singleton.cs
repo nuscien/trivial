@@ -188,7 +188,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <summary>
     /// The singleton instance of singleton resolver.
     /// </summary>
-    private static readonly Lazy<SingletonResolver> instance = new ();
+    private static readonly Lazy<SingletonResolver> instance = new();
 
     /// <summary>
     /// Gets the singleton instance of singleton resolver.
@@ -264,9 +264,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="key">The key.</param>
     /// <param name="factory">The instance factory.</param>
     public void Register<T>(string key, Func<T> factory)
-    {
-        Register<T>(key, new FactoryObjectRef<T>(factory));
-    }
+        => Register<T>(key, new FactoryObjectRef<T>(factory));
 
     /// <summary>
     /// Registers an instance.
@@ -275,9 +273,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="key">The key.</param>
     /// <param name="lazy">The lazy instance.</param>
     public void Register<T>(string key, Lazy<T> lazy)
-    {
-        Register<T>(key, new LazyObjectRef<T>(lazy));
-    }
+        => Register<T>(key, new LazyObjectRef<T>(lazy));
 
     /// <summary>
     /// Registers an instance.
@@ -286,9 +282,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="key">The key.</param>
     /// <param name="obj">The instance.</param>
     public void Register<T>(string key, T obj)
-    {
-        Register<T>(key, new InstanceObjectRef<T>(obj));
-    }
+        => Register<T>(key, new InstanceObjectRef<T>(obj));
 
     /// <summary>
     /// Registers an instance.
@@ -296,9 +290,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="reference">The object reference.</param>
     public void Register<T>(IObjectRef<T> reference)
-    {
-        Register(null, reference);
-    }
+        => Register(null, reference);
 
     /// <summary>
     /// Registers an instance.
@@ -306,9 +298,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="factory">The instance factory.</param>
     public void Register<T>(Func<T> factory)
-    {
-        Register(null, factory);
-    }
+        => Register(null, factory);
 
     /// <summary>
     /// Registers an instance.
@@ -316,9 +306,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="lazy">The lazy instance.</param>
     public void Register<T>(Lazy<T> lazy)
-    {
-        Register(lazy);
-    }
+        => Register(null, lazy);
 
     /// <summary>
     /// Registers an instance.
@@ -326,9 +314,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="obj">The instance.</param>
     public void Register<T>(T obj)
-    {
-        Register(null, obj);
-    }
+        => Register(null, obj);
 
     /// <summary>
     /// Registers an instance.
@@ -336,9 +322,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
     public void Register<T>(string key = null)
-    {
-        Register(key, Activator.CreateInstance<T>);
-    }
+        => Register(key, Activator.CreateInstance<T>);
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -369,9 +353,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="factory">The instance factory.</param>
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(string key, Func<T> factory)
-    {
-        return EnsureResolve(key, new FactoryObjectRef<T>(factory));
-    }
+        => EnsureResolve(key, new FactoryObjectRef<T>(factory));
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -381,9 +363,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="lazy">The lazy instance.</param>
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(string key, Lazy<T> lazy)
-    {
-        return EnsureResolve(key, new LazyObjectRef<T>(lazy));
-    }
+        => EnsureResolve(key, new LazyObjectRef<T>(lazy));
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -392,9 +372,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="reference">The object reference.</param>
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(IObjectRef<T> reference)
-    {
-        return EnsureResolve(null, reference);
-    }
+        => EnsureResolve(null, reference);
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -403,9 +381,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="factory">The instance factory.</param>
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(Func<T> factory)
-    {
-        return EnsureResolve(null, factory);
-    }
+        => EnsureResolve(null, factory);
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -414,9 +390,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="lazy">The lazy instance.</param>
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(Lazy<T> lazy)
-    {
-        return EnsureResolve(null, lazy);
-    }
+        => EnsureResolve(null, lazy);
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -425,9 +399,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="key">The key.</param>
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(string key = null)
-    {
-        return EnsureResolve(key, Activator.CreateInstance<T>);
-    }
+        => EnsureResolve(key, Activator.CreateInstance<T>);
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -438,7 +410,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <returns>An instance resolved.</returns>
     public async Task<T> EnsureResolveAsync<T>(string key, Func<Task<T>> factory)
     {
-        if (key == null) key = string.Empty;
+        key ??= string.Empty;
         var set = GetInstances(typeof(T));
         if (!set.TryGetValue(key, out var result))
         {
@@ -459,7 +431,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <returns>An instance resolved.</returns>
     public async Task<T> EnsureResolveAsync<T>(string key, Task<T> task)
     {
-        if (key == null) key = string.Empty;
+        key ??= string.Empty;
         var set = GetInstances(typeof(T));
         if (!set.TryGetValue(key, out var result))
         {
@@ -478,9 +450,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="factory">The instance factory.</param>
     /// <returns>An instance resolved.</returns>
     public Task<T> EnsureResolveAsync<T>(Func<Task<T>> factory)
-    {
-        return EnsureResolveAsync(null, factory);
-    }
+        => EnsureResolveAsync(null, factory);
 
     /// <summary>
     /// Resolves a singleton instance. Register one if non-exist.
@@ -489,9 +459,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="task">The task to get the instance.</param>
     /// <returns>An instance resolved.</returns>
     public Task<T> EnsureResolveAsync<T>(Task<T> task)
-    {
-        return EnsureResolveAsync(null, task);
-    }
+        => EnsureResolveAsync(null, task);
 
     /// <summary>
     /// Gets all keys of a specific type.
@@ -499,9 +467,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <typeparam name="T">The type of the instance.</typeparam>
     /// <returns>A key list of a specific type.</returns>
     public IEnumerable<string> GetKeys<T>()
-    {
-        return GetKeys(typeof(T));
-    }
+        => GetKeys(typeof(T));
 
     /// <summary>
     /// Gets all keys of a specific type.
@@ -509,23 +475,23 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="type">The type of the instance.</param>
     /// <returns>A key list of a specific type.</returns>
     public IEnumerable<string> GetKeys(Type type)
-    {
-        return new List<string>(GetInstances(type).Keys);
-    }
+        => new List<string>(GetInstances(type).Keys);
 
     /// <summary>
     /// Gets a value indicating whether the type is registered.
     /// </summary>
     /// <typeparam name="T">The type of the instance.</typeparam>
     /// <returns>true if found; otherwise, false.</returns>
-    public bool Contains<T>() => cache.ContainsKey(typeof(T));
+    public bool Contains<T>()
+        => cache.ContainsKey(typeof(T));
 
     /// <summary>
     /// Gets a value indicating whether the type is registered.
     /// </summary>
     /// <param name="type">The type of the instance.</param>
     /// <returns>true if found; otherwise, false.</returns>
-    public bool Contains(Type type) => cache.ContainsKey(type);
+    public bool Contains(Type type)
+        => cache.ContainsKey(type);
 
     /// <summary>
     /// Removes an instance registered.
@@ -534,9 +500,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <param name="key">The key.</param>
     /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
     public bool Remove<T>(string key = null)
-    {
-        return Remove(typeof(T), key);
-    }
+        => Remove(typeof(T), key);
 
     /// <summary>
     /// Removes an instance registered.
@@ -604,7 +568,7 @@ public class SingletonResolver : BaseSingletonResolver
         if (!cache.TryGetValue(typeof(T), out var set)) return null;
         return (string key, out T result) =>
         {
-            if (key == null) key = string.Empty;
+            key ??= string.Empty;
             if (!set.TryGetValue(key, out var value))
             {
                 var b = backup;

@@ -18,6 +18,27 @@ namespace Trivial.Security;
 /// JSON web token model.
 /// </summary>
 /// <typeparam name="T">The type of payload.</typeparam>
+/// <example>
+/// <code>
+/// // Create a hash signature provider.
+/// var sign = HashSignatureProvider.CreateHS512("a secret string");
+///
+/// // Create a payload.
+/// // JsonObjectNode and other JSON seralizable models are also supported.
+/// var model = new JsonWebTokenPayload
+/// {
+///     Id = Guid.NewGuid().ToString("n"),
+///     Subject = "user-or-other-subject-id",
+///     Issuer = "example"
+/// };
+///
+/// // Create a JWT instance by plusing above 2 instances.
+/// var jwt = model + sign;
+///
+/// // Get authenticiation header value for HttpClient class using.
+/// var header = jwt.ToAuthenticationHeaderValue();
+/// </code>
+/// </example>
 public class JsonWebToken<T>
 {
 #pragma warning disable IDE0057
@@ -768,6 +789,13 @@ public class JsonWebTokenPayload
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         });
+
+    /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <param name="payload">The instance to convert.</param>
+    public static explicit operator JsonObjectNode(JsonWebTokenPayload payload)
+        => JsonObjectNode.ConvertFrom(payload);
 
     /// <summary>
     /// Creates a JSON web token.

@@ -7,8 +7,32 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
+/// <remarks>
+/// <para>Create a policy by <see cref="InterceptorPolicy" /> to determine when the invoking action can be executed;
+/// or call one of following helpers.</para>
+/// <list type="bullet">
+/// <item>
+/// <para>Debounce</para>
+/// <para>You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
+/// A sample scenario is real-time search.</para>
+/// </item>
+/// <item>
+/// <para>Throttle</para>
+/// <para>You may want to request to call an action only once in a short time even if you request to call several times. The rest will be ignored.</para>
+/// </item>
+/// <item>
+/// <para>Times</para>
+/// <para>You can define an action can be only processed only when request to call in the specific times range and others will be ignored.
+/// A sample scenario is double click.</para>
+/// </item>
+/// <item>
+/// <para>Multiple</para>
+/// <para>A handler to process for the specific times and it will be reset after a while.</para>
+/// </item>
+/// </list>
+/// </remarks>
 public class Interceptor : BaseInterceptor<object>
 {
     /// <summary>

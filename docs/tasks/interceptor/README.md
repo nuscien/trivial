@@ -61,7 +61,7 @@ action();
 ### Full control & Concept
 
 You can create a policy named `InterceptorPolicy` to determine when the invoking action can be executed.
-It contains following properites to set the condition to match.
+It contains following properties to set the condition to match.
 
 - Limitation of invoking times. So we can set an optional minimum count and an optional maximum count as a window to allow the invoking actions.
 - The counting duration and timeout to auto reset. It is used to reset the above invoking times to zero after a specific time span from the first or last invoking.

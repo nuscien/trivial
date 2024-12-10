@@ -3,6 +3,8 @@ using System.IO;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using Trivial.Reflection;
+using Trivial.Web;
 
 namespace Trivial.Security;
 
@@ -80,17 +82,8 @@ public static class HashUtility
         // Convert the input string to a byte array and compute the hash.
         var data = alg.ComputeHash(input);
 
-        // Create a new Stringbuilder to collect the bytes and create a string.
-        var str = new StringBuilder();
-
-        // Loop through each byte of the hashed data and format each one as a hexadecimal string.
-        for (var i = 0; i < data.Length; i++)
-        {
-            str.Append(data[i].ToString("x2"));
-        }
-
         // Return the hexadecimal string.
-        return str.ToString();
+        return ObjectConvert.ToHexString(data);
     }
 
     /// <summary>
@@ -120,13 +113,7 @@ public static class HashUtility
             arr = alg.ComputeHash(stream);
         }
 
-        var sb = new StringBuilder();
-        for (int i = 0; i < arr.Length; i++)
-        {
-            sb.Append(arr[i].ToString("x2"));
-        }
-
-        return sb.ToString();
+        return ObjectConvert.ToHexString(arr);
     }
 
     /// <summary>
@@ -485,6 +472,57 @@ public static class HashUtility
         => ComputeHashString(SHA3Managed.Create512, file);
 
     /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="value">The value to sign.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public static byte[] Sign(this ISignatureProvider alg, string value, Encoding encoding = null)
+        => alg.Sign((encoding ?? Encoding.UTF8).GetBytes(value));
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The data to sign.</param>
+    /// <returns>The signature in hex format string for the specified hash value.</returns>
+    public static string SignToHex(this ISignatureProvider alg, byte[] plainText)
+        => ObjectConvert.ToHexString(alg.Sign(plainText));
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The text to sign.</param>
+    /// <param name="encoding">The encoding; or null, to use default, UTF-8.</param>
+    /// <returns>The signature in hex format string for the specified hash value.</returns>
+    public static string SignToHex(this ISignatureProvider alg, string plainText, Encoding encoding = null)
+        => string.IsNullOrEmpty(plainText) ? plainText : SignToHex(alg, (encoding ?? Encoding.UTF8).GetBytes(plainText));
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="sign">The signature provider.</param>
+    /// <param name="plainText">The data to sign.</param>
+    /// <returns>The signature in Base64Url format string for the specified hash value.</returns>
+    public static string SignToBase64Url(this ISignatureProvider sign, byte[] plainText)
+    {
+        var data = sign.Sign(plainText);
+        return WebFormat.Base64UrlEncode(data);
+    }
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="sign">The signature provider.</param>
+    /// <param name="plainText">The text to sign.</param>
+    /// <param name="encoding">The encoding; or null, to use default, UTF-8.</param>
+    /// <returns>The signature in hex format string for the specified hash value.</returns>
+    public static string SignToBase64Url(this ISignatureProvider sign, string plainText, Encoding encoding = null)
+        => string.IsNullOrEmpty(plainText) ? plainText : SignToBase64Url(sign, (encoding ?? Encoding.UTF8).GetBytes(plainText));
+
+    /// <summary>
     /// Verifies a hash against a string.
     /// </summary>
     /// <param name="alg">The hash algorithm instance.</param>
@@ -815,12 +853,70 @@ public static class HashUtility
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText), hash);
 
     /// <summary>
-    /// Computes the signature for the specified hash value.
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
     /// </summary>
-    /// <param name="sign">The signature provider.</param>
-    /// <param name="value">The value to sign.</param>
-    /// <param name="encoding">The text encoding.</param>
-    /// <returns>The signature for the specified hash value.</returns>
-    public static byte[] Sign(this ISignatureProvider sign, string value, Encoding encoding = null)
-        => sign.Sign((encoding ?? Encoding.UTF8).GetBytes(value));
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The data to sign.</param>
+    /// <param name="hash">The signature data in hex format string to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public static bool VerifyFromHex(this ISignatureProvider alg, byte[] plainText, string hash)
+        => alg is not null && !string.IsNullOrEmpty(hash) && alg.Verify(plainText, ObjectConvert.FromHexString(hash));
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The plain text to sign.</param>
+    /// <param name="encoding">The encoding of the plain text.</param>
+    /// <param name="hash">The signature data in hex format string to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public static bool VerifyFromHex(this ISignatureProvider alg, string plainText, Encoding encoding, string hash)
+        => VerifyFromHex(alg, (encoding ?? Encoding.UTF8).GetBytes(plainText), hash);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The data to sign.</param>
+    /// <param name="hash">The signature data in hex format string to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public static bool VerifyFromHex(this ISignatureProvider alg, string plainText, string hash)
+        => VerifyFromHex(alg, plainText, null, hash);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The data to sign.</param>
+    /// <param name="hash">The signature data in Base64Url format string to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public static bool VerifyFromBase64Url(this ISignatureProvider alg, byte[] plainText, string hash)
+        => alg is not null && !string.IsNullOrEmpty(hash) && alg.Verify(plainText, WebFormat.Base64UrlDecode(hash));
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The plain text to sign.</param>
+    /// <param name="encoding">The encoding of the plain text.</param>
+    /// <param name="hash">The signature data in Base64Url format string to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public static bool VerifyFromBase64Url(this ISignatureProvider alg, string plainText, Encoding encoding, string hash)
+        => VerifyFromBase64Url(alg, (encoding ?? Encoding.UTF8).GetBytes(plainText), hash);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="alg">The signature provider.</param>
+    /// <param name="plainText">The data to sign.</param>
+    /// <param name="hash">The signature data in Base64Url format string to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public static bool VerifyFromBase64Url(this ISignatureProvider alg, string plainText, string hash)
+        => VerifyFromBase64Url(alg, plainText, null, hash);
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -326,6 +327,22 @@ public static class ObjectConvert
     {
         if (handler == null) return;
         var args = new DataEventArgs<T>(data, message);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="TKey">The type of key.</typeparam>
+    /// <typeparam name="TValue">The type of value</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    public static void Invoke<TKey, TValue>(this KeyValueEventHandler<TKey, TValue> handler, object sender, TKey key, TValue value)
+    {
+        if (handler == null) return;
+        var args = new KeyValueEventArgs<TKey, TValue>(key, value);
         handler(sender, args);
     }
 
@@ -788,13 +805,19 @@ public static class ObjectConvert
     /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
     public static string ToHexString(IEnumerable<byte> bytes)
     {
+        // Null checker.
         if (bytes == null) return null;
+
+        // Create a new string builder to collect the bytes and create a string.
         var str = new StringBuilder();
+
+        // Loop through each byte of the array and format each one as a hexadecimal string.
         foreach (var b in bytes)
         {
             str.Append(b.ToString("x2"));
         }
 
+        // Return the hexadecimal string.
         return str.ToString();
     }
 
@@ -806,6 +829,7 @@ public static class ObjectConvert
     public static byte[] FromHexString(string hex)
     {
         if (hex == null) return Array.Empty<byte>();
+        hex = hex.Replace(" ", string.Empty);
         var count = hex.Length / 2;
         var bytes = new byte[count];
         for (int i = 0; i < count; i++)
@@ -814,7 +838,7 @@ public static class ObjectConvert
             var c = hex.Substring(j, 2);
             bytes[i] = int.TryParse(c, NumberStyles.HexNumber, null, out var val)
                 ? (byte)val
-                : throw new ArgumentException(nameof(hex), "hex should be a hex string.", new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
+                : throw new ArgumentException("hex should be a hex string.", nameof(hex), new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
         }
 
         return bytes;
@@ -835,7 +859,7 @@ public static class ObjectConvert
             var c = hex.Substring(j, 2);
             yield return int.TryParse(c, NumberStyles.HexNumber, null, out var val)
                 ? (byte)val
-                : throw new ArgumentException(nameof(hex), "hex should be a hex string.", new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
+                : throw new ArgumentException("hex should be a hex string.", nameof(hex), new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
         }
     }
 
@@ -853,6 +877,7 @@ public static class ObjectConvert
             return false;
         }
 
+        hex = hex.Replace(" ", string.Empty);
         var count = hex.Length / 2;
         bytes = new byte[count];
         for (int i = 0; i < count; i++)
@@ -876,6 +901,7 @@ public static class ObjectConvert
     public static byte[] TryFromHexString(string hex)
     {
         if (hex == null) return Array.Empty<byte>();
+        hex = hex.Replace(" ", string.Empty);
         var count = hex.Length / 2;
         var bytes = new byte[count];
         for (int i = 0; i < count; i++)

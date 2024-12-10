@@ -1238,11 +1238,38 @@ public sealed partial class StyleConsole
     /// Writes the specified characters to the standard output stream.
     /// Note it may not flush immediately.
     /// </summary>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Append(ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count)));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void Append(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Append(ConsoleTextStyle style, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
         OnAppend();
@@ -1267,11 +1294,40 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Append(ConsoleColor foreground, ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void Append(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
         OnAppend();
@@ -1286,6 +1342,28 @@ public sealed partial class StyleConsole
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void Append(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+    {
+        if (style == null)
+        {
+            Append(value, start, count);
+            return;
+        }
+
+        var list = style.CreateTextCollection(StringExtensions.ToString(value, start, count));
+        if (list == null) return;
+        col.AddRange(list);
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Append(IConsoleTextPrettier style, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         if (style == null)
         {
@@ -2632,11 +2710,38 @@ public sealed partial class StyleConsole
     /// Writes the specified characters to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Write(ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void Write(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Write(ConsoleTextStyle style, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
         Flush();
@@ -2661,11 +2766,41 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Write(ConsoleColor foreground, ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void Write(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
+        Flush();
+    }
+
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
         Flush();
@@ -2680,6 +2815,28 @@ public sealed partial class StyleConsole
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void Write(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+    {
+        if (style == null)
+        {
+            Write(value, start, count);
+            return;
+        }
+
+        var list = style.CreateTextCollection(StringExtensions.ToString(value, start, count));
+        if (list == null) return;
+        col.AddRange(list);
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Write(IConsoleTextPrettier style, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         if (style == null)
         {
@@ -4102,11 +4259,40 @@ public sealed partial class StyleConsole
     /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void WriteLine(ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count)));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void WriteLine(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void WriteLine(ConsoleTextStyle style, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
         col.Add(new ConsoleText(Environment.NewLine));
@@ -4133,11 +4319,42 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void WriteLine(ConsoleColor foreground, ReadOnlySpan<char> value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+    {
+        col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
         col.Add(new ConsoleText(Environment.NewLine));
@@ -4153,6 +4370,29 @@ public sealed partial class StyleConsole
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
     public void WriteLine(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+    {
+        if (style == null)
+        {
+            WriteLine(value, start, count);
+            return;
+        }
+
+        var list = style.CreateTextCollection(StringExtensions.ToString(value, start, count));
+        if (list == null) return;
+        col.AddRange(list);
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void WriteLine(IConsoleTextPrettier style, ReadOnlySpan<char> value, int start = 0, int? count = null)
     {
         if (style == null)
         {
@@ -4317,6 +4557,21 @@ public sealed partial class StyleConsole
     public void WriteLines(IEnumerable<ConsoleText> content)
     {
         if (content == null) return;
+        foreach (var item in content)
+        {
+            if (item != null) col.Add(item);
+            col.Add(new ConsoleText(Environment.NewLine));
+        }
+
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the current line terminator for each item, to the standard output stream.
+    /// </summary>
+    /// <param name="content">The text content collection.</param>
+    public void WriteLines(ReadOnlySpan<ConsoleText> content)
+    {
         foreach (var item in content)
         {
             if (item != null) col.Add(item);

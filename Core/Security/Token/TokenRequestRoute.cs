@@ -27,6 +27,19 @@ namespace Trivial.Security;
 /// The server route of token request handler.
 /// </summary>
 /// <typeparam name="T">The type of account information.</typeparam>
+/// <example>
+/// <code>
+/// // Create a route and register the handlers.
+/// var route = new TokenRequestRoute&lt;UserInfo&gt;();
+/// route.Register((PasswordTokenRequestBody req, CancellationToken cancellationToken)
+///     => UserManager.LoginByPasswordAsync(req.UserName, req.Password));
+/// route.Register((RefreshTokenRequestBody req, CancellationToken cancellationToken)
+///     => UserManager.LoginByRefreshTokenAsync(req.RefreshToken));
+///
+/// // Then you can handle following login request.
+/// var resp = await route.SignInAsync(tokenReq);
+/// </code>
+/// </example>
 public class TokenRequestRoute<T>
 {
     /// <summary>
@@ -231,17 +244,18 @@ public class TokenRequestRoute<T>
     /// <summary>
     /// Signs in.
     /// </summary>
-    /// <param name="utf8Stream">The UTF-8 stream input.</param>
+    /// <param name="stream">The stream input.</param>
+    /// <param name="encoding">The encoding of stream; or null, by default, to use UTF-8.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The login response.</returns>
     /// <exception cref="ArgumentException">stream does not support reading.</exception>
     /// <exception cref="IOException">An I/O error occurs.</exception>
     /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
-    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream, CancellationToken cancellationToken)
+    public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream stream, Encoding encoding, CancellationToken cancellationToken)
     {
-        if (utf8Stream == null) return null;
+        if (stream == null) return null;
         string input;
-        using (var reader = new StreamReader(utf8Stream, Encoding.UTF8))
+        using (var reader = new StreamReader(stream, encoding ?? Encoding.UTF8))
         {
 #if NET8_0_OR_GREATER
             input = await reader.ReadToEndAsync(cancellationToken);
@@ -252,6 +266,15 @@ public class TokenRequestRoute<T>
 
         return await SignInAsync(input, cancellationToken);
     }
+
+    /// <summary>
+    /// Signs in.
+    /// </summary>
+    /// <param name="utf8Stream">The UTF-8 stream input.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>A token information.</returns>
+    public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream, CancellationToken cancellationToken = default)
+        => SignInAsync(utf8Stream, Encoding.UTF8, cancellationToken);
 
     /// <summary>
     /// Signs in.

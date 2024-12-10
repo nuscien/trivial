@@ -9,6 +9,30 @@ namespace Trivial.Text;
 /// <summary>
 /// The text parser for comma-separated values (RFC-4180) file format.
 /// </summary>
+/// <example>
+/// <para>You can parse a CSV format string.</para>
+/// <code>
+/// var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
+/// foreach (var item in csv)
+/// {
+///     Console.WriteLine("{0}\t{1}\t{2}", item[0], item[1], item[2]);
+/// }
+/// </code>
+/// <para>It also support the map a CSV format string to a collection of specific model.</para>
+/// <code>
+/// class Model
+/// {
+///     public string FieldText { get; set; }
+///     public int FieldNumber { get; set; }
+/// }
+/// 
+/// var csv = new CsvParser("abcdefg,123\n\"hijk,lmn\", 456");
+/// foreach (var model in csv.ConvertTo&lt;Model&gt;(new[] { "FieldText", "FieldNumber" }))
+/// {
+///     Console.WriteLine("{0}\t{1}", model.FieldText, model.FieldNumber);
+/// }
+/// </code>
+/// </example>
 public class CsvParser : BaseLinesStringTableParser
 {
     /// <summary>

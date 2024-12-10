@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Trivial.Tasks;
@@ -38,6 +40,16 @@ public enum InterceptorModes : byte
 /// <summary>
 /// The policy of interceptor.
 /// </summary>
+/// <remarks>
+/// This is used to full control how the specific action invokes.
+/// It contains following properties to set the condition to match.
+/// <list type="bullet">
+/// <item>Limitation of invoking times. So we can set an optional minimum count and an optional maximum count as a window to allow the invoking actions.</item>
+/// <item>The counting duration and timeout to auto reset.It is used to reset the above invoking times to zero after a specific time span from the first or last invoking.</item>
+/// <item>Delay time span to invoke.</item>
+/// <item>The interceptor mode to determine which one invokes in the above invoking times limitation, e.g.the first one, the last one or all.</item>
+/// </list>
+/// </remarks>
 public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
 {
     /// <summary>

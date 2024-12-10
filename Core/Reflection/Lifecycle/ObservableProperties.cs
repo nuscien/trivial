@@ -530,12 +530,14 @@ public class ObservableProperties : BaseObservableProperties
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
     [JsonIgnore]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public new IEnumerable<string> Keys => base.Keys;
 
     /// <summary>
     /// Gets or sets the policy used to set property value.
     /// </summary>
     [JsonIgnore]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public new PropertySettingPolicies PropertiesSettingPolicy
     {
         get => base.PropertiesSettingPolicy;

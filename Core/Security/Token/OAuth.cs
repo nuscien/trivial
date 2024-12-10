@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -26,6 +27,24 @@ namespace Trivial.Security;
 /// <para>The OAuth HTTP web client (for RFC-6749).</para>
 /// <para>You can use this to login and then create the JSON HTTP web clients with the authentication information.</para>
 /// </summary>
+/// <example>
+/// <code>
+/// // Inialize a new instance of OAuth client
+/// // with client identifier, client secret, authorization URI and scope.
+/// var oauth = new OAuthClient(
+///     "client_id",        // Client ID.
+///     "client_secret",    // Client secret.
+///     new Uri("https://login.live.com/accesstoken.srf"),
+///     "notify.windows.com");
+///
+/// // Get access token.
+/// var token = await oauth.ResolveTokenAsync(new ClientTokenRequestBody());
+///
+/// // Then you can create the JSON HTTP web client when you need,
+/// // And it will set the access token and its type into the authorization header of HTTP request.
+/// var httpClient = oauth.Create&lt;ResponseBody&gt;();
+/// </code>
+/// </example>
 public class OAuthClient : TokenContainer, IJsonHttpClientMaker
 {
     /// <summary>

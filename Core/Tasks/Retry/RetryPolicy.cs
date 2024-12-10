@@ -21,10 +21,22 @@ public interface IRetryPolicy
 /// <summary>
 /// The linear retry policy.
 /// </summary>
-/// <remarks>
+/// <example>
+/// <para>
 /// You can create this retry policy to process the specific handler within the specific times
 /// with the specific time span between two processing.
-/// </remarks>
+/// </para>
+/// <code>
+/// // Initialize the policy instance with 3 times at most to retry and 10s interval for example.
+/// var retryPolicy = new LinearRetryPolicy(3, TimeSpan.FromSeconds(10));
+///
+/// // Following task to throw InvalidOperationException to mock the scenario that it will retry as the condition.
+/// var proccessResult = retryPolicy.ProcessAsync(() =>
+/// {
+///     throw new InvalidOperationException();
+/// }, typeof(InvalidOperationException));
+/// </code>
+/// </example>
 public sealed class LinearRetryPolicy : IRetryPolicy
 {
     /// <summary>
@@ -104,17 +116,12 @@ public sealed class LinearRetryPolicy : IRetryPolicy
 }
 
 /// <summary>
-/// The function customized retry policy.
+/// The customized retry policy by given test function.
 /// </summary>
-public class CustomizedRetryPolicy : IRetryPolicy
+/// <param name="nextHandler">The handler to gets the waiting time span for next retry or null for no retry.</param>
+public class CustomizedRetryPolicy(Func<IReadOnlyList<DateTime>, TimeSpan?> nextHandler) : IRetryPolicy
 {
-    private readonly Func<IReadOnlyList<DateTime>, TimeSpan?> next;
-
-    /// <summary>
-    /// Initializes a new instance of the CustomizedRetryPolicy class.
-    /// </summary>
-    /// <param name="nextHandler">The handler to gets the waiting time span for next retry or null for no retry.</param>
-    public CustomizedRetryPolicy(Func<IReadOnlyList<DateTime>, TimeSpan?> nextHandler) => next = nextHandler;
+    private readonly Func<IReadOnlyList<DateTime>, TimeSpan?> next = nextHandler;
 
     /// <summary>
     /// Creates an instance of action retry.

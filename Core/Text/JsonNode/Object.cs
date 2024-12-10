@@ -30,6 +30,29 @@ namespace Trivial.Text;
 /// <summary>
 /// Represents a specific JSON object.
 /// </summary>
+/// <example>
+/// <code>
+/// // Initializes an instance of writable JSON DOM with initialized properties.
+/// var json = new JsonObjectNode
+/// {
+///     { "prop-a", 1234 },
+///     { "prop-b", "opq" },
+///     { "prop-c", true },
+///     { "prop-d", new JsonArrayNode { 5678, "rst" } }
+/// };
+///
+/// // Get the values of the specific properties from the JSON object.
+/// var num = json.GetInt32Value("prop-a"); // 1234
+/// var numStr = json.GetStringValue("prop-a"); // "1234"
+///
+/// // Set and override any property.
+/// json.SetValue("prop-a", 5678);
+/// num = json.GetInt32Value("prop-a"); // 5678
+/// 
+/// // Converts to a string.
+/// var jsonStr = json.ToString(IndentStyles.Compact);
+/// </code>
+/// </example>
 [Serializable]
 [JsonConverter(typeof(JsonValueNodeConverter.ObjectConverter))]
 public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
@@ -138,6 +161,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <inheritdoc />
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected override object RawValue => store.GetHashCode();
 
     /// <summary>
@@ -4019,6 +4043,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         AssertKey(key);
         SetProperty(key, new JsonStringNode(string.Format(value, args)));
     }
+
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetFormatValue(string key, string value, params ReadOnlySpan<object> args)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonStringNode(string.Format(value, args)));
+    }
+#endif
 
     /// <summary>
     /// Sets the value of the specific property.
@@ -8333,6 +8373,46 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         if (parser != null && item is IJsonValueNode<string> s) return parser(s.Value);
         return JsonSerializer.Deserialize<T>(item.ToString(), options);
     }
+
+    /// <summary>
+    /// Gets the schema content of current JSON by sending an HTTP request to resolve.
+    /// </summary>
+    /// <param name="httpClientResolver">The HTTP client resolver.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>The schema content; or null, if no schema information.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    /// <exception cref="System.Net.Http.HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+    /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+    public Task<JsonObjectNode> GetSchemaContentAsync(IObjectResolver<System.Net.Http.HttpClient> httpClientResolver, CancellationToken cancellationToken = default)
+    {
+        var schema = TryGetValue("$schema");
+        if (schema is null) return Task.FromResult<JsonObjectNode>(null);
+        if (schema is not IJsonValueNode<string> s)
+        {
+            if (schema is JsonObjectNode json) return Task.FromResult(json);
+            throw new InvalidOperationException($"The JSON kind {schema.ValueKind} of schema field is not a URL string.");
+        }
+
+        var uri = StringExtensions.TryCreateUri(s.Value) ?? throw new InvalidOperationException($"The schema field should be a URI format string.");
+        var http = new JsonHttpClient<JsonObjectNode>
+        {
+            HttpClientResolver = httpClientResolver
+        };
+        return http.GetAsync(uri, cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets the schema content of current JSON by sending an HTTP request to resolve.
+    /// </summary>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>The schema content; or null, if no schema information.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    /// <exception cref="System.Net.Http.HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+    /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+    public Task<JsonObjectNode> GetSchemaContentAsync(CancellationToken cancellationToken = default)
+        => GetSchemaContentAsync(null, cancellationToken);
 
     /// <summary>
     /// Gets the JSON value kind groups.

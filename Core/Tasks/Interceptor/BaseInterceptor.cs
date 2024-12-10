@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never..
+/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
 /// </summary>
 public abstract class BaseInterceptor<T>
 {

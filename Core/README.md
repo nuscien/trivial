@@ -72,12 +72,11 @@ Optional to implement the `OAuthBasedClient` base class to create your own busin
 Create a JSON web token to get the string encoded by initializing a new instance of the `JsonWebToken` class or the `JsonWebTokenParser` class.
 
 ```csharp
-var sign = HashSignatureProvider.CreateHS512("a secret string");
-var jwt = new JsonWebToken<JsonWebTokenPayload>(new JsonWebTokenPayload
+var jwt = new JsonWebTokenPayload
 {
     Id = Guid.NewGuid().ToString("n"),
     Issuer = "example"
-}, sign);
+} + HashSignatureProvider.CreateHS512("a secret string");
 
 // Get authenticiation header value.
 var header = jwt.ToAuthenticationHeaderValue();
