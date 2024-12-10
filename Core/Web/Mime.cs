@@ -302,6 +302,7 @@ public static partial class WebFormat
             "htt" => "text/webviewhtml",
             "ink" or "inkml" => "application/inkml+xml",
             "js" or "jsx" or "mjs" or "esm" => JavaScriptMIME,
+            "cjs" => "application/node",
             "uri" or "uris" or "urls" => "text/uri-list",
             "xaml" => "application/xaml+xml",
             "vbs" => "text/vbscript",
@@ -317,6 +318,9 @@ public static partial class WebFormat
             "mht" or "mhtml" or "nws" or "eml" => "message/rfc822",
             "pcurl" => "application/vnd.curl.pcurl",
             "car" => "application/vnd.curl.car",
+            "x3d" => "model/x3d+xml",
+            "x3dv" => "model/x3d-vrml",
+            "x3db" => "model/x3d+fastinfoset",
 
             // Credential
             "pem" => "application/x-x509-ca-cert",
@@ -394,8 +398,10 @@ public static partial class WebFormat
             "crd" => "application/x-mscardfile",
             "clp" => "application/x-msclip",
             "jar" => "application/java-archive",
-            "dll" or "pdb" or "exe" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
-            "app" or "obj" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" => StreamMIME,
+            "dll" or "exe" => "application/vnd.microsoft.portable-executable",
+            "pdb" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
+            "app" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" => StreamMIME,
+            "obj" => "model/obj",
             "appx" => "application/appx",
             "appxbundle" => "application/appxbundle",
             "appinstaller" => "application/appinstaller",
@@ -424,6 +430,8 @@ public static partial class WebFormat
             "xap" => "application/x-silverlight-app",
             "xbap" => "application/x-ms-xbap",
             "mts" => "model/vnd.mts",
+            "mtl" => "model/mtl",
+            "fbx" => "application/fbx",
             _ => null
         };
     }
