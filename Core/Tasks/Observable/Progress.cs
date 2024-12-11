@@ -14,7 +14,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <summary>
     /// Gets the current value of the updated progress.
     /// </summary>
-    public double Value { get; private set; } = 0;
+    public double Value { get; private set; } = 0d;
 
     /// <summary>
     /// Gets a value indicating whether it is completed.
@@ -29,12 +29,12 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <summary>
     /// Gets a value indicating whether it is successful.
     /// </summary>
-    public bool IsSuccessful => IsCompleted && Value == 1;
+    public bool IsSuccessful => IsCompleted && Value == 1d;
 
     /// <summary>
     /// Gets a value indicating whether it is failed.
     /// </summary>
-    public bool IsFailed => IsCompleted && Value < 1;
+    public bool IsFailed => IsCompleted && Value < 1d;
 
     /// <summary>
     /// The event handler raised for each reported progress value.

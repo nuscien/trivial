@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ public sealed partial class StyleConsole
     /// <summary>
     /// The lock.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else

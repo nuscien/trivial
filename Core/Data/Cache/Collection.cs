@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -55,6 +56,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// <summary>
     /// Gets the count of elements contained in the collection.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     int IReadOnlyCollection<DataCacheItemInfo<T>>.Count => AsEnumerable().Count();
 
     /// <summary>

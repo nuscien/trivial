@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -50,8 +51,13 @@ public enum InterceptorModes : byte
 /// <item>The interceptor mode to determine which one invokes in the above invoking times limitation, e.g.the first one, the last one or all.</item>
 /// </list>
 /// </remarks>
-public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
+public sealed class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
 {
+    /// <summary>
+    /// The fallback time span of double-click speed.
+    /// </summary>
+    private static TimeSpan fallbackDoubleClickSpeed = TimeSpan.FromMilliseconds(500);
+
     /// <summary>
     /// Gets or sets the minimum count of invoking times in the interceptor couting cycle.
     /// </summary>
@@ -100,7 +106,8 @@ public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
-    public InterceptorPolicy Clone() => new()
+    public InterceptorPolicy Clone()
+        => new()
     {
         MinCount = MinCount,
         MaxCount = MaxCount,
@@ -114,7 +121,8 @@ public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
-    object ICloneable.Clone() => Clone();
+    object ICloneable.Clone()
+        => Clone();
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -134,20 +142,50 @@ public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
 
     /// <inheritdoc />
     public override bool Equals(object obj)
-    {
-        return Equals(obj as InterceptorPolicy);
-    }
+        => Equals(obj as InterceptorPolicy);
 
     /// <inheritdoc />
     public override int GetHashCode()
-    {
-        return new Tuple<int, int?, TimeSpan?, TimeSpan?, TimeSpan?, InterceptorModes>(
+        => new Tuple<int, int?, TimeSpan?, TimeSpan?, TimeSpan?, InterceptorModes>(
             MinCount,
             MaxCount,
             Delay,
             Timeout,
             Duration,
             Mode).GetHashCode();
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        sb.Append(Mode);
+        sb.Append(" & MinCount = ");
+        sb.Append(MinCount);
+        if (MaxCount.HasValue)
+        {
+            sb.Append(" & MaxCount = ");
+            sb.Append(MaxCount.Value);
+        }
+
+        if (Delay.HasValue)
+        {
+            sb.Append(" & Delay = ");
+            sb.Append(Delay.Value);
+        }
+
+        if (Timeout.HasValue)
+        {
+            sb.Append(" & Timeout = ");
+            sb.Append(Timeout.Value);
+        }
+
+        if (Duration.HasValue)
+        {
+            sb.Append(" & Duration = ");
+            sb.Append(Duration.Value);
+        }
+
+        return sb.ToString();
     }
 
     /// <summary>
@@ -230,7 +268,6 @@ public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
     /// <returns>A interceptor policy.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
-    /// A sample scenario is double click.
     /// </remarks>
     public static InterceptorPolicy Times(int count, TimeSpan timeout) => new()
     {
@@ -239,4 +276,39 @@ public class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
         MinCount = count,
         Mode = InterceptorModes.Debounce
     };
+
+    /// <summary>
+    /// Sets the fallback time span of double-click speed.
+    /// </summary>
+    /// <param name="duration">The new value.</param>
+    /// <remarks>For Windows, the double-click speed always use the one set in settings app or control panel.</remarks>
+    public static void SetFallbackDoubleClickSpeed(TimeSpan duration)
+        => fallbackDoubleClickSpeed = duration;
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <returns>A interceptor policy.</returns>
+    public static InterceptorPolicy DoubleClick()
+    {
+        var timeout = fallbackDoubleClickSpeed;
+#if NETCOREAPP
+        if (OperatingSystem.IsWindows())
+#endif
+        {
+            var registry = Data.RegistryUtility.TryOpenSubKey(Microsoft.Win32.Registry.CurrentUser, "Control Panel\\Mouse");
+            var milliseconds = registry is null ? null : Data.RegistryUtility.TryGetInt32Value(registry, "DoubleClickSpeed");
+            if (milliseconds.HasValue) timeout = TimeSpan.FromMilliseconds(milliseconds.Value);
+        }
+
+        if (timeout < TimeSpan.Zero) timeout = TimeSpan.Zero;
+        return new()
+        {
+            Delay = timeout,
+            Timeout = timeout,
+            MinCount = 2,
+            MaxCount = 2,
+            Mode = InterceptorModes.Debounce
+        };
+    }
 }

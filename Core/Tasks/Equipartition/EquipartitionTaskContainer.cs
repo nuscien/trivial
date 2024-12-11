@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -25,12 +26,14 @@ namespace Trivial.Tasks;
 /// </summary>
 public class EquipartitionTaskContainer
 {
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();
 #endif
-    private readonly Dictionary<string, List<EquipartitionTask>> cache = new Dictionary<string, List<EquipartitionTask>>();
+
+    private readonly Dictionary<string, List<EquipartitionTask>> cache = new();
 
     /// <summary>
     /// Adds or removes an event handler when create a new task.
@@ -64,9 +67,7 @@ public class EquipartitionTaskContainer
     /// <param name="count">The count to take.</param>
     /// <returns>A collection of equipartition task.</returns>
     public IEnumerable<EquipartitionTask> List(string group, int? count = null)
-    {
-        return List(group, null, count);
-    }
+        => List(group, null, count);
 
     /// <summary>
     /// Gets all the equipartition tasks available.

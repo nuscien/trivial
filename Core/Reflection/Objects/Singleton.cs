@@ -214,6 +214,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <summary>
     /// The locker.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else

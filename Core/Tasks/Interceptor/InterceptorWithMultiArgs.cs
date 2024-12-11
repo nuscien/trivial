@@ -222,6 +222,18 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
         => Action(action, InterceptorPolicy.Times(count, timeout));
 
     /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T1, T2> DoubleClick(Action<T1, T2> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
     /// <param name="action">The action to register to execute.</param>
@@ -292,6 +304,18 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// </remarks>
     public static Func<T1, T2, Task> Times(Func<T1, T2, Task> action, int count, TimeSpan timeout)
         => Action(action, InterceptorPolicy.Times(count, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T1, T2, Task> DoubleClick(Func<T1, T2, Task> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
 }
 
 /// <summary>

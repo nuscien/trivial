@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -25,13 +26,17 @@ namespace Trivial.Tasks;
 /// </summary>
 public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>
 {
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();
 #endif
-    private readonly List<Fragment> fragments = new();
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string desc;
+
+    private readonly List<Fragment> fragments = new();
 
     /// <summary>
     /// Initializes a new instance of the EquipartitionTask class.

@@ -189,6 +189,18 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.Times(count, timeout));
 
     /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action DoubleClick(Action action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
     /// <param name="action">The action to register to execute.</param>
@@ -259,6 +271,18 @@ public class Interceptor : BaseInterceptor<object>
     /// </remarks>
     public static Func<Task> Times(Func<Task> action, int count, TimeSpan timeout)
         => Action(action, InterceptorPolicy.Times(count, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<Task> DoubleClick(Func<Task> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
     /// Creates an action with interceptor policy.
@@ -359,6 +383,19 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.Times(count, timeout));
 
     /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <typeparam name="T">The type of action handler argument.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T> DoubleClick<T>(Action<T> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
     /// <typeparam name="T">The type of action handler argument.</typeparam>
@@ -434,6 +471,19 @@ public class Interceptor : BaseInterceptor<object>
     /// </remarks>
     public static Func<T, Task> Times<T>(Func<T, Task> action, int count, TimeSpan timeout)
         => Action(action, InterceptorPolicy.Times(count, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double click.
+    /// </summary>
+    /// <typeparam name="T">The type of action handler argument.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T, Task> DoubleClick<T>(Func<T, Task> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
     /// Creates an action with interceptor policy.
@@ -541,6 +591,20 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.Times(count, timeout));
 
     /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T1, T2> DoubleClick<T1, T2>(Action<T1, T2> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
     /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
@@ -623,6 +687,20 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.Times(count, timeout));
 
     /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T1, T2, Task> DoubleClick<T1, T2>(Func<T1, T2, Task> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
     /// Creates an action with interceptor policy.
     /// </summary>
     /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
@@ -646,6 +724,210 @@ public class Interceptor : BaseInterceptor<object>
     /// <returns>The action with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, Task> Action<T1, T2, T3>(Func<T1, T2, T3, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3>(action, policy, doNotWait).InvokeAsync;
+
+    /// <summary>
+    /// Creates a debounce interceptor policy.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="delay">Delay time span.</param>
+    /// <returns>The interceptor policy.</returns>
+    /// <remarks>
+    /// Maybe a handler will be asked to process several times in a short time
+    /// but you just want to process once at the last time because the previous ones are obsolete.
+    /// A sample scenario is real-time search.
+    /// </remarks>
+    public static Action<T1, T2, T3> Debounce<T1, T2, T3>(Action<T1, T2, T3> action, TimeSpan delay)
+        => Action(action, InterceptorPolicy.Debounce(delay));
+
+    /// <summary>
+    /// Creates a throttle interceptor policy.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="duration">The duration.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// You may want to request to call an action only once in a short time
+    /// even if you request to call several times.
+    /// The rest will be ignored.
+    /// So the handler will be frozen for a while after it has processed.
+    /// </remarks>
+    public static Action<T1, T2, T3> Throttle<T1, T2, T3>(Action<T1, T2, T3> action, TimeSpan duration)
+        => Action(action, InterceptorPolicy.Throttle(duration));
+
+    /// <summary>
+    /// Creates a multi-hit interceptor policy.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="min">The minmum invoking count.</param>
+    /// <param name="max">The maxmum invoking count.</param>
+    /// <param name="timeout">The time span between each invoking.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remark>
+    /// The handler to process for the specific times and it will be reset after a while.
+    /// </remark>
+    public static Action<T1, T2, T3> Mutliple<T1, T2, T3>(Action<T1, T2, T3> action, int min, int? max, TimeSpan timeout)
+        => Action(action, InterceptorPolicy.Mutliple(min, max, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded at a specific times.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="min">The minmum invoking count.</param>
+    /// <param name="max">The maxmum invoking count.</param>
+    /// <param name="timeout">The time span between each invoking.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T1, T2, T3> Times<T1, T2, T3>(Action<T1, T2, T3> action, int min, int? max, TimeSpan timeout)
+        => Action(action, InterceptorPolicy.Times(min, max, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded at a specific times.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="count">The invoking count.</param>
+    /// <param name="timeout">The time span between each invoking.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T1, T2, T3> Times<T1, T2, T3>(Action<T1, T2, T3> action, int count, TimeSpan timeout)
+        => Action(action, InterceptorPolicy.Times(count, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T1, T2, T3> DoubleClick<T1, T2, T3>(Action<T1, T2, T3> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
+    /// Creates a debounce interceptor policy.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="delay">Delay time span.</param>
+    /// <returns>The interceptor policy.</returns>
+    /// <remarks>
+    /// Maybe a handler will be asked to process several times in a short time
+    /// but you just want to process once at the last time because the previous ones are obsolete.
+    /// A sample scenario is real-time search.
+    /// </remarks>
+    public static Func<T1, T2, T3, Task> Debounce<T1, T2, T3>(Func<T1, T2, T3, Task> action, TimeSpan delay)
+        => Action(action, InterceptorPolicy.Debounce(delay));
+
+    /// <summary>
+    /// Creates a throttle interceptor policy.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="duration">The duration.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// You may want to request to call an action only once in a short time
+    /// even if you request to call several times.
+    /// The rest will be ignored.
+    /// So the handler will be frozen for a while after it has processed.
+    /// </remarks>
+    public static Func<T1, T2, T3, Task> Throttle<T1, T2, T3>(Func<T1, T2, T3, Task> action, TimeSpan duration)
+        => Action(action, InterceptorPolicy.Throttle(duration));
+
+    /// <summary>
+    /// Creates a multi-hit interceptor policy.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="min">The minmum invoking count.</param>
+    /// <param name="max">The maxmum invoking count.</param>
+    /// <param name="timeout">The time span between each invoking.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remark>
+    /// The handler to process for the specific times and it will be reset after a while.
+    /// </remark>
+    public static Func<T1, T2, T3, Task> Mutliple<T1, T2, T3>(Func<T1, T2, T3, Task> action, int min, int? max, TimeSpan timeout)
+        => Action(action, InterceptorPolicy.Mutliple(min, max, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded at a specific times.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="min">The minmum invoking count.</param>
+    /// <param name="max">The maxmum invoking count.</param>
+    /// <param name="timeout">The time span between each invoking.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T1, T2, T3, Task> Times<T1, T2, T3>(Func<T1, T2, T3, Task> action, int min, int? max, TimeSpan timeout)
+        => Action(action, InterceptorPolicy.Times(min, max, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded at a specific times.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <param name="count">The invoking count.</param>
+    /// <param name="timeout">The time span between each invoking.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T1, T2, T3, Task> Times<T1, T2, T3>(Func<T1, T2, T3, Task> action, int count, TimeSpan timeout)
+        => Action(action, InterceptorPolicy.Times(count, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T1, T2, T3, Task> DoubleClick<T1, T2, T3>(Func<T1, T2, T3, Task> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
     /// Creates an action with interceptor policy.

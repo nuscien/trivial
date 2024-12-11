@@ -160,6 +160,18 @@ public class Interceptor<T> : BaseInterceptor<T>
         => Action(action, InterceptorPolicy.Times(count, timeout));
 
     /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Action<T> DoubleClick(Action<T> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
+
+    /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
     /// <param name="action">The action to register to execute.</param>
@@ -230,4 +242,16 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// </remarks>
     public static Func<T, Task> Times(Func<T, Task> action, int count, TimeSpan timeout)
         => Action(action, InterceptorPolicy.Times(count, timeout));
+
+    /// <summary>
+    /// Creates an interceptor policy responded as double-click.
+    /// </summary>
+    /// <param name="action">The action to register to execute.</param>
+    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <remarks>
+    /// A handler to process at last only when request to call in the specific times range.
+    /// A sample scenario is double click.
+    /// </remarks>
+    public static Func<T, Task> DoubleClick(Func<T, Task> action)
+        => Action(action, InterceptorPolicy.DoubleClick());
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -20,6 +21,11 @@ namespace Trivial.Collection;
 internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged, INotifyCollectionChanged
 {
     private readonly List<T> list;
+
+    /// <summary>
+    /// The lock.
+    /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker;
 #else

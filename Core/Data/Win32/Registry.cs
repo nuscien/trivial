@@ -24,8 +24,6 @@ public static class RegistryUtility
     /// <param name="path">The path of the sub key.</param>
     /// <param name="writable">true if need write access to the key; otherwise false.</param>
     /// <returns>The registry key.</returns>
-    /// <exception cref="ArgumentNullException">fileExtension was null.</exception>
-    /// <exception cref="ArgumentException">fileExtension was empty.</exception>
     public static RegistryKey TryOpenSubKey(RegistryKey regKey, string path, bool writable = false)
     {
         path = path?.Trim();
@@ -65,6 +63,9 @@ public static class RegistryUtility
             if (string.IsNullOrEmpty(path)) return regKey;
             return regKey.OpenSubKey(path, writable);
         }
+        catch (ArgumentException)
+        {
+        }
         catch (SecurityException)
         {
         }
@@ -80,7 +81,10 @@ public static class RegistryUtility
         catch (NotImplementedException)
         {
         }
-        catch (Win32Exception)
+        catch (ExternalException)
+        {
+        }
+        catch (AggregateException)
         {
         }
 
@@ -184,6 +188,9 @@ public static class RegistryUtility
                 return true;
             }
         }
+        catch (ArgumentException)
+        {
+        }
         catch (SecurityException)
         {
         }
@@ -206,6 +213,9 @@ public static class RegistryUtility
         {
         }
         catch (ExternalException)
+        {
+        }
+        catch (AggregateException)
         {
         }
 

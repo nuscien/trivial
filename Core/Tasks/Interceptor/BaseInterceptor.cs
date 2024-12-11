@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,6 +16,7 @@ public abstract class BaseInterceptor<T>
     /// <summary>
     /// The locker.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else
@@ -34,6 +36,7 @@ public abstract class BaseInterceptor<T>
     /// <summary>
     /// The interceptor policy.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private InterceptorPolicy policy;
 
     /// <summary>
@@ -51,7 +54,7 @@ public abstract class BaseInterceptor<T>
     /// </summary>
     public BaseInterceptor()
     {
-        policy = new InterceptorPolicy();
+        policy = new();
     }
 
     /// <summary>
@@ -60,7 +63,7 @@ public abstract class BaseInterceptor<T>
     /// <param name="policy">The interceptor policy.</param>
     public BaseInterceptor(InterceptorPolicy policy)
     {
-        this.policy = policy ?? new InterceptorPolicy();
+        this.policy = policy ?? new();
     }
 
     /// <summary>
@@ -102,18 +105,18 @@ public abstract class BaseInterceptor<T>
     }
 
     /// <summary>
+    /// Adds or removes the event that the actions registered is executed.
+    /// </summary>
+    public event EventHandler<InterceptorEventArgs<T>> Executed;
+
+    /// <summary>
     /// Gets or sets the interceptor policy.
     /// </summary>
     public InterceptorPolicy Policy
     {
         get => policy;
-        set => policy = value ?? new InterceptorPolicy();
+        set => policy = value ?? new();
     }
-
-    /// <summary>
-    /// Adds or removes the event that the actions registered is executed.
-    /// </summary>
-    public event EventHandler<InterceptorEventArgs<T>> Executed;
 
     /// <summary>
     /// Gets or sets a value indicating whether need ignore all invoking.

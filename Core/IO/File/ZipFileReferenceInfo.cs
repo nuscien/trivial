@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace Trivial.IO;
 /// </summary>
 public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHostReferenceInfo
 {
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET9_0_OR_GREATER
     private readonly Lock locker = new();
 #else

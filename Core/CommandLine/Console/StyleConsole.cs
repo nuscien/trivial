@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,7 @@ public sealed partial class StyleConsole
     /// <summary>
     /// The command line handler.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private IHandler handlerCache;
 
     /// <summary>
