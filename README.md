@@ -16,8 +16,8 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 ![.NET 8](./docs/assets/badge_NET_8.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
-![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
 ![.NET Framework 4.6.2](./docs/assets/badge_NET_Fx_4_6_2.svg)
+![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
 
 - [Task and retry policy](./docs/tasks)
 - [Text (also including JSON and CSV)](./docs/text)
@@ -39,5 +39,6 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
   - Maths
   - Messages
 - [WinKit](https://github.com/nuscien/winkit)
-  - Windows Kit (&amp; Local Web App framework)
-  - Console
+  - Windows Kit (WinUI components) &amp; Local Web App framework
+  - Console (Command line components)
+  - Web (ASP.NET components)
