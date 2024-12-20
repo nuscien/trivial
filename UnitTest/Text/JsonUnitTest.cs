@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Trivial.IO;
 using Trivial.Maths;
 using Trivial.Web;
 

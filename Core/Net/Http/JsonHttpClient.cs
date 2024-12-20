@@ -557,15 +557,11 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
-    {
-        var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
-        using var str = new StringContent(json, Encoding.UTF8, Text.JsonValues.JsonMIME);
-        return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
+    public Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
-            Content = str
+            Content = HttpClientExtensions.CreateJsonContent(content, options)
         }, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -580,15 +576,11 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
-    {
-        var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
-        using var str = new StringContent(json, Encoding.UTF8, Text.JsonValues.JsonMIME);
-        return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
+    public Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
-            Content = str
+            Content = HttpClientExtensions.CreateJsonContent(content, options)
         }, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.

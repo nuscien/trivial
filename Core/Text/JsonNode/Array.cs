@@ -5680,6 +5680,32 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         return Parse(s);
     }
 
+    /// <summary>
+    /// Parses a stream as UTF-8-encoded data representing a JSON array.
+    /// The stream is read to completion.
+    /// </summary>
+    /// <param name="mime">The MIME of the stream</param>
+    /// <param name="stream">The stream to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+    internal static async Task<JsonArrayNode> ParseAsync(string mime, Stream stream, JsonDocumentOptions options, CancellationToken cancellationToken = default)
+    {
+        if (mime == JsonValues.JsonlMIME)
+        {
+
+        }
+
+        if (mime == WebFormat.ServerSentEventsMIME)
+        {
+
+        }
+
+        return await ParseAsync(stream, options, cancellationToken);
+    }
+
     private static bool PassTrue(BaseJsonValueNode data, int index, int index2)
         => true;
 }

@@ -230,6 +230,13 @@ public class TokenRequest
         => ToJsonObject()?.ToString() ?? "{}";
 
     /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public void WriteTo(Utf8JsonWriter writer)
+        => ToJsonObject().WriteTo(writer);
+
+    /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A query string of the token request but without client secret.</returns>

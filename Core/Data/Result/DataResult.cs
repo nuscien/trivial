@@ -49,6 +49,18 @@ public class MessageResult : BaseObservableProperties
     }
 
     /// <summary>
+    /// Initializes a new instance of the MessageResult class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its properites.</param>
+    protected MessageResult(MessageResult copy)
+    {
+        if (copy == null) return;
+        Message = copy.Message;
+        TrackingId = copy.TrackingId;
+        Tag = copy.Tag;
+    }
+
+    /// <summary>
     /// Gets or sets the message.
     /// It could be an error message, a status description or a notice text. This can be null if no such information.
     /// </summary>
@@ -130,6 +142,17 @@ public class DataResult<T> : MessageResult
     }
 
     /// <summary>
+    /// Initializes a new instance of the DataResult class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its properties.</param>
+    protected DataResult(DataResult<T> copy)
+        : base(copy)
+    {
+        if (copy == null) return;
+        Data = copy.Data;
+    }
+
+    /// <summary>
     /// Gets or sets the data content.
     /// </summary>
     [DataMember(Name = "data")]
@@ -199,6 +222,17 @@ public class DataResult<TData, TInfo> : DataResult<TData>
         : base(data, message)
     {
         AdditionalInfo = additional;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DataResult class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its properties.</param>
+    protected DataResult(DataResult<TData, TInfo> copy)
+        : base(copy)
+    {
+        if (copy == null) return;
+        AdditionalInfo = copy.AdditionalInfo;
     }
 
     /// <summary>

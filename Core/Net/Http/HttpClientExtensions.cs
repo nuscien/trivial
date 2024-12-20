@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Data;
 using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
@@ -345,6 +346,7 @@ public static class HttpClientExtensions
         if (type == typeof(IEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.Parse(stream);
         if (type == typeof(IAsyncEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.ParseAsync(stream);
         if (type == typeof(Stream)) return (T)(object)stream;
+        //if (type == IAsyncEnumerable<JsonObjectNode>)
         return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);
     }
 
@@ -623,17 +625,72 @@ public static class HttpClientExtensions
     }
 
     /// <summary>
+    /// Deserializes the HTTP content into an object by the specific serializer.
+    /// </summary>
+    /// <typeparam name="T">The type of the result expected.</typeparam>
+    /// <param name="httpContent">The http response content.</param>
+    /// <param name="callback">The callback handler on Server-Sent Event info is received and processed.</param>
+    /// <param name="options">The JSON serializer options.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The result serialized.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    /// <exception cref="JsonException">Deserialization failure.</exception>
+    public static async Task<StreamingCollectionResult<T>> DeserializeCollectionResultAsync<T>(this HttpContent httpContent, Action<StreamingCollectionResult<T>, ServerSentEventInfo> callback, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
+    {
+        if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
+#if NET6_0_OR_GREATER
+        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+#else
+        var stream = await httpContent.ReadAsStreamAsync();
+#endif
+        if (httpContent.Headers?.ContentType?.MediaType == WebFormat.ServerSentEventsMIME) return new(stream, callback, options);
+        var copy = await JsonSerializer.DeserializeAsync<CollectionResult<T>>(stream, options, cancellationToken);
+        var result = new StreamingCollectionResult<T>(copy);
+        callback?.Invoke(result, null);
+        return result;
+    }
+
+    /// <summary>
+    /// Deserializes the HTTP content into an object by the specific serializer.
+    /// </summary>
+    /// <typeparam name="T">The type of the result expected.</typeparam>
+    /// <param name="httpContent">The http response content.</param>
+    /// <param name="callback">The callback handler on Server-Sent Event info is received and processed.</param>
+    /// <param name="options">The JSON serializer options.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The result serialized.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    /// <exception cref="JsonException">Deserialization failure.</exception>
+    public static Task<StreamingCollectionResult<T>> DeserializeCollectionResultAsync<T>(this HttpContent httpContent, Action<StreamingCollectionResult<T>> callback, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
+        => DeserializeCollectionResultAsync<T>(httpContent, callback == null ? null : (obj, e) => callback.Invoke(obj), options, cancellationToken);
+
+    /// <summary>
+    /// Deserializes the HTTP content into an object by the specific serializer.
+    /// </summary>
+    /// <typeparam name="T">The type of the result expected.</typeparam>
+    /// <param name="httpContent">The http response content.</param>
+    /// <param name="options">The JSON serializer options.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The result serialized.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    /// <exception cref="JsonException">Deserialization failure.</exception>
+    public static Task<StreamingCollectionResult<T>> DeserializeCollectionResultAsync<T>(this HttpContent httpContent, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
+        => DeserializeCollectionResultAsync<T>(httpContent, null as Action<StreamingCollectionResult<T>, ServerSentEventInfo>, options, cancellationToken);
+
+    /// <summary>
     /// Creates an HTTP content from a JSON of the specific object.
     /// </summary>
     /// <param name="value">The object.</param>
-    /// <param name="options">An optional serialization options.</param>
     /// <returns>The HTTP content a JSON of the specific object.</returns>
-    public static StringContent CreateJsonContent(object value, JsonSerializerOptions options = null)
+    public static StreamContent CreateJsonContent(JsonObjectNode value)
     {
         if (value == null) return null;
-        var json = StringExtensions.ToJson(value, options);
-        if (json == null) return null;
-        return new StringContent(json, Encoding.UTF8, JsonValues.JsonMIME);
+        var stream = new MemoryStream();
+        var writer = new Utf8JsonWriter(stream);
+        value.WriteTo(writer);
+        var content = new StreamContent(stream);
+        content.Headers.ContentType = JsonValues.GetJsonMediaTypeHeaderValue();
+        return content;
     }
 
     /// <summary>
@@ -642,12 +699,30 @@ public static class HttpClientExtensions
     /// <param name="value">The object.</param>
     /// <param name="options">An optional serialization options.</param>
     /// <returns>The HTTP content a JSON of the specific object.</returns>
-    public static StringContent CreateJsonContent(object value, DataContractJsonSerializerSettings options)
+    public static StreamContent CreateJsonContent(object value, JsonSerializerOptions options = null)
     {
         if (value == null) return null;
-        var json = StringExtensions.ToJson(value, options);
-        if (json == null) return null;
-        return new StringContent(json, Encoding.UTF8, JsonValues.JsonMIME);
+        var stream = new MemoryStream();
+        JsonValues.WriteTo(stream, value, options);
+        var content = new StreamContent(stream);
+        content.Headers.ContentType = JsonValues.GetJsonMediaTypeHeaderValue();
+        return content;
+    }
+
+    /// <summary>
+    /// Creates an HTTP content from a JSON of the specific object.
+    /// </summary>
+    /// <param name="value">The object.</param>
+    /// <param name="options">An optional serialization options.</param>
+    /// <returns>The HTTP content a JSON of the specific object.</returns>
+    public static StreamContent CreateJsonContent(object value, DataContractJsonSerializerSettings options)
+    {
+        if (value == null) return null;
+        var stream = new MemoryStream();
+        JsonValues.WriteTo(stream, value, options);
+        var content = new StreamContent(stream);
+        content.Headers.ContentType = JsonValues.GetJsonMediaTypeHeaderValue();
+        return content;
     }
 
     /// <summary>

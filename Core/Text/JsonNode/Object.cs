@@ -8896,7 +8896,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonObjectNode class.</returns>
     /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
-    public static implicit operator JsonObjectNode(System.Text.Json.Nodes.JsonObject json)
+    public static implicit operator JsonObjectNode(JsonObject json)
     {
         if (json is null) return null;
         var result = new JsonObjectNode();
@@ -8914,9 +8914,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonObjectNode class.</returns>
     /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
-    public static implicit operator JsonObjectNode(System.Text.Json.Nodes.JsonNode json)
+    public static implicit operator JsonObjectNode(JsonNode json)
     {
-        if (json is System.Text.Json.Nodes.JsonObject obj) return obj;
+        if (json is JsonObject obj) return obj;
         throw new JsonException("json is not a JSON object.");
     }
 

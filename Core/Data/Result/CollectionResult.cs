@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -161,6 +162,20 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
         TrackingId = trackingId;
         Offset = offset;
         TotalCount = count;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the CollectionResult class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its properties.</param>
+    protected CollectionResult(CollectionResult<T> copy)
+        : base(copy)
+    {
+        if (copy == null) return;
+        Offset = copy.Offset;
+        TotalCount = copy.TotalCount;
+        Data = copy.Data ?? new();
+        AdditionalInfo = copy.AdditionalInfo;
     }
 
     /// <summary>
@@ -574,7 +589,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
         }
 
         State = TaskStates.Working;
-        task = LoadDataAsync(collection, this);
+        task = LoadDataAsync(collection);
     }
 
     /// <summary>
@@ -631,6 +646,25 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
     }
 
     /// <summary>
+    /// Initializes a new instance of the CollectionResultSource class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its data and other properties.</param>
+    internal StreamingCollectionResult(CollectionResult<T> copy)
+        : base(copy)
+    {
+        if (copy is null) return;
+        if (copy is not StreamingCollectionResult<T> c)
+        {
+            State = TaskStates.Done;
+            return;
+        }
+
+        State = c.State;
+        EventItemCount = c.EventItemCount;
+        SerializerOptions = c.SerializerOptions;
+    }
+
+    /// <summary>
     /// Adds or removes an event hanlder on state changed.
     /// </summary>
     public event DataEventHandler<TaskStates> StateChanged;
@@ -638,6 +672,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
     /// <summary>
     /// Gets the current state about data setting.
     /// </summary>
+    [JsonIgnore]
     public TaskStates State
     {
         get
@@ -654,11 +689,13 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
     /// <summary>
     /// Gets the count of Server-Sent Event item received.
     /// </summary>
+    [JsonIgnore]
     public int EventItemCount { get; private set; }
 
     /// <summary>
     /// Gets the JSON serializer options.
     /// </summary>
+    [JsonIgnore]
     protected internal JsonSerializerOptions SerializerOptions { get; }
 
     /// <summary>
@@ -701,22 +738,22 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
         callback?.Invoke(this, info);
     }
 
-    private async Task LoadDataAsync(IAsyncEnumerable<ServerSentEventInfo> collection, StreamingCollectionResult<T> source)
+    private async Task LoadDataAsync(IAsyncEnumerable<ServerSentEventInfo> collection)
     {
         try
         {
             await foreach (var item in collection)
             {
                 if (item == null) continue;
-                Patch(item.EventName.ToLowerInvariant(), item.DataString, source);
-                source.OnReceivedInternal(item);
+                Patch(item.EventName.ToLowerInvariant(), item.DataString);
+                OnReceivedInternal(item);
             }
 
-            if (source.State == TaskStates.Working) source.State = TaskStates.Done;
+            if (State == TaskStates.Working) State = TaskStates.Done;
         }
         catch (Exception)
         {
-            source.State = TaskStates.Faulted;
+            State = TaskStates.Faulted;
             throw;
         }
         finally
@@ -726,7 +763,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
         }
     }
 
-    private void Patch(string name, string s, StreamingCollectionResult<T> source)
+    private void Patch(string name, string s)
     {
         if (string.IsNullOrEmpty(s)) return;
         switch (name)
@@ -735,7 +772,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
                 {
                     var obj = JsonObjectNode.TryParse(s);
                     if (obj == null) break;
-                    Patch(obj, source);
+                    Patch(obj);
                 }
                 break;
             case "info":
@@ -753,23 +790,23 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
 
                 break;
             case "add":
-                AddItem(s, source, false);
+                AddItem(s, false);
                 break;
             case "update":
-                AddItem(s, source, true);
+                AddItem(s, true);
                 break;
             case "set":
                 {
                     var meta = JsonObjectNode.TryParse(s);
                     if (meta == null) break;
-                    PatchMeta(meta, source);
+                    PatchMeta(meta);
                 }
 
                 break;
         }
     }
 
-    private void Patch(JsonObjectNode json, StreamingCollectionResult<T> source)
+    private void Patch(JsonObjectNode json)
     {
         var clear = json.TryGetStringListValue("clear");
         var data2 = InitData();
@@ -781,7 +818,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
         {
             foreach (var item in data)
             {
-                var add = JsonSerializer.Deserialize<T>(item.ToString(), source.SerializerOptions);
+                var add = JsonSerializer.Deserialize<T>(item.ToString(), SerializerOptions);
                 data2.Add(add);
             }
         }
@@ -799,12 +836,12 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
             AdditionalInfo.Clear();
         }
 
-        PatchMeta(json, source);
+        PatchMeta(json);
     }
 
-    private void PatchMeta(JsonObjectNode meta, StreamingCollectionResult<T> source)
+    private void PatchMeta(JsonObjectNode meta)
     {
-        if (meta.TryGetBooleanValue("error") == true) source.State = TaskStates.Faulted;
+        if (meta.TryGetBooleanValue("error") == true) State = TaskStates.Faulted;
         if (meta.TryGetInt32Value("offset", out var i, out var kind)) Offset = i;
         else if (kind == JsonValueKind.Null) Offset = null;
         if (meta.TryGetInt32Value("count", out i, out kind)) TotalCount = i;
@@ -814,7 +851,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
         if (TrackingId == null && meta.TryGetStringTrimmedValue("track", out s) && !string.IsNullOrEmpty(s)) TrackingId = s;
     }
 
-    private void AddItem(string s, StreamingCollectionResult<T> source, bool clear)
+    private void AddItem(string s, bool clear)
     {
         var data = InitData();
         if (clear) data.Clear();
@@ -829,7 +866,7 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
             }
             else if (s.StartsWith('['))
             {
-                var arr = JsonSerializer.Deserialize<List<T>>(s, source.SerializerOptions);
+                var arr = JsonSerializer.Deserialize<List<T>>(s, SerializerOptions);
                 foreach (var item2 in arr)
                 {
                     data.Add(item2);
@@ -843,11 +880,11 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
         }
         catch (JsonException)
         {
-            source.State = TaskStates.Faulted;
+            State = TaskStates.Faulted;
         }
         catch (NotSupportedException)
         {
-            source.State = TaskStates.Faulted;
+            State = TaskStates.Faulted;
             throw;
         }
     }

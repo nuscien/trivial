@@ -284,15 +284,6 @@ public partial class EquipartitionTask
         }
 
         /// <summary>
-        /// Converts to JSON format string.
-        /// </summary>
-        /// <returns>A JSON format string.</returns>
-        public virtual string ToJsonString()
-        {
-            return ToJsonString(null as JsonSerializerOptions);
-        }
-
-        /// <summary>
         /// Converts to query data.
         /// </summary>
         /// <returns>A query data instance.</returns>
@@ -313,49 +304,31 @@ public partial class EquipartitionTask
         /// <summary>
         /// Converts to JSON format string.
         /// </summary>
-        /// <param name="options">The data contract serializer settings.</param>
         /// <returns>A JSON format string.</returns>
-        public virtual string ToJsonString(JsonSerializerOptions options)
-        {
-            var m = new FragmentModel
-            {
-                Id = Id,
-                Index = Index,
-                State = State.ToString().ToLowerInvariant(),
-                Tag = Tag,
-                Creation = WebFormat.ParseDate(Creation),
-                Modification = WebFormat.ParseDate(Modification)
-            };
-            return StringExtensions.ToJson(m, options);
-        }
+        public virtual string ToJsonString()
+            => ToJsonString(JsonValues.Options);
 
         /// <summary>
         /// Converts to JSON format string.
         /// </summary>
         /// <param name="options">The data contract serializer settings.</param>
         /// <returns>A JSON format string.</returns>
-        public virtual string ToJsonString(DataContractJsonSerializerSettings options)
-        {
-            var m = new FragmentModel
-            {
-                Id = Id,
-                Index = Index,
-                State = State.ToString().ToLowerInvariant(),
-                Tag = Tag,
-                Creation = WebFormat.ParseDate(Creation),
-                Modification = WebFormat.ParseDate(Modification)
-            };
-            return StringExtensions.ToJson(m, options);
-        }
+        public virtual string ToJsonString(JsonSerializerOptions options)
+            => JsonSerializer.Serialize(ToModel(), options);
+
+        /// <summary>
+        /// Writes this instance to the specified writer as a JSON value.
+        /// </summary>
+        /// <param name="writer">The writer to which to write this instance.</param>
+        public virtual void WriteTo(Utf8JsonWriter writer)
+            => JsonSerializer.Serialize(writer, ToModel());
 
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
-        {
-            return string.Format("#{0} [{1}] {2}", Index.ToString(), State.ToString(), Id);
-        }
+            => string.Format("#{0} [{1}] {2}", Index.ToString(), State.ToString(), Id);
 
         /// <summary>
         /// Parses from a JSON string.
@@ -367,7 +340,7 @@ public partial class EquipartitionTask
         {
             StringExtensions.AssertNotWhiteSpace(nameof(s), s);
             s = s.Trim();
-            if (s.IndexOf("<") == 0)
+            if (s.StartsWith("<"))
             {
                 var xml = XElement.Parse(s);
                 string id = null;
@@ -431,6 +404,21 @@ public partial class EquipartitionTask
             if (string.IsNullOrWhiteSpace(m.State) || !Enum.TryParse(m.State, true, out FragmentStates state)) state = FragmentStates.Pending;
             return new Fragment(m.Id, m.Index ?? 0, state, WebFormat.ParseDate(m.Creation), WebFormat.ParseDate(m.Modification), m.Tag);
         }
+
+        /// <summary>
+        /// Converts to model.
+        /// </summary>
+        /// <returns>An instance of the model.</returns>
+        internal FragmentModel ToModel()
+            => new()
+            {
+                Id = Id,
+                Index = Index,
+                State = State.ToString().ToLowerInvariant(),
+                Tag = Tag,
+                Creation = WebFormat.ParseDate(Creation),
+                Modification = WebFormat.ParseDate(Modification)
+            };
     }
 
     /// <summary>

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -18,7 +20,8 @@ using Trivial.Data;
 using Trivial.Reflection;
 using Trivial.Tasks;
 using Trivial.Web;
-using System.Buffers;
+using System.IO;
+using System.Runtime.Serialization.Json;
 
 namespace Trivial.Text;
 
@@ -43,6 +46,16 @@ public static class JsonValues
     /// Gets the MIME content type of JSON lines format text.
     /// </summary>
     public const string JsonlMIME = "application/jsonl";
+
+    /// <summary>
+    /// The default JSON serializer options.
+    /// </summary>
+    internal static readonly JsonSerializerOptions Options = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
+    };
 
     /// <summary>
     /// JSON null.
@@ -170,6 +183,37 @@ public static class JsonValues
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Converts from JSON reader.
+    /// </summary>
+    /// <param name="reader">The JSON reader.</param>
+    /// <returns>The JSON value; or null, if failed.</returns>
+    public static BaseJsonValueNode ToJsonValue(ref Utf8JsonReader reader)
+    {
+        SkipComments(ref reader);
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+                return Null;
+            case JsonTokenType.StartObject:
+                return new JsonObjectNode(ref reader);
+            case JsonTokenType.StartArray:
+                return JsonArrayNode.ParseValue(ref reader);
+            case JsonTokenType.String:
+                var str = reader.GetString();
+                return new JsonStringNode(str);
+            case JsonTokenType.Number:
+                if (reader.TryGetInt64(out var int64v)) return new JsonIntegerNode(int64v);
+                return new JsonDoubleNode(reader.GetDouble());
+            case JsonTokenType.True:
+                return JsonBooleanNode.True;
+            case JsonTokenType.False:
+                return JsonBooleanNode.False;
+            default:
+                return null;
+        }
     }
 
     /// <summary>
@@ -1422,6 +1466,366 @@ public static class JsonValues
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
     public static JsonNodeSchemaDescription CreateSchema(Type type, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
         => CreateSchema(type, 10, desc, handler);
+
+    /// <summary>
+    /// Creates media type header value of JSON.
+    /// </summary>
+    /// <returns>The media type header value of JSON.</returns>
+    public static MediaTypeHeaderValue GetJsonMediaTypeHeaderValue()
+#if NET8_0_OR_GREATER
+        => new(JsonMIME, "utf-8");
+#else
+        => new(JsonMIME);
+#endif
+
+    /// <summary>
+    /// Creates media type header value of JSON lines.
+    /// </summary>
+    /// <returns>The media type header value of JSON lines.</returns>
+    public static MediaTypeHeaderValue GetJsonlMediaTypeHeaderValue()
+#if NET8_0_OR_GREATER
+        => new(JsonlMIME, "utf-8");
+#else
+        => new(JsonlMIME);
+#endif
+
+    /// <summary>
+    /// Serializes an object into JSON format.
+    /// </summary>
+    /// <param name="stream">The stream to write.</param>
+    /// <param name="obj">The object to serialize.</param>
+    /// <param name="options">The optional serializer settings.</param>
+    /// <returns>A JSON string.</returns>
+    internal static void WriteTo(Stream stream, object obj, DataContractJsonSerializerSettings options)
+        => WriteTo(stream, obj, null, (s, o, t, opt) =>
+        {
+            var serializer = options != null ? new DataContractJsonSerializer(t, options) : new DataContractJsonSerializer(t);
+            serializer.WriteObject(stream, o);
+        });
+
+    /// <summary>
+    /// Serializes an object into JSON format.
+    /// </summary>
+    /// <param name="stream">The stream to write.</param>
+    /// <param name="obj">The object to serialize.</param>
+    /// <param name="options">The serializer options.</param>
+    /// <param name="converter">The optional fallback converter.</param>
+    /// <returns>A JSON string.</returns>
+    public static void WriteTo(Stream stream, object obj, JsonSerializerOptions options = null, Action<Stream, object, Type, JsonSerializerOptions> converter = null)
+    {
+        if (stream?.CanWrite != true) return;
+        var writer = new Utf8JsonWriter(stream);
+        var t = obj.GetType();
+        if (obj == null)
+        {
+            writer.WriteNullValue();
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is BaseJsonValueNode json)
+        {
+            json.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is JsonDocument jsonDoc)
+        {
+            jsonDoc.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is JsonElement jsonEle)
+        {
+            jsonEle.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is System.Text.Json.Nodes.JsonNode jsonNode)
+        {
+            jsonNode.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+        {
+            if (t.FullName.Equals("Newtonsoft.Json.Linq.JObject", StringComparison.InvariantCulture)
+                || t.FullName.Equals("Newtonsoft.Json.Linq.JArray", StringComparison.InvariantCulture))
+            {
+                var str = obj.ToString();
+                var sw = new StreamWriter(stream, Encoding.UTF8);
+                sw.Write(str);
+                sw.Flush();
+                stream.Position = 0;
+                return;
+            }
+        }
+
+        if (obj is Security.TokenRequest tokenReq)
+        {
+            tokenReq.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is IEnumerable<KeyValuePair<string, string>> col)
+        {
+            writer.WriteStartObject();
+            foreach (var kvp in col)
+            {
+                writer.WriteString(kvp.Key, kvp.Value);
+            }
+
+            writer.WriteEndObject();
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is string s)
+        {
+            writer.WriteStringValue(s);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is Uri uri)
+        {
+            try
+            {
+                writer.WriteStringValue(uri.OriginalString);
+            }
+            catch (InvalidOperationException)
+            {
+                writer.WriteStringValue(uri.ToString());
+            }
+
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is IJsonValueNode jv)
+        {
+            var node = jv.ToJsonNode();
+            if (node is null) writer.WriteNullValue();
+            else node.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is Net.HttpUri || obj is Net.AppDeepLinkUri uri3)
+        {
+            writer.WriteStringValue(obj.ToString());
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (t.IsValueType)
+        {
+            if (obj is bool b)
+            {
+                writer.WriteBooleanValue(b);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is int i32)
+            {
+                writer.WriteNumberValue(i32);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is long i64)
+            {
+                writer.WriteNumberValue(i64);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is float f1)
+            {
+                writer.WriteNumberValue(f1);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is uint i32u)
+            {
+                writer.WriteNumberValue(i32u);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is ulong i64u)
+            {
+                writer.WriteNumberValue(i64u);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is DateTime d)
+            {
+                writer.WriteStringValue(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is DateTimeOffset dto)
+            {
+                writer.WriteStringValue(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is double f2)
+            {
+                writer.WriteNumberValue(f2);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is decimal f3)
+            {
+                writer.WriteNumberValue(f3);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is TimeSpan ts)
+            {
+                writer.WriteStringValue(ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture));
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (t == typeof(Guid) || t == typeof(Maths.Angle) || t == typeof(Geography.Longitude) || t == typeof(Geography.Latitude))
+            {
+                writer.WriteStringValue(obj.ToString());
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is byte i8)
+            {
+                writer.WriteNumberValue(i8);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is short i16)
+            {
+                writer.WriteNumberValue(i16);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is ushort i16u)
+            {
+                writer.WriteNumberValue(i16u);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+#if NET6_0_OR_GREATER
+            if (obj is Half ha)
+            {
+                writer.WriteNumberValue((float)ha);
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is DateOnly date)
+            {
+                writer.WriteStringValue(date.ToString("yyyy-MM-dd"));
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+#endif
+#if NET8_0_OR_GREATER
+            if (obj is Int128 i128)
+            {
+                if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) writer.WriteNumberValue((long)i128);
+                else writer.WriteStringValue(i128.ToString("g"));
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+
+            if (obj is UInt128 i128u)
+            {
+                if (i128u <= JsonIntegerNode.MaxSafeInteger) writer.WriteNumberValue((long)i128u);
+                else writer.WriteStringValue(i128u.ToString("g"));
+                writer.Flush();
+                stream.Position = 0;
+                return;
+            }
+#endif
+        }
+
+        if (t == typeof(DBNull))
+        {
+            writer.WriteNullValue();
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (t == typeof(StringBuilder) || t == typeof(Maths.Angle.Model) || t == typeof(Geography.Longitude.Model) || t == typeof(Geography.Latitude.Model))
+        {
+            writer.WriteStringValue(obj.ToString());
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (obj is IJsonObjectHost jsonHost)
+        {
+            json = jsonHost.ToJson();
+            if (json is null) writer.WriteNullValue();
+            else json.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return;
+        }
+
+        if (converter is not null) converter(stream, obj, t, options);
+        else if (options is null) JsonSerializer.Serialize(stream, obj, t);
+        else JsonSerializer.Serialize(stream, obj, t, options);
+        stream.Position = 0;
+        return;
+    }
 
     internal static void SkipComments(ref Utf8JsonReader reader)
     {

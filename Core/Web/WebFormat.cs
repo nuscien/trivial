@@ -439,6 +439,19 @@ public static partial class WebFormat
     }
 
     /// <summary>
+    /// Encodes a specific string into Base64Url format.
+    /// </summary>
+    /// <param name="value">The value to encode.</param>
+    /// <returns>A Base64Url string.</returns>
+    public static string Base64UrlEncode(Stream value)
+    {
+        if (value?.CanRead != true) return null;
+        var bytes = new byte[value.Length];
+        _ = value.Read(bytes, 0, (int)value.Length);
+        return Convert.ToBase64String(bytes).Replace("+", "-").Replace("/", "_").Replace("=", string.Empty);
+    }
+
+    /// <summary>
     /// Encodes a specific object into JSON Base64Url format.
     /// </summary>
     /// <param name="obj">The object to encode.</param>
@@ -449,10 +462,9 @@ public static partial class WebFormat
         if (obj == null) return string.Empty;
         var t = obj.GetType();
         if (t == typeof(string)) return Base64UrlEncode(obj.ToString(), Encoding.UTF8);
-        return Base64UrlEncode(StringExtensions.ToJson(obj, options ?? new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-        }));
+        using var stream = new MemoryStream();
+        JsonValues.WriteTo(stream, obj, options ?? JsonValues.Options);
+        return Base64UrlEncode(stream);
     }
 
     /// <summary>

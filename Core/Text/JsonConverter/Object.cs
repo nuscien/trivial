@@ -107,30 +107,7 @@ public sealed class JsonValueNodeConverter : JsonConverterFactory
     {
         /// <inheritdoc />
         public override BaseJsonValueNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            switch (reader.TokenType)
-            {
-                case JsonTokenType.Null:
-                    return JsonValues.Null;
-                case JsonTokenType.StartObject:
-                    return new JsonObjectNode(ref reader);
-                case JsonTokenType.StartArray:
-                    return JsonArrayNode.ParseValue(ref reader);
-                case JsonTokenType.String:
-                    var str = reader.GetString();
-                    return new JsonStringNode(str);
-                case JsonTokenType.Number:
-                    if (reader.TryGetInt64(out var int64v)) return new JsonIntegerNode(int64v);
-                    return new JsonDoubleNode(reader.GetDouble());
-                case JsonTokenType.True:
-                    return JsonBooleanNode.True;
-                case JsonTokenType.False:
-                    return JsonBooleanNode.False;
-                default:
-                    return null;
-            }
-        }
+            => JsonValues.ToJsonValue(ref reader);
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, BaseJsonValueNode value, JsonSerializerOptions options)

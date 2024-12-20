@@ -785,10 +785,7 @@ public class JsonWebTokenPayload
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-        => StringExtensions.ToJson(this, new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        });
+        => JsonSerializer.Serialize(this, JsonValues.Options);
 
     /// <summary>
     /// Converts to JSON object.
