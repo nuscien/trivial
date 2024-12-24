@@ -188,11 +188,41 @@ public class TokenInfo
     /// Initializes a new instance of the TokenInfo class.
     /// </summary>
     /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
     /// <param name="scope">The permission scope.</param>
-    public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+    public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, string refreshToken, IEnumerable<string> scope = null)
     {
         Scope = ListExtensions.ToList(scope, false);
         TokenType = BearerTokenType;
+        RefreshToken = refreshToken;
+        if (jwt?.Payload == null) return;
+        AccessToken = jwt.ToEncodedString();
+        UserId = jwt.Payload.Subject;
+        var expiration = jwt.Payload.Expiration;
+        if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+        : this(jwt, null, scope)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<RSASecretExchange.JsonWebTokenPayload> jwt, string refreshToken, IEnumerable<string> scope = null)
+    {
+        Scope = ListExtensions.ToList(scope, false);
+        TokenType = BearerTokenType;
+        RefreshToken = refreshToken;
         if (jwt?.Payload == null) return;
         AccessToken = jwt.ToEncodedString();
         UserId = jwt.Payload.Subject;
@@ -206,13 +236,25 @@ public class TokenInfo
     /// <param name="jwt">The JSON web token used to generate access token.</param>
     /// <param name="scope">The permission scope.</param>
     public TokenInfo(JsonWebToken<RSASecretExchange.JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+        : this(jwt, null, scope)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<JsonObjectNode> jwt, string refreshToken, IEnumerable<string> scope = null)
     {
         Scope = ListExtensions.ToList(scope, false);
         TokenType = BearerTokenType;
+        RefreshToken = refreshToken;
         if (jwt?.Payload == null) return;
         AccessToken = jwt.ToEncodedString();
-        UserId = jwt.Payload.Subject;
-        var expiration = jwt.Payload.Expiration;
+        UserId = jwt.Payload.TryGetStringTrimmedValue("sub", true);
+        var expiration = jwt.Payload.TryGetDateTimeValue("exp", true);
         if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
     }
 
@@ -222,14 +264,8 @@ public class TokenInfo
     /// <param name="jwt">The JSON web token used to generate access token.</param>
     /// <param name="scope">The permission scope.</param>
     public TokenInfo(JsonWebToken<JsonObjectNode> jwt, IEnumerable<string> scope = null)
+        : this(jwt, null, scope)
     {
-        Scope = ListExtensions.ToList(scope, false);
-        TokenType = BearerTokenType;
-        if (jwt?.Payload == null) return;
-        AccessToken = jwt.ToEncodedString();
-        UserId = jwt.Payload.TryGetStringTrimmedValue("sub", true);
-        var expiration = jwt.Payload.TryGetDateTimeValue("exp", true);
-        if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
     }
 
     /// <summary>
@@ -330,13 +366,13 @@ public class TokenInfo
     }
 
     /// <summary>
-    /// Gets or sets the expiration seconds.
+    /// Gets or sets the expiration time span.
     /// </summary>
     [JsonIgnore]
     public TimeSpan? ExpiredAfter { get; set; }
 
     /// <summary>
-    /// Gets or sets the refresh token.
+    /// Gets or sets the refresh token used to re-generate an access token.
     /// </summary>
     [DataMember(Name = RefreshTokenProperty, EmitDefaultValue = false)]
     [JsonPropertyName(RefreshTokenProperty)]
@@ -663,6 +699,14 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// <summary>
     /// Initializes a new instance of the BaseAccountTokenInfo class.
     /// </summary>
+    protected BaseAccountTokenInfo()
+        : base()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="errorUri">The URI of error information.</param>
     /// <param name="errorDescription">The description of the error.</param>
@@ -701,8 +745,84 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     }
 
     /// <summary>
-    /// Gets or sets the user entity.
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
     /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, JsonWebToken<JsonWebTokenPayload> jwt, string refreshToken, IEnumerable<string> scope = null)
+        : base(jwt, refreshToken, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, JsonWebToken<JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+        : base(jwt, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, JsonWebToken<RSASecretExchange.JsonWebTokenPayload> jwt, string refreshToken, IEnumerable<string> scope = null)
+        : base(jwt, refreshToken, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, JsonWebToken<RSASecretExchange.JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
+        : base(jwt, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, JsonWebToken<JsonObjectNode> jwt, string refreshToken, IEnumerable<string> scope = null)
+        : base(jwt, refreshToken, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseAccountTokenInfo class.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="scope">The permission scope.</param>
+    protected BaseAccountTokenInfo(T user, JsonWebToken<JsonObjectNode> jwt, IEnumerable<string> scope = null)
+        : base(jwt, scope)
+    {
+        User = user;
+    }
+
+    /// <summary>
+    /// Gets or sets the current user entity.
+    /// </summary>
+    [DataMember(Name = "user", EmitDefaultValue = false)]
     [JsonPropertyName("user")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T User
@@ -739,11 +859,19 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     }
 
     /// <summary>
+    /// Gets or sets the client identifier.
+    /// </summary>
+    [DataMember(Name = TokenRequestBody.ClientIdProperty, EmitDefaultValue = true)]
+    [JsonPropertyName(TokenRequestBody.ClientIdProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string ClientId { get; set; }
+
+    /// <summary>
     /// Gets the user identifier from the entity.
     /// </summary>
-    /// <param name="User">The user entity.</param>
+    /// <param name="user">The user entity to get the identifier.</param>
     /// <returns>The user identifier.</returns>
-    protected abstract string GetUserId(T User);
+    protected abstract string GetUserId(T user);
 
     /// <summary>
     /// Sets a new user identifier without validating user model.
@@ -751,4 +879,12 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// <param name="id">The new user identifier without validation.</param>
     protected void ForceUpdateUserId(string id)
         => base.UserId = id;
+
+    /// <summary>
+    /// Converts to the token info and user entity.
+    /// </summary>
+    /// <param name="token">The token.</param>
+    /// <returns>An instance of the JsonNode class.</returns>
+    public static explicit operator Reflection.SelectionRelationship<T, TokenInfo>(BaseAccountTokenInfo<T> token)
+        => token is null ? new() : new(token.User, token);
 }

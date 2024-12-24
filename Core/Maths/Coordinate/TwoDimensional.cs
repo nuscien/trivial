@@ -10,6 +10,7 @@
 
 using System;
 using System.Globalization;
+using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -72,33 +73,24 @@ public enum Quadrants : byte
 /// The generic 2D (flat) coordinate point.
 /// </summary>
 /// <typeparam name="TUnit">The type of unit.</typeparam>
-public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<Point2D<TUnit>>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
 {
     /// <summary>
     /// The event arguments with the position.
     /// </summary>
-    public class DataEventArgs : EventArgs
+    /// <param name="x">The value of X.</param>
+    /// <param name="y">The value of Y.</param>
+    public class DataEventArgs(TUnit x, TUnit y) : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the DataEventArgs class.
-        /// </summary>
-        /// <param name="x">The value of X.</param>
-        /// <param name="y">The value of Y.</param>
-        public DataEventArgs(TUnit x, TUnit y)
-        {
-            X = x;
-            Y = y;
-        }
-
         /// <summary>
         /// Gets the value of X.
         /// </summary>
-        public TUnit X { get; }
+        public TUnit X { get; } = x;
 
         /// <summary>
         /// Gets the value of Y.
         /// </summary>
-        public TUnit Y { get; }
+        public TUnit Y { get; } = y;
     }
 
     /// <summary>
@@ -157,6 +149,35 @@ public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>>
         => other is not null && X.Equals(other.ItemA) && Y.Equals(other.ItemB);
 
     /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    public virtual bool Equals(Point2D<TUnit> other)
+        => other is not null && X.Equals(other.X) && Y.Equals(other.Y);
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public override bool Equals(object other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (other is Point2D<TUnit> p) return Equals(p);
+        if (other is TwoElements<TUnit> e) return Equals(e);
+        return base.Equals(other);
+    }
+
+    /// <summary>
+    /// Serves as the default hash function.
+    /// </summary>
+    /// <returns>A hash code for the current object.</returns>
+    public override int GetHashCode()
+        => base.GetHashCode();
+
+    /// <summary>
     /// Returns the point string value of this instance.
     /// </summary>
     /// <returns>A System.String containing this point.</returns>
@@ -182,7 +203,10 @@ public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>>
 /// The point of 2D (flat) mathematics coordinate.
 /// </summary>
 [JsonConverter(typeof(DoublePoint2DConverter))]
-public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, ISubtractionCapable<DoublePoint2D>, INegationCapable<DoublePoint2D>, IEquatable<System.Drawing.PointF>, IEquatable<Point2D<int>>, IEquatable<Point2D<double>>
+public sealed class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, ISubtractionCapable<DoublePoint2D>, INegationCapable<DoublePoint2D>, IEquatable<System.Drawing.PointF>, IEquatable<Vector2>, IEquatable<Point2D<double>>, IEquatable<Point2D<float>>, IEquatable<Point2D<int>>, IJsonObjectHost
+#if NET8_0_OR_GREATER
+    , IAdditionOperators<DoublePoint2D, DoublePoint2D, DoublePoint2D>, ISubtractionOperators<DoublePoint2D, DoublePoint2D, DoublePoint2D>, IUnaryNegationOperators<DoublePoint2D, DoublePoint2D>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the DoublePoint2D class.
@@ -234,11 +258,16 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public DoublePoint2D Plus(Point2D<double> value)
-    {
-        return value != null
-            ? new DoublePoint2D(X + value.X, Y + value.Y)
-            : new DoublePoint2D(X, Y);
-    }
+        => value != null ? new(X + value.X, Y + value.Y) : new(X, Y);
+
+    /// <summary>
+    /// Pluses another value to return. Current value will not be changed.
+    /// this + value
+    /// </summary>
+    /// <param name="value">The value to be plused.</param>
+    /// <returns>A result after leftValue plus rightValue.</returns>
+    public DoublePoint2D Plus(Point2D<float> value)
+        => value != null ? new(X + value.X, Y + value.Y) : new(X, Y);
 
     /// <summary>
     /// Pluses another value to return. Current value will not be changed.
@@ -247,11 +276,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public DoublePoint2D Plus(Point2D<int> value)
-    {
-        return value != null
-            ? new DoublePoint2D(X + value.X, Y + value.Y)
-            : new DoublePoint2D(X, Y);
-    }
+        => value != null ? new(X + value.X, Y + value.Y) : new(X, Y);
 
     /// <summary>
     /// Pluses another value to return. Current value will not be changed.
@@ -260,11 +285,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public DoublePoint2D Plus(DoublePoint2D value)
-    {
-        return value != null
-            ? new DoublePoint2D(X + value.X, Y + value.Y)
-            : new DoublePoint2D(X, Y);
-    }
+        => value != null ? new(X + value.X, Y + value.Y) : new(X, Y);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -273,11 +294,16 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public DoublePoint2D Minus(Point2D<double> value)
-    {
-        return value != null
-            ? new DoublePoint2D(X - value.X, Y - value.Y)
-            : new DoublePoint2D(X, Y);
-    }
+        => value != null ? new(X - value.X, Y - value.Y) : new(X, Y);
+
+    /// <summary>
+    /// Minuses another value to return. Current value will not be changed.
+    /// this - value
+    /// </summary>
+    /// <param name="value">The value to be minuses.</param>
+    /// <returns>A result after leftValue minus rightValue.</returns>
+    public DoublePoint2D Minus(Point2D<float> value)
+        => value != null ? new(X - value.X, Y - value.Y) : new(X, Y);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -286,11 +312,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public DoublePoint2D Minus(Point2D<int> value)
-    {
-        return value != null
-            ? new DoublePoint2D(X - value.X, Y - value.Y)
-            : new DoublePoint2D(X, Y);
-    }
+        => value != null ? new(X - value.X, Y - value.Y) : new(X, Y);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -299,11 +321,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public DoublePoint2D Minus(DoublePoint2D value)
-    {
-        return value != null
-            ? new DoublePoint2D(X - value.X, Y - value.Y)
-            : new DoublePoint2D(X, Y);
-    }
+        => value != null ? new(X - value.X, Y - value.Y) : new(X, Y);
 
     /// <summary>
     /// Negates the current value to return. Current value will not be changed.
@@ -311,9 +329,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// </summary>
     /// <returns>A result after negation.</returns>
     public DoublePoint2D Negate()
-    {
-        return new DoublePoint2D(-X, -Y);
-    }
+        => new(-X, -Y);
 
     /// <summary>
     /// Converts to an instance of JSON.
@@ -321,7 +337,9 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <returns>A JSON object instance.</returns>
     public JsonObjectNode ToJson()
     {
-        return ToJson(new JsonObjectNode());
+        var json = new JsonObjectNode();
+        ToJson(json);
+        return json;
     }
 
     /// <summary>
@@ -329,12 +347,11 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// </summary>
     /// <param name="obj">The optional JSON object instance to add properties.</param>
     /// <returns>A JSON object instance.</returns>
-    public JsonObjectNode ToJson(JsonObjectNode obj)
+    public void ToJson(JsonObjectNode obj)
     {
-        if (obj is null) obj = new JsonObjectNode();
+        if (obj is null) return;
         obj.SetValue("x", X);
         obj.SetValue("y", Y);
-        return obj;
     }
 
     /// <summary>
@@ -357,6 +374,14 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
     /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(Vector2 other)
+        => X == other.X && Y == other.Y;
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
     public bool Equals(Point2D<int> other)
         => other is not null && X == other.X && Y == other.Y;
 
@@ -365,7 +390,15 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
     /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-    public bool Equals(Point2D<double> other)
+    public bool Equals(Point2D<float> other)
+        => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy);
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public override bool Equals(Point2D<double> other)
         => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy);
 
     /// <summary>
@@ -378,8 +411,10 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         if (other is Point2D<double> p) return Equals(p);
+        if (other is Point2D<float> p1) return Equals(p1);
         if (other is Point2D<int> p2) return Equals(p2);
-        if (other is System.Drawing.PointF p3) return Equals(p3);
+        if (other is Vector2 p3) return Equals(p3);
+        if (other is System.Drawing.PointF p4) return Equals(p4);
         return base.Equals(other);
     }
 
@@ -395,7 +430,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// </summary>
     /// <param name="value">The point converted.</param>
     /// <returns>An instance of the point class.</returns>
-    public static explicit operator System.Numerics.Vector2(DoublePoint2D value)
+    public static explicit operator Vector2(DoublePoint2D value)
         => new((float)value.X, (float)value.Y);
 
     /// <summary>
@@ -453,13 +488,24 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <returns>A result after addition.</returns>
     public static DoublePoint2D operator -(DoublePoint2D leftValue, DoublePoint2D rightValue)
         => (leftValue ?? new DoublePoint2D()).Minus(rightValue);
+
+    /// <summary>
+    /// Negates the current value to return. Current value will not be changed.
+    /// </summary>
+    /// <param name="value">The value to negate.</param>
+    /// <returns>A result after negation.</returns>
+    public static DoublePoint2D operator -(DoublePoint2D value)
+        => value?.Negate();
 }
 
 /// <summary>
 /// The point of 2D (flat) integer coordinate.
 /// </summary>
 [JsonConverter(typeof(IntPoint2DConverter))]
-public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtractionCapable<IntPoint2D>, INegationCapable<IntPoint2D>, IEquatable<System.Drawing.Point>, IEquatable<Point2D<int>>, IEquatable<Point2D<double>>
+public sealed class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtractionCapable<IntPoint2D>, INegationCapable<IntPoint2D>, IEquatable<System.Drawing.Point>, IEquatable<Point2D<int>>, IEquatable<Point2D<double>>, IJsonObjectHost
+#if NET8_0_OR_GREATER
+    , IAdditionOperators<IntPoint2D, IntPoint2D, IntPoint2D>, ISubtractionOperators<IntPoint2D, IntPoint2D, IntPoint2D>, IUnaryNegationOperators<IntPoint2D, IntPoint2D>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the IntPoint2D class.
@@ -510,11 +556,7 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public IntPoint2D Plus(Point2D<int> value)
-    {
-        return value != null
-            ? new IntPoint2D(X + value.X, Y + value.Y)
-            : new IntPoint2D(X, Y);
-    }
+        => value != null ? new(X + value.X, Y + value.Y) : new(X, Y);
 
     /// <summary>
     /// Pluses another value to return. Current value will not be changed.
@@ -523,11 +565,7 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public IntPoint2D Plus(IntPoint2D value)
-    {
-        return value != null
-            ? new IntPoint2D(X + value.X, Y + value.Y)
-            : new IntPoint2D(X, Y);
-    }
+        => value != null ? new(X + value.X, Y + value.Y) : new(X, Y);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -536,11 +574,7 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public IntPoint2D Minus(Point2D<int> value)
-    {
-        return value != null
-            ? new IntPoint2D(X - value.X, Y - value.Y)
-            : new IntPoint2D(X, Y);
-    }
+        => value != null ? new(X - value.X, Y - value.Y) : new(X, Y);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -549,11 +583,7 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public IntPoint2D Minus(IntPoint2D value)
-    {
-        return value != null
-            ? new IntPoint2D(X - value.X, Y - value.Y)
-            : new IntPoint2D(X, Y);
-    }
+        => value != null ? new(X - value.X, Y - value.Y) : new(X, Y);
 
     /// <summary>
     /// Negates the current value to return. Current value will not be changed.
@@ -561,9 +591,7 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// </summary>
     /// <returns>A result after negation.</returns>
     public IntPoint2D Negate()
-    {
-        return new IntPoint2D(-X, -Y);
-    }
+        => new(-X, -Y);
 
     /// <summary>
     /// Converts to an instance of JSON.
@@ -571,7 +599,9 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <returns>A JSON object instance.</returns>
     public JsonObjectNode ToJson()
     {
-        return ToJson(new JsonObjectNode());
+        var json = new JsonObjectNode();
+        ToJson(json);
+        return json;
     }
 
     /// <summary>
@@ -579,12 +609,11 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// </summary>
     /// <param name="obj">The optional JSON object instance to add properties.</param>
     /// <returns>A JSON object instance.</returns>
-    public JsonObjectNode ToJson(JsonObjectNode obj)
+    public void ToJson(JsonObjectNode obj)
     {
-        if (obj is null) obj = new JsonObjectNode();
+        if (obj is null) return;
         obj.SetValue("x", X);
         obj.SetValue("y", Y);
-        return obj;
     }
 
     /// <summary>
@@ -601,14 +630,6 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
     public bool Equals(System.Drawing.Point other)
         => X == other.X && Y == other.Y;
-
-    /// <summary>
-    /// Determines whether the specified object is equal to the current object.
-    /// </summary>
-    /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-    public bool Equals(Point2D<int> other)
-        => other is not null && X == other.X && Y == other.Y;
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -673,6 +694,14 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// <returns>A result after addition.</returns>
     public static IntPoint2D operator -(IntPoint2D leftValue, IntPoint2D rightValue)
         => (leftValue ?? new IntPoint2D()).Minus(rightValue);
+
+    /// <summary>
+    /// Negates the current value to return. Current value will not be changed.
+    /// </summary>
+    /// <param name="value">The value to negate.</param>
+    /// <returns>A result after negation.</returns>
+    public static IntPoint2D operator -(IntPoint2D value)
+        => value?.Negate();
 }
 
 /// <summary>
@@ -736,8 +765,7 @@ sealed class IntPoint2DConverter : JsonConverter<IntPoint2D>
 
     private static IntPoint2D ReadJson(ref Utf8JsonReader reader)
     {
-        var json = JsonObjectNode.ParseValue(ref reader);
-        if (json == null) throw new JsonException("Cannot parse the JSON.");
+        var json = JsonObjectNode.ParseValue(ref reader) ?? throw new JsonException("Cannot parse the JSON.");
         if (!json.TryGetInt32Value("x", out var x) && !json.TryGetInt32Value("X", out x))
             throw new JsonException("Expect a property x in the JSON.");
         if (!json.TryGetInt32Value("y", out var y) && !json.TryGetInt32Value("Y", out y))
@@ -747,8 +775,7 @@ sealed class IntPoint2DConverter : JsonConverter<IntPoint2D>
 
     private static IntPoint2D ReadJsonArray(ref Utf8JsonReader reader)
     {
-        var json = JsonArrayNode.ParseValue(ref reader);
-        if (json == null) throw new JsonException("Cannot parse the JSON.");
+        var json = JsonArrayNode.ParseValue(ref reader) ?? throw new JsonException("Cannot parse the JSON.");
         if (json.Count != 2) throw new JsonException("The count of the JSON array is not expected.");
         if (!json.TryGetInt32Value(0, out var num1) || !json.TryGetInt32Value(1, out var num2))
             throw new JsonException("The type of the array item is not expected.");

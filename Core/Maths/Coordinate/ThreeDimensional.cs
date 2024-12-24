@@ -10,6 +10,7 @@
 
 using System;
 using System.Globalization;
+using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,40 +22,30 @@ namespace Trivial.Maths;
 /// The generic 3D (stereoscophic) coordinate point.
 /// </summary>
 /// <typeparam name="TUnit">The type of unit.</typeparam>
-public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<ThreeElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<Point3D<TUnit>>, IEquatable<ThreeElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
 {
     /// <summary>
     /// The event arguments with the position.
     /// </summary>
-    public class DataEventArgs : EventArgs
+    /// <param name="x">The value of X.</param>
+    /// <param name="y">The value of Y.</param>
+    /// <param name="z">The value of Z.</param>
+    public class DataEventArgs(TUnit x, TUnit y, TUnit z) : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the DataEventArgs class.
-        /// </summary>
-        /// <param name="x">The value of X.</param>
-        /// <param name="y">The value of Y.</param>
-        /// <param name="z">The value of Z.</param>
-        public DataEventArgs(TUnit x, TUnit y, TUnit z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-
         /// <summary>
         /// Gets the value of X.
         /// </summary>
-        public TUnit X { get; }
+        public TUnit X { get; } = x;
 
         /// <summary>
         /// Gets the value of Y.
         /// </summary>
-        public TUnit Y { get; }
+        public TUnit Y { get; } = y;
 
         /// <summary>
         /// Gets the value of Y.
         /// </summary>
-        public TUnit Z { get; }
+        public TUnit Z { get; } = z;
     }
 
     /// <summary>
@@ -122,6 +113,35 @@ public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<ThreeElements<TUn
         => other is not null && X.Equals(other.ItemA) && Y.Equals(other.ItemB) && Z.Equals(other.ItemC);
 
     /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    public virtual bool Equals(Point3D<TUnit> other)
+        => other is not null && X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public override bool Equals(object other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (other is Point3D<TUnit> p) return Equals(p);
+        if (other is ThreeElements<TUnit> e) return Equals(e);
+        return base.Equals(other);
+    }
+
+    /// <summary>
+    /// Serves as the default hash function.
+    /// </summary>
+    /// <returns>A hash code for the current object.</returns>
+    public override int GetHashCode()
+        => base.GetHashCode();
+
+    /// <summary>
     /// Returns the point string value of this instance.
     /// </summary>
     /// <returns>A System.String containing this point.</returns>
@@ -149,7 +169,10 @@ public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<ThreeElements<TUn
 /// The point of 3D (stereoscophic) mathematics coordinate.
 /// </summary>
 [JsonConverter(typeof(DoublePoint3DConverter))]
-public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, ISubtractionCapable<DoublePoint3D>, INegationCapable<DoublePoint3D>, IEquatable<Point3D<double>>
+public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, ISubtractionCapable<DoublePoint3D>, INegationCapable<DoublePoint3D>, IEquatable<Vector3>, IEquatable<Point3D<double>>, IEquatable<Point3D<float>>, IEquatable<Point3D<int>>, IJsonObjectHost
+#if NET8_0_OR_GREATER
+    , IAdditionOperators<DoublePoint3D, DoublePoint3D, DoublePoint3D>, ISubtractionOperators<DoublePoint3D, DoublePoint3D, DoublePoint3D>, IUnaryNegationOperators<DoublePoint3D, DoublePoint3D>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the DoublePoint3D class.
@@ -177,11 +200,16 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public DoublePoint3D Plus(Point3D<double> value)
-    {
-        return value != null
-            ? new DoublePoint3D(X + value.X, Y + value.Y, Z + value.Z)
-            : new DoublePoint3D(X, Y, Z);
-    }
+        => value != null ? new(X + value.X, Y + value.Y, Z + value.Z) : new(X, Y, Z);
+
+    /// <summary>
+    /// Pluses another value to return. Current value will not be changed.
+    /// this + value
+    /// </summary>
+    /// <param name="value">The value to be plused.</param>
+    /// <returns>A result after leftValue plus rightValue.</returns>
+    public DoublePoint3D Plus(Point3D<float> value)
+        => value != null ? new(X + value.X, Y + value.Y, Z + value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Pluses another value to return. Current value will not be changed.
@@ -190,11 +218,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public DoublePoint3D Plus(Point3D<int> value)
-    {
-        return value != null
-            ? new DoublePoint3D(X + value.X, Y + value.Y, Z + value.Z)
-            : new DoublePoint3D(X, Y, Z);
-    }
+        => value != null ? new(X + value.X, Y + value.Y, Z + value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Pluses another value to return. Current value will not be changed.
@@ -203,11 +227,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public DoublePoint3D Plus(DoublePoint3D value)
-    {
-        return value != null
-            ? new DoublePoint3D(X + value.X, Y + value.Y, Z + value.Z)
-            : new DoublePoint3D(X, Y, Z);
-    }
+        => value != null ? new(X + value.X, Y + value.Y, Z + value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -216,11 +236,16 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public DoublePoint3D Minus(Point3D<double> value)
-    {
-        return value != null
-            ? new DoublePoint3D(X - value.X, Y - value.Y, Z - value.Z)
-            : new DoublePoint3D(X, Y, Z);
-    }
+        => value != null ? new(X - value.X, Y - value.Y, Z - value.Z) : new(X, Y, Z);
+
+    /// <summary>
+    /// Minuses another value to return. Current value will not be changed.
+    /// this - value
+    /// </summary>
+    /// <param name="value">The value to be minuses.</param>
+    /// <returns>A result after leftValue minus rightValue.</returns>
+    public DoublePoint3D Minus(Point3D<float> value)
+        => value != null ? new(X - value.X, Y - value.Y, Z - value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -229,11 +254,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public DoublePoint3D Minus(Point3D<int> value)
-    {
-        return value != null
-            ? new DoublePoint3D(X - value.X, Y - value.Y, Z - value.Z)
-            : new DoublePoint3D(X, Y, Z);
-    }
+        => value != null ? new(X - value.X, Y - value.Y, Z - value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -242,11 +263,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public DoublePoint3D Minus(DoublePoint3D value)
-    {
-        return value != null
-            ? new DoublePoint3D(X - value.X, Y - value.Y, Z - value.Z)
-            : new DoublePoint3D(X, Y, Z);
-    }
+        => value != null ? new(X - value.X, Y - value.Y, Z - value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Negates the current value to return. Current value will not be changed.
@@ -254,9 +271,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// </summary>
     /// <returns>A result after negation.</returns>
     public DoublePoint3D Negate()
-    {
-        return new DoublePoint3D(-X, -Y, -Z);
-    }
+        => new(-X, -Y, -Z);
 
     /// <summary>
     /// Converts to an instance of JSON.
@@ -264,7 +279,9 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <returns>A JSON object instance.</returns>
     public JsonObjectNode ToJson()
     {
-        return ToJson(new Text.JsonObjectNode());
+        var json = new JsonObjectNode();
+        ToJson(json);
+        return json;
     }
 
     /// <summary>
@@ -272,13 +289,12 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// </summary>
     /// <param name="obj">The optional JSON object instance to add properties.</param>
     /// <returns>A JSON object instance.</returns>
-    public JsonObjectNode ToJson(JsonObjectNode obj)
+    public void ToJson(JsonObjectNode obj)
     {
-        if (obj is null) obj = new JsonObjectNode();
+        if (obj is null) return;
         obj.SetValue("x", X);
         obj.SetValue("y", Y);
         obj.SetValue("z", Z);
-        return obj;
     }
 
     /// <summary>
@@ -293,8 +309,32 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
     /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-    public bool Equals(Point3D<double> other)
-        => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy) && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy);
+    public bool Equals(Vector3 other)
+        => X == other.X && Y == other.Y && Z == other.Z;
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(Point3D<float> other)
+        => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy) && (Math.Abs(Z - other.Z) < Arithmetic.DoubleAccuracy);
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public override bool Equals(Point3D<double> other)
+        => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy) && (Math.Abs(Z - other.Z) < Arithmetic.DoubleAccuracy);
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(Point3D<int> other)
+        => other is not null && X == other.X && Y == other.Y && Z == other.Z;
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -306,6 +346,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         if (other is Point3D<double> p) return Equals(p);
+        if (other is Point3D<float> p1) return Equals(p1);
         return base.Equals(other);
     }
 
@@ -320,28 +361,22 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// Converts a vector to the point.
     /// </summary>
     /// <param name="value">The vector to convert.</param>
-    public static implicit operator DoublePoint3D(System.Numerics.Vector3 value)
-    {
-        return new DoublePoint3D(value.X, value.Y, value.Y);
-    }
+    public static implicit operator DoublePoint3D(Vector3 value)
+        => new(value.X, value.Y, value.Z);
 
     /// <summary>
     /// Converts a vectorpoint.
     /// </summary>
     /// <param name="value">The point to convert.</param>
     public static implicit operator DoublePoint3D(Point3D<int> value)
-    {
-        return new DoublePoint3D(value.X, value.Y, value.Y);
-    }
+        => new(value.X, value.Y, value.Z);
 
     /// <summary>
     /// Converts a vectorpoint.
     /// </summary>
     /// <param name="value">The point to convert.</param>
     public static implicit operator DoublePoint3D(Point3D<float> value)
-    {
-        return new DoublePoint3D(value.X, value.Y, value.Y);
-    }
+        => new(value.X, value.Y, value.Z);
 
     /// <summary>
     /// Pluses two points in coordinate.
@@ -350,9 +385,7 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="rightValue">The right value for addition operator.</param>
     /// <returns>A result after addition.</returns>
     public static DoublePoint3D operator +(DoublePoint3D leftValue, DoublePoint3D rightValue)
-    {
-        return (leftValue ?? new DoublePoint3D()).Plus(rightValue);
-    }
+        => (leftValue ?? new()).Plus(rightValue);
 
     /// <summary>
     /// Pluses two points in coordinate.
@@ -361,16 +394,25 @@ public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, I
     /// <param name="rightValue">The right value for addition operator.</param>
     /// <returns>A result after addition.</returns>
     public static DoublePoint3D operator -(DoublePoint3D leftValue, DoublePoint3D rightValue)
-    {
-        return (leftValue ?? new DoublePoint3D()).Minus(rightValue);
-    }
+        => (leftValue ?? new()).Minus(rightValue);
+
+    /// <summary>
+    /// Negates the current value to return. Current value will not be changed.
+    /// </summary>
+    /// <param name="value">The value to negate.</param>
+    /// <returns>A result after negation.</returns>
+    public static DoublePoint3D operator -(DoublePoint3D value)
+        => value?.Negate();
 }
 
 /// <summary>
 /// The point of 3D (stereoscophic) integer coordinate.
 /// </summary>
 [JsonConverter(typeof(IntPoint3DConverter))]
-public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtractionCapable<IntPoint3D>, INegationCapable<IntPoint3D>, IEquatable<Point3D<int>>
+public sealed class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtractionCapable<IntPoint3D>, INegationCapable<IntPoint3D>, IEquatable<Point3D<int>>, IJsonObjectHost
+#if NET8_0_OR_GREATER
+    , IAdditionOperators<IntPoint3D, IntPoint3D, IntPoint3D>, ISubtractionOperators<IntPoint3D, IntPoint3D, IntPoint3D>, IUnaryNegationOperators<IntPoint3D, IntPoint3D>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the IntPoint3D class.
@@ -398,11 +440,7 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public IntPoint3D Plus(Point3D<int> value)
-    {
-        return value != null
-            ? new IntPoint3D(X + value.X, Y + value.Y, Z + value.Z)
-            : new IntPoint3D(X, Y, Z);
-    }
+        => value != null ? new(X + value.X, Y + value.Y, Z + value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Pluses another value to return. Current value will not be changed.
@@ -411,11 +449,7 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <param name="value">The value to be plused.</param>
     /// <returns>A result after leftValue plus rightValue.</returns>
     public IntPoint3D Plus(IntPoint3D value)
-    {
-        return value != null
-            ? new IntPoint3D(X + value.X, Y + value.Y, Z + value.Z)
-            : new IntPoint3D(X, Y, Z);
-    }
+        => value != null ? new(X + value.X, Y + value.Y, Z + value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -424,11 +458,7 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public IntPoint3D Minus(Point3D<int> value)
-    {
-        return value != null
-            ? new IntPoint3D(X - value.X, Y - value.Y, Z - value.Z)
-            : new IntPoint3D(X, Y, Z);
-    }
+        => value != null ? new(X - value.X, Y - value.Y, Z - value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Minuses another value to return. Current value will not be changed.
@@ -437,11 +467,7 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <param name="value">The value to be minuses.</param>
     /// <returns>A result after leftValue minus rightValue.</returns>
     public IntPoint3D Minus(IntPoint3D value)
-    {
-        return value != null
-            ? new IntPoint3D(X - value.X, Y - value.Y, Z - value.Z)
-            : new IntPoint3D(X, Y, Z);
-    }
+        => value != null ? new(X - value.X, Y - value.Y, Z - value.Z) : new(X, Y, Z);
 
     /// <summary>
     /// Negates the current value to return. Current value will not be changed.
@@ -449,17 +475,17 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// </summary>
     /// <returns>A result after negation.</returns>
     public IntPoint3D Negate()
-    {
-        return new IntPoint3D(-X, -Y, -Z);
-    }
+        => new(-X, -Y, -Z);
 
     /// <summary>
     /// Converts to an instance of JSON.
     /// </summary>
     /// <returns>A JSON object instance.</returns>
-    public Text.JsonObjectNode ToJson()
+    public JsonObjectNode ToJson()
     {
-        return ToJson(new Text.JsonObjectNode());
+        var json = new JsonObjectNode();
+        ToJson(json);
+        return json;
     }
 
     /// <summary>
@@ -467,13 +493,12 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// </summary>
     /// <param name="obj">The optional JSON object instance to add properties.</param>
     /// <returns>A JSON object instance.</returns>
-    public Text.JsonObjectNode ToJson(Text.JsonObjectNode obj)
+    public void ToJson(JsonObjectNode obj)
     {
-        if (obj is null) obj = new Text.JsonObjectNode();
+        if (obj is null) return;
         obj.SetValue("x", X);
         obj.SetValue("y", Y);
         obj.SetValue("z", Z);
-        return obj;
     }
 
     /// <summary>
@@ -482,14 +507,6 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <returns>A new object that is a copy of this instance.</returns>
     public override object Clone()
         => new IntPoint3D(X, Y, Z);
-
-    /// <summary>
-    /// Determines whether the specified object is equal to the current object.
-    /// </summary>
-    /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-    public bool Equals(Point3D<int> other)
-        => other is not null && X == other.X && Y == other.Y && Z == other.Z;
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -518,9 +535,7 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <param name="rightValue">The right value for addition operator.</param>
     /// <returns>A result after addition.</returns>
     public static IntPoint3D operator +(IntPoint3D leftValue, IntPoint3D rightValue)
-    {
-        return (leftValue ?? new IntPoint3D()).Plus(rightValue);
-    }
+        => (leftValue ?? new()).Plus(rightValue);
 
     /// <summary>
     /// Pluses two points in coordinate.
@@ -529,9 +544,15 @@ public class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtracti
     /// <param name="rightValue">The right value for addition operator.</param>
     /// <returns>A result after addition.</returns>
     public static IntPoint3D operator -(IntPoint3D leftValue, IntPoint3D rightValue)
-    {
-        return (leftValue ?? new IntPoint3D()).Minus(rightValue);
-    }
+        => (leftValue ?? new()).Minus(rightValue);
+
+    /// <summary>
+    /// Negates the current value to return. Current value will not be changed.
+    /// </summary>
+    /// <param name="value">The value to negate.</param>
+    /// <returns>A result after negation.</returns>
+    public static IntPoint3D operator -(IntPoint3D value)
+        => value?.Negate();
 }
 
 /// <summary>
@@ -596,8 +617,7 @@ sealed class IntPoint3DConverter : JsonConverter<IntPoint3D>
 
     private static IntPoint3D ReadJson(ref Utf8JsonReader reader)
     {
-        var json = JsonObjectNode.ParseValue(ref reader);
-        if (json == null) throw new JsonException("Cannot parse the JSON.");
+        var json = JsonObjectNode.ParseValue(ref reader) ?? throw new JsonException("Cannot parse the JSON.");
         if (!json.TryGetInt32Value("x", out var x) && !json.TryGetInt32Value("X", out x))
             throw new JsonException("Expect a property x in the JSON.");
         if (!json.TryGetInt32Value("y", out var y) && !json.TryGetInt32Value("Y", out y))
@@ -609,8 +629,7 @@ sealed class IntPoint3DConverter : JsonConverter<IntPoint3D>
 
     private static IntPoint3D ReadJsonArray(ref Utf8JsonReader reader)
     {
-        var json = JsonArrayNode.ParseValue(ref reader);
-        if (json == null) throw new JsonException("Cannot parse the JSON.");
+        var json = JsonArrayNode.ParseValue(ref reader) ?? throw new JsonException("Cannot parse the JSON.");
         if (json.Count != 3) throw new JsonException("The count of the JSON array is not expected.");
         if (!json.TryGetInt32Value(0, out var num1) || !json.TryGetInt32Value(1, out var num2) || !json.TryGetInt32Value(2, out var num3))
             throw new JsonException("The type of the array item is not expected.");
@@ -680,8 +699,7 @@ sealed class DoublePoint3DConverter : JsonConverter<DoublePoint3D>
 
     private static DoublePoint3D ReadJson(ref Utf8JsonReader reader)
     {
-        var json = JsonObjectNode.ParseValue(ref reader);
-        if (json == null) throw new JsonException("Cannot parse the JSON.");
+        var json = JsonObjectNode.ParseValue(ref reader) ?? throw new JsonException("Cannot parse the JSON.");
         if (!json.TryGetDoubleValue("x", out var x) && !json.TryGetDoubleValue("X", out x))
             throw new JsonException("Expect a property x in the JSON.");
         if (!json.TryGetDoubleValue("y", out var y) && !json.TryGetDoubleValue("Y", out y))
@@ -693,8 +711,7 @@ sealed class DoublePoint3DConverter : JsonConverter<DoublePoint3D>
 
     private static DoublePoint3D ReadJsonArray(ref Utf8JsonReader reader)
     {
-        var json = JsonArrayNode.ParseValue(ref reader);
-        if (json == null) throw new JsonException("Cannot parse the JSON.");
+        var json = JsonArrayNode.ParseValue(ref reader) ?? throw new JsonException("Cannot parse the JSON.");
         if (json.Count != 3) throw new JsonException("The count of the JSON array is not expected.");
         if (!json.TryGetDoubleValue(0, out var num1) || !json.TryGetDoubleValue(1, out var num2) || !json.TryGetDoubleValue(2, out var num3))
             throw new JsonException("The type of the array item is not expected.");

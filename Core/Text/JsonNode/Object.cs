@@ -49,7 +49,7 @@ namespace Trivial.Text;
 /// json.SetValue("prop-a", 5678);
 /// num = json.GetInt32Value("prop-a"); // 5678
 /// 
-/// // Converts to a string.
+/// // Converts to a string in JSON format.
 /// var jsonStr = json.ToString(IndentStyles.Compact);
 /// </code>
 /// </example>
@@ -3493,7 +3493,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result)
-        => TryGetValue<T>(keyPath, out result, out _);
+        => TryGetValue(keyPath, out result, out _);
 
     /// <summary>
     /// Tries to get the value of the specific property.

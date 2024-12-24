@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -37,8 +38,10 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
     /// </summary>
     public JsonObjectNode Parent { get; private set; }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<string> IReadOnlyDictionary<string, BaseJsonValueNode>.Keys => Parent.Keys;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<BaseJsonValueNode> IReadOnlyDictionary<string, BaseJsonValueNode>.Values => Parent.Values;
 
     int IReadOnlyCollection<KeyValuePair<string, BaseJsonValueNode>>.Count => Parent.Count;

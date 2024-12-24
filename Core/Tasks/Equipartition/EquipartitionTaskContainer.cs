@@ -94,9 +94,7 @@ public class EquipartitionTaskContainer
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>An equipartition task; or null, if no one available.</returns>
     public EquipartitionTask TryGetFirst(string group, Func<EquipartitionTask, bool> predicate = null)
-    {
-        return List(group, predicate).FirstOrDefault();
-    }
+        => List(group, predicate).FirstOrDefault();
 
     /// <summary>
     /// Gets the last equipartition tasks if available.
@@ -105,9 +103,7 @@ public class EquipartitionTaskContainer
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>An equipartition task; or null, if no one available.</returns>
     public EquipartitionTask TryGetLast(string group, Func<EquipartitionTask, bool> predicate = null)
-    {
-        return List(group, predicate).LastOrDefault();
-    }
+        => List(group, predicate).LastOrDefault();
 
     /// <summary>
     /// Picks one and start.
@@ -116,9 +112,7 @@ public class EquipartitionTaskContainer
     /// <param name="pick">A handler to pick.</param>
     /// <returns>A task and fragment.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
-    {
-        return Pick(group, null, pick);
-    }
+        => Pick(group, null, pick);
 
     /// <summary>
     /// Picks one and start.
@@ -129,9 +123,7 @@ public class EquipartitionTaskContainer
     /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
     /// <returns>A task and fragment.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, string tag, IEnumerable<string> except = null, bool onlyPending = false)
-    {
-        return Pick(group, null, task => task.Pick(tag, except, onlyPending));
-    }
+        => Pick(group, null, task => task.Pick(tag, except, onlyPending));
 
     /// <summary>
     /// Picks one and start.
@@ -143,7 +135,7 @@ public class EquipartitionTaskContainer
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, bool> predicate, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
     {
         var col = List(group, predicate);
-        if (pick == null) pick = task => task.Pick();
+        pick ??= task => task.Pick();
         foreach (var item in col)
         {
             var f = pick(item);
@@ -164,9 +156,7 @@ public class EquipartitionTaskContainer
     /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
     /// <returns>A task and fragment.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, bool> predicate, string tag, IEnumerable<string> except = null, bool onlyPending = false)
-    {
-        return Pick(group, predicate, task => task.Pick(tag, except, onlyPending));
-    }
+        => Pick(group, predicate, task => task.Pick(tag, except, onlyPending));
 
     /// <summary>
     /// Creates a new equipartition tasks.
@@ -177,9 +167,7 @@ public class EquipartitionTaskContainer
     /// <param name="autoRemove">true if remove the item all done automatically; otherwise, false.</param>
     /// <returns>A new equipartition tasks created.</returns>
     public EquipartitionTask Create(string group, string jobId, int count, bool autoRemove = true)
-    {
-        return Create(group, jobId, count, null, autoRemove);
-    }
+        => Create(group, jobId, count, null, autoRemove);
 
     /// <summary>
     /// Creates a new equipartition tasks.
@@ -208,9 +196,7 @@ public class EquipartitionTaskContainer
     /// <param name="autoRemove">true if remove the item all done automatically; otherwise, false.</param>
     /// <returns>A new equipartition tasks created.</returns>
     public EquipartitionTask Create(string group, EquipartitionTask task, bool autoRemove = true)
-    {
-        return Create(group, new[] { task }, autoRemove) > 0 ? task : null;
-    }
+        => Create(group, new[] { task }, autoRemove) > 0 ? task : null;
 
     /// <summary>
     /// Creates a new equipartition tasks.
@@ -227,7 +213,7 @@ public class EquipartitionTaskContainer
             {
                 if (!cache.ContainsKey(group))
                 {
-                    cache[group] = new List<EquipartitionTask>();
+                    cache[group] = new();
                 }
             }
         }
@@ -267,15 +253,15 @@ public class EquipartitionTaskContainer
     /// <returns>true if update succeeded; otherwise, false.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> GetFragment(string group, string fragmentId)
     {
-        if (!cache.TryGetValue(group, out var list)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+        if (!cache.TryGetValue(group, out var list)) return new();
         foreach (var task in list)
         {
             var fragment = task.TryGetByFragmentId(fragmentId);
             if (fragment == null) continue;
-            return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(task, fragment);
+            return new(task, fragment);
         }
 
-        return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+        return new();
     }
 
     /// <summary>

@@ -193,37 +193,44 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <summary>
     /// Gets the collection of the task fragment by its index.
     /// </summary>
-    public IEnumerable<Fragment> GetByFragmentIndex(int index) => fragments.Where(ele => ele.Index == index);
+    public IEnumerable<Fragment> GetByFragmentIndex(int index)
+        => fragments.Where(ele => ele.Index == index);
 
     /// <summary>
     /// Gets the collection of the task fragment which is working or retrying.
     /// </summary>
-    public IEnumerable<Fragment> GetProcessingFragments() => fragments.Where(ele => ele.IsProcessing);
+    public IEnumerable<Fragment> GetProcessingFragments()
+        => fragments.Where(ele => ele.IsProcessing);
 
     /// <summary>
     /// Gets the collection of the task fragment which is not done yet.
     /// </summary>
-    public IEnumerable<Fragment> GetWaitingOrProcessingFragments() => fragments.Where(ele => !ele.IsDone);
+    public IEnumerable<Fragment> GetWaitingOrProcessingFragments()
+        => fragments.Where(ele => !ele.IsDone);
 
     /// <summary>
     /// Gets the collection of the task fragment which is done (even if it is any of success, fatal or ignored).
     /// </summary>
-    public IEnumerable<Fragment> GetDoneFragments() => fragments.Where(ele => ele.IsDone);
+    public IEnumerable<Fragment> GetDoneFragments()
+        => fragments.Where(ele => ele.IsDone);
 
     /// <summary>
     /// Gets the collection of the task fragment which is pending or failure.
     /// </summary>
-    public IEnumerable<Fragment> GetWaitingFragments() => fragments.Where(ele => ele.IsWaiting);
+    public IEnumerable<Fragment> GetWaitingFragments()
+        => fragments.Where(ele => ele.IsWaiting);
 
     /// <summary>
     /// Gets the collection of the task fragment which is fatal or failure (even if it is either waiting or done).
     /// </summary>
-    public IEnumerable<Fragment> GetErrorFragments() => fragments.Where(ele => ele.IsError);
+    public IEnumerable<Fragment> GetErrorFragments()
+        => fragments.Where(ele => ele.IsError);
 
     /// <summary>
     /// Gets the collection of the task fragment which is done but not successful (even if it is either waiting or done).
     /// </summary>
-    public IEnumerable<Fragment> GetErrorOrIngoredFragments() => fragments.Where(ele => ele.IsErrorOrIgnored);
+    public IEnumerable<Fragment> GetErrorOrIngoredFragments()
+        => fragments.Where(ele => ele.IsErrorOrIgnored);
 
     /// <summary>
     /// Filters a sequence of values with specific state.
@@ -232,18 +239,17 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="states">Additional state grouped by OR boolean operation.</param>
     /// <returns>An collection that contains elements from the fragments that satisfy the condition.</returns>
     public IEnumerable<Fragment> Where(FragmentStates state, params FragmentStates[] states)
-    {
-        return states == null || states.Length == 0
+        => states == null || states.Length == 0
             ? fragments.Where(ele => ele.State == state)
             : fragments.Where(ele => ele.State == state || states.Contains(ele.State));
-    }
 
     /// <summary>
     /// Picks one and start.
     /// </summary>
     /// <param name="state">The task fragment state expected.</param>
     /// <returns>A fragment.</returns>
-    public Fragment Pick(FragmentStates state) => Pick(null, state, null);
+    public Fragment Pick(FragmentStates state)
+        => Pick(null, state, null);
 
     /// <summary>
     /// Picks one and start.
@@ -252,9 +258,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
     /// <returns>A fragment.</returns>
     public Fragment Pick(IEnumerable<string> except = null, bool onlyPending = false)
-    {
-        return onlyPending ? Pick(except, FragmentStates.Pending, null) : Pick(except, null, null);
-    }
+        => onlyPending ? Pick(except, FragmentStates.Pending, null) : Pick(except, null, null);
 
     /// <summary>
     /// Picks one and start.
@@ -262,7 +266,8 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="tag">New tag.</param>
     /// <param name="state">The task fragment state expected.</param>
     /// <returns>A fragment.</returns>
-    public Fragment Pick(string tag, FragmentStates state) => Pick(null, state, fragment => fragment.Tag = tag);
+    public Fragment Pick(string tag, FragmentStates state)
+        => Pick(null, state, fragment => fragment.Tag = tag);
 
     /// <summary>
     /// Picks one and start.
@@ -272,9 +277,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
     /// <returns>A fragment.</returns>
     public Fragment Pick(string tag, IEnumerable<string> except = null, bool onlyPending = false)
-    {
-        return onlyPending ? Pick(except, FragmentStates.Pending, fragment => fragment.Tag = tag) : Pick(except, null, fragment => fragment.Tag = tag);
-    }
+        => onlyPending ? Pick(except, FragmentStates.Pending, fragment => fragment.Tag = tag) : Pick(except, null, fragment => fragment.Tag = tag);
 
     /// <summary>
     /// Updates the task fragment.
@@ -294,7 +297,8 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="id">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <returns>true if update succeeded; otherwise, false.</returns>
-    public bool UpdateFragment(string id, FragmentStates state) => UpdateFragment(id, state, null as Action<Fragment>);
+    public bool UpdateFragment(string id, FragmentStates state)
+        => UpdateFragment(id, state, null as Action<Fragment>);
 
     /// <summary>
     /// Updates the task fragment.
@@ -406,9 +410,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-    {
-        return string.Format("Task ID: {0}. Job ID: {1}. Fragment count: {2}.", Id, JobId, Count);
-    }
+        => string.Format("Task ID: {0}. Job ID: {1}. Fragment count: {2}.", Id, JobId, Count);
 
     /// <summary>
     /// Picks one and start.
@@ -532,16 +534,12 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// </summary>
     /// <returns>An enumerator for this instance.</returns>
     public IEnumerator<Fragment> GetEnumerator()
-    {
-        return fragments.GetEnumerator();
-    }
+        => fragments.GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator that iterates through this instance.
     /// </summary>
     /// <returns>An enumerator for this instance.</returns>
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return fragments.GetEnumerator();
-    }
+        => fragments.GetEnumerator();
 }

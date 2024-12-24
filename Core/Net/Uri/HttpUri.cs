@@ -4,13 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Web;
+using Trivial.Text;
 
 namespace Trivial.Net;
 
 /// <summary>
 /// The HTTP URI struct.
 /// </summary>
+[JsonConverter(typeof(HttpUriConverter))]
 public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatable<Uri>, IEquatable<string>
 {
 #pragma warning disable IDE0057
@@ -144,9 +148,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// <param name="other">The instance to compare.</param>
     /// <returns>true if they are equal; otherwise, false.</returns>
     public bool Equals(AppDeepLinkUri other)
-    {
-        return other != null && other.ToString() == ToString();
-    }
+        => other != null && other.ToString() == ToString();
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -154,9 +156,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// <param name="other">The instance to compare.</param>
     /// <returns>true if they are equal; otherwise, false.</returns>
     public bool Equals(Uri other)
-    {
-        return other != null && other.ToString() == ToString();
-    }
+        => other != null && other.ToString() == ToString();
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -164,9 +164,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// <param name="other">The instance to compare.</param>
     /// <returns>true if they are equal; otherwise, false.</returns>
     public bool Equals(string other)
-    {
-        return other != null && other == ToString();
-    }
+        => other != null && other == ToString();
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -297,4 +295,50 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     public static implicit operator HttpUri(Uri uri)
         => uri != null ? Parse(uri.ToString()) : null;
 #pragma warning restore IDE0057
+}
+
+/// <summary>
+/// The JSON converter for enum. The output will be an integer value.
+/// </summary>
+internal class HttpUriConverter : JsonConverter<HttpUri>
+{
+    /// <inheritdoc />
+    public override HttpUri Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.String:
+                try
+                {
+                    return HttpUri.Parse(reader.GetString());
+                }
+                catch (FormatException ex)
+                {
+                    throw new JsonException("Invalid HTTPS URI format.", ex);
+                }
+
+            case JsonTokenType.StartObject:
+                var json = JsonObjectNode.ParseValue(ref reader);
+                var v = new HttpUri
+                {
+                    IsSecure = json.TryGetBooleanValue("secure") ?? true,
+                    AccountInfo = json.TryGetStringTrimmedValue("user", true),
+                    Host = json.TryGetStringTrimmedValue("host", true),
+                    Port = json.TryGetInt32Value("port"),
+                    Path = json.TryGetStringTrimmedValue("path", true),
+                    Hash = json.TryGetStringTrimmedValue("hash", true),
+                };
+                v.Query.ParseSet(json.TryGetStringTrimmedValue("query", true) ?? json.TryGetStringTrimmedValue("q", true), true);
+                return v;
+        }
+
+        throw new JsonException($"Expects a string in HTTPS URI format but {reader.TokenType}.");
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, HttpUri value, JsonSerializerOptions options)
+    {
+        if (value is null) writer.WriteNullValue();
+        else writer.WriteStringValue(value.ToString());
+    }
 }

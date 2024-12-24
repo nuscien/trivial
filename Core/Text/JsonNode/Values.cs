@@ -22,6 +22,8 @@ using Trivial.Tasks;
 using Trivial.Web;
 using System.IO;
 using System.Runtime.Serialization.Json;
+using System.Net.Http;
+using Trivial.IO;
 
 namespace Trivial.Text;
 
@@ -1401,6 +1403,54 @@ public static class JsonValues
         var json = value?.ToJson();
         if (json is null) return Null.ToString();
         return json.ToString(indent);
+    }
+
+    /// <summary>
+    /// Converts to a specific type.
+    /// </summary>
+    /// <param name="kvp">The key value pair of JSON.</param>
+    /// <param name="type">The type to convert.</param>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <returns>The value converted.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    /// <exception cref="OverflowException">The value is outside the range of the underlying type of enum expected.</exception>
+    /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+    public static object As(KeyValuePair<string, BaseJsonValueNode> kvp, Type type, bool strict = false)
+        => (kvp.Value ?? Undefined).As(type, strict);
+
+    /// <summary>
+    /// Converts to a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type to convert.</typeparam>
+    /// <param name="kvp">The key value pair of JSON.</param>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <returns>The value converted.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    /// <exception cref="OverflowException">The value is outside the range of the underlying type of enum expected.</exception>
+    /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+    public static T As<T>(KeyValuePair<string, BaseJsonValueNode> kvp, bool strict = false)
+        => (kvp.Value ?? Undefined).As<T>(strict);
+
+    /// <summary>
+    /// Converts to a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type to convert.</typeparam>
+    /// <param name="kvp">The key value pair of JSON.</param>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <returns>The value converted.</returns>
+    public static T TryConvert<T>(KeyValuePair<string, BaseJsonValueNode> kvp, bool strict = false)
+        => (kvp.Value ?? Undefined).TryConvert<T>(strict);
+
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="kvp">The key value pair of JSON.</param>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public static void WriteTo(KeyValuePair<string, BaseJsonValueNode> kvp, Utf8JsonWriter writer)
+    {
+        if (writer is null) return;
+        writer.WritePropertyName(kvp.Key);
+        (kvp.Value ?? Undefined).WriteTo(writer);
     }
 
     /// <summary>

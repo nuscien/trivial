@@ -117,7 +117,7 @@ public partial class EquipartitionTask
     /// <summary>
     /// Task fragment.
     /// </summary>
-    public class Fragment : ISerializable
+    public class Fragment : ISerializable, IJsonObjectHost
     {
         /// <summary>
         /// Initializes a new instance of the EquipartitionTask.Fragment class.
@@ -322,6 +322,13 @@ public partial class EquipartitionTask
         /// <param name="writer">The writer to which to write this instance.</param>
         public virtual void WriteTo(Utf8JsonWriter writer)
             => JsonSerializer.Serialize(writer, ToModel());
+
+        /// <summary>
+        /// Converts to JSON object.
+        /// </summary>
+        /// <returns>A JSON object about this model.</returns>
+        public virtual JsonObjectNode ToJson()
+            => JsonObjectNode.ConvertFrom(ToModel());
 
         /// <summary>
         /// Returns a string that represents the current object.

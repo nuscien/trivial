@@ -195,6 +195,22 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
+    /// Tries to get the cache item data.
+    /// </summary>
+    /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
+    /// <param name="id">The identifier in the resource group.</param>
+    /// <param name="defaultValue">The default data to return if non-exists.</param>
+    /// <param name="setIfNonExist">true if set the default data back if non-exists; otherwise, false.</param>
+    /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+    public T TryGet(string ns, string id, T defaultValue, bool setIfNonExist = false)
+    {
+        if (string.IsNullOrEmpty(id)) return defaultValue;
+        if (TryGet(ns, id, out var result)) return result;
+        if (setIfNonExist) this[ns, id] = defaultValue;
+        return defaultValue;
+    }
+
+    /// <summary>
     /// Adds an object to the end of the collection.
     /// </summary>
     /// <param name="item">The object to be added to the end of the collection.</param>

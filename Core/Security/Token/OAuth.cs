@@ -32,8 +32,8 @@ namespace Trivial.Security;
 /// // Inialize a new instance of OAuth client
 /// // with client identifier, client secret, authorization URI and scope.
 /// var oauth = new OAuthClient(
-///     "client_id",        // Client ID.
-///     "client_secret",    // Client secret.
+///     CLIENT_ID,
+///     CLIENT_SECRET,
 ///     new Uri("https://login.live.com/accesstoken.srf"),
 ///     "notify.windows.com");
 ///
@@ -43,6 +43,9 @@ namespace Trivial.Security;
 /// // Then you can create the JSON HTTP web client when you need,
 /// // And it will set the access token and its type into the authorization header of HTTP request.
 /// var httpClient = oauth.Create&lt;ResponseBody&gt;();
+/// 
+/// // Get response with authentication.
+/// var resp = await httpClient.PostAsync(A-URL-FOR-BUSINESS, payload);
 /// </code>
 /// </example>
 public class OAuthClient : TokenContainer, IJsonHttpClientMaker

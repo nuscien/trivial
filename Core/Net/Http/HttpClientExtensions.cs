@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Data;
+using Trivial.IO;
 using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
@@ -338,15 +339,17 @@ public static class HttpClientExtensions
         if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync();
         var stream = await httpContent.ReadAsStreamAsync();
 #endif
-        IO.StreamCopy.TrySeek(stream, origin);
+        StreamCopy.TrySeek(stream, origin);
         if (type == typeof(JsonObjectNode)) return (T)(object)await JsonObjectNode.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(JsonArrayNode)) return (T)(object)await JsonArrayNode.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(System.Text.Json.Nodes.JsonNode) || type.IsSubclassOf(typeof(System.Text.Json.Nodes.JsonNode))) return (T)(object)System.Text.Json.Nodes.JsonNode.Parse(stream);
         if (type == typeof(IEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.Parse(stream);
         if (type == typeof(IAsyncEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.ParseAsync(stream);
+        if (type == typeof(IEnumerable<JsonObjectNode>)) return (T)(object)ToJsonObjectNodes(httpContent.Headers.ContentType?.MediaType, stream);
+        if (type == typeof(IAsyncEnumerable<JsonObjectNode>)) return (T)(object)ToJsonObjectNodesAsync(httpContent.Headers.ContentType?.MediaType, stream);
+        if (type == typeof(QueryData)) return (T)(object)QueryData.ParseAsync(stream);
         if (type == typeof(Stream)) return (T)(object)stream;
-        //if (type == IAsyncEnumerable<JsonObjectNode>)
         return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);
     }
 
@@ -688,6 +691,8 @@ public static class HttpClientExtensions
         var stream = new MemoryStream();
         var writer = new Utf8JsonWriter(stream);
         value.WriteTo(writer);
+        writer.Flush();
+        stream.Position = 0;
         var content = new StreamContent(stream);
         content.Headers.ContentType = JsonValues.GetJsonMediaTypeHeaderValue();
         return content;
@@ -782,7 +787,7 @@ public static class HttpClientExtensions
     public static StringContent Add(this MultipartFormDataContent content, string name, string value, Encoding encoding = null, string mediaType = null)
     {
         if (content == null) return null;
-        if (encoding == null) encoding = Encoding.UTF8;
+        encoding ??= Encoding.UTF8;
         var c = string.IsNullOrWhiteSpace(mediaType) ? new StringContent(value, encoding) : new StringContent(value, encoding, mediaType);
         content.Add(c, name);
         return c;
@@ -911,5 +916,63 @@ public static class HttpClientExtensions
         {
             return await httpClient.SendAsync(request, cancellation);
         }, needThrow, cancellationToken);
+    }
+
+    private static IEnumerable<JsonObjectNode> ToJsonObjectNodes(string mime, Stream stream)
+    {
+        if (mime == JsonValues.JsonlMIME)
+        {
+            var reader = CharsReader.ReadLines(stream, Encoding.UTF8);
+            foreach (var line in reader)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                yield return JsonObjectNode.Parse(line);
+            }
+        }
+        else if (mime == WebFormat.ServerSentEventsMIME)
+        {
+            var col = ServerSentEventInfo.Parse(stream, Encoding.UTF8);
+            foreach (var line in col)
+            {
+                yield return line.TryGetJsonData();
+            }
+        }
+        else
+        {
+            var arr = JsonArrayNode.Parse(stream);
+            foreach (var json in arr.ToJsonObjectNodes())
+            {
+                yield return json;
+            }
+        }
+    }
+
+    private static async IAsyncEnumerable<JsonObjectNode> ToJsonObjectNodesAsync(string mime, Stream stream)
+    {
+        if (mime == JsonValues.JsonlMIME)
+        {
+            var reader = CharsReader.ReadLinesAsync(stream, Encoding.UTF8);
+            await foreach (var line in reader)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                yield return JsonObjectNode.Parse(line);
+            }
+        }
+        else if (mime == WebFormat.ServerSentEventsMIME)
+        {
+            var col = ServerSentEventInfo.ParseAsync(stream, Encoding.UTF8);
+            await foreach (var line in col)
+            {
+                yield return line.TryGetJsonData();
+            }
+        }
+        else
+        {
+            var arr = await JsonArrayNode.ParseAsync(stream);
+            foreach (var json in arr.ToJsonObjectNodes())
+            {
+                yield return json;
+            }
+        }
     }
 }

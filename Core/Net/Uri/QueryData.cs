@@ -346,9 +346,7 @@ public class QueryData : StringKeyValuePairs
     /// <param name="encoding">The optional encoding.</param>
     /// <returns>A query string.</returns>
     public string ToString(Uri uri, Encoding encoding = null)
-    {
-        return ToString(uri?.OriginalString, encoding);
-    }
+        => ToString(uri?.OriginalString, encoding);
 
     /// <summary>
     /// Returns a string that represents the current object.
@@ -357,9 +355,7 @@ public class QueryData : StringKeyValuePairs
     /// <param name="encoding">The optional encoding.</param>
     /// <returns>A query string.</returns>
     public string ToString(StringBuilder url, Encoding encoding = null)
-    {
-        return ToString(url?.ToString(), encoding);
-    }
+        => ToString(url?.ToString(), encoding);
 
     /// <summary>
     /// Returns a string HTTP request content.
@@ -406,7 +402,7 @@ public class QueryData : StringKeyValuePairs
     public static QueryData Parse(Stream stream, Encoding encoding = null)
     {
         if (stream == null) return null;
-        if (encoding == null) encoding = Encoding.UTF8;
+        encoding ??= Encoding.UTF8;
         using var reader = new StreamReader(stream, encoding);
         var query = reader.ReadToEnd();
         var q = new QueryData();
@@ -424,7 +420,7 @@ public class QueryData : StringKeyValuePairs
     public static async Task<QueryData> ParseAsync(Stream stream, Encoding encoding = null)
     {
         if (stream == null) return null;
-        if (encoding == null) encoding = Encoding.UTF8;
+        encoding ??= Encoding.UTF8;
         using var reader = new StreamReader(stream, encoding);
         var query = await reader.ReadToEndAsync();
         var q = new QueryData();

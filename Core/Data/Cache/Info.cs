@@ -88,7 +88,7 @@ public class DataCacheItemInfo<T>
     /// <summary>
     /// Gets or sets the update date.
     /// </summary>
-    public DateTime UpdateDate { get; } = DateTime.Now;
+    public DateTime UpdateDate { get; private set; } = DateTime.Now;
 
     /// <summary>
     /// Gets or sets the value.
@@ -99,6 +99,11 @@ public class DataCacheItemInfo<T>
     /// Gets the optional expiration.
     /// </summary>
     public TimeSpan? Expiration { get; }
+
+    /// <summary>
+    /// Gets or sets the additional data.
+    /// </summary>
+    public object Tag { get; set; }
 
     /// <summary>
     /// Gets or sets the expired date.
@@ -118,6 +123,12 @@ public class DataCacheItemInfo<T>
         if (!expiration.HasValue && !Expiration.HasValue) return false;
         return DateTime.Now >= (UpdateDate + (Expiration ?? expiration).Value);
     }
+
+    /// <summary>
+    /// Forces update the update date time to now.
+    /// </summary>
+    public void ForceExtendToNow()
+        => UpdateDate = DateTime.Now;
 }
 
 /// <summary>

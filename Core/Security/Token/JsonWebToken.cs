@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Security;
@@ -544,7 +545,7 @@ public class JsonWebToken<T>
     /// <returns>A string encoded of header.</returns>
     public string ToHeaderBase64Url()
     {
-        if (headerBase64Url == null) headerBase64Url = GetBase64UrlEncode(header);
+        headerBase64Url ??= GetBase64UrlEncode(header);
         return headerBase64Url;
     }
 
@@ -778,6 +779,50 @@ public class JsonWebTokenPayload
             Serializer = serializer
         };
         return jwt.ToAuthenticationHeaderValue();
+    }
+
+    /// <summary>
+    /// Tests if the token is actived to use by checking the expiration.
+    /// </summary>
+    /// <returns>true if the token is actived; otherwise, false.</returns>
+    public bool IsActived()
+        => IsActived(DateTime.Now);
+
+    /// <summary>
+    /// Tests if the token is actived to use by checking the expiration.
+    /// </summary>
+    /// <param name="date">A specific date time to test when the token is actived.</param>
+    /// <returns>true if the token is actived; otherwise, false.</returns>
+    public bool IsActived(DateTime date)
+    {
+        var d = Expiration;
+        if (d.HasValue && date > d.Value) return false;
+        d = NotBefore;
+        if (d.HasValue && date < d.Value) return false;
+        return true;
+    }
+
+    /// <summary>
+    /// Tests if the audience is in the list.
+    /// </summary>
+    /// <param name="value">The audience value to test.</param>
+    /// <param name="comparer">An equality comparer to compare values.</param>
+    /// <returns>true if the audience value is in the list, or the list is null; otherwise, false.</returns>
+    public bool IsAudience(string value, StringComparer comparer = null)
+        => IsAudience(value, false, comparer);
+
+    /// <summary>
+    /// Tests if the audience is in the list.
+    /// </summary>
+    /// <param name="value">The audience value to test.</param>
+    /// <param name="testExpiration">true if also test if the token is actived; otherwise, false.</param>
+    /// <param name="comparer">An equality comparer to compare values.</param>
+    /// <returns>true if the audience value is in the list, or the list is null; otherwise, false.</returns>
+    public bool IsAudience(string value, bool testExpiration, StringComparer comparer = null)
+    {
+        if (testExpiration && !IsActived()) return false;
+        if (Audience == null) return true;
+        return comparer is null ? Audience.Contains(value) : Audience.Contains(value, comparer);
     }
 
     /// <summary>

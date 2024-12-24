@@ -835,10 +835,14 @@ public static class ObjectConvert
         for (int i = 0; i < count; i++)
         {
             var j = i * 2;
+#if NET6_0_OR_GREATER
+            var c = hex.AsSpan(j, 2);
+#else
             var c = hex.Substring(j, 2);
+#endif
             bytes[i] = int.TryParse(c, NumberStyles.HexNumber, null, out var val)
                 ? (byte)val
-                : throw new ArgumentException("hex should be a hex string.", nameof(hex), new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
+                : throw CreateHexArgumentException(nameof(hex), j, c);
         }
 
         return bytes;
@@ -856,10 +860,14 @@ public static class ObjectConvert
         for (int i = 0; i < count; i++)
         {
             var j = i * 2;
+#if NET6_0_OR_GREATER
+            var c = hex.AsSpan(j, 2);
+#else
             var c = hex.Substring(j, 2);
+#endif
             yield return int.TryParse(c, NumberStyles.HexNumber, null, out var val)
                 ? (byte)val
-                : throw new ArgumentException("hex should be a hex string.", nameof(hex), new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
+                : throw CreateHexArgumentException(nameof(hex), j, c);
         }
     }
 
@@ -883,7 +891,11 @@ public static class ObjectConvert
         for (int i = 0; i < count; i++)
         {
             var j = i * 2;
+#if NET6_0_OR_GREATER
+            var c = hex.AsSpan(j, 2);
+#else
             var c = hex.Substring(j, 2);
+#endif
             if (int.TryParse(c, NumberStyles.HexNumber, null, out var val))
                 bytes[i] = (byte)val;
             else
@@ -906,7 +918,11 @@ public static class ObjectConvert
         var bytes = new byte[count];
         for (int i = 0; i < count; i++)
         {
+#if NET6_0_OR_GREATER
+            bytes[i] = int.TryParse(hex.AsSpan(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
+#else
             bytes[i] = int.TryParse(hex.Substring(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
+#endif
         }
 
         return bytes;
@@ -923,7 +939,11 @@ public static class ObjectConvert
         var count = hex.Length / 2;
         for (int i = 0; i < count; i++)
         {
+#if NET6_0_OR_GREATER
+            yield return int.TryParse(hex.AsSpan(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
+#else
             yield return int.TryParse(hex.Substring(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
+#endif
         }
     }
 
@@ -938,20 +958,22 @@ public static class ObjectConvert
     }
 
     internal static T ParseEnum<T>(string s) where T : struct
-    {
 #if NETFRAMEWORK
-        return (T)Enum.Parse(typeof(T), s);
+        => (T)Enum.Parse(typeof(T), s);
 #else
-        return Enum.Parse<T>(s);
+        => Enum.Parse<T>(s);
 #endif
-    }
 
     internal static T ParseEnum<T>(string s, bool ignoreCase) where T : struct
-    {
 #if NETFRAMEWORK
-        return (T)Enum.Parse(typeof(T), s, ignoreCase);
+        => (T)Enum.Parse(typeof(T), s, ignoreCase);
 #else
-        return Enum.Parse<T>(s, ignoreCase);
+        => Enum.Parse<T>(s, ignoreCase);
 #endif
-    }
+
+    private static ArgumentException CreateHexArgumentException(string paramName, int index, ReadOnlySpan<char> c)
+        => CreateHexArgumentException(paramName, index, c.ToString());
+
+    private static ArgumentException CreateHexArgumentException(string paramName, int index, string c)
+        => new(string.Concat(paramName, " should be a hex string."), paramName, new ArgumentOutOfRangeException(paramName, string.Concat("Index ", index, " (", c, ") is not a hex digit.")));
 }

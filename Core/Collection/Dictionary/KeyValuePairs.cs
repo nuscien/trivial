@@ -69,15 +69,8 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <returns>A value of the specific key.</returns>
     public string this[string key]
     {
-        get
-        {
-            return GetValue(key);
-        }
-
-        set
-        {
-            ListExtensions.Set(this, key, value);
-        }
+        get => GetValue(key);
+        set => ListExtensions.Set(this, key, value);
     }
 
     /// <summary>
@@ -113,9 +106,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, SecureString value, bool clearOthers = false)
-    {
-        Add(key, Security.SecureStringExtensions.ToUnsecureString(value), clearOthers);
-    }
+        => Add(key, Security.SecureStringExtensions.ToUnsecureString(value), clearOthers);
 
     /// <summary>
     /// Adds a key and the value to the end of the key value pairs.
@@ -124,9 +115,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, StringBuilder value, bool clearOthers = false)
-    {
-        Add(key, value.ToString(), clearOthers);
-    }
+        => Add(key, value.ToString(), clearOthers);
 
     /// <summary>
     /// Adds a key and the value to the end of the key value pairs.
@@ -135,9 +124,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, int value, bool clearOthers = false)
-    {
-        Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
-    }
+        => Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
 
     /// <summary>
     /// Adds a key and the value to the end of the key value pairs.
@@ -146,9 +133,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, long value, bool clearOthers = false)
-    {
-        Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
-    }
+        => Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
 
     /// <summary>
     /// Adds a key and the value to the end of the key value pairs.
@@ -157,9 +142,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, double value, bool clearOthers = false)
-    {
-        Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
-    }
+        => Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
 
     /// <summary>
     /// Adds a key and the value to the end of the key value pairs.
@@ -168,9 +151,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, bool value, bool clearOthers = false)
-    {
-        Add(key, value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString, clearOthers);
-    }
+        => Add(key, value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString, clearOthers);
 
     /// <summary>
     /// Adds a key and a set of value to the end of the key value pairs.
@@ -230,6 +211,18 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// </summary>
     /// <param name="key">The key.</param>
     /// <returns>The query value as Int32; or null, if the value type is incorrect, or the value is null.</returns>
+    public short? TryGetInt16Value(string key)
+    {
+        var v = GetFirstValue(key, true);
+        if (v != null && Maths.Numbers.TryParseToInt16(v, 10, out var result)) return result;
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the query value as an interger by a specific key.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <returns>The query value as Int32; or null, if the value type is incorrect, or the value is null.</returns>
     public int? TryGetInt32Value(string key)
     {
         var v = GetFirstValue(key, true);
@@ -262,6 +255,19 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     }
 
     /// <summary>
+    /// Gets the query value as a single-precision floating-point number by a specific key.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="defaultIsZero">true if return 0 if non-exists or is not a number; otherwise, false, to return NaN.</param>
+    /// <returns>The query value as Single; or null, if the value type is incorrect, or the value is null.</returns>
+    public float TryGetSingleValue(string key, bool defaultIsZero)
+    {
+        var v = GetFirstValue(key, true);
+        if (v != null && float.TryParse(v, out var result)) return result;
+        return defaultIsZero ? 0f : float.NaN;
+    }
+
+    /// <summary>
     /// Gets the query value as a double-precision floating-point number by a specific key.
     /// </summary>
     /// <param name="key">The key.</param>
@@ -270,6 +276,31 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     {
         var v = GetFirstValue(key, true);
         if (v != null && double.TryParse(v, out var result)) return result;
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the query value as a double-precision floating-point number by a specific key.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="defaultIsZero">true if return 0 if non-exists or is not a number; otherwise, false, to return NaN.</param>
+    /// <returns>The query value as Double; or null, if the value type is incorrect, or the value is null.</returns>
+    public double TryGetDoubleValue(string key, bool defaultIsZero)
+    {
+        var v = GetFirstValue(key, true);
+        if (v != null && double.TryParse(v, out var result)) return result;
+        return defaultIsZero ? 0d : double.NaN;
+    }
+
+    /// <summary>
+    /// Gets the query value as a double-precision floating-point number by a specific key.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <returns>The query value as Double; or null, if the value type is incorrect, or the value is null.</returns>
+    public decimal? TryGetDecimalValue(string key)
+    {
+        var v = GetFirstValue(key, true);
+        if (v != null && decimal.TryParse(v, out var result)) return result;
         return null;
     }
 
@@ -315,9 +346,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="key">The key.</param>
     /// <returns>The key encoded.</returns>
     protected virtual string EncodeKey(string key)
-    {
-        return WebFormat.UrlEncode(key);
-    }
+        => WebFormat.UrlEncode(key);
 
     /// <summary>
     /// Encodes the value.
@@ -325,9 +354,7 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <returns>The value encoded.</returns>
     protected virtual string EncodeValue(string value)
-    {
-        return WebFormat.UrlEncode(value);
-    }
+        => WebFormat.UrlEncode(value);
 
     /// <summary>
     /// Returns a string that represents the current object.

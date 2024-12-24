@@ -32,9 +32,9 @@ namespace Trivial.Security;
 /// // Create a route and register the handlers.
 /// var route = new TokenRequestRoute&lt;UserInfo&gt;();
 /// route.Register((PasswordTokenRequestBody req, CancellationToken cancellationToken)
-///     => UserManager.LoginByPasswordAsync(req.UserName, req.Password));
+///     => UserManager.LoginByPasswordAsync(req.UserName, req.Password, cancellationToken));
 /// route.Register((RefreshTokenRequestBody req, CancellationToken cancellationToken)
-///     => UserManager.LoginByRefreshTokenAsync(req.RefreshToken));
+///     => UserManager.LoginByRefreshTokenAsync(req.RefreshToken, cancellationToken));
 ///
 /// // Then you can handle following login request.
 /// var resp = await route.SignInAsync(tokenReq);
@@ -90,6 +90,13 @@ public class TokenRequestRoute<T>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
+    public void Register(Func<TokenRequest<PasswordTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
+        => Register(PasswordTokenRequestBody.PasswordGrantType, PasswordTokenRequestBody.Create, h);
+
+    /// <summary>
+    /// Registers a token request handler into a route.
+    /// </summary>
+    /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<ClientTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
         => Register(ClientTokenRequestBody.ClientCredentialsGrantType, ClientTokenRequestBody.Create, h);
 
@@ -134,13 +141,6 @@ public class TokenRequestRoute<T>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<RefreshTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
         => Register(RefreshTokenRequestBody.RefreshTokenGrantType, RefreshTokenRequestBody.Create, h);
-
-    /// <summary>
-    /// Registers a token request handler into a route.
-    /// </summary>
-    /// <param name="h">A token request handler.</param>
-    public void Register(Func<TokenRequest<PasswordTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
-        => Register(PasswordTokenRequestBody.PasswordGrantType, PasswordTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a handler.

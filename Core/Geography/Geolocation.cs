@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Trivial.Maths;
+using Trivial.Text;
 
 namespace Trivial.Geography;
 
@@ -988,11 +991,84 @@ public struct Longitude : IEquatable<Longitude>
 /// <summary>
 /// Geolocation with latitude, longitude and optional altitude.
 /// </summary>
+[JsonConverter(typeof(ValueConverter))]
 public struct Geolocation : IEquatable<Geolocation>
 {
     /// <summary>
+    /// The JSON converter for enum. The output will be an integer value.
+    /// </summary>
+    internal class ValueConverter : JsonConverter<Geolocation>
+    {
+        /// <inheritdoc />
+        public override Geolocation Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException($"The token type is {reader.TokenType} but expect an object.");
+            var json = JsonObjectNode.ParseValue(ref reader) ?? throw new JsonException("Parse JSON failed.");
+            if (!json.TryGetDoubleValue("longitude", out var longitude) || !json.TryGetDoubleValue("latitude", out var latitude))
+                throw new JsonException("longitude and latitude are required.");
+            return new(new Latitude(latitude), new Longitude(longitude), json.TryGetDoubleValue("altitude", false), json.TryGetStringTrimmedValue("desc"), json.TryGetDoubleValue("deviation"), json.TryGetDoubleValue("altitudeDeviation"));
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, Geolocation value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("latitude", value.Latitude.Degrees);
+            writer.WriteNumber("longitude", value.Longitude.Degrees);
+            if (value.Altitude.HasValue) writer.WriteNumber("altitude", value.Altitude.Value);
+            if (!string.IsNullOrWhiteSpace(value.Description)) writer.WriteString("desc", value.Description);
+            if (value.RadiusDeviation.HasValue) writer.WriteNumber("deviation", value.RadiusDeviation.Value);
+            if (value.AltitudeDeviation.HasValue) writer.WriteNumber("altitudeDeviation", value.AltitudeDeviation.Value);
+            writer.WriteEndObject();
+        }
+    }
+
+    /// <summary>
+    /// The JSON converter for enum. The output will be an integer value.
+    /// </summary>
+    internal class ModelConverter : JsonConverter<Model>
+    {
+        /// <inheritdoc />
+        public override Model Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException($"The token type is {reader.TokenType} but expect an object.");
+            var json = JsonObjectNode.ParseValue(ref reader) ?? throw new JsonException("Parse JSON failed.");
+            if (!json.TryGetDoubleValue("longitude", out var longitude) || !json.TryGetDoubleValue("latitude", out var latitude))
+                throw new JsonException("longitude and latitude are required.");
+            var model = new Model(new Latitude(latitude), new Longitude(longitude), json.TryGetStringTrimmedValue("desc"));
+            if (json.TryGetDoubleValue("altitude", out longitude))
+                model.Altitude = longitude;
+            if (json.TryGetDoubleValue("deviation", out longitude))
+                model.RadiusDeviation = longitude;
+            if (json.TryGetDoubleValue("altitudeDeviation", out longitude))
+                model.AltitudeDeviation = longitude;
+            return model;
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, Model value, JsonSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartObject();
+            writer.WriteNumber("latitude", value.Latitude.Degrees);
+            writer.WriteNumber("longitude", value.Longitude.Degrees);
+            if (value.Altitude.HasValue) writer.WriteNumber("altitude", value.Altitude.Value);
+            if (!string.IsNullOrWhiteSpace(value.Description)) writer.WriteString("desc", value.Description);
+            if (value.RadiusDeviation.HasValue) writer.WriteNumber("deviation", value.RadiusDeviation.Value);
+            if (value.AltitudeDeviation.HasValue) writer.WriteNumber("altitudeDeviation", value.AltitudeDeviation.Value);
+            writer.WriteEndObject();
+        }
+    }
+
+    /// <summary>
     /// The geolocation model.
     /// </summary>
+    [JsonConverter(typeof(ModelConverter))]
     public class Model
     {
         /// <summary>
@@ -1219,7 +1295,7 @@ public struct Geolocation : IEquatable<Geolocation>
     {
         Latitude = latitude;
         Longitude = longitude;
-        Altitude = altitude;
+        Altitude = double.IsNaN(altitude) ? null : altitude;
         RadiusDeviation = radiusDeviation;
         AltitudeDeviation = altitudeDeviation;
         Description = desc;

@@ -210,9 +210,23 @@ public class ReceivedEventArgs<T> : ReceivedEventArgs
 }
 
 /// <summary>
-/// JSON format serialization HTTP client.
+/// JSON format serialization HTTP client with advanced options.
 /// </summary>
 /// <typeparam name="T">The type of the result.</typeparam>
+/// <example>
+/// <code>
+/// var http1 = new JsonHttpClient&lt;JsonObjectNode&gt;()
+/// var json = await http1.GetAsync(A-URL-TO-GET-JSON);
+/// </code>
+/// <code>
+/// var http2 = new JsonHttpClient&lt;IAsyncEnumerable&lt;ServerSentEventInfo&gt;&gt;()
+/// var sse = await http2.GetAsync(A-URL-TO-STREAM-MESSAGE);
+/// </code>
+/// <code>
+/// var http3 = new JsonHttpClient&lt;SerializableModel&gt;()
+/// var model = await http3.GetAsync(A-URL-TO-GET-JSON);
+/// </code>
+/// </example>
 public class JsonHttpClient<T>
 {
     /// <summary>

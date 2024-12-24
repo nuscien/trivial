@@ -232,9 +232,7 @@ public class TaskFlow<T>
     /// <param name="handler">The handler to run after the current task completed.</param>
     /// <returns>A new flow created for the handler.</returns>
     public TaskFlow<TResult> Then<TResult>(Func<T, TResult> handler)
-    {
-        return new TaskFlow<TResult>(ThenAsync(handler));
-    }
+        => new(ThenAsync(handler));
 
     /// <summary>
     /// Follows a subsequent handler on success.
@@ -242,9 +240,7 @@ public class TaskFlow<T>
     /// <param name="handler">The handler to run after the current task completed.</param>
     /// <returns>A new flow created for the handler.</returns>
     public TaskFlow<TResult> Then<TResult>(Func<T, Task<TResult>> handler)
-    {
-        return new TaskFlow<TResult>(ThenAsync(handler));
-    }
+        => new(ThenAsync(handler));
 
     /// <summary>
     /// Follows a subsequent handler on success.

@@ -157,4 +157,54 @@ public class SetUnitTest
         Assert.IsTrue(Reflection.VersionComparer.Compare("9.0.0.0", "10.0.0", false) < 0);
         Assert.IsTrue(Reflection.VersionComparer.Compare("9.0.0.0", "10.20.0", false) < 0);
     }
+
+    /// <summary>
+    /// Tests writable JSON DOM.
+    /// </summary>
+    [TestMethod]
+    public void TestDimensions()
+    {
+        var p1 = new IntPoint1D(1);
+        Assert.AreEqual(2, (p1 + p1).X);
+        Assert.AreEqual(0, (p1 - p1).X);
+        Assert.AreEqual(-1, (-p1).X);
+        var s = JsonSerializer.Serialize(p1);
+        Assert.IsNotNull(s);
+        Assert.AreEqual(1, JsonSerializer.Deserialize<IntPoint1D>(s).X);
+        var p2 = new IntPoint2D(1, 2);
+        Assert.AreEqual(2, (p2 + p2).X);
+        Assert.AreEqual(0, (p2 - p2).X);
+        Assert.AreEqual(-1, (-p2).X);
+        s = JsonSerializer.Serialize(p2);
+        Assert.IsNotNull(s);
+        Assert.AreEqual(1, JsonSerializer.Deserialize<IntPoint2D>(s).X);
+        var p3 = new IntPoint3D(1, 2, 3);
+        Assert.AreEqual(2, (p3 + p3).X);
+        Assert.AreEqual(0, (p3 - p3).X);
+        Assert.AreEqual(-1, (-p3).X);
+        s = JsonSerializer.Serialize(p3);
+        Assert.IsNotNull(s);
+        Assert.AreEqual(1, JsonSerializer.Deserialize<IntPoint3D>(s).X);
+        var p1d = new DoublePoint1D(1);
+        Assert.AreEqual(2.0, (p1d + p1d).X);
+        Assert.AreEqual(0d, (p1d - p1d).X);
+        Assert.AreEqual(-1.0, (-p1d).X);
+        s = JsonSerializer.Serialize(p1d);
+        Assert.IsNotNull(s);
+        Assert.AreEqual(1, JsonSerializer.Deserialize<DoublePoint1D>(s).X);
+        var p2d = new DoublePoint2D(1, 2);
+        Assert.AreEqual(2.0, (p2d + p2d).X);
+        Assert.AreEqual(0d, (p2d - p2d).X);
+        Assert.AreEqual(-1.0, (-p2d).X);
+        s = JsonSerializer.Serialize(p2d);
+        Assert.IsNotNull(s);
+        Assert.AreEqual(1, JsonSerializer.Deserialize<DoublePoint2D>(s).X);
+        var p3d = new DoublePoint3D(1, 2, 3);
+        Assert.AreEqual(2.0, (p3d + p3d).X);
+        Assert.AreEqual(0d, (p3d - p3d).X);
+        Assert.AreEqual(-1.0, (-p3d).X);
+        s = JsonSerializer.Serialize(p3d);
+        Assert.IsNotNull(s);
+        Assert.AreEqual(1, JsonSerializer.Deserialize<DoublePoint3D>(s).X);
+    }
 }

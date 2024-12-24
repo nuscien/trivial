@@ -31,6 +31,26 @@ namespace Trivial.Text;
 /// <summary>
 /// Represents a specific JSON array.
 /// </summary>
+/// <example>
+/// <code>
+/// // Initializes an instance of writable JSON DOM with initialized properties.
+/// var arr = new JsonArrayNode { 1234, "abcdefg", true, new JsonObject() }
+///
+/// // Get the values of the specific item from the JSON array.
+/// var num = arr.GetInt32Value(0); // 1234
+/// var numStr = arr.GetStringValue(0); // "1234"
+/// 
+/// // Add an item.
+/// arr.AddValue("hijklmn");
+///
+/// // Set and override any item.
+/// arr.SetValue(1, 5678);
+/// num = arr.GetInt32Value(1); // 5678
+/// 
+/// // Converts to a string in JSON array format.
+/// var str = arr.ToString(IndentStyles.Compact);
+/// </code>
+/// </example>
 [Serializable]
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ArrayConverter))]
 public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged

@@ -52,33 +52,39 @@ class HttpClientVerb : BaseCommandVerb
 
     protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
     {
+        var console = GetConsole();
+
         // HTTP URI.
         var url = "http://www.kingcean.net:8080/test/path?a=123&b=hello#nothing/all";
         var uri = HttpUri.Parse(url);
-        Console.WriteLine(((Uri)uri).ToString());
-        Console.WriteLine();
+        console.WriteLine(((Uri)uri).ToString());
+        console.WriteLine();
 
         // Query data.
         var query = "{ str: \"abcdefg\", b: true, \"name\": \"hijklmn\", // abcd: efg\n \"value\": \"012345\", \"num\": 67, null: undefined, \"props\": { \"x\": \"o\\tp\\tq\", \"y\": [ 8, 9, { \"z\": \"rst\" } ] } }";
         var q = QueryData.Parse(query);
-        Console.WriteLine(q.ToString());
-        Console.WriteLine();
+        console.WriteLine(q.ToString());
+        console.WriteLine();
 
         // JSON HTTP web client.
         url = "https://developer.mozilla.org/api/v1/whoami";
         var who = new JsonHttpClient<WhoAmI>();
         var me = await who.SendAsync(HttpMethod.Get, url, cancellationToken);
-        Console.WriteLine(me.RegionCode);
+        var region = me.RegionCode;
         me = await who.SendAsync(HttpMethod.Get, url, cancellationToken);
-        Console.WriteLine(me.RegionCode);
+        console.WriteLine(region == me.RegionCode ? ConsoleColor.Green : ConsoleColor.Red, region);
+        var whoJson = new JsonHttpClient<JsonObjectNode>();
+        var json = await whoJson.SendAsync(HttpMethod.Get, url, cancellationToken);
+        region = json.GetObjectValue("geo").GetValue<string>("country_iso");
+        if (region != me.RegionCode) console.WriteLine(ConsoleColor.Red, region);
 
         // JSON HTTP web client.
         url = "https://github.com/compositejs/datasense/raw/main/package.json";
         var webClient = new JsonHttpClient<NameAndDescription>();
         var resp = await webClient.SendAsync(HttpMethod.Get, url, cancellationToken);
-        Console.WriteLine(resp.Name);
+        region = resp.Name;
         resp = await webClient.SendAsync(HttpMethod.Get, url, cancellationToken);
-        Console.WriteLine(resp.Name);
+        console.WriteLine(region == resp.Name ? ConsoleColor.Green : ConsoleColor.Red, region);
 
         //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"
     }
@@ -100,7 +106,7 @@ class DemoServerClientVerb : BaseCommandVerb
         const string password = "P@ssw0rd";
         DefaultConsole.Write("Signing in...");
         var client = oauth.Create<JsonObjectNode>();
-        var resp = await client.PostAsync(url + "Register", new JsonObjectNode
+        _ = await client.PostAsync(url + "Register", new JsonObjectNode
         {
             { "name", name },
             { "password", password }
@@ -108,20 +114,20 @@ class DemoServerClientVerb : BaseCommandVerb
         await oauth.ResolveTokenAsync(new PasswordTokenRequestBody(name, password), cancellationToken);
         DefaultConsole.BackspaceToBeginning();
         DefaultConsole.WriteLine($"Signed in succeeded by account {name}.");
-        resp = await client.GetAsync(url + "Data");
+        var resp = await client.GetAsync(url + "Data");
         DefaultConsole.WriteLine();
         DefaultConsole.WriteLine(resp);
         DefaultConsole.WriteLine();
         DefaultConsole.WriteLine("SSE test");
         DefaultConsole.WriteLine();
-        var sse = await oauth.Create<IEnumerable<ServerSentEventInfo>>().GetAsync(url + "Stream");
-        foreach (var item in sse)
+        var sse = await oauth.Create<IAsyncEnumerable<ServerSentEventInfo>>().GetAsync(url + "Stream", cancellationToken);
+        await foreach (var item in sse)
         {
             DefaultConsole.WriteLine(item.Id);
-            DefaultConsole.WriteLine(item.DataString);
+            DefaultConsole.WriteLine(item.GetJsonData());
             DefaultConsole.WriteLine();
         }
 
-        DefaultConsole.WriteLine("Done!");
+        DefaultConsole.WriteLine(ConsoleColor.Green, "Done!");
     }
 }

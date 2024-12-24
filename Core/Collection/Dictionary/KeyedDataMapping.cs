@@ -81,7 +81,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// <summary>
     /// Gets or sets an hanlder for backup getter.
     /// </summary>
-    public Reflection.KeyedInstanceResolver<T> BackupGetter { get; set; }
+    public KeyedInstanceResolver<T> BackupGetter { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether auto cache for backup getter result is disabled.

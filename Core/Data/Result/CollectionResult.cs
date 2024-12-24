@@ -333,7 +333,7 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>default(T) if source is empty or if no element passes the test specified by predicate; otherwise, the first element in source that passes the test specified by predicate.</returns>
-    public T FirstOrDefault(Func<T, bool> predicate)
+    public T FirstOrDefault(Func<T, bool> predicate = null)
     {
         var col = Data;
         if (col == null) return default;
@@ -345,7 +345,7 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>default(T) if source is empty or if no element passes the test specified by predicate; otherwise, the last element in source that passes the test specified by predicate.</returns>
-    public T LastOrDefault(Func<T, bool> predicate)
+    public T LastOrDefault(Func<T, bool> predicate = null)
     {
         var col = Data;
         if (col == null) return default;

@@ -19,7 +19,7 @@ namespace Trivial.Maths;
 /// The polar coordinate point.
 /// </summary>
 [DataContract]
-public class PolarPoint : IEquatable<PolarPoint>, ICloneable
+public sealed class PolarPoint : IEquatable<PolarPoint>, ICloneable
 {
     /// <summary>
     /// Polar coordinate point symbols.
@@ -74,49 +74,42 @@ public class PolarPoint : IEquatable<PolarPoint>, ICloneable
     /// </summary>
     [JsonPropertyName("r")]
     [DataMember(Name = "r")]
-    public double Radius
-    {
-        get;
-        set;
-    }
+    public double Radius { get; set; }
 
     /// <summary>
     /// Gets or sets the angel (θ).
     /// </summary>
     [JsonPropertyName("theta")]
     [DataMember(Name = "theta")]
-    public Angle Theta
-    {
-        get;
-        set;
-    }
+    public Angle Theta { get; set; }
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
-    public object Clone()
-    {
-        return new PolarPoint(Radius, Theta);
-    }
+    public PolarPoint Clone()
+        => new(Radius, Theta);
+
+    /// <summary>
+    /// Creates a new object that is a copy of the current instance.
+    /// </summary>
+    /// <returns>A new object that is a copy of this instance.</returns>
+    object ICloneable.Clone()
+        => new PolarPoint(Radius, Theta);
 
     /// <summary>
     /// Returns a tuple that represents the values of current coordinate point object.
     /// </summary>
     /// <returns>The tuple representation of this coordinate point object.</returns>
     public Tuple<double, Angle> ToTuple()
-    {
-        return new Tuple<double, Angle>(Radius, Theta);
-    }
+        => new(Radius, Theta);
 
     /// <summary>
     /// Serves as the default hash function.
     /// </summary>
     /// <returns>A hash code for the current object.</returns>
     public override int GetHashCode()
-    {
-        return string.Format(CultureInfo.InvariantCulture, "{0} {1}", Theta.Degrees, Radius).GetHashCode();
-    }
+        => string.Format(CultureInfo.InvariantCulture, "{0} {1}", Theta.Degrees, Radius).GetHashCode();
 
     /// <summary>
     /// Returns the point string value of this instance.

@@ -31,9 +31,7 @@ public static class EquipartitionTaskExtensions
     /// <param name="pick">A handler to pick.</param>
     /// <returns>A task and fragment.</returns>
     public static SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(this IEnumerable<EquipartitionTask> col, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
-    {
-        return Pick(col, null, pick);
-    }
+        => Pick(col, null, pick);
 
     /// <summary>
     /// Picks one and start.
@@ -44,9 +42,7 @@ public static class EquipartitionTaskExtensions
     /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
     /// <returns>A task and fragment.</returns>
     public static SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(this IEnumerable<EquipartitionTask> col, string tag, IEnumerable<string> except = null, bool onlyPending = false)
-    {
-        return Pick(col, null, task => task.Pick(tag, except, onlyPending));
-    }
+        => Pick(col, null, task => task.Pick(tag, except, onlyPending));
 
     /// <summary>
     /// Picks one and start.
@@ -80,9 +76,7 @@ public static class EquipartitionTaskExtensions
     /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
     /// <returns>A task and fragment.</returns>
     public static SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(this IEnumerable<EquipartitionTask> col, Func<EquipartitionTask, bool> predicate, string tag, IEnumerable<string> except = null, bool onlyPending = false)
-    {
-        return Pick(col, predicate, task => task.Pick(tag, except, onlyPending));
-    }
+        => Pick(col, predicate, task => task.Pick(tag, except, onlyPending));
 
     /// <summary>
     /// Gets a task fragment.

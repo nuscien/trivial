@@ -56,26 +56,30 @@ public class QueryPredication<T>
         /// Gets the first value.
         /// </summary>
         /// <returns>The string value of the first item matched; or null if non-exist.</returns>
-        public string GetFirstValue() => Q.GetFirstValue(Key);
+        public string GetFirstValue()
+            => Q.GetFirstValue(Key);
 
         /// <summary>
         /// Gets the last value.
         /// </summary>
         /// <returns>The string value of the first item matched; or null if non-exist.</returns>
-        public string GetLastValue() => Q.GetFirstValue(Key);
+        public string GetLastValue()
+            => Q.GetFirstValue(Key);
 
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <param name="separator">The optional separator for mulitple key; or null for default separator.</param>
         /// <returns>The string value combined; or null if non-exist.</returns>
-        public string GetValue(string separator = null) => Q.GetValue(Key, separator);
+        public string GetValue(string separator = null)
+            => Q.GetValue(Key, separator);
 
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <returns>The value.</returns>
-        public IList<string> GetValues() => Q.GetValues(Key).ToList();
+        public IList<string> GetValues()
+            => Q.GetValues(Key).ToList();
 
         /// <summary>
         /// Converts an instance to its value.
@@ -83,9 +87,7 @@ public class QueryPredication<T>
         /// <param name="info">The instance.</param>
         /// <returns>The value.</returns>
         public static explicit operator TValue(FilterInfo<TValue> info)
-        {
-            return info is null ? default : info.Value;
-        }
+            => info is null ? default : info.Value;
     }
 
     /// <summary>
@@ -164,7 +166,8 @@ public class QueryPredication<T>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="checkEmpty">true if pass for null or empty result; otherwise, false.</param>
-    public void AddForString(string key, Func<FilterInfo<string>, IQueryable<T>> filter, bool checkEmpty = false) => Add(key, filter, checkEmpty);
+    public void AddForString(string key, Func<FilterInfo<string>, IQueryable<T>> filter, bool checkEmpty = false)
+        => Add(key, filter, checkEmpty);
 
     /// <summary>
     /// Adds a predication.
@@ -187,7 +190,8 @@ public class QueryPredication<T>
     /// <param name="filter">The filter.</param>
     /// <param name="separator">The separator for multiple values.</param>
     /// <param name="checkEmpty">true if pass for null or empty result; otherwise, false.</param>
-    public void AddForString(string key, Func<FilterInfo<string>, IQueryable<T>> filter, string separator, bool checkEmpty = false) => Add(key, filter, separator, checkEmpty);
+    public void AddForString(string key, Func<FilterInfo<string>, IQueryable<T>> filter, string separator, bool checkEmpty = false)
+        => Add(key, filter, separator, checkEmpty);
 
     /// <summary>
     /// Adds a predication.
@@ -206,7 +210,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForInt32(string key, Func<FilterInfo<int>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForInt32(string key, Func<FilterInfo<int>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -225,7 +230,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForNullableInt32(string key, Func<FilterInfo<int?>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForNullableInt32(string key, Func<FilterInfo<int?>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -244,7 +250,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForInt64(string key, Func<FilterInfo<long>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForInt64(string key, Func<FilterInfo<long>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -263,7 +270,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForNullableInt64(string key, Func<FilterInfo<long?>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForNullableInt64(string key, Func<FilterInfo<long?>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -282,7 +290,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForSingle(string key, Func<FilterInfo<float>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForSingle(string key, Func<FilterInfo<float>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -301,7 +310,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForNullableSingle(string key, Func<FilterInfo<float?>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForNullableSingle(string key, Func<FilterInfo<float?>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -320,7 +330,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForDouble(string key, Func<FilterInfo<double>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForDouble(string key, Func<FilterInfo<double>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -339,7 +350,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForNullableDouble(string key, Func<FilterInfo<double>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForNullableDouble(string key, Func<FilterInfo<double>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -360,7 +372,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForBoolean(string key, Func<FilterInfo<bool>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForBoolean(string key, Func<FilterInfo<bool>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -380,7 +393,8 @@ public class QueryPredication<T>
     /// </summary>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
-    public void AddForNullableBoolean(string key, Func<FilterInfo<bool>, IQueryable<T>> filter) => Add(key, filter);
+    public void AddForNullableBoolean(string key, Func<FilterInfo<bool>, IQueryable<T>> filter)
+        => Add(key, filter);
 
     /// <summary>
     /// Adds a predication.
@@ -401,7 +415,8 @@ public class QueryPredication<T>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="useUnixTimestamp">true if the value is unix timestamp; otherwise, false.</param>
-    public void AddForDateTime(string key, Func<FilterInfo<DateTime>, IQueryable<T>> filter, bool useUnixTimestamp = false) => Add(key, filter, useUnixTimestamp);
+    public void AddForDateTime(string key, Func<FilterInfo<DateTime>, IQueryable<T>> filter, bool useUnixTimestamp = false)
+        => Add(key, filter, useUnixTimestamp);
 
     /// <summary>
     /// Adds a predication.
@@ -422,7 +437,8 @@ public class QueryPredication<T>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="useUnixTimestamp">true if the value is unix timestamp; otherwise, false.</param>
-    public void AddForNullableDateTime(string key, Func<FilterInfo<DateTime?>, IQueryable<T>> filter, bool useUnixTimestamp = false) => Add(key, filter, useUnixTimestamp);
+    public void AddForNullableDateTime(string key, Func<FilterInfo<DateTime?>, IQueryable<T>> filter, bool useUnixTimestamp = false)
+        => Add(key, filter, useUnixTimestamp);
 
     /// <summary>
     /// Adds a predication.
@@ -445,7 +461,8 @@ public class QueryPredication<T>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="ignoreCase">true to ignore case; false to regard case; null to use default settings.</param>
-    public void AddForEnum<TEnum>(string key, Func<FilterInfo<TEnum>, IQueryable<T>> filter, bool? ignoreCase = null) where TEnum : struct => Add(key, filter, ignoreCase);
+    public void AddForEnum<TEnum>(string key, Func<FilterInfo<TEnum>, IQueryable<T>> filter, bool? ignoreCase = null) where TEnum : struct
+        => Add(key, filter, ignoreCase);
 
     /// <summary>
     /// Adds a predication.
@@ -468,5 +485,6 @@ public class QueryPredication<T>
     /// <param name="key">The key in query data.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="ignoreCase">true to ignore case; false to regard case; null to use default settings.</param>
-    public void AddForNullableEnum<TEnum>(string key, Func<FilterInfo<TEnum?>, IQueryable<T>> filter, bool? ignoreCase = null) where TEnum : struct => Add(key, filter, ignoreCase);
+    public void AddForNullableEnum<TEnum>(string key, Func<FilterInfo<TEnum?>, IQueryable<T>> filter, bool? ignoreCase = null) where TEnum : struct
+        => Add(key, filter, ignoreCase);
 }

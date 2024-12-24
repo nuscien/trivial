@@ -777,6 +777,133 @@ public static class Numbers
             _ => null
         };
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Parses a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters..</exception>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    /// <exception cref="FormatException">s was in an incorrect format.</exception>
+    /// <returns>A number parsed.</returns>
+    public static Int128 ParseToInt128(string s, int radix)
+    {
+        if (s == null) throw ObjectConvert.ArgumentNull(nameof(s));
+        if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
+        if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
+        if (TryParseToInt128(s, radix, out var result)) return result;
+        var i = TryParseNumericWord64(s);
+        if (i.HasValue) return i.Value;
+        var message = $"{nameof(s)} is incorrect. It should be in base {radix} number format.";
+        throw new FormatException(message, new ArgumentException(message, nameof(s)));
+    }
+
+    /// <summary>
+    /// Tries to parse a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    public static bool TryParseToInt128(string s, int radix, out Int128 result)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            result = 0;
+            return false;
+        }
+
+        s = s.Trim();
+        if (radix == 10)
+        {
+            if (Int128.TryParse(s, out result)) return true;
+            var i = TryParseNumericWord64(s);
+            if (i.HasValue)
+            {
+                result = i.Value;
+                return true;
+            }
+        }
+
+        if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
+        {
+            result = default;
+            return false;
+        }
+
+        s = s.ToLowerInvariant();
+        var num = Int128.Zero;
+        var pos = 0;
+        var neg = false;
+        if (radix == 16)
+        {
+            if (s.StartsWith("0x-") || s.StartsWith("-0x") || s.StartsWith("&h-") || s.StartsWith("-&h"))
+            {
+                pos += 3;
+                neg = true;
+            }
+            else if (s.StartsWith("0x") || s.StartsWith("&h"))
+            {
+                pos += 2;
+            }
+            else if (s.StartsWith("x-") || s.StartsWith("-x"))
+            {
+                pos += 2;
+                neg = true;
+            }
+            else if (s.StartsWith("x"))
+            {
+                pos++;
+            }
+        }
+        else if (s[0] == '-')
+        {
+            neg = true;
+            pos++;
+        }
+        else if (radix == 10 && s.StartsWith("0x"))
+        {
+            radix = 16;
+            if (s.StartsWith("0x-"))
+            {
+                pos += 3;
+                neg = true;
+            }
+            else
+            {
+                pos += 2;
+            }
+        }
+
+        for (; pos < s.Length; pos++)
+        {
+            var c = s[pos];
+            var i = num36.IndexOf(c);
+            if (i < 0)
+            {
+                if (c == ' ' || c == '_' || c == ',') continue;
+                if (c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '.' && pos == s.Length - 1) break;
+                result = default;
+                return false;
+            }
+            else if (i >= radix || num < 0)
+            {
+                result = default;
+                return false;
+            }
+
+            num *= radix;
+            num += i;
+        }
+
+        result = neg ? -num : num;
+        return true;
+    }
+#endif
+
     /// <summary>
     /// Gets the string of a specific number.
     /// </summary>

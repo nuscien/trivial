@@ -403,8 +403,9 @@ public class AppAccessingKey
 /// <summary>
 /// The access token resolver request body.
 /// </summary>
+/// <param name="grantType">The grant type.</param>
 [DataContract]
-public abstract class TokenRequestBody
+public abstract class TokenRequestBody(string grantType)
 {
     /// <summary>
     /// The grant type property name.
@@ -422,20 +423,11 @@ public abstract class TokenRequestBody
     public const string ClientSecretProperty = "client_secret";
 
     /// <summary>
-    /// Initializes a new instance of the TokenRequestBody class.
-    /// </summary>
-    /// <param name="grantType">The grant type.</param>
-    protected TokenRequestBody(string grantType)
-    {
-        GrantType = grantType;
-    }
-
-    /// <summary>
     /// Gets the grant type.
     /// </summary>
     [DataMember(Name = GrantTypeProperty)]
     [JsonPropertyName(GrantTypeProperty)]
-    public string GrantType { get; }
+    public string GrantType { get; } = grantType;
 
     /// <summary>
     /// Gets the property.

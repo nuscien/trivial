@@ -16,6 +16,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Trivial.Data;
+using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Security;
 using Trivial.Web;
@@ -614,6 +615,21 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             exception = CreateInvalidOperationException("a URL string");
             if (throwException) throw exception;
             return null;
+        }
+
+        if (type == typeof(HttpUri))
+        {
+            var str = TryConvert<string>(TryConvert, strict, out exception, throwException, JsonValueKind.String);
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(str)) return HttpUri.Parse(str);
+            }
+            catch (FormatException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
         }
 
         if (this is JsonObjectNode json && !type.IsInterface)

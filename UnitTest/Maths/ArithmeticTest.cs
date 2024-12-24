@@ -71,6 +71,10 @@ public class ArithmeticTest
         Assert.AreEqual(17_000_000L, Numbers.ParseToInt64("17百w", 10));
         Assert.AreEqual(17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
         Assert.AreEqual(-200_000_000_000_000, Numbers.ParseToInt64("-200T", 10));
+#if NET8_0_OR_GREATER
+        Assert.AreEqual((Int128)17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
+        Assert.AreEqual((Int128)(-200_000_000_000_000), Numbers.ParseToInt64("-200T", 10));
+#endif
         Assert.AreEqual(1_000_000L, Numbers.ParseToInt64("百万", 10));
         Assert.AreEqual(1_000_000L, Numbers.ParseToInt64("mega", 10));
 

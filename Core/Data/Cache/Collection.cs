@@ -16,6 +16,18 @@ namespace Trivial.Data;
 /// The thread-safe cache for keyed data.
 /// </summary>
 /// <typeparam name="T">The type of data model.</typeparam>
+/// <example>
+/// <code>
+/// // Initializes an instance as a singleton.
+/// var cache = new DataCacheCollection&lt;DataModel&gt;();
+/// 
+/// // Set data with an identifier.
+/// cache["id-to-reference"] = new();
+/// 
+/// // Get data on demand.
+/// var m = cache.TryGet("id-to-reference", default);
+/// </code>
+/// </example>
 public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOnlyList<DataCacheItemInfo<T>>
 {
     /// <summary>
@@ -189,6 +201,21 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
 
         data = result.Value;
         return true;
+    }
+
+    /// <summary>
+    /// Tries to get the cache item data.
+    /// </summary>
+    /// <param name="id">The identifier in the resource group.</param>
+    /// <param name="defaultValue">The default data to return if non-exists.</param>
+    /// <param name="setIfNonExist">true if set the default data back if non-exists; otherwise, false.</param>
+    /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+    public T TryGet(string id, T defaultValue, bool setIfNonExist = false)
+    {
+        if (string.IsNullOrEmpty(id)) return defaultValue;
+        if (TryGet(id, out var result)) return result;
+        if (setIfNonExist) this[id] = defaultValue;
+        return defaultValue;
     }
 
     /// <summary>

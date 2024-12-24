@@ -18,7 +18,7 @@ namespace Trivial.Maths;
 /// <summary>
 /// The spherical coordinate point.
 /// </summary>
-public class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
+public sealed class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
 {
     /// <summary>
     /// Spherical coordinate point symbols.
@@ -72,60 +72,49 @@ public class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
     /// </summary>
     [JsonPropertyName("r")]
     [DataMember(Name = "r")]
-    public double Radius
-    {
-        get;
-        set;
-    }
+    public double Radius { get; set; }
 
     /// <summary>
     /// Gets or sets the angel (θ).
     /// </summary>
     [JsonPropertyName("theta")]
     [DataMember(Name = "theta")]
-    public Angle Theta
-    {
-        get;
-        set;
-    }
+    public Angle Theta { get; set; }
 
     /// <summary>
     /// Gets or sets the angel (φ).
     /// </summary>
     [JsonPropertyName("phi")]
     [DataMember(Name = "phi")]
-    public Angle Phi
-    {
-        get;
-        set;
-    }
+    public Angle Phi { get; set; }
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
-    public object Clone()
-    {
-        return new SphericalPoint(Radius, Theta, Phi);
-    }
+    public SphericalPoint Clone()
+        => new(Radius, Theta, Phi);
+
+    /// <summary>
+    /// Creates a new object that is a copy of the current instance.
+    /// </summary>
+    /// <returns>A new object that is a copy of this instance.</returns>
+    object ICloneable.Clone()
+        => new SphericalPoint(Radius, Theta, Phi);
 
     /// <summary>
     /// Returns a tuple that represents the values of current coordinate point object.
     /// </summary>
     /// <returns>The tuple representation of this coordinate point object.</returns>
     public Tuple<double, Angle, Angle> ToTuple()
-    {
-        return new Tuple<double, Angle, Angle>(Radius, Theta, Phi);
-    }
+        => new(Radius, Theta, Phi);
 
     /// <summary>
     /// Serves as the default hash function.
     /// </summary>
     /// <returns>A hash code for the current object.</returns>
     public override int GetHashCode()
-    {
-        return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", Theta.Degrees, Phi.Degrees, Radius).GetHashCode();
-    }
+        => string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", Theta.Degrees, Phi.Degrees, Radius).GetHashCode();
 
     /// <summary>
     /// Returns the point string value of this instance.
