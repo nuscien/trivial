@@ -33,7 +33,7 @@ public sealed class FactoryObjectResolver<T> : IObjectResolver<T>
     /// Initializes a new instance of the FactoryObjectResolver class.
     /// </summary>
     /// <param name="create">The handler to create instance.</param>
-    public FactoryObjectResolver(Func<T> create)
+    public FactoryObjectResolver(Func<T> create = null)
     {
         handler = create ?? Activator.CreateInstance<T>;
     }

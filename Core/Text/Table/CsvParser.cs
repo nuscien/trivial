@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Text;
@@ -33,6 +34,7 @@ namespace Trivial.Text;
 /// }
 /// </code>
 /// </example>
+[Guid("D58B97EF-FF39-4CD9-AD95-2CDC65705D4C")]
 public class CsvParser : BaseLinesStringTableParser
 {
     /// <summary>

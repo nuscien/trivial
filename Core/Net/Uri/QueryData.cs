@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Trivial.Net;
 /// <summary>
 /// The query data in URI after question mark.
 /// </summary>
+[Guid("E17633F1-1C54-484C-9751-C049368AE6FD")]
 public class QueryData : StringKeyValuePairs
 {
 #pragma warning disable IDE0056, IDE0057, CA1834

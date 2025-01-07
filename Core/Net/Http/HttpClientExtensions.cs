@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -41,6 +42,29 @@ public static class HttpClientExtensions
     /// <summary>
     /// Creates an object resolver for HTTP client.
     /// </summary>
+    /// <param name="client">The HTTP client created.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(out HttpClient client)
+    {
+        client = new();
+        return new InstanceObjectRef<HttpClient>(client);
+    }
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="onInit">A handler occurred on the HTTP client instance is initialized.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(Action<HttpClient> onInit)
+    {
+        var http = new HttpClient();
+        onInit(http);
+        return new InstanceObjectRef<HttpClient>(http);
+    }
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
     /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
     /// <returns>The object resolver of HTTP client.</returns>
     public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value)
@@ -54,6 +78,47 @@ public static class HttpClientExtensions
     /// <returns>The object resolver of HTTP client.</returns>
     public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value, bool disposeHandler)
         => new InstanceObjectRef<HttpClient>(new(value, disposeHandler));
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
+    /// <param name="client">The HTTP client created.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value, out HttpClient client)
+    {
+        HttpClient http = value is null ? new() : new(value);
+        client = http;
+        return new InstanceObjectRef<HttpClient>(http);
+    }
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
+    /// <param name="disposeHandler">true if the inner handler should be disposed when the HTTP client is disposed; otherwise, false, to reuse the inner handler.</param>
+    /// <param name="client">The HTTP client created.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value, bool disposeHandler, out HttpClient client)
+    {
+        HttpClient http = new(value, disposeHandler);
+        client = http;
+        return new InstanceObjectRef<HttpClient>(http);
+    }
+
+    /// <summary>
+    /// Creates an object resolver for HTTP client.
+    /// </summary>
+    /// <param name="value">The handler of HTTP client instance responsible for processing the HTTP response.</param>
+    /// <param name="disposeHandler">true if the inner handler should be disposed when the HTTP client is disposed; otherwise, false, to reuse the inner handler.</param>
+    /// <param name="onInit">A handler occurred on the HTTP client instance is initialized.</param>
+    /// <returns>The object resolver of HTTP client.</returns>
+    public static IObjectResolver<HttpClient> CreateResolver(HttpClientHandler value, bool disposeHandler, Action<HttpClient> onInit)
+    {
+        HttpClient http = new(value, disposeHandler);
+        onInit?.Invoke(http);
+        return new InstanceObjectRef<HttpClient>(http);
+    }
 
     /// <summary>
     /// Creates an object resolver for HTTP client.
@@ -107,7 +172,7 @@ public static class HttpClientExtensions
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static Task CopyToAsync(this HttpContent httpContent, Stream destination, IProgress<long> progress = null, CancellationToken cancellationToken = default)
-        => CopyToAsync(httpContent, destination, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
+        => CopyToAsync(httpContent, destination, StreamCopy.DefaultBufferSize, progress, cancellationToken);
 
     /// <summary>
     /// Loads the HTTP content into a stream of bytes and copies it to the stream object provided as the stream parameter.
@@ -128,7 +193,7 @@ public static class HttpClientExtensions
 #else
         var downloadingStream = await httpContent.ReadAsStreamAsync();
 #endif
-        await IO.StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
+        await StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
     }
 
     /// <summary>
@@ -146,7 +211,7 @@ public static class HttpClientExtensions
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
     /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
     public static Task<FileInfo> WriteFileAsync(this HttpContent httpContent, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
-        => WriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
+        => WriteFileAsync(httpContent, fileName, StreamCopy.DefaultBufferSize, progress, cancellationToken);
 
     /// <summary>
     /// Loads the HTTP content into a stream of bytes and copies it to the file.
@@ -220,7 +285,7 @@ public static class HttpClientExtensions
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
     /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
     public static Task TryWriteFileAsync(HttpContent httpContent, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
-        => TryWriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
+        => TryWriteFileAsync(httpContent, fileName, StreamCopy.DefaultBufferSize, progress, cancellationToken);
 
     /// <summary>
     /// Loads the HTTP content into a stream of bytes and copies it to the file.
@@ -344,12 +409,38 @@ public static class HttpClientExtensions
         if (type == typeof(JsonArrayNode)) return (T)(object)await JsonArrayNode.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(System.Text.Json.Nodes.JsonNode) || type.IsSubclassOf(typeof(System.Text.Json.Nodes.JsonNode))) return (T)(object)System.Text.Json.Nodes.JsonNode.Parse(stream);
-        if (type == typeof(IEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.Parse(stream);
-        if (type == typeof(IAsyncEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.ParseAsync(stream);
-        if (type == typeof(IEnumerable<JsonObjectNode>)) return (T)(object)ToJsonObjectNodes(httpContent.Headers.ContentType?.MediaType, stream);
-        if (type == typeof(IAsyncEnumerable<JsonObjectNode>)) return (T)(object)ToJsonObjectNodesAsync(httpContent.Headers.ContentType?.MediaType, stream);
+        if (type.IsGenericType)
+        {
+            var generic = type.GetGenericTypeDefinition();
+            if (generic == typeof(IAsyncEnumerable<>))
+            {
+                if (type == typeof(IAsyncEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.ParseAsync(stream);
+                if (type == typeof(IAsyncEnumerable<JsonObjectNode>)) return (T)(object)ToJsonObjectNodesAsync(httpContent.Headers.ContentType?.MediaType, stream);
+                if (type == typeof(IAsyncEnumerable<string>)) return (T)(object)CharsReader.ReadLinesAsync(stream, Encoding.UTF8);
+            }
+            else if (generic == typeof(IEnumerable<>))
+            {
+                if (type == typeof(IEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.Parse(stream);
+                if (type == typeof(IEnumerable<JsonObjectNode>)) return (T)(object)ToJsonObjectNodes(httpContent.Headers.ContentType?.MediaType, stream);
+                if (type == typeof(IEnumerable<string>)) return (T)(object)CharsReader.ReadLines(stream, Encoding.UTF8);
+            }
+            else if (generic == typeof(StreamingCollectionResult<>))
+            {
+                var genericType = type.GetGenericArguments().FirstOrDefault();
+                if (genericType == null) return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);
+                if (httpContent.Headers?.ContentType?.MediaType == WebFormat.ServerSentEventsMIME)
+                    return (T)Activator.CreateInstance(type, new object[] { stream });
+                var baseType = typeof(CollectionResult<>).MakeGenericType(new[] { genericType });
+                var copy = await JsonSerializer.DeserializeAsync(stream, baseType, default(JsonSerializerOptions), cancellationToken);
+                if (copy is null) return default;
+                var con = type.GetConstructor(new[] { baseType });
+                return (T)con.Invoke(new object[] { copy });
+            }
+        }
+
         if (type == typeof(QueryData)) return (T)(object)QueryData.ParseAsync(stream);
         if (type == typeof(Stream)) return (T)(object)stream;
+        if (type == typeof(HttpContent)) return (T)(object)httpContent;
         return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);
     }
 
@@ -382,7 +473,7 @@ public static class HttpClientExtensions
 #else
         var stream = await httpContent.ReadAsStreamAsync();
 #endif
-        IO.StreamCopy.TrySeek(stream, origin);
+        StreamCopy.TrySeek(stream, origin);
         return await JsonSerializer.DeserializeAsync<T>(stream, options, cancellationToken);
     }
 
@@ -916,6 +1007,187 @@ public static class HttpClientExtensions
         {
             return await httpClient.SendAsync(request, cancellation);
         }, needThrow, cancellationToken);
+    }
+
+    /// <summary>
+    /// Sets the preferred color scheme to HTTP request headers.
+    /// </summary>
+    /// <param name="headers">The headers to fill the property.</param>
+    /// <param name="value">The preferred color scheme to add, e.g. light and dark.</param>
+    public static void SetTheme(HttpRequestHeaders headers, string value)
+    {
+        if (headers == null) return;
+        headers.Remove("Sec-CH-Prefers-Color-Scheme");
+        if (!string.IsNullOrWhiteSpace(value)) headers.Add("Sec-CH-Prefers-Color-Scheme", JsonStringNode.ToJson(value));
+    }
+
+    /// <summary>
+    /// Sets the preferred color scheme as light to HTTP request headers.
+    /// </summary>
+    /// <param name="headers">The headers to fill the property.</param>
+    public static void SetLightTheme(HttpRequestHeaders headers)
+        => SetTheme(headers, "light");
+
+    /// <summary>
+    /// Sets the preferred color scheme as dark to HTTP request headers.
+    /// </summary>
+    /// <param name="headers">The headers to fill the property.</param>
+    public static void SetDarkTheme(HttpRequestHeaders headers)
+        => SetTheme(headers, "dark");
+
+    /// <summary>
+    /// Sets the OS platform name to HTTP request headers.
+    /// </summary>
+    /// <param name="headers">The headers to fill the property.</param>
+    /// <param name="fullInfo">true if also append its version and CPU arch; otherwise, false.</param>
+    /// <returns>The platform name.</returns>
+    public static string SetPlatform(HttpRequestHeaders headers, bool fullInfo = false)
+    {
+        var client = new HttpClient();
+        var name = GetPlatformName();
+        if (string.IsNullOrWhiteSpace(name) || name == "Unknown" || headers == null) return name;
+        headers.Add("Sec-CH-UA-Platform", string.Concat('"', name, '"'));
+        if (!fullInfo) return name;
+        try
+        {
+            headers.Remove("Sec-CH-UA-Platform-Version");
+            headers.Add("Sec-CH-UA-Platform-Version", string.Concat('"', Environment.OSVersion.Version, '"'));
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+#if NET48_OR_GREATER || NETCOREAPP
+        try
+        {
+            var bitness = Environment.Is64BitProcess ? "64" : "32";
+            var arch = RuntimeInformation.ProcessArchitecture.ToString();
+            headers.Remove("Sec-CH-UA-Bitness");
+            headers.Add("Sec-CH-UA-Bitness", bitness);
+            headers.Remove("Sec-CH-UA-Arch");
+            headers.Add("Sec-CH-UA-Arch", string.Concat('"', arch, '"'));
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+#endif
+
+        return name;
+    }
+
+    internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri requestUri)
+    {
+        var m = new HttpRequestMessage(method, requestUri);
+        m.Headers.Date = DateTimeOffset.Now;
+        return m;
+    }
+
+    internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, string requestUri)
+    {
+        var m = new HttpRequestMessage(method, requestUri);
+        m.Headers.Date = DateTimeOffset.Now;
+        return m;
+    }
+
+    internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri requestUri, HttpContent content)
+    {
+        var m = new HttpRequestMessage(method, requestUri)
+        {
+            Content = content
+        };
+        m.Headers.Date = DateTimeOffset.Now;
+        return m;
+    }
+
+    internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, string requestUri, HttpContent content)
+    {
+        var m = new HttpRequestMessage(method, requestUri)
+        {
+            Content = content
+        };
+        m.Headers.Date = DateTimeOffset.Now;
+        return m;
+    }
+
+    /// <summary>
+    /// Gets the operating system name of the host.
+    /// </summary>
+    /// <returns>The OS name used in HTTP request header Sec-CH-UA-Platform.</returns>
+    private static string GetPlatformName()
+    {
+        try
+        {
+#if NETFRAMEWORK
+            return Environment.OSVersion.Platform switch
+            {
+                PlatformID.Win32NT or PlatformID.Win32Windows or PlatformID.Win32S => "Windows",
+                PlatformID.MacOSX => "macOS",
+                PlatformID.WinCE => "Windows CE",
+                PlatformID.Xbox => "Xbox",
+                _ => "Unknown"
+            };
+#else
+            if (OperatingSystem.IsWindows()) return "Windows";
+            if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst()) return "macOS";
+            if (OperatingSystem.IsIOS()) return "iOS";
+            if (OperatingSystem.IsAndroid()) return "Android";
+            if (OperatingSystem.IsTvOS()) return "tvOS";
+            if (OperatingSystem.IsWatchOS()) return "watchOS";
+            if (OperatingSystem.IsLinux()) return "Linux";
+
+            //if (OperatingSystem.IsBrowser()) return "Chromium OS";    // Need read its host.
+#endif
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return "Unknown";
     }
 
     private static IEnumerable<JsonObjectNode> ToJsonObjectNodes(string mime, Stream stream)

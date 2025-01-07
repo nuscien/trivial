@@ -53,6 +53,7 @@ namespace Trivial.Text;
 /// </example>
 [Serializable]
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ArrayConverter))]
+[Guid("710F2703-04E9-4C13-9B6A-3403EC89A298")]
 public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
 #if NET8_0_OR_GREATER
     , IParsable<JsonArrayNode>, IAdditionOperators<JsonArrayNode, JsonArrayNode, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<BaseJsonValueNode>, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<IJsonValueNode>, JsonArrayNode>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Trivial.IO;
 /// <summary>
 /// The characters reader.
 /// </summary>
+[Guid("B8BB09CE-3ADC-4E56-AF99-D7DF82FAA419")]
 public class CharsReader : TextReader
 {
     private readonly IEnumerator<char> enumerator;

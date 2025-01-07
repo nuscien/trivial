@@ -51,6 +51,7 @@ public enum InterceptorModes : byte
 /// <item>The interceptor mode to determine which one invokes in the above invoking times limitation, e.g.the first one, the last one or all.</item>
 /// </list>
 /// </remarks>
+[Guid("11698602-816D-4878-9E1C-5D453AF81E86")]
 public sealed class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy>
 {
     /// <summary>

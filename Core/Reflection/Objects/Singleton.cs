@@ -334,7 +334,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <returns>An instance resolved.</returns>
     public T EnsureResolve<T>(string key, IObjectRef<T> reference)
     {
-        if (key == null) key = string.Empty;
+        key ??= string.Empty;
         var set = GetInstances(typeof(T));
         if (!set.TryGetValue(key, out var result))
         {

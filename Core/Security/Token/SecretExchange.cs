@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Cryptography;
@@ -128,6 +129,7 @@ namespace Trivial.Security;
 ///     var jwt = exchange.ToJsonWebTokenAuthenticationHeaderValue(sign);
 ///   </code>
 /// </example>
+[Guid("2E887BCE-F862-429F-B67C-D15A4DF1856B")]
 public class RSASecretExchange : ICloneable
 {
     /// <summary>

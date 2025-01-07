@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -13,6 +14,7 @@ namespace Trivial.Text;
 /// Represents a specific JSON boolean value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.BooleanConverter))]
+[Guid("BB8C0C59-D1D0-47B4-9C94-0DE7680FAFC8")]
 public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
 #if NET8_0_OR_GREATER
     , IParsable<JsonBooleanNode>

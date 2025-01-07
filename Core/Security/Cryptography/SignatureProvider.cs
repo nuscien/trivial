@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 using System.Security.Cryptography;
@@ -62,6 +63,7 @@ public interface ISignatureProvider
 /// <summary>
 /// The hash signature for string.
 /// </summary>
+[Guid("0476149D-9482-409B-9D75-427801ABC853")]
 public class HashSignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;
@@ -429,6 +431,7 @@ public class HashSignatureProvider : ISignatureProvider
 /// <summary>
 /// The RSA hash signature for string.
 /// </summary>
+[Guid("0A09C949-B088-461E-A886-A72C06C296EB")]
 public class RSASignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;
@@ -679,6 +682,7 @@ public class RSASignatureProvider : ISignatureProvider
 /// <summary>
 /// The ECDSA hash signature for string.
 /// </summary>
+[Guid("5EB7E921-9CF8-41EA-96D1-9F7DA015FFEE")]
 public class ECDsaSignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;

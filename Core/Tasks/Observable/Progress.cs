@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Trivial.Tasks;
 /// <summary>
 /// The progress from zero (0) to one (1) in double-floating number.
 /// </summary>
+[Guid("3C47D491-58A0-493D-9A69-803F8A4B1FA0")]
 public class OneProgress : IProgress<double>, INotifyPropertyChanged
 {
     /// <summary>
@@ -102,9 +104,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// </summary>
     /// <param name="delta">The delta value to update.</param>
     public void Increase(double delta = 0.01)
-    {
-        Report(Value + delta);
-    }
+        => Report(Value + delta);
 
     /// <summary>
     /// Increases value in a given time inteval.

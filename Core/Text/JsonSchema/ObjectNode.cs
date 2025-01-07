@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Trivial.Text;
 
@@ -16,6 +17,7 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public JsonObjectSchemaDescription()
     {
+        Properties = new();
     }
 
     /// <summary>
@@ -25,6 +27,22 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     public JsonObjectSchemaDescription(JsonObjectNode json)
         : this(json, false)
     {
+        Properties = new();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonObjectSchemaDescription class.
+    /// </summary>
+    /// <param name="properties">The description of properties.</param>
+    public JsonObjectSchemaDescription(Dictionary<string, JsonNodeSchemaDescription> properties, IEnumerable<string> requiredPropertyNames = null)
+    {
+        Properties = properties;
+        if (requiredPropertyNames == null) return;
+        foreach (var prop in requiredPropertyNames)
+        {
+            if (string.IsNullOrWhiteSpace(prop) || RequiredPropertyNames.Contains(prop)) continue;
+            RequiredPropertyNames.Add(prop);
+        }
     }
 
     /// <summary>
@@ -35,6 +53,7 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     protected JsonObjectSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
         : base(json, true)
     {
+        Properties = new();
         if (json == null) return;
         DefaultValue = json.TryGetObjectValue("default");
         JsonValues.FillObjectSchema(Properties, json, "properties");
@@ -102,7 +121,7 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     /// Gets the description of properties.
     /// The dictionary keys are the property names.
     /// </summary>
-    public Dictionary<string, JsonNodeSchemaDescription> Properties { get; } = new();
+    public Dictionary<string, JsonNodeSchemaDescription> Properties { get; }
 
     /// <summary>
     /// Gets the pattern description properties.
@@ -231,6 +250,34 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     public bool RemoveProperty(string propertyName)
         => Properties.Remove(propertyName);
 
+    /// <summary>
+    /// Converts the schema to TypeScript definition string.
+    /// </summary>
+    /// <param name="name">The interface name.</param>
+    /// <returns>A TypeScript definition string.</returns>
+    public string ToTypeScriptDefinitionString(string name)
+    {
+        var sb = new StringBuilder();
+        sb.Append("export interface ");
+        sb.Append(name);
+        sb.Append(' ');
+        ToTypeScriptDefinitionString(sb, 0);
+        sb.AppendLine();
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Converts the schema to Type Script definition string.
+    /// </summary>
+    /// <returns>A Type Script definition string.</returns>
+    public string ToTypeScriptDefinitionString()
+    {
+        var sb = new StringBuilder();
+        ToTypeScriptDefinitionString(sb, 0);
+        sb.AppendLine();
+        return sb.ToString();
+    }
+
     /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
@@ -274,5 +321,106 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     {
         Properties[propertyName] = value;
         return value;
+    }
+
+    /// <summary>
+    /// Converts the schema to TypeScript definition string.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="indent">The indent level.</param>
+    /// <returns>A TypeScript definition string.</returns>
+    private void ToTypeScriptDefinitionString(StringBuilder sb, int indent)
+    {
+        var indentStr = new string(' ', indent * 2);
+        sb.AppendLine("{");
+        foreach (var prop in Properties)
+        {
+            var key = prop.Key;
+            var v = prop.Value;
+            if (string.IsNullOrWhiteSpace(key) || v == null) continue;
+            if (!string.IsNullOrWhiteSpace(v.Description))
+            {
+                sb.AppendLine();
+                sb.Append(indentStr);
+                sb.AppendLine("  /** ");
+                sb.Append(indentStr);
+                sb.Append("   * ");
+                sb.AppendLine(v.Description);
+                sb.Append(indentStr);
+                sb.AppendLine("   */");
+            }
+
+            sb.Append(indentStr);
+            sb.Append("  ");
+            sb.Append(key);
+            if (!RequiredPropertyNames.Contains(key)) sb.Append('?');
+            sb.Append(": ");
+            if (v is JsonStringSchemaDescription str)
+            {
+                sb.Append(str.ConstantValue ?? "string");
+            }
+            else if (v is JsonNumberSchemaDescription || v is JsonIntegerSchemaDescription)
+            {
+                sb.Append("number");
+            }
+            else if (v is JsonBooleanSchemaDescription)
+            {
+                sb.Append("boolean");
+            }
+            else if (v is JsonObjectSchemaDescription obj)
+            {
+                obj.ToTypeScriptDefinitionString(sb, indent + 1);
+            }
+            else if (v is JsonArraySchemaDescription arr)
+            {
+                var item = arr.DefaultItems;
+                if (item != null && (arr.FixedItems == null || arr.FixedItems.Count == 0))
+                {
+                    if (item is JsonStringSchemaDescription str2)
+                    {
+                        sb.Append(str2.ConstantValue ?? "string");
+                    }
+                    else if (item is JsonNumberSchemaDescription || item is JsonIntegerSchemaDescription)
+                    {
+                        sb.Append("number");
+                    }
+                    else if (item is JsonBooleanSchemaDescription)
+                    {
+                        sb.Append("boolean");
+                    }
+                    else if (item is JsonObjectSchemaDescription obj2)
+                    {
+                        obj2.ToTypeScriptDefinitionString(sb, indent + 1);
+                    }
+                    else
+                    {
+                        sb.Append("any");
+                    }
+                }
+
+                sb.Append("[]");
+            }
+            else
+            {
+                sb.Append("any");
+            }
+
+            if (v.EnumItems != null && v.EnumItems.Count > 0)
+            {
+                sb.Append(" | ");
+                sb.Append(string.Join(" | ", v.EnumItems.Select(o => o.ToString())));
+            }
+
+            sb.AppendLine(";");
+        }
+
+        if (!DisableAdditionalProperties)
+        {
+            sb.Append(indentStr);
+            sb.AppendLine("  [key: string]: any;");
+        }
+
+        sb.Append(indentStr);
+        sb.Append('}');
     }
 }

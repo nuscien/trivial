@@ -24,7 +24,7 @@ public class ExceptionHandler
     /// </summary>
     /// <param name="type">The exception type.</param>
     /// <param name="handler">The catch handler.</param>
-    public class Item(Type type, ExceptionHandler.ItemHandler handler)
+    public class Item(Type type, ItemHandler handler)
     {
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Trivial.CommandLine;
 /// <summary>
 /// The command line interface.
 /// </summary>
+[Guid("86E515F9-00B4-465A-ACB5-C473B7B678D4")]
 public sealed partial class StyleConsole
 {
     /// <summary>

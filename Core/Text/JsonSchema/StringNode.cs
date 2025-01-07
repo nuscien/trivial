@@ -101,7 +101,7 @@ public class JsonStringSchemaDescription : JsonNodeSchemaDescription
     protected override void FillProperties(JsonObjectNode node)
     {
         node.SetValueIfNotNull("default", DefaultValue);
-        node.SetValueIfNotNull("const", DefaultValue);
+        node.SetValueIfNotNull("const", ConstantValue);
         node.SetValueIfNotEmpty("contentMediaType", ContentType);
         node.SetValueIfNotEmpty("contentEncoding", ContentEncoding);
         node.SetValueIfNotNull("minLength", MinLength);

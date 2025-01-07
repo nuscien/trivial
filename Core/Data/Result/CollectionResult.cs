@@ -565,6 +565,12 @@ public class JsonCollectionResult : CollectionResult<JsonObjectNode>
 /// The Server-Sent Events collection data result.
 /// </summary>
 /// <typeparam name="T">The type of item.</typeparam>
+/// <example>
+/// <code>
+/// var http = new JsonHttpClient&lt;StreamingCollectionResult&lt;JsonObjectNode&gt;&gt;()
+/// var sse = await http.GetAsync(A-URL-TO-STREAM-MESSAGE);
+/// </code>
+/// </example>
 public class StreamingCollectionResult<T> : CollectionResult<T>
 {
     private Task task;
@@ -617,8 +623,17 @@ public class StreamingCollectionResult<T> : CollectionResult<T>
     /// Initializes a new instance of the CollectionResultSource class.
     /// </summary>
     /// <param name="sse">The Server-Sent Events stream.</param>
+    public StreamingCollectionResult(Stream sse)
+        : this(ServerSentEventInfo.ParseAsync(sse), null as Action<StreamingCollectionResult<T>, ServerSentEventInfo>, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the CollectionResultSource class.
+    /// </summary>
+    /// <param name="sse">The Server-Sent Events stream.</param>
     /// <param name="options">The JSON serializer options.</param>
-    public StreamingCollectionResult(Stream sse, JsonSerializerOptions options = null)
+    public StreamingCollectionResult(Stream sse, JsonSerializerOptions options)
         : this(ServerSentEventInfo.ParseAsync(sse), null as Action<StreamingCollectionResult<T>, ServerSentEventInfo>, options)
     {
     }

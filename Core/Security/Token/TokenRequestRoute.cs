@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
@@ -40,6 +41,7 @@ namespace Trivial.Security;
 /// var resp = await route.SignInAsync(tokenReq);
 /// </code>
 /// </example>
+[Guid("1E9E554C-82DB-4D5C-8C5A-A0D054D17426")]
 public class TokenRequestRoute<T>
 {
     /// <summary>

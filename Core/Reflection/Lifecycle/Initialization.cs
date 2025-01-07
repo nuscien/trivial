@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Trivial.Reflection;
 /// <summary>
 /// The initialization in thread-safe mode.
 /// </summary>
+[Guid("EF30759E-EF34-4C68-9994-5769A147BE4E")]
 public class Initialization
 {
     private SemaphoreSlim semaphoreSlim = new(1, 1);

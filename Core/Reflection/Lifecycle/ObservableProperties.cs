@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Trivial.Data;
 using Trivial.Text;
@@ -38,6 +40,23 @@ public enum PropertySettingPolicies
 /// <summary>
 /// Base model with observable properties.
 /// </summary>
+/// <example>
+/// <code>
+/// public class TestModel : BaseObservableProperties
+/// {
+///     public string Name
+///     {
+///         get => GetCurrentProperty&lt;string&gt;();
+///         set => SetCurrentProperty(value);
+///     }
+/// }
+/// </code>
+/// <code>
+/// var m = new TestModel();
+/// m.PropertyChanged += (sender, e) => Console.WriteLine($"Property {e.PropertyName} changed.");
+/// m.Name = "Programming";
+/// </code>
+/// </example>
 public abstract class BaseObservableProperties : INotifyPropertyChanged
 {
     /// <summary>
@@ -124,6 +143,36 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Gets a property value.
+    /// </summary>
+    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <param name="keyCase">A casing rules of the specified culture.</param>
+    /// <param name="culture">An object that supplies culture-specific casing rules.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="key">The additional key.</param>
+    /// <returns>A property value.</returns>
+    protected T GetCurrentProperty<T>(Cases keyCase, CultureInfo culture = null, T defaultValue = default, [CallerMemberName] string key = null)
+    {
+        key = StringExtensions.ToSpecificCase(key, keyCase, culture);
+        if (string.IsNullOrWhiteSpace(key)) return defaultValue;
+        try
+        {
+            return TryGetPropertyInternal(key, out var v) ? (T)v : defaultValue;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return defaultValue;
+    }
+
+    /// <summary>
     /// Sets a property.
     /// </summary>
     /// <param name="value">The value.</param>
@@ -133,6 +182,33 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, [CallerMemberName] string key = null)
     {
+        if (!AssertPropertyKey(key)) return false;
+        var exist = cache.TryGetValue(key, out var v);
+        if (exist && v == value) return false;
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+        {
+            if (!SetPropertyInternal(key, value)) return false;
+            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
+            return true;
+        }
+
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+        throw new InvalidOperationException("Forbid to set property.");
+    }
+
+    /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="keyCase">A casing rules of the specified culture.</param>
+    /// <param name="culture">An object that supplies culture-specific casing rules.</param>
+    /// <param name="key">The additional key.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
+    protected bool SetCurrentProperty(object value, Cases keyCase, CultureInfo culture = null, [CallerMemberName] string key = null)
+    {
+        key = StringExtensions.ToSpecificCase(key, keyCase, culture);
         if (!AssertPropertyKey(key)) return false;
         var exist = cache.TryGetValue(key, out var v);
         if (exist && v == value) return false;

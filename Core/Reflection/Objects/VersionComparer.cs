@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Trivial.Reflection;
 /// <summary>
 /// The version comparer.
 /// </summary>
+[Guid("00236369-B525-416D-AB9E-9CD81925457F")]
 public class VersionComparer : IComparer<string>
 {
     /// <summary>

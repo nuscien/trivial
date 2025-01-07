@@ -18,6 +18,21 @@ namespace Trivial.Net;
 /// <summary>
 /// The record item of Server-Sent Events response.
 /// </summary>
+/// <example>
+/// <code>
+/// // Client side to receive streaming
+/// var http = new JsonHttpClient&lt;IAsyncEnumerable&lt;ServerSentEventInfo&gt;&gt;()
+/// var sse = await http.GetAsync(A-URL-TO-STREAM-MESSAGE);
+/// </code>
+/// <code>
+/// // Server side (ASP.NET) to push data
+/// public IActionResult Streaming()
+/// {
+///     IAsyncEnumerable&lt;ServerSentEventInfo&gt; sse = GetStreamingData();
+///     return sse.ToActionResult();
+/// }
+/// </code>
+/// </example>
 public class ServerSentEventInfo
 {
     private readonly Dictionary<string, string> dict = new();

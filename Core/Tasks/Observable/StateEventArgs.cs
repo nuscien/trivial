@@ -87,6 +87,27 @@ public class ResultEventArgs<T> : StateEventArgs<TaskStates>
     public ResultEventArgs(Exception exception, TaskStates state = TaskStates.Faulted) : base(state) => Exception = exception;
 
     /// <summary>
+    /// Initializes a new instance of the ResultEventArgs class.
+    /// </summary>
+    /// <param name="message">The additional message.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="exception">The exception.</param>
+    public ResultEventArgs(string message, T result, TaskStates state = TaskStates.Done, Exception exception = null) : base(state, message)
+    {
+        Result = result;
+        Exception = exception;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ResultEventArgs class.
+    /// </summary>
+    /// <param name="message">The additional message.</param>
+    /// <param name="exception">The exception.</param>
+    /// <param name="state">The state.</param>
+    public ResultEventArgs(string message, Exception exception, TaskStates state = TaskStates.Faulted) : base(state, message) => Exception = exception;
+
+    /// <summary>
     /// Gets the result.
     /// </summary>
     public T Result { get; }

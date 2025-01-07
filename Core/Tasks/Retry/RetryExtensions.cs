@@ -166,7 +166,7 @@ public static class RetryExtensions
             {
                 result.Fail(ex);
                 ex = needThrow(ex);
-                if (ex != null) throw ex;
+                if (ex != null) throw;
             }
 
             var span = retry.Next();

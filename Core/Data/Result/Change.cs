@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
@@ -334,6 +335,29 @@ public class DataEventArgs<T> : EventArgs
     /// Gets the additional message.
     /// </summary>
     public string Message { get; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        try
+        {
+            return Data?.ToString() ?? Message ?? "null";
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return base.ToString();
+    }
 }
 
 /// <summary>

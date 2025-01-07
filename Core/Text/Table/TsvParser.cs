@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Text;
@@ -9,6 +10,7 @@ namespace Trivial.Text;
 /// <summary>
 /// The text parser for tab-separated values file format.
 /// </summary>
+[Guid("E90FE0E3-799C-4E0C-94DC-8D1925EA7F0E")]
 public class TsvParser : BaseLinesStringTableParser
 {
     /// <summary>

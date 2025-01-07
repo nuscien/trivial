@@ -55,6 +55,7 @@ namespace Trivial.Text;
 /// </example>
 [Serializable]
 [JsonConverter(typeof(JsonValueNodeConverter.ObjectConverter))]
+[Guid("2D5D5CB8-9ACD-4DB6-9B0F-1D766EF64D75")]
 public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
 #if NET8_0_OR_GREATER
     , IParsable<JsonObjectNode>

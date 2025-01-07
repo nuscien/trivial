@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using Trivial.Text;
@@ -9,6 +10,7 @@ namespace Trivial.Data;
 /// <summary>
 /// Column mapping.
 /// </summary>
+[Guid("A11ACE29-8AD8-4A59-9C88-52053CDEF354")]
 public class ColumnMapping : List<ColumnMappingItem>
 {
     /// <summary>
@@ -73,6 +75,7 @@ public class ColumnMapping : List<ColumnMappingItem>
 /// <summary>
 /// Column mapping item.
 /// </summary>
+[Guid("A6C96FD4-87BA-4076-8FC9-D37B859F9EFB")]
 public class ColumnMappingItem
 {
     /// <summary>

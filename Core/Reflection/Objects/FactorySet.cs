@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Trivial.Reflection;
 /// <summary>
 /// A set of factory used to register and resolve instance.
 /// </summary>
+[Guid("B9589B69-A5A1-423E-86BB-85B35C78A2AA")]
 public sealed class FactorySet
 {
     /// <summary>

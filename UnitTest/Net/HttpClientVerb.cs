@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Trivial.CommandLine;
+using Trivial.Data;
 using Trivial.Security;
 using Trivial.Text;
 
@@ -100,8 +102,10 @@ class DemoServerClientVerb : BaseCommandVerb
     {
         var oauth = new OAuthClient("trivial.cli", "demo-used")
         {
-            TokenResolverUri = new(url + "Login")
+            TokenResolverUri = new(url + "Login"),
+            HttpClientResolver = HttpClientExtensions.CreateResolver(out var http)
         };
+        HttpClientExtensions.SetPlatform(http.DefaultRequestHeaders, true);
         const string name = "admin";
         const string password = "P@ssw0rd";
         DefaultConsole.Write("Signing in...");
@@ -114,7 +118,7 @@ class DemoServerClientVerb : BaseCommandVerb
         await oauth.ResolveTokenAsync(new PasswordTokenRequestBody(name, password), cancellationToken);
         DefaultConsole.BackspaceToBeginning();
         DefaultConsole.WriteLine($"Signed in succeeded by account {name}.");
-        var resp = await client.GetAsync(url + "Data");
+        var resp = await client.GetAsync(url + "Data", cancellationToken);
         DefaultConsole.WriteLine();
         DefaultConsole.WriteLine(resp);
         DefaultConsole.WriteLine();
@@ -129,5 +133,7 @@ class DemoServerClientVerb : BaseCommandVerb
         }
 
         DefaultConsole.WriteLine(ConsoleColor.Green, "Done!");
+
+        //var col = await oauth.Create<StreamingCollectionResult<JsonObjectNode>>().GetAsync(url + "Items");
     }
 }

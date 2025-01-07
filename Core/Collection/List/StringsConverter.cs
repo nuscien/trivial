@@ -69,7 +69,6 @@ public static partial class ListExtensions
             if (item == null) continue;
             if (i > 0) writer.Write('\n');
             writer.Write(item.ToResponseString(true));
-            writer.Write('\n');
             writer.Flush();
             i++;
         }
@@ -96,7 +95,6 @@ public static partial class ListExtensions
             if (item == null) continue;
             if (i > 0) writer.Write('\n');
             await writer.WriteAsync(item.ToResponseString(true));
-            writer.Write('\n');
             await writer.FlushAsync();
             i++;
         }
@@ -123,7 +121,6 @@ public static partial class ListExtensions
             if (item == null) continue;
             if (i > 0) writer.Write('\n');
             await writer.WriteAsync(item.ToResponseString(true));
-            writer.Write('\n');
             await writer.FlushAsync();
             i++;
         }

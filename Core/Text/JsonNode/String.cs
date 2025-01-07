@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
@@ -18,6 +19,7 @@ namespace Trivial.Text;
 /// Represents a specific JSON string value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.StringConverter))]
+[Guid("F6732685-1CEA-42D3-A13D-42AD3FA235DE")]
 public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IEquatable<char>, IReadOnlyList<char>
 #if NET8_0_OR_GREATER
     , IAdditionOperators<JsonStringNode, IJsonValueNode<string>, JsonStringNode>, IAdditionOperators<JsonStringNode, string, JsonStringNode>
