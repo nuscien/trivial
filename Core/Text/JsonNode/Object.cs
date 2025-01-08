@@ -3855,7 +3855,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keys">The property key collection.</param>
     /// <returns>The count of value removed.</returns>
-    public int Remove(IEnumerable<string> keys)
+    public int Remove(string[] keys)
     {
         var count = 0;
         foreach (var key in keys)
@@ -3866,6 +3866,57 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
 
         return count;
     }
+
+    /// <summary>
+    /// Removes all properties of the specific key.
+    /// </summary>
+    /// <param name="keys">The property key collection.</param>
+    /// <returns>The count of value removed.</returns>
+    public int Remove(IEnumerable<string> keys)
+    {
+        var count = 0;
+        if (keys == null) return count;
+        foreach (var key in keys)
+        {
+            if (string.IsNullOrEmpty(key)) continue;
+            if (RemoveProperty(key)) count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Removes all properties of the specific key.
+    /// </summary>
+    /// <param name="keys">The property key collection.</param>
+    /// <returns>The count of value removed.</returns>
+    public int Remove(ReadOnlySpan<string> keys)
+    {
+        var count = 0;
+        foreach (var key in keys)
+        {
+            if (string.IsNullOrEmpty(key)) continue;
+            if (RemoveProperty(key)) count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Removes all properties of the specific key.
+    /// </summary>
+    /// <param name="keys">The property key collection.</param>
+    /// <returns>The count of value removed.</returns>
+    public int RemoveRange(params string[] keys)
+        => Remove(keys);
+
+    /// <summary>
+    /// Removes all properties of the specific key.
+    /// </summary>
+    /// <param name="keys">The property key collection.</param>
+    /// <returns>The count of value removed.</returns>
+    public int RemoveRange(params ReadOnlySpan<string> keys)
+        => Remove(keys);
 
     /// <summary>
     /// Sets null to the specific property.

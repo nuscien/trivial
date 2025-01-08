@@ -664,40 +664,6 @@ public class JsonUnitTest
         Assert.IsFalse(json.GetValue("arr").Switch().Case<string, int>(TestObject, (s, i) => Assert.Fail()).IsPassed);
     }
 
-    /// <summary>
-    /// Tests JSON schema.
-    /// </summary>
-    [TestMethod]
-    public void TestJsonSchema()
-    {
-        var schema = new JsonObjectSchemaDescription(new Dictionary<string, JsonNodeSchemaDescription>
-        {
-            {
-                "str", new JsonStringSchemaDescription
-                {
-                    DefaultValue = "Hey!",
-                }
-            },
-            {
-                "num", new JsonNumberSchemaDescription()
-            },
-            {
-                "b", new JsonBooleanSchemaDescription()
-            },
-            {
-                "arr", new JsonArraySchemaDescription
-                {
-                    DefaultItems = new JsonObjectSchemaDescription()
-                }
-            },
-        })
-        {
-            DisableAdditionalProperties = true
-        };
-        Assert.IsNotNull(schema.ToTypeScriptDefinitionString());
-        Assert.IsNotNull(schema.ToJson());
-    }
-
     private static bool TestObject(IJsonValueNode node, out string a, out int b)
     {
         if (node is not JsonObjectNode json)

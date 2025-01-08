@@ -114,13 +114,7 @@ public class JsonNumberSchemaDescription : JsonNodeSchemaDescription
         if (skipExtendedProperties) return;
         ExtendedProperties.SetRange(json);
         JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
-        ExtendedProperties.Remove("default");
-        ExtendedProperties.Remove("const");
-        ExtendedProperties.Remove("multipleOf");
-        ExtendedProperties.Remove("exclusiveMinimum");
-        ExtendedProperties.Remove("exclusiveMaximum");
-        ExtendedProperties.Remove("minimum");
-        ExtendedProperties.Remove("maximum");
+        ExtendedProperties.RemoveRange("default", "const", "multipleOf", "exclusiveMinimum", "exclusiveMaximum", "minimum", "maximum");
     }
 
     /// <summary>
@@ -278,13 +272,7 @@ public class JsonIntegerSchemaDescription : JsonNodeSchemaDescription
         if (skipExtendedProperties) return;
         ExtendedProperties.SetRange(json);
         JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
-        ExtendedProperties.Remove("default");
-        ExtendedProperties.Remove("const");
-        ExtendedProperties.Remove("multipleOf");
-        ExtendedProperties.Remove("exclusiveMinimum");
-        ExtendedProperties.Remove("exclusiveMaximum");
-        ExtendedProperties.Remove("minimum");
-        ExtendedProperties.Remove("maximum");
+        ExtendedProperties.RemoveRange("default", "const", "multipleOf", "exclusiveMinimum", "exclusiveMaximum", "minimum", "maximum");
     }
 
     /// <summary>

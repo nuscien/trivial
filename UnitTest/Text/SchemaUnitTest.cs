@@ -45,5 +45,38 @@ public class SchemaUnitTest
         Assert.IsNotNull(schema);
         Assert.AreEqual("Unit test.", schema.Description);
         Assert.AreEqual(5, schema.Properties.Count);
+        schema = new JsonObjectSchemaDescription(new Dictionary<string, JsonNodeSchemaDescription>
+        {
+            {
+                "str", new JsonStringSchemaDescription
+                {
+                    Description = "Gets or sets a string property.",
+                    DefaultValue = "Hey!",
+                }
+            },
+            {
+                "num", new JsonNumberSchemaDescription()
+            },
+            {
+                "b", new JsonBooleanSchemaDescription()
+            },
+            {
+                "arr", new JsonArraySchemaDescription
+                {
+                    DefaultItems = schema
+                }
+            },
+        })
+        {
+            Description = "This is a test model.",
+            DisableAdditionalProperties = true,
+        };
+        schema.MarkPropertyRequired("str");
+        schema.GetProperty("str").EnumItems.AddRange(new[] { "a", "c", "defg" });
+        schema.SetProperty("b", new JsonBooleanSchemaDescription
+        {
+            DefaultValue = false
+        });
+        Assert.IsNotNull(schema.ToTypeScriptDefinitionString("testContract"));
     }
 }

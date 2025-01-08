@@ -47,14 +47,7 @@ public class JsonStringSchemaDescription : JsonNodeSchemaDescription
         if (skipExtendedProperties) return;
         ExtendedProperties.SetRange(json);
         JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
-        ExtendedProperties.Remove("default");
-        ExtendedProperties.Remove("const");
-        ExtendedProperties.Remove("contentMediaType");
-        ExtendedProperties.Remove("contentEncoding");
-        ExtendedProperties.Remove("minLength");
-        ExtendedProperties.Remove("maxLength");
-        ExtendedProperties.Remove("pattern");
-        ExtendedProperties.Remove("format");
+        ExtendedProperties.RemoveRange("default", "const", "contentMediaType", "contentEncoding", "minLength", "maxLength", "pattern", "format");
     }
 
     /// <summary>

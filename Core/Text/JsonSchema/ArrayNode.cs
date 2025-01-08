@@ -63,13 +63,7 @@ public class JsonArraySchemaDescription : JsonNodeSchemaDescription
         if (skipExtendedProperties) return;
         ExtendedProperties.SetRange(json);
         JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
-        ExtendedProperties.Remove("default");
-        ExtendedProperties.Remove("minItems");
-        ExtendedProperties.Remove("maxItems");
-        ExtendedProperties.Remove("items");
-        ExtendedProperties.Remove("additionalItems");
-        ExtendedProperties.Remove("contains");
-        ExtendedProperties.Remove("uniqueItems");
+        ExtendedProperties.RemoveRange("default", "minItems", "maxItems", "items", "additionalItems", "contains", "uniqueItems");
     }
 
     /// <summary>

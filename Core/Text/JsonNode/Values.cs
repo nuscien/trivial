@@ -2446,6 +2446,135 @@ public static class JsonValues
         json.Remove(new[] { "type", "title", "deprecated", "readOnly", "writeOnly", "allOf", "anyOf", "oneOf", "not", "enum", "definitions" });
     }
 
+    /// <summary>
+    /// Converts the JSON schema to Type Script definition (format of .d.ts file) content string.
+    /// </summary>
+    /// <param name="source">The JSON schema to convert.</param>
+    /// <param name="name">The interface name; or null, if only exports the definition body.</param>
+    /// <returns>A Type Script definition format content string.</returns>
+    public static string ToTypeScriptDefinitionString(this JsonObjectSchemaDescription source, string name = null)
+    {
+        if (source == null) return string.IsNullOrWhiteSpace(name) ? string.Empty : string.Concat(name, ": null | undefined;");
+        var sb = new StringBuilder();
+        ToTypeScriptDefinitionString("export interface ", name, source.Description, sb, 0);
+        if (!string.IsNullOrWhiteSpace(name)) sb.Append(' ');
+        ToTypeScriptDefinitionString(source, sb, 0);
+        sb.AppendLine();
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Converts the JSON schema to Type Script definition (format of .d.ts file) content string.
+    /// </summary>
+    /// <param name="source">The JSON schema to convert.</param>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="indent">The indent level.</param>
+    private static void ToTypeScriptDefinitionString(JsonNodeSchemaDescription source, StringBuilder sb, int indent)
+    {
+        if (source == null) return;
+        var appended = true;
+        if (source is JsonStringSchemaDescription str)
+            sb.Append(str.ConstantValue ?? "string");
+        else if (source is JsonNumberSchemaDescription || source is JsonIntegerSchemaDescription)
+            sb.Append("number");
+        else if (source is JsonBooleanSchemaDescription)
+            sb.Append("boolean");
+        else if (source is JsonObjectSchemaDescription obj)
+            ToTypeScriptDefinitionString(obj, sb, indent);
+        else if (source is JsonArraySchemaDescription arr)
+            ToTypeScriptDefinitionString(arr, sb, indent);
+        else
+            appended = false;
+
+        if (source.EnumItems != null && source.EnumItems.Count > 0)
+        {
+            if (appended) sb.Append(" | ");
+            sb.Append(string.Join(" | ", source.EnumItems.Select(o => o.ToString())));
+            appended = true;
+        }
+
+        if (!appended) sb.Append("any");
+    }
+
+    /// <summary>
+    /// Converts the JSON schema to Type Script definition (format of .d.ts file) content string.
+    /// </summary>
+    /// <param name="source">The JSON schema to convert.</param>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="indent">The indent level.</param>
+    private static void ToTypeScriptDefinitionString(JsonObjectSchemaDescription source, StringBuilder sb, int indent)
+    {
+        if (source == null) return;
+        var indentStr = new string(' ', indent * 2);
+        sb.AppendLine("{");
+        indent++;
+        foreach (var prop in source.Properties)
+        {
+            var key = prop.Key;
+            var v = prop.Value;
+            if (string.IsNullOrWhiteSpace(key) || v == null) continue;
+            ToTypeScriptDefinitionString(null, key, v.Description, sb, indent);
+            if (!source.RequiredPropertyNames.Contains(key)) sb.Append('?');
+            sb.Append(": ");
+            ToTypeScriptDefinitionString(v, sb, indent);
+            sb.AppendLine(";");
+        }
+
+        if (!source.DisableAdditionalProperties || (source.PatternProperties != null && source.PatternProperties.Count > 0))
+        {
+            sb.Append(indentStr);
+            sb.AppendLine("  [key: string]: any;");
+        }
+
+        sb.Append(indentStr);
+        sb.Append('}');
+    }
+
+    /// <summary>
+    /// Converts the JSON schema to Type Script definition (format of .d.ts file) content string.
+    /// </summary>
+    /// <param name="source">The JSON schema to convert.</param>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="indent">The indent level.</param>
+    private static void ToTypeScriptDefinitionString(JsonArraySchemaDescription source, StringBuilder sb, int indent)
+    {
+        if (source == null) return;
+        var item = source.DefaultItems;
+        if (item != null)
+            ToTypeScriptDefinitionString(item, sb, indent);
+        var fixedItems = source.FixedItems;
+        if (fixedItems != null && fixedItems.Count > 0)
+        {
+            if (item != null) sb.Append(" | ");
+            sb.Append("any");
+        }
+
+        sb.Append("[]");
+    }
+
+    private static void ToTypeScriptDefinitionString(string prefix, string name, string description, StringBuilder sb, int indent)
+    {
+        var indentStr = new string(' ', indent * 2);
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            sb.AppendLine();
+            sb.Append(indentStr);
+            sb.AppendLine("/** ");
+            sb.Append(indentStr);
+            sb.Append(" * ");
+            sb.AppendLine(description);
+            sb.Append(indentStr);
+            sb.AppendLine(" */");
+        }
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            sb.Append(indentStr);
+            if (!string.IsNullOrEmpty(prefix)) sb.Append(prefix);
+            sb.Append(name);
+        }
+    }
+
     private static JsonNodeSchemaDescription CreateSchema(JsonConverterAttribute jsonSerializer, Type type, JsonObjectSchemaDescription jsonSchema)
     {
         var converter = GetSchemaCreationHandler(jsonSerializer);
