@@ -3,9 +3,9 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>9.1.0</Version>
-    <AssemblyVersion>9.1.0.0</AssemblyVersion>
-    <FileVersion>9.1.0.0</FileVersion>
+    <Version>9.2.0</Version>
+    <AssemblyVersion>9.2.0.0</AssemblyVersion>
+    <FileVersion>9.2.0.0</FileVersion>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://trivial.kingcean.net</PackageProjectUrl>
