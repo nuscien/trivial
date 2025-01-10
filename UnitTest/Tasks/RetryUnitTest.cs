@@ -9,88 +9,87 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.Reflection;
 
-namespace Trivial.Tasks
+namespace Trivial.Tasks;
+
+/// <summary>
+/// Retry unit test.
+/// </summary>
+[TestClass]
+public class RetryUnitTest
 {
     /// <summary>
-    /// Retry unit test.
+    /// Tests linear retry policy.
     /// </summary>
-    [TestClass]
-    public class RetryUnitTest
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    [TestMethod]
+    public async Task TestLinearAsync()
     {
-        /// <summary>
-        /// Tests linear retry policy.
-        /// </summary>
-        /// <returns>The task object representing the asynchronous operation.</returns>
-        [TestMethod]
-        public async Task TestLinearAsync()
+        var count = 0;
+        var now = DateTime.Now;
+        var retry = new LinearRetryPolicy(3, TimeSpan.FromMilliseconds(20), TimeSpan.FromMilliseconds(10));
+        await retry.ProcessAsync(() =>
         {
-            var count = 0;
-            var now = DateTime.Now;
-            var retry = new LinearRetryPolicy(3, TimeSpan.FromMilliseconds(20), TimeSpan.FromMilliseconds(10));
+            count++;
+            throw new ApplicationException();
+        }, typeof(ApplicationException));
+        Assert.AreEqual(4, count);
+        Assert.IsTrue(DateTime.Now - now >= TimeSpan.FromMilliseconds(90));
+
+        var isSucc = false;
+        try
+        {
             await retry.ProcessAsync(() =>
             {
                 count++;
-                throw new ApplicationException();
+                throw new InvalidOperationException();
             }, typeof(ApplicationException));
-            Assert.AreEqual(4, count);
-            Assert.IsTrue(DateTime.Now - now >= TimeSpan.FromMilliseconds(90));
-
-            var isSucc = false;
-            try
-            {
-                await retry.ProcessAsync(() =>
-                {
-                    count++;
-                    throw new InvalidOperationException();
-                }, typeof(ApplicationException));
-            }
-            catch (InvalidOperationException)
-            {
-                isSucc = true;
-            }
-
-            Assert.IsTrue(isSucc);
-            Assert.AreEqual(5, count);
-
-            var h = new ExceptionHandler();
-            h.Add<ApplicationException>(ex =>
-            {
-                return null;
-            });
-            h.Add<ArgumentException>(ex =>
-            {
-                if (ex.Message == "name") return null;
-                return new ApplicationException();
-            });
-
-            await retry.ProcessAsync(() =>
-            {
-                count++;
-                throw new ApplicationException();
-            }, h.GetException);
-            await retry.ProcessAsync(() =>
-            {
-                count++;
-                throw new ArgumentException("name");
-            }, h.GetException);
-            Assert.AreEqual(13, count);
-
-            isSucc = false;
-            try
-            {
-                await retry.ProcessAsync(() =>
-                {
-                    count++;
-                    throw new ArgumentException("other");
-                }, h.GetException);
-            }
-            catch (ApplicationException)
-            {
-                isSucc = true;
-            }
-
-            Assert.AreEqual(14, count);
-            Assert.IsTrue(isSucc);
         }
+        catch (InvalidOperationException)
+        {
+            isSucc = true;
+        }
+
+        Assert.IsTrue(isSucc);
+        Assert.AreEqual(5, count);
+
+        var h = new ExceptionHandler();
+        h.Add<ApplicationException>(ex =>
+        {
+            return null;
+        });
+        h.Add<ArgumentException>(ex =>
+        {
+            if (ex.Message == "name") return null;
+            return new ApplicationException();
+        });
+
+        await retry.ProcessAsync(() =>
+        {
+            count++;
+            throw new ApplicationException();
+        }, h.GetException);
+        await retry.ProcessAsync(() =>
+        {
+            count++;
+            throw new ArgumentException("name");
+        }, h.GetException);
+        Assert.AreEqual(13, count);
+
+        isSucc = false;
+        try
+        {
+            await retry.ProcessAsync(() =>
+            {
+                count++;
+                throw new ArgumentException("other");
+            }, h.GetException);
+        }
+        catch (ApplicationException)
+        {
+            isSucc = true;
+        }
+
+        Assert.AreEqual(14, count);
+        Assert.IsTrue(isSucc);
     }
 }

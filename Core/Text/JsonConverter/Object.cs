@@ -398,13 +398,41 @@ public sealed class JsonValueNodeConverter : JsonConverterFactory
         }
     }
 
+    /// <summary>
+    /// JSON object node host converter.
+    /// </summary>
+    internal sealed class HostConverter<T> : JsonConverter<T> where T : IJsonObjectHost
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+            => typeof(IJsonObjectHost).IsAssignableFrom(typeToConvert);
+
+        /// <inheritdoc />
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => ReadHost<T>(ref reader, typeToConvert, options);
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        {
+            var json = value?.ToJson();
+            if (json is null) writer.WriteNullValue();
+            json.WriteTo(writer);
+        }
+    }
+
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-        => typeof(IJsonValueNode).IsAssignableFrom(typeToConvert) || typeToConvert == typeof(JsonNodeSchemaDescription);
+        => typeof(IJsonValueNode).IsAssignableFrom(typeToConvert) || typeof(IJsonObjectHost).IsAssignableFrom(typeToConvert) || typeToConvert == typeof(JsonNodeSchemaDescription);
 
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
+        if (typeof(IJsonObjectHost).IsAssignableFrom(typeToConvert))
+        {
+            var type = typeof(HostConverter<>).MakeGenericType(new[] { typeToConvert });
+            return (JsonConverter)Activator.CreateInstance(type);
+        }
+
         if (typeToConvert == typeof(IJsonValueNode)) return new CommonConverter();
         if (typeToConvert == typeof(JsonObjectNode)) return new ObjectConverter();
         if (typeToConvert == typeof(JsonArrayNode)) return new ArrayConverter();
@@ -446,22 +474,9 @@ public sealed class JsonValueNodeConverter : JsonConverterFactory
         else if (value is IJsonValueNode<decimal> jDecimal) writer.WriteNumberValue(jDecimal.Value);
         else writer.WriteNullValue();
     }
-}
 
-#if NET7_0_OR_GREATER || NET462_OR_GREATER
-/// <summary>
-/// JSON object node host converter.
-/// </summary>
-public sealed class JsonObjectHostConverter : JsonConverter<IJsonObjectHost>
-{
-    private readonly static JsonConverter<IJsonObjectHost> defaultConverter = (JsonConverter<IJsonObjectHost>)JsonSerializerOptions.Default.GetConverter(typeof(IJsonObjectHost));
-
-    /// <inheritdoc />
-    public override bool CanConvert(Type typeToConvert)
-        => typeof(IJsonObjectHost).IsAssignableFrom(typeToConvert);
-
-    /// <inheritdoc />
-    public override IJsonObjectHost Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    internal static T ReadHost<T>(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        where T : IJsonObjectHost
     {
         JsonValues.SkipComments(ref reader);
         switch (reader.TokenType)
@@ -471,21 +486,54 @@ public sealed class JsonObjectHostConverter : JsonConverter<IJsonObjectHost>
             case JsonTokenType.StartObject:
                 if (typeToConvert.IsInterface) throw new NotSupportedException();
                 var constructor = typeToConvert.GetConstructor(new[] { typeof(JsonObjectNode), typeof(JsonSerializerOptions) });
-                if (constructor != null) return (IJsonObjectHost)constructor.Invoke(new object[] { new JsonObjectNode(ref reader), options });
+                if (constructor != null) return (T)constructor.Invoke(new object[] { new JsonObjectNode(ref reader), options });
                 constructor = typeToConvert.GetConstructor(new[] { typeof(JsonObjectNode) });
-                if (constructor != null) return (IJsonObjectHost)constructor.Invoke(new[] { new JsonObjectNode(ref reader) });
-                return defaultConverter.Read(ref reader, typeToConvert, options);
+                if (constructor != null) return (T)constructor.Invoke(new[] { new JsonObjectNode(ref reader) });
+                    throw new JsonException("Requires a constructor with an argument of which type is JsonObjectNode.", new InvalidOperationException("Cannot deserialize the entity."));
+            default:
+                throw new JsonException($"The token type is {reader.TokenType} but expect JSON object or null for {typeToConvert}.");
+        }
+    }
+}
+
+/// <summary>
+/// JSON object node host converter.
+/// </summary>
+/// <typeparam name="T">The type of the model.</typeparam>
+public abstract class JsonObjectHostConverter<T> : JsonConverter<T> where T : IJsonObjectHost
+{
+    /// <inheritdoc />
+    public override bool CanConvert(Type typeToConvert)
+        => typeof(IJsonObjectHost).IsAssignableFrom(typeToConvert);
+
+    /// <inheritdoc />
+    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        JsonValues.SkipComments(ref reader);
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+                return default;
+            case JsonTokenType.StartObject:
+                var json = JsonObjectNode.ParseValue(ref reader);
+                return json is null ? default : Create(json);
             default:
                 throw new JsonException($"The token type is {reader.TokenType} but expect JSON object or null for {typeToConvert}.");
         }
     }
 
     /// <inheritdoc />
-    public override void Write(Utf8JsonWriter writer, IJsonObjectHost value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
         var json = value?.ToJson();
         if (json is null) writer.WriteNullValue();
         json.WriteTo(writer);
     }
+
+    /// <summary>
+    /// Creates the instance by JSON object.
+    /// </summary>
+    /// <param name="json">The JSON object.</param>
+    /// <returns>The instance.</returns>
+    protected abstract T Create(JsonObjectNode json);
 }
-#endif

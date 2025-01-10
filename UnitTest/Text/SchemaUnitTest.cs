@@ -33,9 +33,10 @@ public class SchemaUnitTest
         Assert.IsNotNull(arrSchema?.DefaultItems);
         Assert.AreEqual(typeof(JsonIntegerSchemaDescription), arrSchema.DefaultItems.GetType());
         var desc = JsonOperationDescription.Create(typeof(JsonModel), nameof(JsonModel.Create), new[] { typeof(JsonAttributeTestModel) });
-        Assert.IsNotNull(desc);
+        Assert.IsNotNull(desc?.ResultSchema);
         Assert.AreEqual("Create a new instance.", desc.Description);
         Assert.AreEqual("A test model.", desc.ArgumentSchema.Description);
+        Assert.IsNotNull(desc.ToTypeScriptDefinitionString("testFunc"));
         desc = JsonOperationDescription.Create(typeof(JsonModel), nameof(JsonModel.Create), new[] { typeof(string), typeof(string) });
         Assert.IsNotNull(desc);
         Assert.AreEqual("Create a new instance.", desc.Description);

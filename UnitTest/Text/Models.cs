@@ -133,15 +133,9 @@ class JsonAttributeTestModel
     public Maths.Angle W { get; set; }
 }
 
-#if NET7_0_OR_GREATER
-[JsonConverter(typeof(JsonObjectHostConverter))]
-#endif
+[JsonConverter(typeof(JsonValueNodeConverter))]
 class JsonHostTestModel : IJsonObjectHost
 {
-    public JsonHostTestModel()
-    {
-    }
-
     public JsonHostTestModel(JsonObjectNode json)
     {
         if (json == null) return;

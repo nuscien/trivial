@@ -378,11 +378,9 @@ public class JsonUnitTest
         var host = new JsonHostTestModel("Test", "JSON");
         json.SetValue("host", host);
         Assert.AreEqual("Test", json.TryGetStringValue(new[] { "host", "n" }));
-#if NET7_0_OR_GREATER
         host = JsonSerializer.Deserialize<JsonHostTestModel>(JsonSerializer.Serialize(host));
         json.SetValue("host", host);
         Assert.AreEqual("JSON", json.TryGetValue<string>("host", "v"));
-#endif
         var hostService = new JsonObjectHostService(json);
         host = hostService.TryGetValue<JsonHostTestModel>("host");
         host.Name = "Right";

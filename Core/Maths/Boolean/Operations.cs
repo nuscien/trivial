@@ -149,6 +149,27 @@ public static class BooleanOperations
         => string.Join(Environment.NewLine, col.Select(ele => ele?.ToString()));
 
     /// <summary>
+    /// Converts a boolean to string format customized.
+    /// </summary>
+    /// <param name="value">A boolean value.</param>
+    /// <param name="trueString">true in string.</param>
+    /// <param name="falseString">false in string.</param>
+    /// <returns>The customized string converted from boolean.</returns>
+    public static string ToString(bool value, string trueString, string falseString)
+        => value ? trueString : falseString;
+
+    /// <summary>
+    /// Converts a boolean to string format customized.
+    /// </summary>
+    /// <param name="value">A boolean value.</param>
+    /// <param name="trueString">true in string.</param>
+    /// <param name="falseString">false in string.</param>
+    /// <param name="nullString">null in string.</param>
+    /// <returns>The customized string converted from boolean.</returns>
+    public static string ToString(bool? value, string trueString, string falseString, string nullString)
+        => value.HasValue ? ToString(value.Value, trueString, falseString) : nullString;
+
+    /// <summary>
     /// Calculates by boolean operation.
     /// </summary>
     /// <param name="leftValue">The left value.</param>

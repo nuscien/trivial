@@ -24,6 +24,7 @@ using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Net.Http;
 using Trivial.IO;
+using Trivial.Maths;
 
 namespace Trivial.Text;
 
@@ -1406,6 +1407,14 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Converts to string format.
+    /// </summary>
+    /// <param name="value">A boolean value.</param>
+    /// <returns>The string converted in JSON format.</returns>
+    public static string ToString(bool? value)
+        => BooleanOperations.ToString(value, JsonBooleanNode.TrueString, JsonBooleanNode.FalseString, NullString);
+
+    /// <summary>
     /// Converts to a specific type.
     /// </summary>
     /// <param name="kvp">The key value pair of JSON.</param>
@@ -2415,7 +2424,7 @@ public static class JsonValues
     }
 
     internal static double ToDouble(int? value)
-        => value.HasValue ? value.Value : double.NaN;
+        => value ?? double.NaN;
 
     internal static JsonNodeSchemaDescription CreateEnumSchema(Type type, JsonNodeSchemaDescription result = null)
     {
@@ -2434,7 +2443,6 @@ public static class JsonValues
 
         return desc;
     }
-
 
     internal static void RemoveJsonNodeSchemaDescriptionExtendedProperties(JsonObjectNode json, bool onlyBase)
     {
@@ -2456,10 +2464,48 @@ public static class JsonValues
     {
         if (source == null) return string.IsNullOrWhiteSpace(name) ? string.Empty : string.Concat(name, ": null | undefined;");
         var sb = new StringBuilder();
-        ToTypeScriptDefinitionString("export interface ", name, source.Description, sb, 0);
+        ToTypeScriptDefinitionString("declare interface ", name, source.Description, sb, 0);
         if (!string.IsNullOrWhiteSpace(name)) sb.Append(' ');
         ToTypeScriptDefinitionString(source, sb, 0);
         sb.AppendLine();
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Converts the JSON operation to Type Script definition (format of .d.ts file) content string.
+    /// </summary>
+    /// <param name="source">The JSON operation to convert.</param>
+    /// <param name="name">The function name.</param>
+    /// <returns>A Type Script definition format content string.</returns>
+    /// <exception cref="ArgumentException">name was empty or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentNullException">name was null.</exception>
+    public static string ToTypeScriptDefinitionString(this JsonOperationDescription source, string name)
+    {
+        StringExtensions.AssertNotWhiteSpace(nameof(name), name);
+        if (source == null) return string.Concat("declare function ", name, "(): void", Environment.NewLine);
+        var sb = new StringBuilder();
+        ToTypeScriptDefinitionString("declare function ", name, source.Description, sb, 0);
+        if (source.ArgumentSchema == null)
+        {
+            sb.Append("(): ");
+        }
+        else
+        {
+            sb.Append("(args: ");
+            ToTypeScriptDefinitionString(source.ArgumentSchema, sb, 0);
+            sb.Append("): ");
+        }
+
+        if (source.ResultSchema == null)
+        {
+            sb.Append("void;");
+        }
+        else
+        {
+            ToTypeScriptDefinitionString(source.ResultSchema, sb, 0);
+            sb.AppendLine(";");
+        }
+
         return sb.ToString();
     }
 
@@ -2477,8 +2523,8 @@ public static class JsonValues
             sb.Append(str.ConstantValue ?? "string");
         else if (source is JsonNumberSchemaDescription || source is JsonIntegerSchemaDescription)
             sb.Append("number");
-        else if (source is JsonBooleanSchemaDescription)
-            sb.Append("boolean");
+        else if (source is JsonBooleanSchemaDescription b)
+            sb.Append(BooleanOperations.ToString(b.ConstantValue, JsonBooleanNode.TrueString, JsonBooleanNode.FalseString, "boolean"));
         else if (source is JsonObjectSchemaDescription obj)
             ToTypeScriptDefinitionString(obj, sb, indent);
         else if (source is JsonArraySchemaDescription arr)
@@ -2508,12 +2554,15 @@ public static class JsonValues
         var indentStr = new string(' ', indent * 2);
         sb.AppendLine("{");
         indent++;
+        var hasDesc = false;
         foreach (var prop in source.Properties)
         {
             var key = prop.Key;
             var v = prop.Value;
             if (string.IsNullOrWhiteSpace(key) || v == null) continue;
+            if (hasDesc) sb.AppendLine();
             ToTypeScriptDefinitionString(null, key, v.Description, sb, indent);
+            if (!string.IsNullOrWhiteSpace(v.Description)) hasDesc = true;
             if (!source.RequiredPropertyNames.Contains(key)) sb.Append('?');
             sb.Append(": ");
             ToTypeScriptDefinitionString(v, sb, indent);
@@ -2522,6 +2571,7 @@ public static class JsonValues
 
         if (!source.DisableAdditionalProperties || (source.PatternProperties != null && source.PatternProperties.Count > 0))
         {
+            if (hasDesc) sb.AppendLine();
             sb.Append(indentStr);
             sb.AppendLine("  [key: string]: any;");
         }
@@ -2557,7 +2607,6 @@ public static class JsonValues
         var indentStr = new string(' ', indent * 2);
         if (!string.IsNullOrWhiteSpace(description))
         {
-            sb.AppendLine();
             sb.Append(indentStr);
             sb.AppendLine("/** ");
             sb.Append(indentStr);

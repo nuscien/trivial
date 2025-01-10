@@ -506,7 +506,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Writes this instance to the specified writer as a JSON value.
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
-    protected void WriteTo(Utf8JsonWriter writer)
+    protected virtual void WriteTo(Utf8JsonWriter writer)
         => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
 
     /// <summary>
