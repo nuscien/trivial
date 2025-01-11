@@ -1886,6 +1886,19 @@ public static class JsonValues
         return;
     }
 
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="source">The object to serialize.</param>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public static void WriteTo(IJsonObjectHost source, Utf8JsonWriter writer)
+    {
+        if (writer is null) return;
+        var json = source?.ToJson();
+        if (json is null) writer.WriteNullValue();
+        else json.WriteTo(writer);
+    }
+
     internal static void SkipComments(ref Utf8JsonReader reader)
     {
         while (reader.TokenType == JsonTokenType.Comment)

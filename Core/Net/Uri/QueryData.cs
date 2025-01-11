@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -19,6 +21,7 @@ namespace Trivial.Net;
 /// <summary>
 /// The query data in URI after question mark.
 /// </summary>
+[JsonConverter(typeof(QueryDataConverter))]
 [Guid("E17633F1-1C54-484C-9751-C049368AE6FD")]
 public class QueryData : StringKeyValuePairs
 {
@@ -430,4 +433,47 @@ public class QueryData : StringKeyValuePairs
         return q;
     }
 #pragma warning restore IDE0056, IDE0057, CA1834
+}
+
+/// <summary>
+/// The JSON converter for query data.
+/// </summary>
+internal class QueryDataConverter : JsonConverter<QueryData>
+{
+    /// <inheritdoc />
+    public override QueryData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+            case JsonTokenType.False:
+                return null;
+            case JsonTokenType.True:
+                return new();
+            case JsonTokenType.String:
+                return QueryData.Parse(reader.GetString());
+            case JsonTokenType.StartObject:
+                {
+                    var json = JsonObjectNode.ParseValue(ref reader);
+                    if (json is null) return null;
+                    var q = new QueryData();
+                    foreach (var prop in json)
+                    {
+                        if (string.IsNullOrWhiteSpace(prop.Key)) continue;
+                        q.Add(prop.Key, prop.Value);
+                    }
+
+                    return q;
+                }
+            default:
+                throw new JsonException($"The JSON value should be a string.");
+        }
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, QueryData value, JsonSerializerOptions options)
+    {
+        if (value is null) writer.WriteNullValue();
+        else writer.WriteStringValue(value.ToString());
+    }
 }

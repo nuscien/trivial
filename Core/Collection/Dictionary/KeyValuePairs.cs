@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 using Trivial.Text;
@@ -142,6 +143,24 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="value">The value.</param>
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, double value, bool clearOthers = false)
+        => Add(key, double.IsNaN(value) ? null : value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
+
+    /// <summary>
+    /// Adds a key and the value to the end of the key value pairs.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+    public void Add(string key, float value, bool clearOthers = false)
+        => Add(key, float.IsNaN(value) ? null : value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
+
+    /// <summary>
+    /// Adds a key and the value to the end of the key value pairs.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+    public void Add(string key, decimal value, bool clearOthers = false)
         => Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
 
     /// <summary>
@@ -152,6 +171,28 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public void Add(string key, bool value, bool clearOthers = false)
         => Add(key, value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString, clearOthers);
+
+    /// <summary>
+    /// Adds a key and the value to the end of the key value pairs.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+    public void Add(string key, BaseJsonValueNode value, bool clearOthers = false)
+    {
+        if (value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined) Add(key, null as string, clearOthers);
+        else if (value.ValueKind == JsonValueKind.True) Add(key, true, clearOthers);
+        else if (value.ValueKind == JsonValueKind.False) Add(key, false, clearOthers);
+        else if (value is IJsonValueNode<string> str) Add(key, str.Value, clearOthers);
+        else if (value is IJsonValueNode<long> i1) Add(key, i1.Value, clearOthers);
+        else if (value is IJsonValueNode<double> i2) Add(key, i2.Value, clearOthers);
+        else if (value is IJsonValueNode<decimal> i3) Add(key, i3.Value, clearOthers);
+        else if (value is JsonArrayNode arr) Add(key, arr.ToString(), clearOthers);
+        else if (value is JsonObjectNode obj) Add(key, obj.ToString(), clearOthers);
+        else if (value is IJsonValueNode<bool> b) Add(key, b.Value, clearOthers);
+        else if (value is IJsonValueNode<int> i4) Add(key, i4.Value, clearOthers);
+        else if (value is IJsonValueNode<float> i5) Add(key, i5.Value, clearOthers);
+    }
 
     /// <summary>
     /// Adds a key and a set of value to the end of the key value pairs.
