@@ -507,7 +507,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
     protected virtual void WriteTo(Utf8JsonWriter writer)
-        => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
+    {
+        var json = this is IJsonObjectHost obj ? obj.ToJson() : JsonObjectNode.ConvertFrom(this);
+        if (json is null) writer.WriteNullValue();
+        else json.WriteTo(writer);
+    }
 
     /// <summary>
     /// Copies data from another instance.
