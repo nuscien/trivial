@@ -444,7 +444,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA key.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS512(string secret)
-        => Create(secret, HashAlgorithmName.SHA512, "RS512");
+        => Create(secret, RSASignaturePadding.Pkcs1, HashAlgorithmName.SHA512, "RS512");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
@@ -481,7 +481,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA key.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS384(string secret)
-        => Create(secret, HashAlgorithmName.SHA384, "RS384");
+        => Create(secret, RSASignaturePadding.Pkcs1, HashAlgorithmName.SHA384, "RS384");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -518,7 +518,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA key.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS256(string secret)
-        => Create(secret, HashAlgorithmName.SHA256, "RS256");
+        => Create(secret, RSASignaturePadding.Pkcs1, HashAlgorithmName.SHA256, "RS256");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -550,15 +550,127 @@ public class RSASignatureProvider : ISignatureProvider
         => new(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "RS256", needDisposeAlgorithmAutomatically);
 
     /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding and SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA key.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS512(string secret)
+        => Create(secret, RSASignaturePadding.Pss, HashAlgorithmName.SHA512, "PS512");
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA parameters.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS512(RSAParameters secret)
+        => new(secret, RSASignaturePadding.Pss, HashAlgorithmName.SHA512, "PS512");
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA instance created.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS512(out RSA secret)
+    {
+        secret = RSA.Create();
+        return new(secret, RSASignaturePadding.Pss, true, HashAlgorithmName.SHA512, "PS512");
+    }
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="rsaInstance">The RSA instance.</param>
+    /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+    /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS512(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
+        => new(rsaInstance, RSASignaturePadding.Pss, hasPrivateKey, HashAlgorithmName.SHA512, "PS512", needDisposeAlgorithmAutomatically);
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA key.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS384(string secret)
+        => Create(secret, RSASignaturePadding.Pss, HashAlgorithmName.SHA384, "PS384");
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA parameters.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS384(RSAParameters secret)
+        => new(secret, RSASignaturePadding.Pss, HashAlgorithmName.SHA384, "PS384");
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA instance created.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS384(out RSA secret)
+    {
+        secret = RSA.Create();
+        return new(secret, RSASignaturePadding.Pss, true, HashAlgorithmName.SHA384, "PS384");
+    }
+
+    /// <summary>
+    /// Creates an RSA hash signature provider usin probabilistic signature scheme paddingg SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="rsaInstance">The RSA instance.</param>
+    /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+    /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS384(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
+        => new(rsaInstance, RSASignaturePadding.Pss, hasPrivateKey, HashAlgorithmName.SHA384, "PS384", needDisposeAlgorithmAutomatically);
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA key.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS256(string secret)
+        => Create(secret, RSASignaturePadding.Pss, HashAlgorithmName.SHA256, "PS256");
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA parameters.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS256(RSAParameters secret)
+        => new(secret, RSASignaturePadding.Pss, HashAlgorithmName.SHA256, "PS256");
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The RSA instance created.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS256(out RSA secret)
+    {
+        secret = RSA.Create();
+        return new(secret, RSASignaturePadding.Pss, true, HashAlgorithmName.SHA256, "PS256");
+    }
+
+    /// <summary>
+    /// Creates an RSA hash signature provider using probabilistic signature scheme padding SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="rsaInstance">The RSA instance.</param>
+    /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+    /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    public static RSASignatureProvider CreatePS256(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
+        => new(rsaInstance, RSASignaturePadding.Pss, hasPrivateKey, HashAlgorithmName.SHA256, "PS256", needDisposeAlgorithmAutomatically);
+
+    /// <summary>
     /// Creates an RSA hash signature provider.
     /// </summary>
     /// <param name="secret">The RSA key.</param>
+    /// <param name="padding">The signature padding.</param>
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     /// <exception cref="ArgumentNullException">secret was null.</exception>
     /// <exception cref="ArgumentException">secret was empty or consists only of white-space characters.</exception>
-    private static RSASignatureProvider Create(string secret, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+    private static RSASignatureProvider Create(string secret, RSASignaturePadding padding, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
     {
         StringExtensions.AssertNotWhiteSpace(nameof(secret), secret);
         var p = RSAParametersConvert.Parse(secret);
@@ -574,13 +686,8 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     public RSASignatureProvider(RSAParameters rsaParams, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+        : this(rsaParams, RSASignaturePadding.Pkcs1, hashAlgorithmName, signAlgorithmName)
     {
-        Name = signAlgorithmName;
-        rsa = RSA.Create();
-        needDispose = true;
-        CanSign = rsaParams.D != null && rsaParams.D.Length > 0;
-        rsa.ImportParameters(rsaParams);
-        hashName = hashAlgorithmName;
     }
 
     /// <summary>
@@ -590,7 +697,8 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
-    public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false) : this(rsaInstance, true, hashAlgorithmName, signAlgorithmName, needDisposeAlgorithmAutomatically)
+    public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false)
+        : this(rsaInstance, true, hashAlgorithmName, signAlgorithmName, needDisposeAlgorithmAutomatically)
     {
     }
 
@@ -603,9 +711,42 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     public RSASignatureProvider(RSA rsaInstance, bool hasPrivateKey, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false)
+        : this(rsaInstance, RSASignaturePadding.Pkcs1, hasPrivateKey, hashAlgorithmName, signAlgorithmName, needDisposeAlgorithmAutomatically)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the RSASignatureProvider class.
+    /// </summary>
+    /// <param name="rsaParams">The RSA parameters.</param>
+    /// <param name="padding">The signature padding.</param>
+    /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+    /// <param name="signAlgorithmName">The signature algorithm name.</param>
+    public RSASignatureProvider(RSAParameters rsaParams, RSASignaturePadding padding, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+    {
+        Name = signAlgorithmName;
+        rsa = RSA.Create();
+        Padding = padding;
+        needDispose = true;
+        CanSign = rsaParams.D != null && rsaParams.D.Length > 0;
+        rsa.ImportParameters(rsaParams);
+        hashName = hashAlgorithmName;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the RSASignatureProvider class.
+    /// </summary>
+    /// <param name="rsaInstance">The RSA instance.</param>
+    /// <param name="padding">The signature padding.</param>
+    /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+    /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+    /// <param name="signAlgorithmName">The signature algorithm name.</param>
+    /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+    public RSASignatureProvider(RSA rsaInstance, RSASignaturePadding padding, bool hasPrivateKey, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false)
     {
         Name = signAlgorithmName;
         rsa = rsaInstance;
+        Padding = padding;
         hashName = hashAlgorithmName;
         if (rsa == null || !hasPrivateKey) return;
         needDispose = needDisposeAlgorithmAutomatically;
@@ -635,6 +776,11 @@ public class RSASignatureProvider : ISignatureProvider
     /// Gets the signature name.
     /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// Gets the signature padding.
+    /// </summary>
+    public RSASignaturePadding Padding { get; }
 
     /// <summary>
     /// Gets a value indicating whether it can sign a specific data.

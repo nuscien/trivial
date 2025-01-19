@@ -3123,6 +3123,16 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Gets the value of the specific property.
     /// </summary>
+    /// <typeparam name="T">An enumeration type.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="defaultValue">The default value to return.</param>
+    /// <returns>The value.</returns>
+    public T TryGetEnumValue<T>(string key, T defaultValue) where T : struct, Enum
+        => TryGetEnumValue<T>(key) ?? defaultValue;
+
+    /// <summary>
+    /// Gets the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
@@ -3139,6 +3149,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         result = r.Value;
         return true;
     }
+
+    /// <summary>
+    /// Gets the value of the specific property.
+    /// </summary>
+    /// <typeparam name="T">An enumeration type.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+    /// <param name="defaultValue">The default value to return.</param>
+    /// <returns>The value.</returns>
+    public T TryGetEnumValue<T>(string key, bool ignoreCase, T defaultValue) where T : struct, Enum
+        => TryGetEnumValue<T>(key, ignoreCase) ?? defaultValue;
 
     /// <summary>
     /// Gets the value of the specific property.
@@ -9322,7 +9343,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         if (obj is JsonDocument doc) return doc;
         if (obj is string str) return Parse(str);
         if (obj is StringBuilder sb) return Parse(sb.ToString());
-        if (obj is System.Text.Json.Nodes.JsonObject jo) return jo;
+        if (obj is JsonObject jo) return jo;
         if (obj is IJsonObjectHost jh) return jh.ToJson();
         if (obj is Stream stream) return Parse(stream);
         if (obj is IEnumerable<KeyValuePair<string, object>> dict)

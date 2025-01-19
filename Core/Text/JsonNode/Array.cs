@@ -1897,6 +1897,15 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Tries to get the value of the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="defaultValue">The default value to return.</param>
+    /// <returns>The enum.</returns>
+    public T? TryGetEnumValue<T>(int index, T defaultValue) where T : struct, Enum
+        => TryGetEnumValue<T>(index) ?? defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
@@ -1924,6 +1933,16 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         result = default;
         return false;
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+    /// <param name="defaultValue">The default value to return.</param>
+    /// <returns>The enum.</returns>
+    public T? TryGetEnumValue<T>(int index, bool ignoreCase, T defaultValue) where T : struct, Enum
+        => TryGetEnumValue<T>(index, ignoreCase) ?? defaultValue;
 
     /// <summary>
     /// Tries to get the value of the specific index.

@@ -65,7 +65,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// </summary>
     /// <returns>A string that represents the value.</returns>
     public override string ToString()
-        => Value.ToString();
+        => Value is null ? string.Empty : Value.ToString();
 
     /// <summary>
     /// Tries to get the value of the element as a boolean.

@@ -826,6 +826,13 @@ public class JsonWebTokenPayload
     }
 
     /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public void WriteTo(Utf8JsonWriter writer)
+        => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
+
+    /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A string that represents the current object.</returns>

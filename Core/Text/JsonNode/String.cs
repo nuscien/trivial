@@ -41,6 +41,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     public JsonStringNode(IJsonValueNode<string> value)
         : this(value?.Value)
     {
+        if (value is JsonStringNode s) ValueType = s.ValueType;
     }
 
     /// <summary>
@@ -139,6 +140,16 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">The value.</param>
     public JsonStringNode(char[] value)
         : this(value != null ? new string(value) : null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="c">The char.</param>
+    /// <param name="repeatCount">The count to repeat the char.</param>
+    public JsonStringNode(char c, int repeatCount)
+        : this(new string(c, repeatCount))
     {
     }
 
@@ -337,7 +348,32 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     public JsonStringNode(bool value)
         : this(value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString)
     {
-        ValueType = 5;
+        ValueType = value ? 5 : 6;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="trueString">The true string.</param>
+    /// <param name="falseString">The false string.</param>
+    public JsonStringNode(bool value, string trueString, string falseString)
+        : this(value ? trueString : falseString)
+    {
+        ValueType = value ? 5 : 6;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="trueString">The true string.</param>
+    /// <param name="falseString">The false string.</param>
+    /// <param name="nullString">The null string.</param>
+    public JsonStringNode(bool? value, string trueString, string falseString, string nullString)
+        : this(value.HasValue ? (value.Value ? trueString : falseString) : nullString)
+    {
+        if (value.HasValue) ValueType = value.Value ? 5 : 6;
     }
 
     /// <summary>
@@ -389,7 +425,8 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <item><term>2</term><description>Integer</description></item>
     /// <item><term>3</term><description>Floating number</description></item>
     /// <item><term>4</term><description>Guid</description></item>
-    /// <item><term>5</term><description>Boolean</description></item>
+    /// <item><term>5</term><description>True</description></item>
+    /// <item><term>6</term><description>False</description></item>
     /// </list>
     /// </summary>
     internal int ValueType { get; }
@@ -983,6 +1020,16 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
+        switch (ValueType)
+        {
+            case 5:
+                result = true;
+                return true;
+            case 6:
+                result = false;
+                return true;
+        }
+
         if (strict || string.IsNullOrEmpty(Value)) return base.TryConvert(strict, out result);
         var b = JsonBooleanNode.TryParse(Value);
         if (b == null) return base.TryConvert(strict, out result);
