@@ -1308,6 +1308,86 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     }
 
     /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="mapping">The mapping of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue<T>(int index, IDictionary<string, T> mapping, out T result)
+    {
+        var s = TryGetStringTrimmedValue(index, true);
+        if (s == null || mapping == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return mapping.TryGetValue(s, out result);
+    }
+
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="resolver">The resolver of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue<T>(int index, ISingletonResolver resolver, out T result)
+    {
+        var s = TryGetStringTrimmedValue(index, true);
+        if (s == null || resolver == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return resolver.TryResolve(s, out result);
+    }
+
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="resolver">The resolver of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue<T>(int index, DataCacheCollection<T> resolver, out T result)
+    {
+        var s = TryGetStringTrimmedValue(index, true);
+        if (s == null || resolver == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return resolver.TryGet(s, out result);
+    }
+
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="mapping">The mapping of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue(int index, StringKeyValuePairs mapping, out string result)
+    {
+        var s = TryGetStringTrimmedValue(index, true);
+        if (s == null || mapping == null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = mapping.GetValue(s);
+        return result != null;
+    }
+
+    /// <summary>
     /// Tries to get the value of the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
@@ -2976,17 +3056,28 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <summary>
     /// Sets a set of items from first element to override and keep the rest if has.
     /// </summary>
+    /// <param name="start">A zero-based index to start to override items.</param>
     /// <param name="values">The values to override.</param>
-    public void SetRange(IEnumerable<BaseJsonValueNode> values)
+    public void SetRange(int start, IEnumerable<BaseJsonValueNode> values)
     {
         if (values == null) return;
-        var i = -1;
+        if (start < 0) throw new ArgumentOutOfRangeException(nameof(start), "start should not be less than 0.");
+        var i = start - 1;
         foreach (var item in values)
         {
             i++;
-            SetItem(i, item);
+            while (store.Count < i) store.Add(JsonValues.Undefined);
+            if (store.Count == i) store.Add(item);
+            else SetItem(i, item);
         }
     }
+
+    /// <summary>
+    /// Sets a set of items from first element to override and keep the rest if has.
+    /// </summary>
+    /// <param name="values">The values to override.</param>
+    public void SetRange(IEnumerable<BaseJsonValueNode> values)
+        => SetRange(0, values);
 
     /// <summary>
     /// Replaces the old value to a new one by reference equaling.

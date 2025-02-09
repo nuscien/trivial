@@ -116,6 +116,17 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public override int GetHashCode()
         => base.GetHashCode();
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Tries to format the value of the current boolean instance into the provided span of characters.
+    /// </summary>
+    /// <param name="destination">The span in which to write this instance's value formatted as a span of characters.</param>
+    /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<char> destination, out int charsWritten)
+        => Value.TryFormat(destination, out charsWritten);
+#endif
+
     /// <summary>
     /// Tries to get the value of the element as a boolean.
     /// </summary>

@@ -1872,6 +1872,86 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="mapping">The mapping of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue<T>(string key, IDictionary<string, T> mapping, out T result)
+    {
+        var s = TryGetStringTrimmedValue(key, true);
+        if (s == null || mapping == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return mapping.TryGetValue(s, out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="resolver">The resolver of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue<T>(string key, ISingletonResolver resolver, out T result)
+    {
+        var s = TryGetStringTrimmedValue(key, true);
+        if (s == null || resolver == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return resolver.TryResolve<T>(s, out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="resolver">The resolver of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue<T>(string key, DataCacheCollection<T> resolver, out T result)
+    {
+        var s = TryGetStringTrimmedValue(key, true);
+        if (s == null || resolver == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return resolver.TryGet(s, out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="mapping">The mapping of value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringMappedValue(string key, Collection.StringKeyValuePairs mapping, out string result)
+    {
+        var s = TryGetStringTrimmedValue(key, true);
+        if (s == null || mapping == null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = mapping.GetValue(s);
+        return result != null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="trueString">The string value of true.</param>
     /// <param name="falseString">The string value of false.</param>

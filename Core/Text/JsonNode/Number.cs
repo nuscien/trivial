@@ -408,6 +408,30 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     public int CompareTo(float other)
         => Value.CompareTo(other);
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Tries to format the value of the current double instance into the provided span of characters.
+    /// </summary>
+    /// <param name="destination">The span in which to write this instance's value formatted as a span of characters.</param>
+    /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
+    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for destination.</param>
+    /// <param name="provider">An optional object that supplies culture-specific formatting information for destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<char> destination, out int charsWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
+        => Value.TryFormat(destination, out charsWritten, format, provider);
+
+    /// <summary>
+    /// Tries to format the value of the current instance as UTF-8 into the provided span of bytes.
+    /// </summary>
+    /// <param name="utf8Destination">The span in which to write this instance's value formatted as a span of bytes.</param>
+    /// <param name="bytesWritten">When this method returns, contains the number of bytes that were written in utf8Destination.</param>
+    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for utf8Destination.</param>
+    /// <param name="provider">An optional object that supplies culture-specific formatting information for utf8Destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
+        => Value.TryFormat(utf8Destination, out bytesWritten, format, provider);
+#endif
+
     /// <summary>
     /// Tries to get the value of the element as a boolean.
     /// </summary>
@@ -903,6 +927,16 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
         if (value is JsonValue v) return v;
         throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
     }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator Int128(JsonIntegerNode json)
+        => json.Value;
+#endif
 
     /// <summary>
     /// Converts the JSON raw back.
@@ -1901,6 +1935,30 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// </returns>
     public int CompareTo(decimal other)
         => Value.CompareTo(other);
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Tries to format the value of the current double instance into the provided span of characters.
+    /// </summary>
+    /// <param name="destination">The span in which to write this instance's value formatted as a span of characters.</param>
+    /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
+    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for destination.</param>
+    /// <param name="provider">An optional object that supplies culture-specific formatting information for destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<char> destination, out int charsWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
+        => Value.TryFormat(destination, out charsWritten, format, provider);
+
+    /// <summary>
+    /// Tries to format the value of the current instance as UTF-8 into the provided span of bytes.
+    /// </summary>
+    /// <param name="utf8Destination">The span in which to write this instance's value formatted as a span of bytes.</param>
+    /// <param name="bytesWritten">When this method returns, contains the number of bytes that were written in utf8Destination.</param>
+    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for utf8Destination.</param>
+    /// <param name="provider">An optional object that supplies culture-specific formatting information for utf8Destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
+        => Value.TryFormat(utf8Destination, out bytesWritten, format, provider);
+#endif
 
     /// <summary>
     /// Gets the value of the element as a boolean.
@@ -3435,6 +3493,29 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     public int CompareTo(decimal other)
         => Value.CompareTo(other);
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Tries to format the value of the current double instance into the provided span of characters.
+    /// </summary>
+    /// <param name="destination">The span in which to write this instance's value formatted as a span of characters.</param>
+    /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
+    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for destination.</param>
+    /// <param name="provider">An optional object that supplies culture-specific formatting information for destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<char> destination, out int charsWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
+        => Value.TryFormat(destination, out charsWritten, format, provider);
+
+    /// <summary>
+    /// Tries to format the value of the current instance as UTF-8 into the provided span of bytes.
+    /// </summary>
+    /// <param name="utf8Destination">The span in which to write this instance's value formatted as a span of bytes.</param>
+    /// <param name="bytesWritten">When this method returns, contains the number of bytes that were written in utf8Destination.</param>
+    /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for utf8Destination.</param>
+    /// <param name="provider">An optional object that supplies culture-specific formatting information for utf8Destination.</param>
+    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
+        => Value.TryFormat(utf8Destination, out bytesWritten, format, provider);
+#endif
 
     /// <summary>
     /// Gets the value of the element as a boolean.
