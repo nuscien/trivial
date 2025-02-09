@@ -681,6 +681,19 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         => Value?.IndexOf(value, start, count) ?? (value == null ? string.Empty.IndexOf(value) : -1);
 
     /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position and examines a specified number of character positions.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+    /// <param name="startIndex">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentException">count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus startIndex.</exception>
+    public int IndexOf(string value, StringComparison comparisonType, int startIndex = 0, int? count = null)
+        => Value == null ? -1 : (count.HasValue ? Value.IndexOf(value, startIndex, count.Value, comparisonType) : Value.IndexOf(value, startIndex, comparisonType));
+
+    /// <summary>
     /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
     /// </summary>
     /// <param name="value">The string to seek.</param>
@@ -725,6 +738,19 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         => Value?.LastIndexOf(value, start, count) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
 
     /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string for the specified number of character positions. A parameter specifies the type of comparison to performwhen searching for the specified string.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+    /// <param name="startIndex">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentException">count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus startIndex.</exception>
+    public int LastIndexOf(string value, StringComparison comparisonType, int startIndex = 0, int? count = null)
+        => Value == null ? -1 : (count.HasValue ? Value.LastIndexOf(value, startIndex, count.Value, comparisonType) : Value.LastIndexOf(value, startIndex, comparisonType));
+
+    /// <summary>
     /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
     /// </summary>
     /// <param name="value">The string to seek.</param>
@@ -758,6 +784,14 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         if (str != null && str.Length == Length) return this;
         return new(str);
     }
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(Data.StringCondition condition)
+        => condition == null || condition.IsMatched(Value);
 
     /// <summary>
     /// Converts to a JSON array.

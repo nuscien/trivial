@@ -198,6 +198,41 @@ public static partial class ListExtensions
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <param name="provider">An optional format provider.</param>
     /// <returns>The string collection converted.</returns>
+    public static IEnumerable<string> ToStringCollection(this IEnumerable<short> input, string format = null, IFormatProvider provider = null)
+    {
+        if (input == null) yield break;
+        foreach (var item in input)
+        {
+            yield return item.ToString(format, provider);
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <param name="provider">An optional format provider.</param>
+    /// <returns>The string collection converted.</returns>
+    public static string[] ToStringArray(this short[] input, string format = null, IFormatProvider provider = null)
+    {
+        if (input == null) return null;
+        var arr = new string[input.Length];
+        for (var i = 0; i < input.Length; i++)
+        {
+            arr[i] = input[i].ToString(format, provider);
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <param name="provider">An optional format provider.</param>
+    /// <returns>The string collection converted.</returns>
     public static IEnumerable<string> ToStringCollection(this IEnumerable<int> input, string format = null, IFormatProvider provider = null)
     {
         if (input == null) yield break;
@@ -260,6 +295,78 @@ public static partial class ListExtensions
 
         return arr;
     }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <param name="provider">An optional format provider.</param>
+    /// <returns>The string collection converted.</returns>
+    public static IEnumerable<string> ToStringCollection(this IEnumerable<Int128> input, string format = null, IFormatProvider provider = null)
+    {
+        if (input == null) yield break;
+        foreach (var item in input)
+        {
+            yield return item.ToString(format, provider);
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <param name="provider">An optional format provider.</param>
+    /// <returns>The string collection converted.</returns>
+    public static string[] ToStringArray(this Int128[] input, string format = null, IFormatProvider provider = null)
+    {
+        if (input == null) return null;
+        var arr = new string[input.Length];
+        for (var i = 0; i < input.Length; i++)
+        {
+            arr[i] = input[i].ToString(format, provider);
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <param name="provider">An optional format provider.</param>
+    /// <returns>The string collection converted.</returns>
+    public static IEnumerable<string> ToStringCollection(this IEnumerable<Half> input, string format = null, IFormatProvider provider = null)
+    {
+        if (input == null) yield break;
+        foreach (var item in input)
+        {
+            yield return item.ToString(format, provider);
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <param name="provider">An optional format provider.</param>
+    /// <returns>The string collection converted.</returns>
+    public static string[] ToStringArray(this Half[] input, string format = null, IFormatProvider provider = null)
+    {
+        if (input == null) return null;
+        var arr = new string[input.Length];
+        for (var i = 0; i < input.Length; i++)
+        {
+            arr[i] = input[i].ToString(format, provider);
+        }
+
+        return arr;
+    }
+#endif
 
     /// <summary>
     /// Converts a collection of boolean to strings.

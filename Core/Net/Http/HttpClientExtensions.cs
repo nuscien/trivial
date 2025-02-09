@@ -1119,6 +1119,9 @@ public static class HttpClientExtensions
         return m;
     }
 
+    internal static string GetServerSentEventName(string s)
+        => string.IsNullOrWhiteSpace(s) ? "message" : s.Trim();
+
     internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri requestUri, HttpContent content)
     {
         var m = new HttpRequestMessage(method, requestUri)

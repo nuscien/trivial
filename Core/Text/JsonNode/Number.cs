@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Trivial.Data;
 using Trivial.Maths;
 using Trivial.Web;
 
@@ -137,6 +138,14 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonIntegerNode>.IsZero => Value == 0L;
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(Int64Condition condition)
+        => condition == null || condition.IsMatched(Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -1579,6 +1588,14 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonDoubleNode>.IsZero => Value == 0d;
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(DoubleCondition condition)
+        => condition == null || condition.IsMatched(Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -3105,6 +3122,14 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonDecimalNode>.IsZero => Value == decimal.Zero;
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(DecimalCondition condition)
+        => condition == null || condition.IsMatched(Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.

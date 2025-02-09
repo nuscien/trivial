@@ -54,6 +54,14 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     }
 
     /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(Data.BooleanCondition condition)
+        => condition == null || condition.IsMatched(Value);
+
+    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the boolean.</returns>
@@ -61,12 +69,21 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
         => Value ? TrueString : FalseString;
 
     /// <summary>
-    /// Converts the numeric value of this instance to its equivalent string representation.
+    /// Converts the boolean value of this instance to its equivalent string representation.
     /// </summary>
     /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(IFormatProvider provider)
         => Value.ToString(provider);
+
+    /// <summary>
+    /// Converts a boolean to string format customized.
+    /// </summary>
+    /// <param name="trueString">true in string.</param>
+    /// <param name="falseString">false in string.</param>
+    /// <returns>The customized string converted from boolean.</returns>
+    public string ToString(string trueString, string falseString)
+        => Value ? trueString : falseString;
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -236,6 +253,16 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// <inheritdoc />
     public override JsonValue ToJsonValue()
         => JsonValue.Create(Value);
+
+    /// <summary>
+    /// Gets a value from the specific ones.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="trueValue">The value of true.</param>
+    /// <param name="falseValue">The value of false.</param>
+    /// <returns>A value.</returns>
+    public T PickOut<T>(T trueValue, T falseValue)
+        => Value ? trueValue : falseValue;
 
     bool IConvertible.ToBoolean(IFormatProvider provider)
         => Value;

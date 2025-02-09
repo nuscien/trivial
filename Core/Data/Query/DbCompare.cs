@@ -66,7 +66,7 @@ public enum DbCompareOperator : byte
 public enum SortingOrder : byte
 {
     /// <summary>
-    /// No sequence.
+    /// Default sequence.
     /// </summary>
     None = 0,
 

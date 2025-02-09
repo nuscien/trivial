@@ -114,6 +114,31 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Filters a sequence of values based on a predicate that the element is not null.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="source">A collection to filter.</param>
+    /// <returns>A collection that contains elements from the input sequence that satisfy the not null condition.</returns>
+    public static IEnumerable<T> WhereNotNull<T>(IEnumerable<T> source)
+        => source?.Where(IsNotNull);
+
+    /// <summary>
+    /// Filters a sequence of values based on a predicate that the element is not null or empty.
+    /// </summary>
+    /// <param name="source">A collection to filter.</param>
+    /// <returns>A collection that contains elements from the input sequence that satisfy the not empty condition.</returns>
+    public static IEnumerable<string> WhereNotNullOrEmpty(this IEnumerable<string> source)
+        => source?.Where(IsNotNullOrEmpty);
+
+    /// <summary>
+    /// Filters a sequence of values based on a predicate that the element is not null, empty or consists only of white-space characters.
+    /// </summary>
+    /// <param name="source">A collection to filter.</param>
+    /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+    public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string> source)
+        => source?.Where(IsNotNullOrWhiteSpace);
+
+    /// <summary>
     /// Creates a new list to copy the input collection and insert a specific number of default value at beginning.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
@@ -833,7 +858,7 @@ public static partial class ListExtensions
     /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
     /// <returns>A synchronized list.</returns>
     public static SynchronizedList<T> ToSynchronizedList<T>(List<T> list, bool useSource)
-        => new(System.Threading.LockRecursionPolicy.NoRecursion, list, useSource);
+        => new(LockRecursionPolicy.NoRecursion, list, useSource);
 
     /// <summary>
     /// Creates a synchronized list from the source collection.
@@ -1017,10 +1042,7 @@ public static partial class ListExtensions
     /// <param name="condition">The condition.</param>
     /// <returns>A string collection that contains elements from the input sequence that satisfy the condition.</returns>
     public static IEnumerable<string> Where(this IEnumerable<string> source, StringCondition condition)
-    {
-        if (condition == null) return source;
-        return source.Where(ele => condition.IsMatched(ele));
-    }
+        => condition == null ? source : source.Where(condition.IsMatched);
 
     /// <summary>
     /// Filters a sequence of values based on a condition.
@@ -1029,10 +1051,7 @@ public static partial class ListExtensions
     /// <param name="condition">The condition.</param>
     /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
     public static IEnumerable<int> Where(this IEnumerable<int> source, Int32Condition condition)
-    {
-        if (condition == null) return source;
-        return source.Where(ele => condition.IsMatched(ele));
-    }
+        => condition == null ? source : source.Where(condition.IsMatched);
 
     /// <summary>
     /// Filters a sequence of values based on a condition.
@@ -1041,10 +1060,7 @@ public static partial class ListExtensions
     /// <param name="condition">The condition.</param>
     /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
     public static IEnumerable<long> Where(this IEnumerable<long> source, Int64Condition condition)
-    {
-        if (condition == null) return source;
-        return source.Where(ele => condition.IsMatched(ele));
-    }
+        => condition == null ? source : source.Where(condition.IsMatched);
 
     /// <summary>
     /// Filters a sequence of values based on a condition.
@@ -1053,10 +1069,7 @@ public static partial class ListExtensions
     /// <param name="condition">The condition.</param>
     /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
     public static IEnumerable<float> Where(this IEnumerable<float> source, SingleCondition condition)
-    {
-        if (condition == null) return source;
-        return source.Where(ele => condition.IsMatched(ele));
-    }
+        => condition == null ? source : source.Where(condition.IsMatched);
 
     /// <summary>
     /// Filters a sequence of values based on a condition.
@@ -1065,10 +1078,16 @@ public static partial class ListExtensions
     /// <param name="condition">The condition.</param>
     /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
     public static IEnumerable<double> Where(this IEnumerable<double> source, DoubleCondition condition)
-    {
-        if (condition == null) return source;
-        return source.Where(ele => condition.IsMatched(ele));
-    }
+        => condition == null ? source : source.Where(condition.IsMatched);
+
+    /// <summary>
+    /// Filters a sequence of values based on a condition.
+    /// </summary>
+    /// <param name="source">A number collection to filter.</param>
+    /// <param name="condition">The condition.</param>
+    /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
+    public static IEnumerable<decimal> Where(this IEnumerable<decimal> source, DecimalCondition condition)
+        => condition == null ? source : source.Where(condition.IsMatched);
 
     /// <summary>
     /// Filters a sequence of values based on a condition.
@@ -1077,10 +1096,7 @@ public static partial class ListExtensions
     /// <param name="condition">The condition.</param>
     /// <returns>A date time collection that contains elements from the input sequence that satisfy the condition.</returns>
     public static IEnumerable<DateTime> Where(this IEnumerable<DateTime> source, DateTimeCondition condition)
-    {
-        if (condition == null) return source;
-        return source.Where(ele => condition.IsMatched(ele));
-    }
+        => condition == null ? source : source.Where(condition.IsMatched);
 
     /// <summary>
     /// Converts to JSON object node collection.
@@ -1127,6 +1143,23 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <param name="eventName">The event name.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<ServerSentEventInfo> collection, string eventName)
+    {
+        if (collection == null) yield break;
+        eventName = HttpClientExtensions.GetServerSentEventName(eventName);
+        foreach (var item in collection)
+        {
+            if (item == null || item.EventName != eventName) continue;
+            yield return (JsonObjectNode)item;
+        }
+    }
+
+    /// <summary>
     /// Converts to JSON array.
     /// </summary>
     /// <param name="collection">The collection of the item to convert.</param>
@@ -1151,6 +1184,23 @@ public static partial class ListExtensions
         await foreach (var item in collection)
         {
             if (item == null) yield return null;
+            yield return (JsonObjectNode)item;
+        }
+    }
+
+    /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <param name="eventName">The event name.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public async static IAsyncEnumerable<JsonObjectNode> ToJsonObjectNodesAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, string eventName)
+    {
+        if (collection == null) yield break;
+        eventName = HttpClientExtensions.GetServerSentEventName(eventName);
+        await foreach (var item in collection)
+        {
+            if (item == null || item.EventName != eventName) continue;
             yield return (JsonObjectNode)item;
         }
     }
@@ -1204,13 +1254,48 @@ public static partial class ListExtensions
         var i = -1;
         foreach (var item in collection)
         {
-            i++;
             if (item == null) continue;
+            i++;
             if (item.EventName == eventName) callback(item, i);
             yield return item;
         }
     }
 
+    /// <summary>
+    /// Raises on all the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="handlers">The dictionary with key of event name and value of callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public static IEnumerable<ServerSentEventInfo> On(this IEnumerable<ServerSentEventInfo> collection, IDictionary<string, Action<ServerSentEventInfo>> handlers)
+    {
+        if (collection == null || handlers == null) yield break;
+        foreach (var item in collection)
+        {
+            if (item == null) continue;
+            if (handlers.TryGetValue(item.EventName, out var handler) && handler != null) handler(item);
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Raises on all the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="handlers">The dictionary with key of event name and value of callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public static IEnumerable<ServerSentEventInfo> On(this IEnumerable<ServerSentEventInfo> collection, IDictionary<string, Action<ServerSentEventInfo, int>> handlers)
+    {
+        if (collection == null || handlers == null) yield break;
+        var i = -1;
+        foreach (var item in collection)
+        {
+            if (item == null) continue;
+            i++;
+            if (handlers.TryGetValue(item.EventName, out var handler) && handler != null) handler(item, i);
+            yield return item;
+        }
+    }
 
     /// <summary>
     /// Raises on the specific key.
@@ -1243,13 +1328,90 @@ public static partial class ListExtensions
         var i = -1;
         await foreach (var item in collection)
         {
-            i++;
             if (item == null) continue;
+            i++;
             if (item.EventName == eventName) callback(item, i);
             yield return item;
         }
     }
 
+    /// <summary>
+    /// Raises on all the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="handlers">The dictionary with key of event name and value of callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public async static IAsyncEnumerable<ServerSentEventInfo> OnAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, IDictionary<string, Action<ServerSentEventInfo>> handlers)
+    {
+        if (collection == null || handlers == null) yield break;
+        var i = -1;
+        await foreach (var item in collection)
+        {
+            if (item == null) continue;
+            i++;
+            if (handlers.TryGetValue(item.EventName, out var handler) && handler != null) handler(item);
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Raises on all the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="handlers">The dictionary with key of event name and value of callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public async static IAsyncEnumerable<ServerSentEventInfo> OnAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, IDictionary<string, Action<ServerSentEventInfo, int>> handlers)
+    {
+        if (collection == null || handlers == null) yield break;
+        var i = -1;
+        await foreach (var item in collection)
+        {
+            if (item == null) continue;
+            i++;
+            if (handlers.TryGetValue(item.EventName, out var handler) && handler != null) handler(item, i);
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Raises on all the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="callback">The callback.</param>
+    /// <returns>The count of item received.</returns>
+    public async static Task<int> ProcessAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, Action<ServerSentEventInfo> callback = null)
+    {
+        if (collection == null) return 0;
+        var i = -1;
+        await foreach (var item in collection)
+        {
+            if (item == null) continue;
+            i++;
+            callback?.Invoke(item);
+        }
+
+        return i + 1;
+    }
+
+    /// <summary>
+    /// Raises on all the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="callback">The callback.</param>
+    /// <returns>The count of item received.</returns>
+    public async static Task<int> ProcessAsync(this IAsyncEnumerable<ServerSentEventInfo> collection, Action<ServerSentEventInfo, int> callback)
+    {
+        if (collection == null) return 0;
+        var i = -1;
+        await foreach (var item in collection)
+        {
+            if (item == null) continue;
+            i++;
+            callback?.Invoke(item, i);
+        }
+
+        return i + 1;
+    }
 
     internal static IEnumerable<TResult> Select<TItem, TResult>(IEnumerable<TItem> leftValue, IEnumerable<TItem> rightValue, TItem padding, Func<TItem, bool, TItem, bool, int, TResult> callback)
     {
@@ -1287,4 +1449,13 @@ public static partial class ListExtensions
         if (col is null) return create ? new() : null;
         return col is List<T> list ? list : col.ToList();
     }
+
+    private static bool IsNotNull<T>(T obj)
+        => obj is not null;
+
+    private static bool IsNotNullOrEmpty(string s)
+        => !string.IsNullOrEmpty(s);
+
+    private static bool IsNotNullOrWhiteSpace(string s)
+        => !string.IsNullOrWhiteSpace(s);
 }

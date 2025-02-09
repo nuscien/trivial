@@ -2974,6 +2974,21 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     }
 
     /// <summary>
+    /// Sets a set of items from first element to override and keep the rest if has.
+    /// </summary>
+    /// <param name="values">The values to override.</param>
+    public void SetRange(IEnumerable<BaseJsonValueNode> values)
+    {
+        if (values == null) return;
+        var i = -1;
+        foreach (var item in values)
+        {
+            i++;
+            SetItem(i, item);
+        }
+    }
+
+    /// <summary>
     /// Replaces the old value to a new one by reference equaling.
     /// </summary>
     /// <param name="oldValue">The old value.</param>

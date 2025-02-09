@@ -20,14 +20,14 @@ public enum DbValueType : byte
     LiteralString = 0,
 
     /// <summary>
-    /// Integer with 32 bit length.
+    /// Integer with 32 bits length.
     /// </summary>
     Int32 = 1,
 
     /// <summary>
-    /// Single decimal number.
+    /// Single floating number.
     /// </summary>
-    SingleDecimal = 2,
+    SingleFloating = 2,
 
     /// <summary>
     /// Date time UTC.
@@ -40,14 +40,14 @@ public enum DbValueType : byte
     Boolean = 4,
 
     /// <summary>
-    /// Integer with 64 bit length.
+    /// Integer with 64 bits length.
     /// </summary>
     Int64 = 5,
 
     /// <summary>
-    /// Double decimal number.
+    /// Double floating number.
     /// </summary>
-    DoubleDecimal = 6,
+    DoubleFloating = 6,
 
     /// <summary>
     /// Date time with offset.

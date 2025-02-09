@@ -115,15 +115,11 @@ public class ServerSentEventInfo
     /// <summary>
     /// Gets the event name.
     /// </summary>
+    /// <remarks>
+    /// It never be null or empty.
+    /// </remarks>
     [JsonIgnore]
-    public string EventName
-    {
-        get
-        {
-            var s = OriginalEventName;
-            return string.IsNullOrWhiteSpace(s) ? "message" : s.Trim();
-        }
-    }
+    public string EventName => HttpClientExtensions.GetServerSentEventName(OriginalEventName);
 
     /// <summary>
     /// Gets the original event name.
@@ -310,6 +306,17 @@ public class ServerSentEventInfo
     /// <returns>A JSON object of data.</returns>
     public JsonObjectNode TryGetJsonData(JsonDocumentOptions options = default)
         => JsonObjectNode.TryParse(DataString, options);
+
+    /// <summary>
+    /// Deserializes data string from JSON format.
+    /// </summary>
+    /// <typeparam name="TValue">The type of data to deserialize.</typeparam>
+    /// <param name="options">The JSON serialization options.</param>
+    /// <returns>The value deserialized from data string in JSON format.</returns>
+    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON. -or- There is remaining data in the string beyond a single JSON value.</exception>
+    /// <exception cref="NotSupportedException">There is no compatible System.Text.Json.Serialization.JsonConverter for TValue or its serializable members.</exception>
+    public TValue DeserializeJsonData<TValue>(JsonSerializerOptions options = default)
+        => string.IsNullOrWhiteSpace(DataString) ? default : JsonSerializer.Deserialize<TValue>(DataString, options);
 
     /// <summary>
     /// Converts the record to string.

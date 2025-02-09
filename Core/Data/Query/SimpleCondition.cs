@@ -261,10 +261,11 @@ public abstract class ClassSimpleCondition<T> : ISimpleCondition, IClassSimpleCo
     /// <summary>
     /// Gets or sets the value for the comparing in the condition object.
     /// </summary>
+    /// <exception cref="InvalidCastException">The value to set is not the specific type.</exception>
     object ISimpleCondition.Value
     {
-        get { return Value; }
-        set { Value = (T) value; }
+        get => Value;
+        set => Value = (T)value;
     }
 
     /// <summary>
@@ -280,16 +281,14 @@ public abstract class ClassSimpleCondition<T> : ISimpleCondition, IClassSimpleCo
     /// <summary>
     /// Gets a value indicating whether the value of the condition is null.
     /// </summary>
-    public bool ValueIsNull { get { return Value == null; } }
+    public bool ValueIsNull => Value == null;
 
     /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-    {
-        return SimpleCondition.ToString(Operator) + " " + (Value != null ? Value.ToString() : "null");
-    }
+        => SimpleCondition.ToString(Operator) + " " + (Value != null ? Value.ToString() : "null");
 
     /// <summary>
     /// Checks if the simple condition with reference value is valid.
@@ -440,9 +439,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// <param name="value">The value for comparing in the condition.</param>
     /// <returns>A StringCondition value.</returns>
     public static StringCondition CreateForStartingWith(string value)
-    {
-        return new StringCondition { Value = value, Operator = DbCompareOperator.StartsWith };
-    }
+        => new(DbCompareOperator.StartsWith, value);
 
     /// <summary>
     /// Creates a string condition as ending with a value.
@@ -450,9 +447,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// <param name="value">The value for comparing in the condition.</param>
     /// <returns>A StringCondition value.</returns>
     public static StringCondition CreateForEndingWith(string value)
-    {
-        return new StringCondition { Value = value, Operator = DbCompareOperator.EndsWith };
-    }
+        => new(DbCompareOperator.EndsWith, value);
 
     /// <summary>
     /// Creates a string condition as liking with a value.
@@ -460,9 +455,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// <param name="value">The value for comparing in the condition.</param>
     /// <returns>A StringCondition value.</returns>
     public static StringCondition CreateForLiking(string value)
-    {
-        return new StringCondition { Value = value, Operator = DbCompareOperator.Contains };
-    }
+        => new(DbCompareOperator.Contains, value);
 
     /// <summary>
     /// Creates a string condition as equaling with a value.
@@ -470,9 +463,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// <param name="value">The value for comparing in the condition.</param>
     /// <returns>A StringCondition value.</returns>
     public static StringCondition CreateForEqualing(string value)
-    {
-        return new StringCondition { Value = value, Operator = DbCompareOperator.Equal };
-    }
+        => new(DbCompareOperator.Equal, value);
 
     /// <summary>
     /// Creates a string condition as not equaling with a value.
@@ -480,9 +471,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// <param name="value">The value for comparing in the condition.</param>
     /// <returns>A StringCondition value.</returns>
     public static StringCondition CreateForNotEqualing(string value)
-    {
-        return new StringCondition { Value = value, Operator = DbCompareOperator.NotEqual };
-    }
+        => new(DbCompareOperator.NotEqual, value);
 
     /// <summary>
     /// Checks if a string condition is valid.
@@ -490,17 +479,12 @@ public class StringCondition : ClassSimpleCondition<string>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(StringCondition value)
-    {
-        return IsValid(value, SimpleCondition.GetLiteralValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetLiteralValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.LiteralString; }
-    }
+    public override DbValueType ValueType => DbValueType.LiteralString;
 
     /// <summary>
     /// Tests if the given string is macthed.
@@ -574,7 +558,7 @@ public class Int32Condition : StructSimpleCondition<int>
     public static Int32Condition CreateFromLeft(StructValueSimpleInterval<int> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new Int32Condition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -589,7 +573,7 @@ public class Int32Condition : StructSimpleCondition<int>
     public static Int32Condition CreateFromRight(StructValueSimpleInterval<int> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new Int32Condition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -605,7 +589,7 @@ public class Int32Condition : StructSimpleCondition<int>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
-        return new Int32Condition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -621,7 +605,7 @@ public class Int32Condition : StructSimpleCondition<int>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
-        return new Int32Condition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -634,17 +618,12 @@ public class Int32Condition : StructSimpleCondition<int>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(Int32Condition value)
-    {
-        return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.Int32; }
-    }
+    public override DbValueType ValueType => DbValueType.Int32;
 
     /// <summary>
     /// Tests if the given number is macthed.
@@ -652,25 +631,16 @@ public class Int32Condition : StructSimpleCondition<int>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(int source)
-    {
-        switch (Operator)
+        => Operator switch
         {
-            case DbCompareOperator.Equal:
-                return source == Value;
-            case DbCompareOperator.NotEqual:
-                return source != Value;
-            case DbCompareOperator.Greater:
-                return source > Value;
-            case DbCompareOperator.GreaterOrEqual:
-                return source >= Value;
-            case DbCompareOperator.Less:
-                return source < Value;
-            case DbCompareOperator.LessOrEqual:
-                return source <= Value;
-        }
-
-        return false;
-    }
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
 
     /// <summary>
     /// Converts to simple interval.
@@ -735,7 +705,7 @@ public class Int64Condition : StructSimpleCondition<long>
     public static Int64Condition CreateFromLeft(StructValueSimpleInterval<long> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new Int64Condition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -750,7 +720,7 @@ public class Int64Condition : StructSimpleCondition<long>
     public static Int64Condition CreateFromRight(StructValueSimpleInterval<long> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new Int64Condition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -766,7 +736,7 @@ public class Int64Condition : StructSimpleCondition<long>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
-        return new Int64Condition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -782,7 +752,7 @@ public class Int64Condition : StructSimpleCondition<long>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
-        return new Int64Condition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -795,17 +765,12 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(Int64Condition value)
-    {
-        return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.Int64; }
-    }
+    public override DbValueType ValueType => DbValueType.Int64;
 
     /// <summary>
     /// Tests if the given number is macthed.
@@ -813,25 +778,16 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(long source)
-    {
-        switch (Operator)
+        => Operator switch
         {
-            case DbCompareOperator.Equal:
-                return source == Value;
-            case DbCompareOperator.NotEqual:
-                return source != Value;
-            case DbCompareOperator.Greater:
-                return source > Value;
-            case DbCompareOperator.GreaterOrEqual:
-                return source >= Value;
-            case DbCompareOperator.Less:
-                return source < Value;
-            case DbCompareOperator.LessOrEqual:
-                return source <= Value;
-        }
-
-        return false;
-    }
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
 
     /// <summary>
     /// Converts to simple interval.
@@ -896,7 +852,7 @@ public class SingleCondition : StructSimpleCondition<float>
     public static SingleCondition CreateFromLeft(StructValueSimpleInterval<float> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new SingleCondition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -911,7 +867,7 @@ public class SingleCondition : StructSimpleCondition<float>
     public static SingleCondition CreateFromRight(StructValueSimpleInterval<float> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new SingleCondition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -927,7 +883,7 @@ public class SingleCondition : StructSimpleCondition<float>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
-        return new SingleCondition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -943,7 +899,7 @@ public class SingleCondition : StructSimpleCondition<float>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
-        return new SingleCondition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -956,17 +912,12 @@ public class SingleCondition : StructSimpleCondition<float>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(SingleCondition value)
-    {
-        return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.SingleDecimal; }
-    }
+    public override DbValueType ValueType => DbValueType.SingleFloating;
 
     /// <summary>
     /// Tests if the given number is macthed.
@@ -974,25 +925,16 @@ public class SingleCondition : StructSimpleCondition<float>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(float source)
-    {
-        switch (Operator)
+        => Operator switch
         {
-            case DbCompareOperator.Equal:
-                return source == Value;
-            case DbCompareOperator.NotEqual:
-                return source != Value;
-            case DbCompareOperator.Greater:
-                return source > Value;
-            case DbCompareOperator.GreaterOrEqual:
-                return source >= Value;
-            case DbCompareOperator.Less:
-                return source < Value;
-            case DbCompareOperator.LessOrEqual:
-                return source <= Value;
-        }
-
-        return false;
-    }
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
 
     /// <summary>
     /// Converts to simple interval.
@@ -1057,7 +999,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     public static DoubleCondition CreateFromLeft(StructValueSimpleInterval<double> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new DoubleCondition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -1072,7 +1014,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     public static DoubleCondition CreateFromRight(StructValueSimpleInterval<double> value)
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
-        return new DoubleCondition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -1088,7 +1030,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
-        return new DoubleCondition
+        return new()
         {
             Value = value.MinValue,
             Operator = SimpleCondition.GetLeftOperator(value)
@@ -1104,7 +1046,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     {
         if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
-        return new DoubleCondition
+        return new()
         {
             Value = value.MaxValue,
             Operator = SimpleCondition.GetRightOperator(value)
@@ -1117,17 +1059,12 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(DoubleCondition value)
-    {
-        return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.DoubleDecimal; }
-    }
+    public override DbValueType ValueType => DbValueType.DoubleFloating;
 
     /// <summary>
     /// Tests if the given number is macthed.
@@ -1135,25 +1072,16 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(double source)
-    {
-        switch (Operator)
+        => Operator switch
         {
-            case DbCompareOperator.Equal:
-                return source == Value;
-            case DbCompareOperator.NotEqual:
-                return source != Value;
-            case DbCompareOperator.Greater:
-                return source > Value;
-            case DbCompareOperator.GreaterOrEqual:
-                return source >= Value;
-            case DbCompareOperator.Less:
-                return source < Value;
-            case DbCompareOperator.LessOrEqual:
-                return source <= Value;
-        }
-
-        return false;
-    }
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
 
     /// <summary>
     /// Converts to simple interval.
@@ -1174,6 +1102,153 @@ public class DoubleCondition : StructSimpleCondition<double>
             DbCompareOperator.NotEqual => BasicCompareOperator.NotEqual,
             _ => BasicCompareOperator.Equal
         }, double.NegativeInfinity, double.PositiveInfinity);
+    }
+}
+
+/// <summary>
+/// The simple condition class for decimal float.
+/// </summary>
+public class DecimalCondition : StructSimpleCondition<decimal>
+{
+    /// <summary>
+    /// Initializes a new instance of the DecimalCondition class.
+    /// </summary>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public DecimalCondition()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DecimalCondition class.
+    /// </summary>
+    /// <param name="copier">An instance to copy.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public DecimalCondition(IStructSimpleCondition<decimal> copier)
+        : base(copier)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DecimalCondition class.
+    /// </summary>
+    /// <param name="op">The operator in the condition.</param>
+    /// <param name="value">The value for comparing in the condition.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public DecimalCondition(DbCompareOperator op, decimal value) : base(op, value)
+    {
+    }
+
+    /// <summary>
+    /// Get a condition from the given struct value simple interval left bound.
+    /// </summary>
+    /// <param name="value">A simple interval.</param>
+    /// <returns>A condition from left bound of a specific simple interval.</returns>
+    public static DecimalCondition CreateFromLeft(StructValueSimpleInterval<decimal> value)
+    {
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
+        return new()
+        {
+            Value = value.MinValue,
+            Operator = SimpleCondition.GetLeftOperator(value)
+        };
+    }
+
+    /// <summary>
+    /// Get a condition from the given struct value simple interval left bound.
+    /// </summary>
+    /// <param name="value">A simple interval.</param>
+    /// <returns>A condition from right bound of a specific simple interval.</returns>
+    public static DecimalCondition CreateFromRight(StructValueSimpleInterval<decimal> value)
+    {
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
+        return new()
+        {
+            Value = value.MaxValue,
+            Operator = SimpleCondition.GetRightOperator(value)
+        };
+    }
+
+    /// <summary>
+    /// Get a condition from the given nullable value simple interval left bound.
+    /// </summary>
+    /// <param name="value">A simple interval.</param>
+    /// <returns>A condition from left bound of a specific simple interval.</returns>
+    public static DecimalCondition CreateFromLeft(NullableValueSimpleInterval<decimal> value)
+    {
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
+        if (!value.LeftBounded) return null;
+        return new()
+        {
+            Value = value.MinValue,
+            Operator = SimpleCondition.GetLeftOperator(value)
+        };
+    }
+
+    /// <summary>
+    /// Get a condition from the given nullable value simple interval left bound.
+    /// </summary>
+    /// <param name="value">A simple interval.</param>
+    /// <returns>A condition from right bound of a specific simple interval.</returns>
+    public static DecimalCondition CreateFromRight(NullableValueSimpleInterval<decimal> value)
+    {
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
+        if (!value.RightBounded) return null;
+        return new()
+        {
+            Value = value.MaxValue,
+            Operator = SimpleCondition.GetRightOperator(value)
+        };
+    }
+
+    /// <summary>
+    /// Checks if a decimal float value condition is valid.
+    /// </summary>
+    /// <param name="value">The condition object.</param>
+    /// <returns>true if it is valid; otherwise, false.</returns>
+    public static bool IsValid(DecimalCondition value)
+        => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
+
+    /// <summary>
+    /// Gets the type of the value.
+    /// </summary>
+    public override DbValueType ValueType => DbValueType.DoubleFloating;
+
+    /// <summary>
+    /// Tests if the given number is macthed.
+    /// </summary>
+    /// <param name="source">The source to test the condition.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(decimal source)
+        => Operator switch
+        {
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
+
+    /// <summary>
+    /// Converts to simple interval.
+    /// </summary>
+    /// <param name="value">The original value.</param>
+    public static explicit operator StructValueSimpleInterval<decimal>(DecimalCondition value)
+    {
+        if (value is null) return null;
+        if (value.ValueIsNull) return new StructValueSimpleInterval<decimal>(decimal.MinValue, decimal.MaxValue, false, false, null, null);
+        return new(value.Value.Value, value.Operator switch
+        {
+            DbCompareOperator.Greater => BasicCompareOperator.Greater,
+            DbCompareOperator.GreaterOrEqual => BasicCompareOperator.GreaterOrEqual,
+            DbCompareOperator.StartsWith => BasicCompareOperator.GreaterOrEqual,
+            DbCompareOperator.Less => BasicCompareOperator.Less,
+            DbCompareOperator.LessOrEqual => BasicCompareOperator.LessOrEqual,
+            DbCompareOperator.EndsWith => BasicCompareOperator.LessOrEqual,
+            DbCompareOperator.NotEqual => BasicCompareOperator.NotEqual,
+            _ => BasicCompareOperator.Equal
+        }, decimal.MinValue, decimal.MaxValue);
     }
 }
 
@@ -1268,17 +1343,12 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(DateTimeCondition value)
-    {
-        return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.DateTimeUtc; }
-    }
+    public override DbValueType ValueType => DbValueType.DateTimeUtc;
 
     /// <summary>
     /// Tests if the given date time is macthed.
@@ -1286,25 +1356,16 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(DateTime source)
-    {
-        switch (Operator)
+        => Operator switch
         {
-            case DbCompareOperator.Equal:
-                return source == Value;
-            case DbCompareOperator.NotEqual:
-                return source != Value;
-            case DbCompareOperator.Greater:
-                return source > Value;
-            case DbCompareOperator.GreaterOrEqual:
-                return source >= Value;
-            case DbCompareOperator.Less:
-                return source < Value;
-            case DbCompareOperator.LessOrEqual:
-                return source <= Value;
-        }
-
-        return false;
-    }
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
 }
 
 /// <summary>
@@ -1336,17 +1397,12 @@ public class BooleanCondition : StructSimpleCondition<bool>
     /// <param name="value">The condition object.</param>
     /// <returns>true if it is valid; otherwise, false.</returns>
     public static bool IsValid(BooleanCondition value)
-    {
-        return IsValid(value, SimpleCondition.GetBasicValidOperators().Contains);
-    }
+        => IsValid(value, SimpleCondition.GetBasicValidOperators().Contains);
 
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public override DbValueType ValueType
-    {
-        get { return DbValueType.Boolean; }
-    }
+    public override DbValueType ValueType => DbValueType.Boolean;
 
     /// <summary>
     /// Tests if the given boolean is macthed.
@@ -1354,15 +1410,10 @@ public class BooleanCondition : StructSimpleCondition<bool>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(bool source)
-    {
-        switch (Operator)
+        => Operator switch
         {
-            case DbCompareOperator.Equal:
-                return source == Value;
-            case DbCompareOperator.NotEqual:
-                return source != Value;
-        }
-
-        return false;
-    }
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            _ => false,
+        };
 }
