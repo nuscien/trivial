@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Trivial.Console" Version="9.3.0" />
+    <PackageReference Include="Trivial.Console" Version="9.4.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.8.0" />
     <PackageReference Include="MSTest.TestFramework" Version="3.8.0" />
