@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using Trivial.Text;
 using Trivial.Data;
 using Trivial.Collection;
+using Trivial.Net;
 
 namespace Trivial.Security;
 
@@ -686,6 +687,30 @@ public class TokenContainer
             : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
         return true;
     }
+
+    /// <summary>
+    /// Creates a JSON HTTP client.
+    /// </summary>
+    /// <typeparam name="T">The type of response.</typeparam>
+    /// <param name="httpClient">The JSON HTTP client to set token.</param>
+    /// <param name="callback">An optional callback raised on data received.</param>
+    public void ApplyToken<T>(JsonHttpClient<T> httpClient, Action<ReceivedEventArgs<T>> callback = null)
+    {
+        if (httpClient == null) return;
+        httpClient.Sending += OnSend;
+        if (callback != null) httpClient.Received += (sender, ev) =>
+        {
+            callback(ev);
+        };
+    }
+
+    /// <summary>
+    /// Occurs on the JSON HTTP client is sending.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="ev">The event arguments.</param>
+    protected virtual void OnSend(object sender, SendingEventArgs ev)
+        => WriteAuthenticationHeaderValue(ev.RequestMessage.Headers);
 }
 
 /// <summary>

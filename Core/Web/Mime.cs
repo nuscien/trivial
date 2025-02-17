@@ -90,6 +90,22 @@ public static partial class WebFormat
     public const string StreamMIME = "application/octet-stream";
 
     /// <summary>
+    /// Gets the content type with UTF-8 character set.
+    /// </summary>
+    /// <param name="contentType">The content type (MIME).</param>
+    /// <returns>A string with the specific content type and character set UTF-8.</returns>
+    public static string GetUtf8ContentType(string contentType)
+        => string.Concat(contentType, "; charset=utf-8");
+
+    /// <summary>
+    /// Gets the content type of multiple part form data.
+    /// </summary>
+    /// <param name="boundary">The boundary.</param>
+    /// <returns>The content type of multiple part form data with boundary.</returns>
+    public static string GetFormDataContentType(string boundary)
+        => string.Concat(FormDataMIME, "; boundary=", boundary);
+
+    /// <summary>
     /// The MIME mapping.
     /// </summary>
     internal static Collection.KeyedDataMapping<string> MimeMapping { get; } = new();

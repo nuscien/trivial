@@ -267,16 +267,8 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
         {
             HttpClientResolver = HttpClientResolver,
         };
-        httpClient.Sending += (sender, ev) =>
-        {
-            WriteAuthenticationHeaderValue(ev.RequestMessage.Headers);
-            Sending?.Invoke(sender, ev);
-        };
+        ApplyToken(httpClient);
         if (Deserializer != null) httpClient.Deserializer = json => (T)Deserializer(json, typeof(T));
-        if (callback != null) httpClient.Received += (sender, ev) =>
-        {
-            callback(ev);
-        };
         return httpClient;
     }
 
@@ -650,6 +642,16 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
         return httpClient;
     }
 
+    /// <inheritdoc />
+    protected override void OnSend(object sender, SendingEventArgs ev)
+    {
+        base.OnSend(sender, ev);
+        Sending?.Invoke(sender, ev);
+    }
+
+    internal void OnSendInternal(object sender, SendingEventArgs ev)
+        => OnSend(sender, ev);
+
     /// <summary>
     /// Creates the JSON HTTP web client for resolving token.
     /// </summary>
@@ -953,6 +955,10 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
         => Create<T>().SendAsync(request, callback, cancellationToken);
+
+    /// <inheritdoc />
+    protected override void OnSend(object sender, SendingEventArgs ev)
+        => oauth.OnSendInternal(sender, ev);
 
     /// <summary>
     /// Creates a token request instance by a specific body.
