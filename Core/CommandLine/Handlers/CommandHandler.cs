@@ -255,7 +255,7 @@ public abstract class BaseCommandVerb
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the work queued to execute in the thread pool.</returns>
     protected static Task RunAsync(Action action = null, CancellationToken cancellationToken = default)
-        => Task.Run(action is null ? RunEmpty : action, cancellationToken);
+        => action is null ? Task.CompletedTask : Task.Run(action, cancellationToken);
 
     /// <summary>
     /// Queues the specified work to run on the thread pool.
@@ -317,10 +317,6 @@ public abstract class BaseCommandVerb
         Arguments = new CommandArguments(args);
         Context = context;
         OnGetHelp();
-    }
-
-    private static void RunEmpty()
-    {
     }
 }
 

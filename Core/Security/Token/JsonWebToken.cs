@@ -294,7 +294,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
     /// <exception cref="FormatException">jwt was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
-    /// <exception cref="JsonException">Deserialize failed.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
     public static JsonWebToken<T> Parse(string jwt, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
@@ -347,7 +347,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
     /// <exception cref="FormatException">jwt was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
-    /// <exception cref="JsonException">Deserialize failed.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
     public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
@@ -397,7 +397,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
     /// <exception cref="FormatException">The access token was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
-    /// <exception cref="JsonException">Deserialize failed.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
@@ -427,7 +427,7 @@ public class JsonWebToken<T>
     /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
     /// <exception cref="FormatException">The access token was in incorrect format.</exception>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
-    /// <exception cref="JsonException">Deserialize failed.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, ISignatureProvider algorithm, bool verify = true)
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));

@@ -47,6 +47,7 @@ public class JsonUnitTest
         Assert.AreEqual(JsonValueKind.Object, json.GetValueKind("props"));
         Assert.AreEqual(JsonValueKind.Array, json.GetValueKind("arr"));
         Assert.AreEqual(json, json.Clone());
+        Assert.IsNotNull(json.ToString(new[] { "num", "q", "props" }));
 
         var props = json.GetObjectValue("props");
         var p1 = new JsonObjectNode

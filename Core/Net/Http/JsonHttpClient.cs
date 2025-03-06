@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 
 using Trivial.Reflection;
 using Trivial.Tasks;
+using Trivial.Text;
 using Trivial.Web;
 
 namespace Trivial.Net;
@@ -233,7 +234,7 @@ public class JsonHttpClient<T>
     public JsonHttpClient()
     {
         var d = WebFormat.GetJsonDeserializer<T>(true);
-        if (d != null) Deserializer = d;
+        if (d != null) Deserializer = new JsonTypedDeserializer<T>(d);
     }
 
     /// <summary>
@@ -307,7 +308,7 @@ public class JsonHttpClient<T>
     /// <summary>
     /// Gets or sets the JSON deserializer.
     /// </summary>
-    public Func<string, T> Deserializer { get; set; }
+    public JsonTypedDeserializer<T> Deserializer { get; set; }
 
     /// <summary>
     /// Gets or sets the HTTP client resolver.

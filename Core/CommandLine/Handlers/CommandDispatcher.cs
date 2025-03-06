@@ -15,6 +15,14 @@ namespace Trivial.CommandLine;
 /// <summary>
 /// Verb dispatcher.
 /// </summary>
+/// <example>
+/// <code>
+/// var dispatcher = new CommandDispatcher();
+/// dispatcher.Register&lt;Verb1&gt;("a");
+/// dispatcher.Register&lt;Verb2&gt;("b");
+/// return dispatcher.ProcessAsync();
+/// </code>
+/// </example>
 public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
 {
     /// <summary>

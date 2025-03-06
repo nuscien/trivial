@@ -1553,20 +1553,6 @@ public static class JsonValues
     /// </summary>
     /// <param name="stream">The stream to write.</param>
     /// <param name="obj">The object to serialize.</param>
-    /// <param name="options">The optional serializer settings.</param>
-    /// <returns>A JSON string.</returns>
-    internal static void WriteTo(Stream stream, object obj, DataContractJsonSerializerSettings options)
-        => WriteTo(stream, obj, null, (s, o, t, opt) =>
-        {
-            var serializer = options != null ? new DataContractJsonSerializer(t, options) : new DataContractJsonSerializer(t);
-            serializer.WriteObject(stream, o);
-        });
-
-    /// <summary>
-    /// Serializes an object into JSON format.
-    /// </summary>
-    /// <param name="stream">The stream to write.</param>
-    /// <param name="obj">The object to serialize.</param>
     /// <param name="options">The serializer options.</param>
     /// <param name="converter">The optional fallback converter.</param>
     /// <returns>A JSON string.</returns>
@@ -1905,6 +1891,52 @@ public static class JsonValues
         {
             reader.Skip();
         }
+    }
+
+    /// <summary>
+    /// Serializes an object into JSON format.
+    /// </summary>
+    /// <param name="stream">The stream to write.</param>
+    /// <param name="obj">The object to serialize.</param>
+    /// <param name="options">The optional serializer settings.</param>
+    /// <returns>A JSON string.</returns>
+    internal static void WriteTo(Stream stream, object obj, DataContractJsonSerializerSettings options)
+        => WriteTo(stream, obj, null, (s, o, t, opt) =>
+        {
+            var serializer = options != null ? new DataContractJsonSerializer(t, options) : new DataContractJsonSerializer(t);
+            serializer.WriteObject(stream, o);
+        });
+
+    internal static void AppendProperty(StringBuilder str, string key, BaseJsonValueNode value, IndentStyles indentStyle, int indentLevel, string indentStr)
+    {
+        str.AppendLine();
+        str.Append(indentStr);
+        str.Append(JsonStringNode.ToJson(key));
+        str.Append(": ");
+        if (value is null)
+        {
+            str.Append("null,");
+            return;
+        }
+
+        switch (value.ValueKind)
+        {
+            case JsonValueKind.Undefined:
+            case JsonValueKind.Null:
+                str.Append("null");
+                break;
+            case JsonValueKind.Array:
+                str.Append((value is JsonArrayNode jArr) ? jArr.ConvertToString(indentStyle, indentLevel) : "[]");
+                break;
+            case JsonValueKind.Object:
+                str.Append((value is JsonObjectNode jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
+                break;
+            default:
+                str.Append(value.ToString());
+                break;
+        }
+
+        str.Append(',');
     }
 
     internal static JsonOperationDescription CreateDescriptionByAttribute(MemberInfo member)

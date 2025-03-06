@@ -46,6 +46,11 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     private DataCacheFactoryInfo<T> factoryInfo;
 
     /// <summary>
+    /// Adds or removes an event handler on the cache item is added;
+    /// </summary>
+    public event DataEventHandler<DataCacheItemInfo<T>> AddedOrUpdated;
+
+    /// <summary>
     /// Gets the maxinum count of the elements contained in the cache item collection; or null, if no limitation.
     /// </summary>
     public int? MaxCount { get; set; }
@@ -103,15 +108,16 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
         {
             StringExtensions.AssertNotWhiteSpace(nameof(id), id);
             var info = GetInfo(id);
-            if (info == null) throw new KeyNotFoundException("The identifier does not exist.");
-            return info.Value;
+            return info == null ? throw new KeyNotFoundException("The identifier does not exist.", new ArgumentOutOfRangeException(nameof(id), "id is out of range.")) : info.Value;
         }
 
         set
         {
             StringExtensions.AssertNotWhiteSpace(nameof(id), id);
-            items[id] = new DataCacheItemInfo<T>(id, value);
+            var item = new DataCacheItemInfo<T>(id, value);
+            items[id] = item;
             RemoveExpiredAuto();
+            AddedOrUpdated?.Invoke(this, new(item));
         }
     }
 
@@ -165,11 +171,13 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
     /// <param name="expiration">The expiration for initialization.</param>
     /// <returns>The cache item info.</returns>
+    /// <exception cref="ArgumentNullException">id was null.</exception>
+    /// <exception cref="ArgumentException">id was empty or consists only of white-space characters.</exception>
+    /// <exception cref="KeyNotFoundException">The identifier does not exist.</exception>
     public async Task<T> GetAsync(string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
     {
         var result = await GetInfoAsync(id, initialization, expiration);
-        if (result is null) throw new KeyNotFoundException("The identifier does not exist.");
-        return result.Value;
+        return result is null ? throw new KeyNotFoundException("The identifier does not exist.", new ArgumentOutOfRangeException(nameof(id), "id is out of range.")) : result.Value;
     }
 
     /// <summary>
@@ -227,6 +235,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
         if (item == null || string.IsNullOrWhiteSpace(item.Id) || item.IsExpired(Expiration)) return;
         items[item.Id] = item;
         RemoveExpiredAuto();
+        AddedOrUpdated?.Invoke(this, new(item));
     }
 
     /// <summary>
@@ -312,6 +321,16 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
         => factoryInfo = factory == null
             ? null
             : new DataCacheFactoryInfo<T>() { Factory = factory, Timeout = timeout };
+
+    /// <summary>
+    /// Registers a value resolving factory.
+    /// </summary>
+    /// <param name="factory">The value resovling factory.</param>
+    /// <param name="timeout">An optional time span that represents the number of milliseconds to wait</param>
+    public void Register(Reflection.ISingletonResolver factory, TimeSpan? timeout = null)
+        => factoryInfo = factory == null
+            ? null
+            : new DataCacheFactoryInfo<T>() { Factory = key => Task.FromResult(factory.Resolve<T>(key)), Timeout = timeout };
 
     /// <summary>
     /// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the target array.
@@ -666,6 +685,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
             var v = await factory.Factory(id);
             r = new DataCacheItemInfo<T>(id, v);
             items[id] = r;
+            AddedOrUpdated?.Invoke(this, new(r));
             return r;
         }
         finally

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,6 +60,92 @@ public abstract class BaseSingletonResolver : ISingletonResolver
     /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
     /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
     public T Resolve<T>(string key)
+    {
+        var result = ResolveDirectly<T>(key);
+        OnResolve(key, result);
+        return result;
+    }
+
+    /// <summary>
+    /// Resolves a singleton instance.
+    /// </summary>
+    /// <typeparam name="T">The type of instance.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <param name="result">An instance resolved.</param>
+    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+    /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
+    public bool TryResolve<T>(string key, out T result)
+    {
+        if (key == null) key = string.Empty;
+        try
+        {
+            var resolver = GetResolver<T>();
+            if (resolver is not null)
+            {
+                if (!resolver(key, out result)) return false;
+                OnResolve(key, result);
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (KeyNotFoundException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (ApplicationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the keyed instance resolver of the specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of the instance.</typeparam>
+    /// <returns>The resolver; or null, if so such type supported.</returns>
+    protected abstract KeyedInstanceResolver<T> GetResolver<T>();
+
+    /// <summary>
+    /// Occurs on resolving.
+    /// </summary>
+    /// <typeparam name="T">The type of the instance to get.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The instance resolved.</param>
+    protected virtual void OnResolve<T>(string key, T value)
+    {
+    }
+
+    /// <summary>
+    /// Resolves a singleton instance.
+    /// </summary>
+    /// <typeparam name="T">The type of instance.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <returns>An instance resolved.</returns>
+    /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+    /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
+    private T ResolveDirectly<T>(string key)
     {
         key ??= string.Empty;
         KeyedInstanceResolver<T> resolver = null;
@@ -129,55 +216,6 @@ public abstract class BaseSingletonResolver : ISingletonResolver
         if (string.IsNullOrEmpty(key)) throw new NotSupportedException("There is no default instance of the type registered.", exception);
         throw new KeyNotFoundException("The key is not supported in the given type registered.", exception);
     }
-
-    /// <summary>
-    /// Resolves a singleton instance.
-    /// </summary>
-    /// <typeparam name="T">The type of instance.</typeparam>
-    /// <param name="key">The key.</param>
-    /// <param name="result">An instance resolved.</param>
-    /// <returns>true if resolve succeeded; otherwise, false.</returns>
-    /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
-    /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
-    public bool TryResolve<T>(string key, out T result)
-    {
-        if (key == null) key = string.Empty;
-        try
-        {
-            var resolver = GetResolver<T>();
-            if (!(resolver is null)) return resolver(key, out result);
-            result = default;
-            return false;
-        }
-        catch (ArgumentException)
-        {
-        }
-        catch (NullReferenceException)
-        {
-        }
-        catch (KeyNotFoundException)
-        {
-        }
-        catch (InvalidCastException)
-        {
-        }
-        catch (NotSupportedException)
-        {
-        }
-        catch (InvalidOperationException)
-        {
-        }
-
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the keyed instance resolver of the specific type.
-    /// </summary>
-    /// <typeparam name="T">The type of the instance.</typeparam>
-    /// <returns>The resolver; or null, if so such type supported.</returns>
-    protected abstract KeyedInstanceResolver<T> GetResolver<T>();
 }
 
 /// <summary>

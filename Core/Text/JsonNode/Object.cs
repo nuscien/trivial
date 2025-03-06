@@ -8290,12 +8290,24 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
+    /// <param name="indentStyle">The indent style.</param>
+    /// <returns>A JSON format string.</returns>
+    public string ToString(IEnumerable<string> priorityKeyOrder, bool onlyPriorityKeys = false, IndentStyles indentStyle = IndentStyles.Minified)
+        => ConvertToString(indentStyle, 0, priorityKeyOrder, onlyPriorityKeys);
+
+    /// <summary>
+    /// Gets the JSON format string of the value.
+    /// </summary>
     /// <param name="indentStyle">The indent style.</param>
     /// <param name="indentLevel">The current indent level.</param>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
     /// <returns>A JSON format string.</returns>
-    internal string ConvertToString(IndentStyles indentStyle, int indentLevel)
+    internal string ConvertToString(IndentStyles indentStyle, int indentLevel, IEnumerable<string> priorityKeyOrder = null, bool onlyPriorityKeys = false)
     {
-        if (indentStyle == IndentStyles.Minified) return ToString();
+        if (indentStyle == IndentStyles.Minified && priorityKeyOrder == null) return ToString();
         var indentStr = StringExtensions.GetString(indentStyle);
         var indentPrefix = new StringBuilder();
         for (var i = 0; i < indentLevel; i++)
@@ -8308,36 +8320,32 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         indentStr = indentPrefix.ToString();
         indentLevel++;
         var str = new StringBuilder("{");
-        foreach (var prop in store)
+        if (priorityKeyOrder == null)
         {
-            str.AppendLine();
-            str.Append(indentStr);
-            str.Append(JsonStringNode.ToJson(prop.Key));
-            str.Append(": ");
-            if (prop.Value is null)
+            foreach (var prop in store)
             {
-                str.Append("null,");
-                continue;
+                JsonValues.AppendProperty(str, prop.Key, prop.Value, indentStyle, indentLevel, indentStr);
+            }
+        }
+        else
+        {
+            var list = new List<string>();
+            foreach (var key in priorityKeyOrder)
+            {
+                if (list.Contains(key)) continue;
+                list.Add(key);
+                if (!store.TryGetValue(key, out var propValue)) continue;
+                JsonValues.AppendProperty(str, key, propValue, indentStyle, indentLevel, indentStr);
             }
 
-            switch (prop.Value.ValueKind)
+            if (!onlyPriorityKeys)
             {
-                case JsonValueKind.Undefined:
-                case JsonValueKind.Null:
-                    str.Append("null");
-                    break;
-                case JsonValueKind.Array:
-                    str.Append((prop.Value is JsonArrayNode jArr) ? jArr.ConvertToString(indentStyle, indentLevel) : "[]");
-                    break;
-                case JsonValueKind.Object:
-                    str.Append((prop.Value is JsonObjectNode jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
-                    break;
-                default:
-                    str.Append(prop.Value.ToString());
-                    break;
+                foreach (var prop in store)
+                {
+                    if (list.Contains(prop.Key)) continue;
+                    JsonValues.AppendProperty(str, prop.Key, prop.Value, indentStyle, indentLevel, indentStr);
+                }
             }
-
-            str.Append(',');
         }
 
         if (str.Length > 1) str.Remove(str.Length - 1, 1);

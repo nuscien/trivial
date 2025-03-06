@@ -460,6 +460,15 @@ public static class Numbers
     /// </summary>
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <returns>The number parsed; or null, if fails.</returns>
+    public static short? TryParseToInt16(string s, int radix = 10)
+        => TryParseToInt16(s, radix, out var result) ? result : null;
+
+    /// <summary>
+    /// Tries to parse a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if parse succeeded; otherwise, false.</returns>
     public static bool TryParseToInt32(string s, int radix, out int result)
@@ -563,6 +572,15 @@ public static class Numbers
     /// </summary>
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <returns>The number parsed; or null, if fails.</returns>
+    public static int? TryParseToInt32(string s, int radix = 10)
+        => TryParseToInt32(s, radix, out var result) ? result : null;
+
+    /// <summary>
+    /// Tries to parse a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if parse succeeded; otherwise, false.</returns>
     public static bool TryParseToInt64(string s, int radix, out long result)
@@ -660,6 +678,15 @@ public static class Numbers
         result = neg ? -num : num;
         return true;
     }
+
+    /// <summary>
+    /// Tries to parse a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <returns>The number parsed; or null, if fails.</returns>
+    public static long? TryParseToInt64(string s, int radix = 10)
+        => TryParseToInt64(s, radix, out var result) ? result : null;
 
     /// <summary>
     /// Tries to parse a string to a number.

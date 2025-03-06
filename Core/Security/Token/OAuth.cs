@@ -226,10 +226,16 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Gets or sets the JSON deserializer.
+    /// Gets or sets the JSON deserializer of token.
     /// </summary>
     [JsonIgnore]
-    public Func<string, Type, object> Deserializer { get; set; }
+    public Func<string, Type, object> TokenDeserializer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the JSON deserializer of other kind of request.
+    /// </summary>
+    [JsonIgnore]
+    public Func<string, Type, object> GeneralDeserializer { get; set; }
 
     /// <summary>
     /// Gets or sets a handler to indicate whether the token request is valid and fill additional information if needed.
@@ -268,7 +274,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
             HttpClientResolver = HttpClientResolver,
         };
         ApplyToken(httpClient);
-        if (Deserializer != null) httpClient.Deserializer = json => (T)Deserializer(json, typeof(T));
+        if (GeneralDeserializer != null) httpClient.Deserializer = new(DeserializeValue<T>);
         return httpClient;
     }
 
@@ -634,7 +640,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
             Token = ev.Result;
             TokenResolved?.Invoke(sender, ev);
         };
-        if (Deserializer != null) httpClient.Deserializer = json => (TokenInfo)Deserializer(json, typeof(TokenInfo));
+        if (TokenDeserializer != null) httpClient.Deserializer = new(DeserializeToken<TokenInfo>);
         if (TokenResolving != null) httpClient.Sending += (sender, ev) =>
         {
             TokenResolving?.Invoke(sender, ev);
@@ -675,7 +681,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
             Token = ev.Result;
             TokenResolved?.Invoke(sender, ev.ConvertTo<TokenInfo>());
         };
-        if (Deserializer != null) httpClient.Deserializer = json => (T)Deserializer(json, typeof(T));
+        if (TokenDeserializer != null) httpClient.Deserializer = new(DeserializeToken<T>);
         if (TokenResolving != null) httpClient.Sending += (sender, ev) =>
         {
             TokenResolving?.Invoke(sender, ev);
@@ -711,6 +717,12 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
 
         return resolver.GetInstance() ?? new();
     }
+
+    private T DeserializeToken<T>(string json) where T : TokenInfo
+        => (T)TokenDeserializer(json, typeof(T));
+
+    private T DeserializeValue<T>(string json)
+        => (T)GeneralDeserializer(json, typeof(T));
 }
 
 /// <summary>
@@ -893,13 +905,23 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     public string AppId => oauth.AppId;
 
     /// <summary>
-    /// Gets or sets the JSON deserializer.
+    /// Gets or sets the JSON deserializer of token.
     /// </summary>
     [JsonIgnore]
-    public Func<string, Type, object> Deserializer
+    public Func<string, Type, object> TokenDeserializer
     {
-        get => oauth.Deserializer;
-        set => oauth.Deserializer = value;
+        get => oauth.TokenDeserializer;
+        set => oauth.TokenDeserializer = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the JSON deserializer of other kind of request.
+    /// </summary>
+    [JsonIgnore]
+    public Func<string, Type, object> GeneralDeserializer
+    {
+        get => oauth.GeneralDeserializer;
+        set => oauth.GeneralDeserializer = value;
     }
 
     /// <summary>

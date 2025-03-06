@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -543,13 +544,24 @@ public static class HttpClientExtensions
     /// <param name="httpContent">The http response content.</param>
     /// <param name="deserializer">The JSON deserializer.</param>
     /// <returns>The result serialized.</returns>
-    /// <exception cref="ArgumentNullException">The argument is null.</exception>
-    public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, Func<string, T> deserializer)
+    /// <exception cref="ArgumentNullException">The HTTP content is null.</exception>
+    public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, JsonTypedDeserializer<T> deserializer)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
+        if (deserializer == null)
+        {
+            var stream = await httpContent.ReadAsStreamAsync();
+            return JsonSerializer.Deserialize<T>(stream);
+        }
+
+        if (deserializer.IsStreamPriority)
+        {
+            var stream = await httpContent.ReadAsStreamAsync();
+            return deserializer.Deserialize(stream);
+        }
+
         var str = await httpContent.ReadAsStringAsync();
-        return deserializer(str);
+        return deserializer.Deserialize(str);
     }
 
     /// <summary>
@@ -626,13 +638,24 @@ public static class HttpClientExtensions
     /// <param name="deserializer">The JSON deserializer.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
-    /// <exception cref="ArgumentNullException">The argument is null.</exception>
-    public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, Func<string, T> deserializer, CancellationToken cancellationToken)
+    /// <exception cref="ArgumentNullException">The Http content is null.</exception>
+    public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, JsonTypedDeserializer<T> deserializer, CancellationToken cancellationToken)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
+        if (deserializer == null)
+        {
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            return JsonSerializer.Deserialize<T>(stream);
+        }
+
+        if (deserializer.IsStreamPriority)
+        {
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            return deserializer.Deserialize(stream);
+        }
+
         var str = await httpContent.ReadAsStringAsync(cancellationToken);
-        return deserializer(str);
+        return deserializer.Deserialize(str);
     }
 
     /// <summary>

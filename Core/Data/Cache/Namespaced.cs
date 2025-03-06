@@ -33,6 +33,11 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     private readonly ConcurrentDictionary<string, DataCacheFactoryInfo<T>> factories = new ();
 
     /// <summary>
+    /// Adds or removes an event handler on the cache item is added;
+    /// </summary>
+    public event DataEventHandler<DataCacheItemInfo<T>> AddedOrUpdated;
+
+    /// <summary>
     /// Gets the maxinum count of the elements contained in the cache item collection; or null, if no limitation.
     /// </summary>
     public int? MaxCount { get; set; }
@@ -97,8 +102,10 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
         set
         {
             StringExtensions.AssertNotWhiteSpace(nameof(id), id);
-            items[GetIdWithPrefix(ns, id)] = new DataCacheItemInfo<T>(ns, id, value);
+            var item = new DataCacheItemInfo<T>(ns, id, value);
+            items[GetIdWithPrefix(ns, id)] = item;
             RemoveExpiredAuto();
+            AddedOrUpdated?.Invoke(this, new(item));
         }
     }
 
@@ -219,6 +226,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
         if (item == null || string.IsNullOrWhiteSpace(item.Id) || item.IsExpired(Expiration)) return;
         items[GetIdWithPrefix(item.Namespace, item.Id)] = item;
         RemoveExpiredAuto();
+        AddedOrUpdated?.Invoke(this, new(item));
     }
 
     /// <summary>
@@ -356,6 +364,18 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     {
         if (factory is null) factories.TryRemove(ns, out _);
         else factories[ns] = new DataCacheFactoryInfo<T>() { Factory = factory, Timeout = timeout };
+    }
+
+    /// <summary>
+    /// Registers a value resolving factory.
+    /// </summary>
+    /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
+    /// <param name="factory">The value resovling factory.</param>
+    /// <param name="timeout">An optional time span that represents the number of milliseconds to wait</param>
+    public void Register(string ns, Reflection.ISingletonResolver factory, TimeSpan? timeout = null)
+    {
+        if (factory is null) factories.TryRemove(ns, out _);
+        else factories[ns] = new DataCacheFactoryInfo<T>() { Factory = key => Task.FromResult(factory.Resolve<T>(key)), Timeout = timeout };
     }
 
     /// <summary>
@@ -807,6 +827,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
             var v = await factory.Factory(id);
             r = new DataCacheItemInfo<T>(ns, id, v);
             items[GetIdWithPrefix(ns, id)] = r;
+            AddedOrUpdated?.Invoke(this, new(r));
             return r;
         }
         finally
