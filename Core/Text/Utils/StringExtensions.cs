@@ -622,6 +622,201 @@ public static class StringExtensions
     }
 
     /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, string q, bool withQ, int startIndex, out int offset)
+        => After(source, string.IsNullOrEmpty(q) ? ReadOnlySpan<char>.Empty : q.AsSpan(), withQ, startIndex, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, string q, bool withQ, out int offset)
+        => After(source, q, withQ, 0, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, string q, int startIndex, out int offset)
+        => After(source, q, false, startIndex, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, string q, out int offset)
+        => After(source, q, false, 0, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, string q, bool withQ = false, int startIndex = 0)
+        => After(source, q, withQ, startIndex, out _);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, string q, int startIndex)
+        => After(source, q, false, startIndex, out _);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, ReadOnlySpan<char> q, bool withQ, int startIndex, out int offset)
+    {
+        if (startIndex > 0) source = source.Slice(startIndex);
+        else if (startIndex < 0) startIndex = 0;
+        var i = source.IndexOf(q);
+        if (i < 0)
+        {
+            offset = -1;
+            return ReadOnlySpan<char>.Empty;
+        }
+
+        if (!withQ)
+        {
+            i += q.Length;
+            if (i >= source.Length)
+            {
+                offset = -1;
+                return ReadOnlySpan<char>.Empty;
+            }
+        }
+
+        offset = i;
+        return source.Slice(i);
+    }
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, ReadOnlySpan<char> q, bool withQ, out int offset)
+        => After(source, q, withQ, 0, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, ReadOnlySpan<char> q, int startIndex, out int offset)
+        => After(source, q, false, startIndex, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="offset">The offset of the query string.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, ReadOnlySpan<char> q, out int offset)
+        => After(source, q, false, 0, out offset);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, ReadOnlySpan<char> q, bool withQ = false, int startIndex = 0)
+        => After(source, q, withQ, startIndex, out _);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="startIndex">The index at which to begin the searching.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, ReadOnlySpan<char> q, int startIndex)
+        => After(source, q, false, startIndex, out _);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, ReadOnlySpan<char> q, bool withQ)
+    {
+        var i = source.IndexOf(q);
+        if (i < 0) return ReadOnlySpan<char>.Empty;
+        if (withQ)
+        {
+            i += q.Length;
+            if (i >= source.Length) return source;
+        }
+
+        return source.Slice(0, i);
+    }
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, string q, bool withQ)
+        => Before(source, string.IsNullOrEmpty(q) ? ReadOnlySpan<char>.Empty : q.AsSpan(), withQ);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="length">The desired length for the slice.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, int length)
+    {
+        if (length < 0) return ReadOnlySpan<char>.Empty;
+        if (length >= source.Length) return source;
+        return source.Slice(0, length);
+    }
+
+    /// <summary>
     /// Gets the first item which is not empty.
     /// </summary>
     /// <param name="values">The string values.</param>

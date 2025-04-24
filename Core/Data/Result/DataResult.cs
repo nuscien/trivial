@@ -407,8 +407,9 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
     /// </summary>
     /// <param name="type">The type or group key of the resource.</param>
     /// <param name="id">The identifier of the object.</param>
+    /// <param name="httpClientResolver">The optional HTTP client resolver.</param>
     /// <returns>The reference object.</returns>
-    public JsonObjectNode GetReferenceObject(string type, string id)
+    public JsonObjectNode GetReferenceObject(string type, string id, IObjectResolver<System.Net.Http.HttpClient> httpClientResolver = null)
     {
         if (string.IsNullOrWhiteSpace(id)) return null;
         var components = GetComponents();
@@ -423,7 +424,7 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
         if (json == null) return null;
         var refPath = json.TryGetStringValue("$ref");
         if (refPath == null) return json;
-        return JsonObjectNode.TryGetRefObjectValue(Data, json, ToJson());
+        return JsonObjectNode.TryGetRefObjectValue(Data, json, ToJson(), httpClientResolver);
     }
 
     internal JsonObjectNode GetComponents()

@@ -46,15 +46,15 @@ public class DataCacheItemInfo<T>
     /// </summary>
     /// <param name="id">The identifier.</param>
     /// <param name="value">The value.</param>
-    /// <param name="creation">The creation time.</param>
+    /// <param name="update">The last update time.</param>
     /// <param name="expiration">The optional expiration to override current policy.</param>
-    public DataCacheItemInfo(string id, T value, DateTime creation, TimeSpan? expiration = null)
+    public DataCacheItemInfo(string id, T value, DateTime update, TimeSpan? expiration = null)
     {
         Id = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id;
         Value = value;
         Expiration = expiration;
-        if (creation > DateTime.Now) return;
-        UpdateDate = creation;
+        if (update > DateTime.Now) return;
+        UpdateDate = update;
     }
 
     /// <summary>
@@ -63,9 +63,9 @@ public class DataCacheItemInfo<T>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>
     /// <param name="value">The value.</param>
-    /// <param name="creation">The creation time.</param>
+    /// <param name="update">The last update time.</param>
     /// <param name="expiration">The optional expiration to override current policy.</param>
-    public DataCacheItemInfo(string ns, string id, T value, DateTime creation, TimeSpan? expiration = null) : this(id, value, creation, expiration)
+    public DataCacheItemInfo(string ns, string id, T value, DateTime update, TimeSpan? expiration = null) : this(id, value, update, expiration)
     {
         Namespace = string.IsNullOrWhiteSpace(ns) ? null : ns.Trim();
     }
@@ -81,12 +81,12 @@ public class DataCacheItemInfo<T>
     public string Id { get; }
 
     /// <summary>
-    /// Gets or sets the creation date.
+    /// Gets or sets the item creation date.
     /// </summary>
     public DateTime CreationDate { get; internal set; } = DateTime.Now;
 
     /// <summary>
-    /// Gets or sets the update date.
+    /// Gets or sets the last update date.
     /// </summary>
     public DateTime UpdateDate { get; private set; } = DateTime.Now;
 

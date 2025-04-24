@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using Trivial.Data;
 
 namespace Trivial.Reflection;
@@ -53,9 +54,53 @@ public static class ObjectConvert
         if (value is string str)
         {
             if (type == typeof(string)) return str;
-            if (type.IsEnum)
+            else if (type.IsEnum)
             {
                 return Enum.Parse(type, str);
+            }
+            else if (type.IsValueType)
+            {
+                Text.StringExtensions.AssertNotWhiteSpace(nameof(value), str);
+                if (type == typeof(bool))
+                    return Text.JsonBooleanNode.Parse(str);
+                if (type == typeof(int))
+                    return Maths.Numbers.ParseToInt32(str, 10);
+                if (type == typeof(long))
+                    return Maths.Numbers.ParseToInt64(str, 10);
+                if (type == typeof(short))
+                    return Maths.Numbers.ParseToInt16(str, 10);
+                if (type == typeof(double))
+                    return double.Parse(str);
+                if (type == typeof(float))
+                    return float.Parse(str);
+                if (type == typeof(decimal))
+                    return decimal.Parse(str);
+                if (type == typeof(uint))
+                    return Maths.Numbers.ParseToUInt32(str, 10);
+                if (type == typeof(ushort))
+                    return Maths.Numbers.ParseToUInt16(str, 10);
+                if (type == typeof(Guid))
+                    return Guid.Parse(str);
+#if NET8_0_OR_GREATER
+                if (type == typeof(Int128))
+                    return Maths.Numbers.ParseToInt128(str, 10);
+#endif
+            }
+            else if (type == typeof(StringBuilder))
+            {
+                return new StringBuilder(str);
+            }
+            else if (type == typeof(Uri))
+            {
+                return new Uri(str, UriKind.RelativeOrAbsolute); ;
+            }
+            else if (type == typeof(JsonEncodedText))
+            {
+                return JsonEncodedText.Encode(str);
+            }
+            else if (type == typeof(Text.JsonStringNode))
+            {
+                return new Text.JsonStringNode(str);
             }
 
             try

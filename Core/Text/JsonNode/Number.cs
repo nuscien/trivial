@@ -774,6 +774,13 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
         return !strict;
     }
 
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+        => writer?.WriteNumberValue(Value);
+
     long IConvertible.ToInt64(IFormatProvider provider)
         => Value;
 
@@ -952,7 +959,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <param name="json">The JSON value.</param>
     /// <returns>A JSON string instance.</returns>
     public static explicit operator JsonStringNode(JsonIntegerNode json)
-        => new(json.ToString());
+        => new(json?.ToString());
 
     /// <summary>
     /// Converts to a JSON double object.
@@ -960,15 +967,25 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <param name="json">The JSON value.</param>
     /// <returns>A JSON double instance.</returns>
     public static explicit operator JsonDoubleNode(JsonIntegerNode json)
-        => new(json.Value);
+        => new(json?.Value ?? double.NaN);
 
     /// <summary>
     /// Converts to a JSON double object.
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>A JSON double instance.</returns>
+    /// <exception cref="ArgumentNullException">The value is null.</exception>
     public static explicit operator JsonDecimalNode(JsonIntegerNode json)
         => new(json.Value);
+
+    /// <summary>
+    /// Converts to string builder.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A string.</returns>
+    /// <exception cref="ArgumentNullException">The value is null.</exception>
+    public static explicit operator JsonEncodedText(JsonIntegerNode json)
+        => JsonEncodedText.Encode(json?.ToString());
 
     /// <summary>
     /// Compares if left is smaller than right.
@@ -2349,6 +2366,17 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// <inheritdoc />
     public override JsonValue ToJsonValue()
         => JsonValue.Create(Value);
+
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+    {
+        if (writer == null) return;
+        if (double.IsNaN(Value)) writer.WriteNullValue();
+        else writer.WriteNumberValue(Value);
+    }
 
     double IConvertible.ToDouble(IFormatProvider provider)
         => Value;
@@ -3894,6 +3922,13 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     /// <inheritdoc />
     public override JsonValue ToJsonValue()
         => JsonValue.Create(Value);
+
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+        => writer?.WriteNumberValue(Value);
 
     /// <summary>
     /// Tries to get the value of the element as a boolean.

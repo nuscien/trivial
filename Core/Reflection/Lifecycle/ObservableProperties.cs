@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Trivial.Data;
 using Trivial.Text;
+using Trivial.Web;
 
 namespace Trivial.Reflection;
 
@@ -347,6 +348,14 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                     var uri = StringExtensions.TryCreateUri(s);
                     return uri == null ? defaultValue : (T)(object)uri;
                 }
+                else if (typeE == typeof(JsonEncodedText))
+                {
+                    return (T)(object)JsonEncodedText.Encode(s);
+                }
+                else if (typeE == typeof(JsonStringNode))
+                {
+                    return (T)(object)new JsonStringNode(s);
+                }
             }
             else if (typeO.IsEnum)
             {
@@ -377,15 +386,77 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             else if (typeO.IsValueType)
             {
                 if (typeE == typeof(string)
-                    && (typeE == typeof(char) || typeE == typeof(float) || typeE == typeof(double) || typeE == typeof(decimal)
-                    || typeE == typeof(int) || typeE == typeof(long) || typeE == typeof(short) || typeE == typeof(byte)
-                    || typeE == typeof(uint) || typeE == typeof(ulong)) || typeE == typeof(ushort) || typeE == typeof(sbyte)
+                    && (typeO == typeof(char) || typeO == typeof(float) || typeO == typeof(double) || typeO == typeof(decimal)
+                    || typeO == typeof(int) || typeO == typeof(long) || typeO == typeof(short) || typeO == typeof(byte)
+                    || typeO == typeof(uint) || typeO == typeof(ulong)) || typeO == typeof(ushort) || typeO == typeof(sbyte)
 #if NET8_0_OR_GREATER
-                    || typeE == typeof(Int128) || typeE == typeof(UInt128) || typeE == typeof(Half) || typeE == typeof(DateOnly) || typeE == typeof(TimeOnly)
+                    || typeO == typeof(Int128) || typeO == typeof(UInt128) || typeO == typeof(Half) || typeO == typeof(DateOnly) || typeO == typeof(TimeOnly)
 #endif
-                    || typeE == typeof(bool) || typeE == typeof(Guid) || typeE == typeof(BigInteger) || typeE == typeof(DateTime) || typeE == typeof(DateTimeOffset))
+                    || typeO == typeof(bool) || typeO == typeof(Guid) || typeO == typeof(BigInteger) || typeO == typeof(DateTime) || typeO == typeof(DateTimeOffset))
                 {
                     return (T)(object)v.ToString();
+                }
+                else if (typeE == typeof(int))
+                {
+                    if (v is long i2) return (T)(object)(int)i2;
+                    if (v is short i3) return (T)(object)(int)i3;
+                    if (v is double i6) return (T)(object)(int)i6;
+                    if (v is float i7) return (T)(object)(int)i7;
+                    if (v is decimal i8) return (T)(object)(int)i8;
+                    if (v is bool b) return (T)(object)(b ? 1 : 0);
+                    if (v is string s2) return Maths.Numbers.TryParseToInt32(s2, 10, out var i0) ? (T)(object)i0 : defaultValue;
+                }
+                else if (typeE == typeof(long))
+                {
+                    if (v is int i1) return (T)(object)(long)i1;
+                    if (v is short i3) return (T)(object)(long)i3;
+                    if (v is double i6) return (T)(object)(long)i6;
+                    if (v is float i7) return (T)(object)(long)i7;
+                    if (v is decimal i8) return (T)(object)(long)i8;
+                    if (v is string s2) return Maths.Numbers.TryParseToInt64(s2, 10, out var i0) ? (T)(object)i0 : defaultValue;
+                }
+                else if (typeE == typeof(double))
+                {
+                    if (v is float i7) return (T)(object)(double)i7;
+                    if (v is decimal i8) return (T)(object)(double)i8;
+                    if (v is int i1) return (T)(object)(double)i1;
+                    if (v is long i2) return (T)(object)(double)i2;
+                }
+                else if (typeE == typeof(float))
+                {
+                    if (v is double i6) return (T)(object)(float)i6;
+                    if (v is decimal i8) return (T)(object)(float)i8;
+                    if (v is int i1) return (T)(object)(float)i1;
+                    if (v is long i2) return (T)(object)(float)i2;
+                }
+                else if (typeE == typeof(decimal))
+                {
+                    if (v is float i7) return (T)(object)(decimal)i7;
+                    if (v is double i6) return (T)(object)(decimal)i6;
+                    if (v is int i1) return (T)(object)(decimal)i1;
+                    if (v is long i2) return (T)(object)(decimal)i2;
+                }
+                else if (typeE == typeof(bool))
+                {
+                    if (v is int i1)
+                    {
+                        if (i1 == 1 || i1 == 200) return (T)(object)true;
+                        if (i1 == 0 || i1 == -1) return (T)(object)false;
+                        return defaultValue;
+                    }
+
+                    if (v is string s2) return JsonBooleanNode.TryParse(s2, out var b) ? (T)(object)b.Value : defaultValue;
+                }
+                else if (typeE == typeof(DateTime))
+                {
+                    if (v is string s2)
+                    {
+                        var dt = WebFormat.ParseDate(s2);
+                        if (dt.HasValue) return (T)(object)dt.Value;
+                        return defaultValue;
+                    }
+
+                    if (v is DateTimeOffset dto) return (T)(object)dto.UtcDateTime;
                 }
             }
             else if (typeO == typeof(Uri))

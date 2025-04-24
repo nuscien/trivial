@@ -342,7 +342,9 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     {
         if (other is null) return true;
         if (other is IJsonValueNode json) return Equals(json);
-        return false;
+        return other is DBNull
+            || (other is double d && double.IsNaN(d))
+            || (other is float f && float.IsNaN(f));
     }
 
     /// <summary>

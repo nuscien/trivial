@@ -1800,9 +1800,10 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="root">The root node.</param>
+    /// <param name="httpClientResolver">The optional HTTP client resolver.</param>
     /// <returns>The value.</returns>
-    public JsonObjectNode TryGetRefObjectValue(int index, JsonObjectNode root)
-        => JsonObjectNode.TryGetRefObjectValue(null, TryGetObjectValue(index), root);
+    public JsonObjectNode TryGetRefObjectValue(int index, JsonObjectNode root, IObjectResolver<System.Net.Http.HttpClient> httpClientResolver = null)
+        => JsonObjectNode.TryGetRefObjectValue(null, TryGetObjectValue(index), root, httpClientResolver);
 
     /// <summary>
     /// Tries to get the value at the specific index.

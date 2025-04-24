@@ -1462,6 +1462,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             if (type == typeof(uint)) return GetUInt32Value(key);
             if (type == typeof(ulong)) return (ulong)GetInt64Value(key);
             if (type == typeof(short)) return (short)GetInt32Value(key);
+            if (type == typeof(ushort)) return (ushort)GetInt32Value(key);
             if (type == typeof(Guid)) return GetGuidValue(key);
             if (type == typeof(DateTime)) return GetDateTimeValue(key);
         }
@@ -1474,6 +1475,12 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         if (type == typeof(Type)) return GetValue(key).GetType();
         if (type == typeof(BaseJsonValueNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonValueNode<string>) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonDecimalNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
             return GetValue(key);
+
+        if (type == typeof(Uri))
+        {
+            var url = GetStringValue(key);
+            return new Uri(url, UriKind.RelativeOrAbsolute);
+        }
 
         if (type.IsClass)
         {
@@ -2993,24 +3000,26 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="root">The root node.</param>
-    /// <returns>The value.</returns>
-    public JsonObjectNode TryGetRefObjectValue(string key, JsonObjectNode root)
-        => TryGetRefObjectValue(this, TryGetObjectValue(key), root);
+    /// <param name="httpClientResolver">The optional HTTP client resolver.</param>
+    /// <returns>The JSON object node; or null, if gets failed.</returns>
+    public JsonObjectNode TryGetRefObjectValue(string key, JsonObjectNode root, IObjectResolver<System.Net.Http.HttpClient> httpClientResolver = null)
+        => TryGetRefObjectValue(this, TryGetObjectValue(key), root, httpClientResolver);
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="root">The root node.</param>
-    /// <returns>The value.</returns>
-    public JsonObjectNode TryGetRefObjectValue(string key, JsonDataResult root)
-        => root == null ? null : TryGetRefObjectValue(key, root.ToJson());
+    /// <param name="httpClientResolver">The optional HTTP client resolver.</param>
+    /// <returns>The JSON object node; or null, if gets failed.</returns>
+    public JsonObjectNode TryGetRefObjectValue(string key, JsonDataResult root, IObjectResolver<System.Net.Http.HttpClient> httpClientResolver = null)
+        => root == null ? null : TryGetRefObjectValue(key, root.ToJson(), httpClientResolver);
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
+    /// <returns>The JSON array node; or null, if the kind is not array.</returns>
     public JsonArrayNode TryGetArrayValue(string key)
     {
         if (TryGetJsonValue<JsonArrayNode>(key, out var p)) return p;
@@ -3034,7 +3043,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
-    /// <returns>A string.</returns>
+    /// <returns>The JSON array node; or null, if the kind is not array.</returns>
     public JsonArrayNode TryGetArrayValue(IEnumerable<string> keyPath)
         => TryGetValue(keyPath) as JsonArrayNode;
 
@@ -3737,11 +3746,11 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
                         return true;
                     }
                 }
-                else if (type == typeof(Uri))
+                else if (type == typeof(ushort))
                 {
-                    if (JsonValues.TryGetString(r, out var s) && Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out var u))
+                    if (JsonValues.TryGetInt32(r, out var i))
                     {
-                        result = (T)(object)u;
+                        result = (T)(object)(ushort)i;
                         return true;
                     }
                 }
@@ -3752,6 +3761,14 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
                 {
                     result = (T)(object)new StringBuilder(s);
                     return true;
+                }
+            }
+            else if (type == typeof(Uri))
+            {
+                if (JsonValues.TryGetString(r, out var s))
+                {
+                    result = (T)(object)StringExtensions.TryCreateUri(s);
+                    if (result != null) return true;
                 }
             }
             else if (type.IsClass)
@@ -3795,10 +3812,16 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         catch (FormatException)
         {
         }
+        catch (ArithmeticException)
+        {
+        }
         catch (JsonException)
         {
         }
         catch (NotSupportedException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 
@@ -8059,41 +8082,43 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         writer.WriteStartObject();
         foreach (var prop in store)
         {
-            if (prop.Value is null)
-            {
-                writer.WriteNull(prop.Key);
-                continue;
-            }
+            JsonValues.WriteTo(writer, prop.Key, prop.Value);
+        }
 
-            switch (prop.Value.ValueKind)
+        writer.WriteEndObject();
+    }
+
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
+    public void WriteTo(Utf8JsonWriter writer, IEnumerable<string> priorityKeyOrder, bool onlyPriorityKeys = false)
+    {
+        if (priorityKeyOrder == null)
+        {
+            WriteTo(writer);
+            return;
+        }
+
+        if (writer == null) return;
+        writer.WriteStartObject();
+        var list = new List<string>();
+        foreach (var key in priorityKeyOrder)
+        {
+            if (list.Contains(key)) continue;
+            list.Add(key);
+            if (!store.TryGetValue(key, out var propValue)) continue;
+            JsonValues.WriteTo(writer, key, propValue);
+        }
+
+        if (!onlyPriorityKeys)
+        {
+            foreach (var prop in store)
             {
-                case JsonValueKind.Undefined:
-                    break;
-                case JsonValueKind.Null:
-                    writer.WriteNull(prop.Key);
-                    break;
-                case JsonValueKind.String:
-                    if (prop.Value is JsonStringNode strJson) writer.WriteString(prop.Key, strJson.Value);
-                    break;
-                case JsonValueKind.Number:
-                    if (prop.Value is JsonIntegerNode intJson) writer.WriteNumber(prop.Key, (long)intJson);
-                    else if (prop.Value is JsonDoubleNode floatJson) writer.WriteNumber(prop.Key, (double)floatJson);
-                    else if (prop.Value is JsonDecimalNode decimalJson) writer.WriteNumber(prop.Key, (decimal)decimalJson);
-                    break;
-                case JsonValueKind.True:
-                    writer.WriteBoolean(prop.Key, true);
-                    break;
-                case JsonValueKind.False:
-                    writer.WriteBoolean(prop.Key, false);
-                    break;
-                case JsonValueKind.Object:
-                    writer.WritePropertyName(prop.Key);
-                    if (prop.Value is JsonObjectNode objJson) objJson.WriteTo(writer);
-                    break;
-                case JsonValueKind.Array:
-                    writer.WritePropertyName(prop.Key);
-                    if (prop.Value is JsonArrayNode objArr) objArr.WriteTo(writer);
-                    break;
+                if (list.Contains(prop.Key)) continue;
+                JsonValues.WriteTo(writer, prop.Key, prop.Value);
             }
         }
 
@@ -8117,6 +8142,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Writes to file.
     /// </summary>
+    /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
+    /// <param name="style">The indent style.</param>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentException">path was invalid..</exception>
+    /// <exception cref="ArgumentNullException">path was null.</exception>
+    /// <exception cref="NotSupportedException">path was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public void WriteTo(string path, IEnumerable<string> priorityKeyOrder, bool onlyPriorityKeys = false, IndentStyles style = IndentStyles.Minified)
+        => File.WriteAllText(path, ToString(priorityKeyOrder, onlyPriorityKeys, style) ?? "null");
+
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
     /// <param name="file">The file to write.</param>
     /// <param name="style">The indent style.</param>
     /// <exception cref="IOException">IO exception.</exception>
@@ -8128,6 +8169,25 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
         if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
         File.WriteAllText(file.FullName, ToString(style) ?? "null");
+        file.Refresh();
+    }
+
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="file">The file to write.</param>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
+    /// <param name="style">The indent style.</param>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentNullException">The file path was null.</exception>
+    /// <exception cref="NotSupportedException">The file was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public void WriteTo(FileInfo file, IEnumerable<string> priorityKeyOrder, bool onlyPriorityKeys = false, IndentStyles style = IndentStyles.Minified)
+    {
+        if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
+        File.WriteAllText(file.FullName, ToString(priorityKeyOrder, onlyPriorityKeys, style) ?? "null");
         file.Refresh();
     }
 
@@ -8147,6 +8207,24 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
     public Task WriteToAsync(string path, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
         => File.WriteAllTextAsync(path, ToString(style) ?? "null", cancellationToken);
+
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
+    /// <param name="style">The indent style.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentException">path was invalid..</exception>
+    /// <exception cref="ArgumentNullException">path was null.</exception>
+    /// <exception cref="NotSupportedException">path was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public Task WriteToAsync(string path, IEnumerable<string> priorityKeyOrder, bool onlyPriorityKeys = false, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
+        => File.WriteAllTextAsync(path, ToString(priorityKeyOrder, onlyPriorityKeys, style) ?? "null", cancellationToken);
 #endif
 
     /// <summary>
@@ -9496,8 +9574,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="source">The source.</param>
     /// <param name="property">The property.</param>
     /// <param name="root">The root node.</param>
-    /// <returns>The value.</returns>
-    internal static JsonObjectNode TryGetRefObjectValue(JsonObjectNode source, JsonObjectNode property, JsonObjectNode root)
+    /// <param name="httpClientResolver">The optional HTTP client resolver.</param>
+    /// <returns>The JSON object node; or null, if gets failed.</returns>
+    internal static JsonObjectNode TryGetRefObjectValue(JsonObjectNode source, JsonObjectNode property, JsonObjectNode root, IObjectResolver<System.Net.Http.HttpClient> httpClientResolver = null)
     {
         if (property == null) return null;
         root ??= source;
@@ -9547,7 +9626,11 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             {
                 { "$ref", refPath }
             };
-            _ = TryParse(null, refPath, property);
+            var http = new JsonHttpClient<JsonObjectNode>
+            {
+                HttpClientResolver = httpClientResolver
+            };
+            _ = TryParse(http, refPath, property);
             return property;
         }
 

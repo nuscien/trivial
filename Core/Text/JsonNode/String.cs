@@ -26,7 +26,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
 #endif
 {
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(string value)
@@ -34,8 +34,19 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     {
     }
 
+#if NET462_OR_GREATER || NET8_0_OR_GREATER
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(JsonEncodedText value)
+        : base(JsonValueKind.String, value.Value)
+    {
+    }
+#endif
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(IJsonValueNode<string> value)
@@ -45,7 +56,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(DateTime value)
@@ -55,7 +66,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom date and time format string.</param>
@@ -66,7 +77,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(DateTimeOffset value)
@@ -76,7 +87,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom date and time format string.</param>
@@ -87,7 +98,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Guid value)
@@ -97,7 +108,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom GUID format string.</param>
@@ -108,7 +119,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Uri value)
@@ -117,7 +128,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(System.Security.SecureString value)
@@ -126,7 +137,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(StringBuilder value)
@@ -135,7 +146,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(char[] value)
@@ -144,7 +155,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="c">The char.</param>
     /// <param name="repeatCount">The count to repeat the char.</param>
@@ -154,7 +165,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(ReadOnlySpan<char> value)
@@ -163,7 +174,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(TimeSpan value)
@@ -172,7 +183,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -182,7 +193,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(short value)
@@ -192,7 +203,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(int value)
@@ -202,7 +213,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -214,7 +225,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(long value)
@@ -224,7 +235,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -236,7 +247,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(uint value)
@@ -246,7 +257,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(ulong value)
@@ -256,7 +267,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(double value)
@@ -266,7 +277,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -278,7 +289,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(float value)
@@ -288,7 +299,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -300,7 +311,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(decimal value)
@@ -310,7 +321,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -322,7 +333,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(BigInteger value)
@@ -331,7 +342,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
@@ -342,7 +353,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(bool value)
@@ -352,7 +363,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="trueString">The true string.</param>
@@ -364,7 +375,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="trueString">The true string.</param>
@@ -377,7 +388,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Net.QueryData value)
@@ -386,7 +397,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Net.HttpUri value)
@@ -395,7 +406,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Net.AppDeepLinkUri value)
@@ -404,7 +415,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Initializes a new instance of the JsonString class.
+    /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Fraction value)
@@ -1605,6 +1616,17 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         => System.Text.Json.Nodes.JsonValue.Create(Value);
 
     /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+    {
+        if (writer == null) return;
+        if (Value == null) writer.WriteNullValue();
+        else writer.WriteStringValue(Value);
+    }
+
+    /// <summary>
     /// Converts to JSON value.
     /// </summary>
     /// <param name="value">The source value.</param>
@@ -1707,6 +1729,15 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <returns>A string.</returns>
     public static explicit operator StringBuilder(JsonStringNode json)
         => json?.Value == null ? null : new StringBuilder(json.Value);
+
+    /// <summary>
+    /// Converts to string builder.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A string.</returns>
+    /// <exception cref="ArgumentNullException">The value is null.</exception>
+    public static explicit operator JsonEncodedText(JsonStringNode json)
+        => JsonEncodedText.Encode(json?.Value);
 
     /// <summary>
     /// Indicates whether the specified string is null or an empty string ("").

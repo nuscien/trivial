@@ -275,6 +275,13 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public T PickOut<T>(T trueValue, T falseValue)
         => Value ? trueValue : falseValue;
 
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    public override void WriteTo(Utf8JsonWriter writer)
+        => writer?.WriteBooleanValue(Value);
+
     bool IConvertible.ToBoolean(IFormatProvider provider)
         => Value;
 

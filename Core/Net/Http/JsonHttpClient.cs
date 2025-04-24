@@ -1,14 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="JsonHttpClient.cs" company="Nanchang Jinchen Software Co., Ltd.">
-//   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
-// </copyright>
-// <summary>
-//   The JSON HTTP web client and its event arguments.
-// </summary>
-// <author>Kingcean Tuan</author>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -382,21 +372,7 @@ public class JsonHttpClient<T>
         T valueResult;
         try
         {
-            var result = await RetryExtensions.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
-            {
-                resp = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-                if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
-                    throw FailedHttpException.Create(resp);
-                var obj = Deserializer != null
-#if NET6_0_OR_GREATER
-                    ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
-#else
-                    ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer)
-#endif
-                    : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content, cancellationToken);
-                return obj;
-            }, GetExceptionInternal, cancellationToken);
-            valueResult = result.Result;
+            valueResult = await SendAsync(client, request, cancellationToken);
         }
         catch (HttpRequestException)
         {
@@ -876,4 +852,31 @@ public class JsonHttpClient<T>
     /// <returns>true if need retry; otherwise, false.</returns>
     private Exception GetExceptionInternal(Exception exception)
         => GetExceptionHandler?.Invoke(exception) ?? GetException(exception);
+
+    /// <summary>
+    /// Sends an HTTP request and gets the result serialized by JSON.
+    /// </summary>
+    /// <param name="client">The HTTP client.</param>
+    /// <param name="request">The HTTP request message.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A result serialized.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    protected virtual async Task<T> SendAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken = default)
+    {
+        var result = await RetryExtensions.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
+        {
+            var resp = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
+                throw FailedHttpException.Create(resp);
+            var obj = Deserializer != null
+#if NET6_0_OR_GREATER
+                    ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
+#else
+                ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer)
+#endif
+                : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content, cancellationToken);
+            return obj;
+        }, GetExceptionInternal, cancellationToken);
+        return result.Result;
+    }
 }

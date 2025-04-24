@@ -189,7 +189,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     public bool TryGetInfo(string id, out DataCacheItemInfo<T> result)
     {
         result = GetInfo(id);
-        return !(result is null);
+        return result is not null;
     }
 
     /// <summary>

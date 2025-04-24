@@ -437,6 +437,42 @@ public static class Numbers
     }
 
     /// <summary>
+    /// Parses a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters..</exception>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    /// <exception cref="FormatException">s was in an incorrect format.</exception>
+    /// <returns>A number parsed.</returns>
+    public static ushort ParseToUInt16(string s, int radix)
+    {
+        var result = ParseToInt32(s, radix);
+        if (result >= 0 && result <= ushort.MaxValue)
+            return (ushort)result;
+        throw new FormatException("s was too small or too large.", new OverflowException("s was too small or too large."));
+    }
+
+    /// <summary>
+    /// Parses a string to a number.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <exception cref="ArgumentNullException">s was null.</exception>
+    /// <exception cref="ArgumentException">s was empty or consists only of white-space characters..</exception>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    /// <exception cref="FormatException">s was in an incorrect format.</exception>
+    /// <returns>A number parsed.</returns>
+    public static uint ParseToUInt32(string s, int radix)
+    {
+        var result = ParseToInt64(s, radix);
+        if (result >= 0L && result <= uint.MaxValue)
+            return (uint)result;
+        throw new FormatException("s was too small or too large.", new OverflowException("s was too small or too large."));
+    }
+
+    /// <summary>
     /// Tries to parse a string to a number.
     /// </summary>
     /// <param name="s">The input string.</param>

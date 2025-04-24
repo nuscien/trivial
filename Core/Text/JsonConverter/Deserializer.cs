@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -39,6 +40,15 @@ public class JsonTypedDeserializer<T>
     public JsonTypedDeserializer(Func<string, T> deserializer)
     {
         impl = new StringJsonTypedDeserializer<T>(deserializer);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonTypedDeserializer class.
+    /// </summary>
+    public JsonTypedDeserializer(Func<JsonObjectNode, T> deserializer)
+    {
+        impl = new ConvertJsonTypedDeserializer<T>(deserializer);
+        IsStreamPriority = true;
     }
 
     /// <summary>
@@ -169,5 +179,39 @@ internal class StringJsonTypedDeserializer<T>(Func<string, T> deserializer) : Ba
     {
         if (deserializer == null) return JsonSerializer.Deserialize<T>(s);
         return deserializer(s);
+    }
+}
+
+/// <summary>
+/// The deserializer for JSON from a string.
+/// </summary>
+/// <typeparam name="T">The type of the target.</typeparam>
+/// <remarks>
+/// Initializes a new instance of the StreamJsonTypedDeserializer class.
+/// </remarks>
+internal class ConvertJsonTypedDeserializer<T>(Func<JsonObjectNode, T> deserializer) : BaseJsonTypedDeserializer<T>
+{
+    /// <summary>
+    /// Deserializes from a stream.
+    /// </summary>
+    /// <param name="stream">The stream to deserialize.</param>
+    /// <returns>The object deserialized.</returns>
+    public override T Deserialize(Stream stream)
+    {
+        if (deserializer == null) return JsonSerializer.Deserialize<T>(stream);
+        var json = JsonObjectNode.Parse(stream);
+        return deserializer(json);
+    }
+
+    /// <summary>
+    /// Deserializes from a string.
+    /// </summary>
+    /// <param name="s">The string to deserialize.</param>
+    /// <returns>The object deserialized.</returns>
+    public override T Deserialize(string s)
+    {
+        if (deserializer == null) return JsonSerializer.Deserialize<T>(s);
+        var json = JsonObjectNode.Parse(s);
+        return deserializer(json);
     }
 }

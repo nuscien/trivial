@@ -245,9 +245,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     /// Removes all elements from the collection.
     /// </summary>
     public void Clear()
-    {
-        items.Clear();
-    }
+        => items.Clear();
 
     /// <summary>
     /// Gets the count of elements contained in the collection.

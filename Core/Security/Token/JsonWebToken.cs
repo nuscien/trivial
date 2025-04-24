@@ -40,7 +40,7 @@ namespace Trivial.Security;
 /// var header = jwt.ToAuthenticationHeaderValue();
 /// </code>
 /// </example>
-public class JsonWebToken<T>
+public sealed class JsonWebToken<T>
 {
 #pragma warning disable IDE0057
     /// <summary>

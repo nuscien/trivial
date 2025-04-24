@@ -1907,6 +1907,58 @@ public static class JsonValues
             serializer.WriteObject(stream, o);
         });
 
+    /// <summary>
+    /// Writes this instance to the specified writer as a JSON value.
+    /// </summary>
+    /// <param name="writer">The writer to which to write this instance.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The JSON node of property.</param>
+    internal static void WriteTo(Utf8JsonWriter writer, string key, BaseJsonValueNode value)
+    {
+        if (value is null)
+        {
+            writer.WriteNull(key);
+            return;
+        }
+
+        switch (value.ValueKind)
+        {
+            case JsonValueKind.Undefined:
+                break;
+            case JsonValueKind.Null:
+                writer.WriteNull(key);
+                break;
+            case JsonValueKind.String:
+                if (value is BaseJsonValueNode<string> strJson) writer.WriteString(key, strJson.Value);
+                else WritePropertyTo(writer, key, value);
+                break;
+            case JsonValueKind.Number:
+                if (value is BaseJsonValueNode<long> intJson) writer.WriteNumber(key, intJson.Value);
+                else if (value is BaseJsonValueNode<double> floatJson) writer.WriteNumber(key, floatJson.Value);
+                else if (value is BaseJsonValueNode<decimal> decimalJson) writer.WriteNumber(key, decimalJson.Value);
+                else if (value is BaseJsonValueNode<int> int32Json) writer.WriteNumber(key, int32Json.Value);
+                else if (value is BaseJsonValueNode<float> float32Json) writer.WriteNumber(key, float32Json.Value);
+                else WritePropertyTo(writer, key, value);
+                break;
+            case JsonValueKind.True:
+                writer.WriteBoolean(key, true);
+                break;
+            case JsonValueKind.False:
+                writer.WriteBoolean(key, false);
+                break;
+            case JsonValueKind.Object:
+                writer.WritePropertyName(key);
+                if (value is JsonObjectNode objJson) objJson.WriteTo(writer);
+                else WritePropertyTo(writer, key, value);
+                break;
+            case JsonValueKind.Array:
+                writer.WritePropertyName(key);
+                if (value is JsonArrayNode objArr) objArr.WriteTo(writer);
+                else WritePropertyTo(writer, key, value);
+                break;
+        }
+    }
+
     internal static void AppendProperty(StringBuilder str, string key, BaseJsonValueNode value, IndentStyles indentStyle, int indentLevel, string indentStr)
     {
         str.AppendLine();
@@ -2205,6 +2257,12 @@ public static class JsonValues
         }
 
         return handler.Convert(type, jsonSchema, breadcrumb);
+    }
+
+    private static void WritePropertyTo(Utf8JsonWriter writer, string key, BaseJsonValueNode value)
+    {
+        writer.WritePropertyName(key);
+        value.WriteTo(writer);
     }
 
     /// <summary>

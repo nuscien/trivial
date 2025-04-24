@@ -522,6 +522,59 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
                 return ValueKind;
             }
 
+            if (type == typeof(JsonEncodedText))
+            {
+                if (this is IJsonValueNode<string> s)
+                {
+                    if (s.Value != null)
+                    {
+                        exception = null;
+                        return JsonEncodedText.Encode(s.Value);
+                    }
+
+                }
+                else if (this is IJsonValueNode<bool> b)
+                {
+                    exception = null;
+                    return JsonEncodedText.Encode(b.Value.ToString());
+                }
+                else if (this is IJsonValueNode<long> i2)
+                {
+                    exception = null;
+                    return JsonEncodedText.Encode(i2.Value.ToString());
+                }
+                else if (this is IJsonValueNode<int> i1)
+                {
+                    exception = null;
+                    return JsonEncodedText.Encode(i1.Value.ToString());
+                }
+                else if (this is IJsonValueNode<double> i6)
+                {
+                    if (!double.IsNaN(i6.Value))
+                    {
+                        exception = null;
+                        return JsonEncodedText.Encode(i6.Value.ToString());
+                    }
+                }
+                else if (this is IJsonValueNode<decimal> i8)
+                {
+                    exception = null;
+                    return JsonEncodedText.Encode(i8.Value.ToString());
+                }
+                else if (this is IJsonValueNode<float> i7)
+                {
+                    if (!float.IsNaN(i7.Value))
+                    {
+                        exception = null;
+                        return JsonEncodedText.Encode(i7.Value.ToString());
+                    }
+                }
+
+                exception = CreateInvalidOperationException("a string");
+                if (throwException) throw exception;
+                return default;
+            }
+
             if (type.IsEnum)
             {
                 try
