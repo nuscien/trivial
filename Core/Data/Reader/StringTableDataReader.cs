@@ -115,9 +115,7 @@ public class StringTableDataReader : BaseListDataReader<IReadOnlyList<string>>
     /// <param name="ordinal">The zero-based column ordinal.</param>
     /// <returns>The value of the specified column.</returns>
     public override string GetString(int ordinal)
-    {
-        return CurrentRecord[ordinal];
-    }
+        => CurrentRecord[ordinal];
 
     /// <summary>
     /// Returns the typed collection.
@@ -127,9 +125,7 @@ public class StringTableDataReader : BaseListDataReader<IReadOnlyList<string>>
     /// <param name="propertyNames">The property names to map.</param>
     /// <returns>A typed collection based on the data parsed.</returns>
     public T ConvertTo<T>(Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames)
-    {
-        return ObjectConvert.Invoke<T>(CurrentRecord, creator, propertyNames);
-    }
+        => ObjectConvert.Invoke<T>(CurrentRecord, creator, propertyNames);
 
     /// <summary>
     /// Returns the typed collection.
@@ -138,9 +134,7 @@ public class StringTableDataReader : BaseListDataReader<IReadOnlyList<string>>
     /// <param name="propertyNames">The property names to map.</param>
     /// <returns>A typed collection based on the data parsed.</returns>
     public T ConvertTo<T>(IEnumerable<string> propertyNames)
-    {
-        return ConvertTo<T>(null, propertyNames);
-    }
+        => ConvertTo<T>(null, propertyNames);
 
     /// <summary>
     /// Processes on reading record.

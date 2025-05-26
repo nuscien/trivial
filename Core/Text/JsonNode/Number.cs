@@ -102,7 +102,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <param name="value">The value.</param>
     /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
     public JsonIntegerNode(DateTime value, bool isUnixTimestamp = false)
-        : base(JsonValueKind.Number, isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(value) : Web.WebFormat.ParseDate(value))
+        : base(JsonValueKind.Number, isUnixTimestamp ? WebFormat.ParseUnixTimestamp(value) : WebFormat.ParseDate(value))
     {
         IsSafe = true;
     }
@@ -145,6 +145,14 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <param name="condition">The condition to test the number value.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(Int64Condition condition)
+        => condition == null || condition.IsMatched(Value);
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(Int32Condition condition)
         => condition == null || condition.IsMatched(Value);
 
     /// <summary>

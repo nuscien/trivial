@@ -280,6 +280,11 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     }
 #endif
 
+    /// <summary>
+    /// Gets the revision token of member-wised property updated.
+    /// </summary>
+    public object RevisionToken { get; private set; } = new();
+
     /// <inheritdoc />
     public int Count
     {
@@ -425,6 +430,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
                 slim.ExitWriteLock();
             }
 
+            OnPropertyChanged(true);
             Sorted?.Invoke(this, new EventArgs());
             return;
         }
@@ -439,6 +445,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
             slim.ExitWriteLock();
         }
 
+        OnPropertyChanged(true);
         Sorted?.Invoke(this, new EventArgs());
     }
 
@@ -465,6 +472,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
                 slim.ExitWriteLock();
             }
 
+            OnPropertyChanged(true);
             Sorted?.Invoke(this, new EventArgs());
             return;
         }
@@ -479,6 +487,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
             slim.ExitWriteLock();
         }
 
+        OnPropertyChanged(true);
         Sorted?.Invoke(this, new EventArgs());
     }
 
@@ -1287,9 +1296,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+        => GetEnumerator();
 
     /// <summary>
     /// Creates a new concurrent list that is a copy of the current instance.
@@ -1300,7 +1307,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
         slim.EnterReadLock();
         try
         {
-            return new SynchronizedList<T>(list);
+            return new(list);
         }
         finally
         {
@@ -1323,7 +1330,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
         {
             var col = list.Skip(index);
             if (count.HasValue) col = col.Take(count.Value);
-            return new SynchronizedList<T>(col);
+            return new(col);
         }
         finally
         {
@@ -1356,12 +1363,11 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
 
     /// <inheritdoc />
     object ICloneable.Clone()
-    {
-        return Clone();
-    }
+        => Clone();
 
     private void OnPropertyChanged(bool onlyItemUpdate = false)
     {
+        RevisionToken = new();
         if (!onlyItemUpdate) notifyPropertyChanged?.Invoke(this, new(nameof(Count)));
         notifyPropertyChanged?.Invoke(this, new("Item[]"));
     }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 using Trivial.Data;
@@ -205,6 +206,11 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     }
 #endif
 
+    /// <summary>
+    /// Gets the revision token of member-wised property updated.
+    /// </summary>
+    public object RevisionToken { get; private set; } = new();
+
     /// <inheritdoc />
     public int Count
     {
@@ -269,6 +275,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
                 list.Reverse(index, list.Count - index);
             }
 
+            OnPropertyChanged(true);
             Sorted?.Invoke(this, new EventArgs());
             return;
         }
@@ -278,6 +285,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
             list.Reverse(index, count.Value);
         }
 
+        OnPropertyChanged(true);
         Sorted?.Invoke(this, new EventArgs());
     }
 
@@ -299,6 +307,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
                 list.Sort(index, list.Count - index, comparer);
             }
 
+            OnPropertyChanged(true);
             Sorted?.Invoke(this, new EventArgs());
             return;
         }
@@ -308,6 +317,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
             list.Sort(index, count.Value, comparer);
         }
 
+        OnPropertyChanged(true);
         Sorted?.Invoke(this, new EventArgs());
     }
 
@@ -674,7 +684,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     {
         lock (locker)
         {
-            return new ConcurrentList<T>(list);
+            return new(list);
         }
     }
 
@@ -692,7 +702,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
         {
             var col = list.Skip(index);
             if (count.HasValue) col = col.Take(count.Value);
-            return new ConcurrentList<T>(col);
+            return new(col);
         }
     }
 
@@ -720,6 +730,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
 
     private void OnPropertyChanged(bool onlyItemUpdate = false)
     {
+        RevisionToken = new();
         if (!onlyItemUpdate) notifyPropertyChanged?.Invoke(this, new(nameof(Count)));
         notifyPropertyChanged?.Invoke(this, new("Item[]"));
     }

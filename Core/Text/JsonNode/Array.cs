@@ -180,6 +180,11 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     protected override object RawValue => store.GetHashCode();
 
     /// <summary>
+    /// Gets the revision token of member-wised property updated.
+    /// </summary>
+    public object RevisionToken { get; private set; } = new();
+
+    /// <summary>
     /// Gets the number of elements contained in the array.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
@@ -5350,6 +5355,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
     private void OnPropertyChanged(bool onlyItemUpdate = false)
     {
+        RevisionToken = new();
         if (!onlyItemUpdate) notifyPropertyChanged?.Invoke(this, new(nameof(Count)));
         notifyPropertyChanged?.Invoke(this, new("Item[]"));
     }

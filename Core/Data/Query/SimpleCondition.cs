@@ -197,8 +197,7 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <param name="op"></param>
     /// <returns>A string that represents the operation.</returns>
     public static string ToString(DbCompareOperator op)
-    {
-        return op switch
+        => op switch
         {
             DbCompareOperator.Equal => BooleanOperations.EqualSign,
             DbCompareOperator.Greater => BooleanOperations.GreaterSign,
@@ -208,16 +207,40 @@ public abstract class SimpleCondition : ISimpleCondition
             DbCompareOperator.NotEqual => BooleanOperations.NotEqualSign,
             _ => op.ToString(),
         };
-    }
+
+    internal static DbCompareOperator Parse(string s)
+        => (s?.Trim()?.ToLowerInvariant() ?? string.Empty) switch
+        {
+            "equal" or "eq" or "==" => DbCompareOperator.Equal,
+            "not equal" or "neq" or "!=" or "<>" => DbCompareOperator.NotEqual,
+            "greater" or "gt" or ">" => DbCompareOperator.Greater,
+            "less" or "lt" or "<" => DbCompareOperator.Greater,
+            "greater than or equal to" or "greater or equal" or "ge" or ">=" or "≥" => DbCompareOperator.GreaterOrEqual,
+            "less than or equal to" or "less or equal" or "le" or "<=" or "≤" => DbCompareOperator.LessOrEqual,
+            "start" or "start with" => DbCompareOperator.StartsWith,
+            "end" or "end with" => DbCompareOperator.EndsWith,
+            "contain" or "like" => DbCompareOperator.Contains,
+            _ => throw new NotSupportedException("The operator does not supported.")
+        };
+
+    internal static BasicCompareOperator ParseBasic(string s)
+        => (s?.Trim()?.ToLowerInvariant() ?? string.Empty) switch
+        {
+            "equal" or "eq" or "==" => BasicCompareOperator.Equal,
+            "not equal" or "neq" or "!=" or "<>" => BasicCompareOperator.NotEqual,
+            "greater" or "gt" or ">" => BasicCompareOperator.Greater,
+            "less" or "lt" or "<" => BasicCompareOperator.Greater,
+            "greater than or equal to" or "greater or equal" or "ge" or ">=" or "≥" => BasicCompareOperator.GreaterOrEqual,
+            "less than or equal to" or "less or equal" or "le" or "<=" or "≤" => BasicCompareOperator.LessOrEqual,
+            _ => throw new NotSupportedException("The operator does not supported.")
+        };
 
     /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-    {
-        return ToString(Operator) + " " + (Value != null ? Value.ToString() : "null");
-    }
+        => ToString(Operator) + " " + (Value != null ? Value.ToString() : "null");
 }
 
 /// <summary>
@@ -643,6 +666,23 @@ public class Int32Condition : StructSimpleCondition<int>
         };
 
     /// <summary>
+    /// Tests if the given number is macthed.
+    /// </summary>
+    /// <param name="source">The source to test the condition.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(long source)
+        => Operator switch
+        {
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
+
+    /// <summary>
     /// Converts to simple interval.
     /// </summary>
     /// <param name="value">The original value.</param>
@@ -778,6 +818,23 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <param name="source">The source to test the condition.</param>
     /// <returns>true if it is matched; otherwise, false.</returns>
     public bool IsMatched(long source)
+        => Operator switch
+        {
+            DbCompareOperator.Equal => source == Value,
+            DbCompareOperator.NotEqual => source != Value,
+            DbCompareOperator.Greater => source > Value,
+            DbCompareOperator.GreaterOrEqual => source >= Value,
+            DbCompareOperator.Less => source < Value,
+            DbCompareOperator.LessOrEqual => source <= Value,
+            _ => false,
+        };
+
+    /// <summary>
+    /// Tests if the given number is macthed.
+    /// </summary>
+    /// <param name="source">The source to test the condition.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public bool IsMatched(int source)
         => Operator switch
         {
             DbCompareOperator.Equal => source == Value,

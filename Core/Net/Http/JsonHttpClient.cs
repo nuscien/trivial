@@ -354,7 +354,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="request">The HTTP request message.</param>
     /// <param name="callback">An optional callback raised on data received.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
@@ -427,7 +427,7 @@ public class JsonHttpClient<T>
     /// Sends an HTTP request and gets the result serialized by JSON.
     /// </summary>
     /// <param name="request">The HTTP request message.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
@@ -442,7 +442,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -456,7 +456,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -471,7 +471,7 @@ public class JsonHttpClient<T>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -486,7 +486,7 @@ public class JsonHttpClient<T>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -501,7 +501,7 @@ public class JsonHttpClient<T>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -516,7 +516,7 @@ public class JsonHttpClient<T>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -532,7 +532,7 @@ public class JsonHttpClient<T>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -551,7 +551,7 @@ public class JsonHttpClient<T>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -570,7 +570,7 @@ public class JsonHttpClient<T>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -586,7 +586,7 @@ public class JsonHttpClient<T>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -601,7 +601,7 @@ public class JsonHttpClient<T>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -616,7 +616,7 @@ public class JsonHttpClient<T>
     /// <param name="method">The HTTP method.</param>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -633,7 +633,7 @@ public class JsonHttpClient<T>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
     /// <param name="deserializer">The JSON deserializer.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -650,7 +650,7 @@ public class JsonHttpClient<T>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
     /// <param name="deserializer">The JSON deserializer.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -689,7 +689,7 @@ public class JsonHttpClient<T>
     /// Sends a GET request and gets the result serialized by JSON.
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -702,7 +702,7 @@ public class JsonHttpClient<T>
     /// Sends a GET request and gets the result serialized by JSON.
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -716,7 +716,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> PostAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
@@ -727,7 +727,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -741,7 +741,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -755,7 +755,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -769,7 +769,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -783,7 +783,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -797,7 +797,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -811,7 +811,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="requestUri">The Uri the request is sent to.</param>
     /// <param name="content">The HTTP request content sent to the server.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
@@ -858,7 +858,7 @@ public class JsonHttpClient<T>
     /// </summary>
     /// <param name="client">The HTTP client.</param>
     /// <param name="request">The HTTP request message.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A result serialized.</returns>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     protected virtual async Task<T> SendAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken = default)

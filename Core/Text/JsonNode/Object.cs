@@ -185,6 +185,11 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <summary>
+    /// Gets the revision token of member-wised property updated.
+    /// </summary>
+    public object RevisionToken { get; private set; } = new();
+
+    /// <summary>
     /// Gets the number of elements contained in the System.Collections.Generic.ICollection`1
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
@@ -8000,6 +8005,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
         var keys = store.Keys.ToList();
         store.Clear();
+        RevisionToken = new();
         if (PropertyChanged != null)
         {
             foreach (var key in keys)
@@ -8082,7 +8088,12 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         writer.WriteStartObject();
         foreach (var prop in store)
         {
-            JsonValues.WriteTo(writer, prop.Key, prop.Value);
+            if (prop.Key.StartsWith('$')) JsonValues.WriteTo(writer, prop.Key, prop.Value);
+        }
+
+        foreach (var prop in store)
+        {
+            if (!prop.Key.StartsWith('$')) JsonValues.WriteTo(writer, prop.Key, prop.Value);
         }
 
         writer.WriteEndObject();
@@ -8330,6 +8341,32 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         var str = new StringBuilder("{");
         foreach (var prop in store)
         {
+            if (!prop.Key.StartsWith('$')) continue;
+            str.Append(JsonStringNode.ToJson(prop.Key));
+            str.Append(':');
+            if (prop.Value is null)
+            {
+                str.Append("null,");
+                continue;
+            }
+
+            switch (prop.Value.ValueKind)
+            {
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Null:
+                    str.Append("null");
+                    break;
+                default:
+                    str.Append(prop.Value.ToString());
+                    break;
+            }
+
+            str.Append(',');
+        }
+
+        foreach (var prop in store)
+        {
+            if (prop.Key.StartsWith('$')) continue;
             str.Append(JsonStringNode.ToJson(prop.Key));
             str.Append(':');
             if (prop.Value is null)
@@ -8402,7 +8439,12 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         {
             foreach (var prop in store)
             {
-                JsonValues.AppendProperty(str, prop.Key, prop.Value, indentStyle, indentLevel, indentStr);
+                if (prop.Key.StartsWith('$')) JsonValues.AppendProperty(str, prop.Key, prop.Value, indentStyle, indentLevel, indentStr);
+            }
+
+            foreach (var prop in store)
+            {
+                if (!prop.Key.StartsWith('$')) JsonValues.AppendProperty(str, prop.Key, prop.Value, indentStyle, indentLevel, indentStr);
             }
         }
         else
@@ -8959,6 +9001,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     private void AddProperty(string key, BaseJsonValueNode value)
     {
         store.Add(key, value);
+        RevisionToken = new();
         PropertyChanged?.Invoke(this, new(key, value));
         notifyPropertyChanged?.Invoke(this, new(key));
     }
@@ -8966,6 +9009,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     private void SetProperty(string key, BaseJsonValueNode value)
     {
         store[key] = value;
+        RevisionToken = new();
         PropertyChanged?.Invoke(this, new(key, value));
         notifyPropertyChanged?.Invoke(this, new(key));
     }
@@ -8975,6 +9019,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         var b = store.Remove(key);
         if (b)
         {
+            RevisionToken = new();
             PropertyChanged?.Invoke(this, new(key, JsonValues.Undefined));
             notifyPropertyChanged?.Invoke(this, new(key));
         }
@@ -8987,6 +9032,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         var b = store.Remove(kvp);
         if (b)
         {
+            RevisionToken = new();
             PropertyChanged?.Invoke(this, new(kvp.Key, JsonValues.Undefined));
             notifyPropertyChanged?.Invoke(this, new(kvp.Key));
         }

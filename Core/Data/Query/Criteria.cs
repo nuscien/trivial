@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using Trivial.Maths;
+using Trivial.Text;
 
 namespace Trivial.Data;
 
@@ -35,7 +37,7 @@ public enum CriteriaType : byte
     /// <summary>
     /// The property query criteria.
     /// </summary>
-    Property = 2
+    Property = 2,
 }
 
 /// <summary>
@@ -52,18 +54,8 @@ public interface ICriteria
 /// <summary>
 /// Collection query criteria.
 /// </summary>
-public sealed class CollectionCriteria : List<ICriteria>, ICriteria
+public sealed class CollectionCriteria : List<ICriteria>, ICriteria, IJsonObjectHost
 {
-    /// <summary>
-    /// Gets the query criteria type.
-    /// </summary>
-    public CriteriaType CriteriaType => CriteriaType.Collection;
-
-    /// <summary>
-    /// Gets or sets the value of operator.
-    /// </summary>
-    public CriteriaBooleanOperator Operator { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the CollectionCriteria class.
     /// </summary>
@@ -105,6 +97,58 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
     {
         Operator = op;
         foreach (var item in items) Add(item);
+    }
+
+    /// <summary>
+    /// Gets the query criteria type.
+    /// </summary>
+    public CriteriaType CriteriaType => CriteriaType.Collection;
+
+    /// <summary>
+    /// Gets or sets the value of operator.
+    /// </summary>
+    public CriteriaBooleanOperator Operator { get; set; }
+
+    /// <summary>
+    /// Returns a string that represents the current object.
+    /// </summary>
+    /// <returns>A string that represents the current object.</returns>
+    public override string ToString()
+    {
+        var str = new StringBuilder();
+        var step = 0;
+        foreach (var item in this)
+        {
+            if (item == null) continue;
+            if (step > 0) str.AppendFormat(CultureInfo.InvariantCulture, " {0} ", Operator.ToString());
+            str.AppendFormat(CultureInfo.InvariantCulture, "({0})", item.ToString());
+            step++;
+        }
+
+        return str.ToString();
+    }
+
+    /// <summary>
+    /// Converts current criteria to JSON object.
+    /// </summary>
+    /// <returns>The JSON object converted.</returns>
+    public JsonObjectNode ToJson()
+    {
+        var arr = new JsonArrayNode();
+        foreach (var item in this)
+        {
+            if (item is IJsonObjectHost h && item != this) arr.Add(h);
+        }
+
+        return new()
+        {
+            { "op", Operator switch {
+                CriteriaBooleanOperator.And => "&&",
+                CriteriaBooleanOperator.Or => "||",
+                _ => "&&"
+            } },
+            { "items", arr }
+        };
     }
 
     /// <summary>
@@ -263,31 +307,12 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria
 
         return false;
     }
-
-    /// <summary>
-    /// Returns a string that represents the current object.
-    /// </summary>
-    /// <returns>A string that represents the current object.</returns>
-    public override string ToString()
-    {
-        var str = new StringBuilder();
-        var step = 0;
-        foreach (var item in this)
-        {
-            if (item == null) continue;
-            if (step > 0) str.AppendFormat(CultureInfo.InvariantCulture, " {0} ", Operator.ToString());
-            str.AppendFormat(CultureInfo.InvariantCulture, "({0})", item.ToString());
-            step++;
-        }
-
-        return str.ToString();
-    }
 }
 
 /// <summary>
 /// Property query criteria.
 /// </summary>
-public sealed class PropertyCriteria : ICriteria
+public sealed class PropertyCriteria : ICriteria, IJsonObjectHost
 {
     /// <summary>
     /// Initializes a new instance of the PropertyCriteria class.
@@ -357,11 +382,38 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="op">The operator.</param>
     /// <param name="value">The value of property.</param>
     /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, BasicCompareOperator op, double value)
+    {
+        Name = name;
+        var ope = ToOperator(op);
+        Condition = new DoubleCondition { Operator = ope, Value = value };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="op">The operator.</param>
+    /// <param name="value">The value of property.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
     public PropertyCriteria(string name, BasicCompareOperator op, DateTime value)
     {
         Name = name;
         var ope = ToOperator(op);
         Condition = new DateTimeCondition { Operator = ope, Value = value };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="equals">true if set the operator to equals to; otherwise, false, to not equals to.</param>
+    /// <param name="value">The value of property.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, bool equals, bool value)
+    {
+        Name = name;
+        Condition = new BooleanCondition { Operator = equals ? DbCompareOperator.Equal : DbCompareOperator.NotEqual, Value = value };
     }
 
     /// <summary>
@@ -389,6 +441,96 @@ public sealed class PropertyCriteria : ICriteria
             "[{0}] {1}",
             Name ?? "[empty]",
             Condition != null ? Condition.ToString() : "null");
+
+    /// <summary>
+    /// Converts current criteria to JSON object.
+    /// </summary>
+    /// <returns>The JSON object converted.</returns>
+    public JsonObjectNode ToJson()
+    {
+        var op = (Condition?.Operator ?? DbCompareOperator.Equal) switch
+        {
+            DbCompareOperator.Equal => "==",
+            DbCompareOperator.NotEqual => "!=",
+            DbCompareOperator.Greater => ">",
+            DbCompareOperator.Less => "<",
+            DbCompareOperator.GreaterOrEqual => ">=",
+            DbCompareOperator.LessOrEqual => "<=",
+            DbCompareOperator.StartsWith => "start",
+            DbCompareOperator.EndsWith => "end",
+            DbCompareOperator.Contains => "contain",
+            _ => "unknown"
+        };
+        var json = new JsonObjectNode()
+        {
+            { "name", Name },
+            { "op", op },
+        };
+        if (Condition?.Value is null)
+        {
+        }
+        else if (Condition is StructSimpleCondition<bool> b)
+        {
+            json.SetValue("value", b.Value);
+        }
+        else if (Condition is ClassSimpleCondition<string> s)
+        {
+            json.SetValue("value", s.Value);
+        }
+        else if (Condition is StructSimpleCondition<int> i1)
+        {
+            json.SetValue("format", "int");
+            json.SetValue("value", i1.Value);
+        }
+        else if (Condition is StructSimpleCondition<long> i2)
+        {
+            json.SetValue("format", "int");
+            json.SetValue("value", i2.Value);
+        }
+        else if (Condition is StructSimpleCondition<float> i5)
+        {
+            json.SetValue("value", i5.Value);
+        }
+        else if (Condition is StructSimpleCondition<double> i6)
+        {
+            json.SetValue("value", i6.Value);
+        }
+        else if (Condition is StructSimpleCondition<decimal> i7)
+        {
+            json.SetValue("value", i7.Value);
+        }
+        else if (Condition is StructSimpleCondition<DateTime> dt)
+        {
+            json.SetValue("format", "date");
+            json.SetValue("value", dt.Value);
+        }
+        else if (Condition.Value is JsonObjectNode j1)
+        {
+            json.SetValue("value", j1);
+        }
+        else if (Condition.Value is JsonArrayNode j2)
+        {
+            json.SetValue("value", j2);
+        }
+        else if (Condition.Value is IJsonObjectHost j3)
+        {
+            json.SetValue("value", j3.ToJson());
+        }
+        else if (Condition.Value is IEnumerable<string> c1)
+        {
+            json.SetValue("value", c1);
+        }
+        else if (Condition.Value is IEnumerable<int> c2)
+        {
+            json.SetValue("value", c2);
+        }
+        else
+        {
+            json.SetValue("value", Condition.Value.ToString());
+        }
+
+        return json;
+    }
 
     /// <summary>
     /// Converts given basic compare operator to database compare operator.

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.IO;
 using Trivial.Maths;
@@ -400,6 +399,8 @@ public class JsonUnitTest
         json.Id = Guid.NewGuid().ToString();
         Assert.IsNotNull(json.Id);
         Assert.IsTrue(json.ContainsKey("$id"));
+        Assert.IsTrue(json.ToString().IndexOf('$') < 10);
+        Assert.IsTrue(json.ToString(IndentStyles.Compact).IndexOf('$') < 10);
         json.Id = null;
         Assert.IsNull(json.Id);
         Assert.IsFalse(json.ContainsKey("$id"));

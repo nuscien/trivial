@@ -88,6 +88,12 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     public event ChangeEventHandler<object> PropertyChanged;
 
     /// <summary>
+    /// Gets the revision token of member-wised property updated.
+    /// </summary>
+    [JsonIgnore]
+    protected object RevisionToken { get; private set; } = new();
+
+    /// <summary>
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
     [JsonIgnore]
@@ -606,6 +612,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                 var result = cache.Remove(key);
                 if (result)
                 {
+                    RevisionToken = new();
                     propertyChanged?.Invoke(this, new(key));
                 }
 
@@ -618,6 +625,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                 var result = cache.Remove(key);
                 if (result)
                 {
+                    RevisionToken = new();
                     RaisePropertyChange(v, null, ChangeMethods.Remove, key);
                 }
 
@@ -627,6 +635,55 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
 
         if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
         throw new InvalidOperationException("Forbid to set property.");
+    }
+
+    /// <summary>
+    /// Removes a set of properties.
+    /// </summary>
+    /// <param name="keys">The keys of property to remove.</param>
+    /// <returns>The count of property removed.</returns>
+    protected int RemoveProperties(IEnumerable<string> keys)
+    {
+        var i = 0;
+        if (keys == null) return i;
+        foreach (var key in keys)
+        {
+            if (RemoveProperty(key)) i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Removes a set of properties.
+    /// </summary>
+    /// <param name="keys">The keys of property to remove.</param>
+    /// <returns>The count of property removed.</returns>
+    protected int RemoveProperties(params string[] keys)
+    {
+        var i = 0;
+        foreach (var key in keys)
+        {
+            if (RemoveProperty(key)) i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Removes a set of properties.
+    /// </summary>
+    /// <param name="keys">The keys of property to remove.</param>
+    /// <returns>The count of property removed.</returns>
+    protected int RemoveProperties(params ReadOnlySpan<string> keys)
+    {
+        var i = 0;
+        foreach (var key in keys)
+        {
+            if (RemoveProperty(key)) i++;
+        }
+
+        return i;
     }
 
     /// <summary>
@@ -675,7 +732,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (v is string s) return JsonStringNode.ToJson(s);
         if (v is JsonObjectNode json) return options?.WriteIndented == true ? json.ToString(IndentStyles.Compact) : json.ToString();
         if (v is JsonArrayNode arr) return options?.WriteIndented == true ? arr.ToString(IndentStyles.Compact) : arr.ToString();
-        if (v is System.Text.Json.Nodes.JsonNode node) return node.ToJsonString(options);
+        if (v is JsonNode node) return node.ToJsonString(options);
         if (v is JsonDocument jDoc) return jDoc.RootElement.ToString();
         if (v is IJsonObjectHost joh) return joh.ToJson()?.ToString();
         if (v is Net.QueryData q) return q.ToString();
@@ -751,6 +808,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (cache.TryGetValue(key, out value)) return true;
         if (!FillNonExistProperty(key, out value)) return false;
         cache[key] = value;
+        RevisionToken = new();
         RaisePropertyChange(null, value, ChangeMethods.Add, key);
         return true;
     }
@@ -767,6 +825,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         {
             if (!IsPropertyValid(key, value)) return false;
             cache[key] = value;
+            RevisionToken = new();
             return true;
         }
         catch (ArgumentException)
@@ -811,6 +870,12 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
 /// </summary>
 public class ObservableProperties : BaseObservableProperties
 {
+    /// <summary>
+    /// Gets the revision token of member-wised property updated.
+    /// </summary>
+    [JsonIgnore]
+    public new object RevisionToken => base.RevisionToken;
+
     /// <summary>
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
@@ -894,5 +959,5 @@ public class ObservableProperties : BaseObservableProperties
     /// Writes this instance to the specified writer as a JSON value.
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
-    public new void WriteTo(Utf8JsonWriter writer) => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
+    public new void WriteTo(Utf8JsonWriter writer) => base.WriteTo(writer);
 }

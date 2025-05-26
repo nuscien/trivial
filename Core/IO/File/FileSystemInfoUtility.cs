@@ -463,10 +463,10 @@ public static class FileSystemInfoUtility
         var endSign = path.IndexOf("%\\", 2) - 1;
         if (endSign < 3) return null;
         var sign = path.Substring(1, endSign);
-        if (!arr.ContainsKey(sign)) return null;
+        if (!arr.TryGetValue(sign, out Environment.SpecialFolder value)) return null;
         try
         {
-            return Environment.GetFolderPath(arr[sign]) + path.Substring(sign.Length + 2);
+            return string.Concat(Environment.GetFolderPath(value), path.Substring(sign.Length + 2));
         }
         catch (ArgumentException)
         {

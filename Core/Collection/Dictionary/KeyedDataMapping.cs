@@ -12,6 +12,7 @@ namespace Trivial.Collection;
 /// <summary>
 /// The mapping for keyed data.
 /// </summary>
+/// <typeparam name="T">The type of value.</typeparam>
 public class KeyedDataMapping<T> : IDictionary<string, T>
 {
     /// <summary>

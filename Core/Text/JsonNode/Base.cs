@@ -685,24 +685,44 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             }
         }
 
-        if (this is JsonObjectNode json && !type.IsInterface)
+        if (this is JsonObjectNode json)
         {
-            try
+            if (!type.IsInterface)
             {
-                exception = null;
-                return json.Deserialize(type);
+                try
+                {
+                    exception = null;
+                    return json.Deserialize(type);
+                }
+                catch (JsonException ex)
+                {
+                    exception = new InvalidOperationException("Deserialize failed.", ex);
+                    if (throwException) throw exception;
+                    return default;
+                }
+                catch (ArgumentException ex)
+                {
+                    exception = new InvalidOperationException("Deserialize failed.", ex);
+                    if (throwException) throw exception;
+                    return default;
+                }
             }
-            catch (JsonException ex)
+
+            if (type == typeof(ICriteria))
             {
-                exception = new InvalidOperationException("Deserialize failed.", ex);
-                if (throwException) throw exception;
-                return default;
-            }
-            catch (ArgumentException ex)
-            {
-                exception = new InvalidOperationException("Deserialize failed.", ex);
-                if (throwException) throw exception;
-                return default;
+                try
+                {
+                    var criteria = JsonValues.ToCriteria(json);
+                    exception = criteria == null ? new InvalidOperationException("Deserialize failed.", new NotSupportedException("The JSON is not about a criteria.")) : null;
+                    if (throwException) throw exception;
+                    return criteria;
+                }
+                catch (JsonException ex)
+                {
+                    exception = new InvalidOperationException("Deserialize failed.", ex);
+                    if (throwException) throw exception;
+                    return default;
+                }
             }
         }
         else if (this is JsonArrayNode arr)

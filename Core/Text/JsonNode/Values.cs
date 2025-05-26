@@ -2,29 +2,23 @@
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Cryptography;
-using System.Text.Json.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-
 using Trivial.Collection;
 using Trivial.Data;
+using Trivial.Maths;
 using Trivial.Reflection;
 using Trivial.Tasks;
 using Trivial.Web;
-using System.IO;
-using System.Runtime.Serialization.Json;
-using System.Net.Http;
-using Trivial.IO;
-using Trivial.Maths;
 
 namespace Trivial.Text;
 
@@ -2460,6 +2454,88 @@ public static class JsonValues
 
         if (rightValue is null || rightValue.ValueKind != leftValue.ValueKind) return false;
         return leftValue.Equals(rightValue);
+    }
+
+    internal static ICriteria ToCriteria(JsonObjectNode json)
+    {
+        if (json == null) return null;
+        var op = json.TryGetStringTrimmedValue("op", true)?.ToLowerInvariant() ?? string.Empty;
+        var kind = json.GetValueKind("value");
+        var name = json.TryGetStringValue("name");
+        var isNoName = string.IsNullOrWhiteSpace(name);
+        if (kind == JsonValueKind.Undefined || isNoName)
+        {
+            var list = json.TryGetObjectListValue("items") ?? json.TryGetObjectListValue("col") ?? json.TryGetObjectListValue("value");
+            var col = new CollectionCriteria()
+            {
+                Operator = op switch
+                {
+                    "and" or "&&" => CriteriaBooleanOperator.And,
+                    "or" or "||" => CriteriaBooleanOperator.Or,
+                    _ => CriteriaBooleanOperator.And
+                }
+            };
+            if (list == null) return col;
+            foreach (var item in list)
+            {
+                var p = ToCriteria(item);
+                if (p != null) col.Add(p);
+            }
+
+            return col;
+        }
+
+        if (isNoName) return null;
+        var format = json.TryGetStringTrimmedValue("format", true)?.ToLowerInvariant()?.Replace(" ", string.Empty) ?? string.Empty;
+        switch (format)
+        {
+            case "date":
+            case "datetime":
+            case "jsticks":
+            case "jstick":
+                {
+                    var date = json.TryGetDateTimeValue("value");
+                    if (date == null) return null;
+                    var o = SimpleCondition.ParseBasic("op");
+                    return new PropertyCriteria(name, o, date.Value);
+                }
+            case "unixtimestamps":
+            case "unixtimestamp":
+                {
+                    var date = json.TryGetDateTimeValue("value", true);
+                    if (date == null) return null;
+                    var o = SimpleCondition.ParseBasic("op");
+                    return new PropertyCriteria(name, o, date.Value);
+                }
+            case "int":
+            case "integer":
+                {
+                    var i = json.TryGetInt64Value("value") ?? 0;
+                    var o = SimpleCondition.ParseBasic("op");
+                    return new PropertyCriteria(name, o, i);
+                }
+            default:
+                {
+                    return kind switch
+                    {
+                        JsonValueKind.String => new PropertyCriteria(name, SimpleCondition.Parse("op"), json.TryGetStringValue("value")),
+                        JsonValueKind.Number => new PropertyCriteria(name, SimpleCondition.ParseBasic("op"), json.TryGetDoubleValue("value") ?? 0d),
+                        JsonValueKind.True => new PropertyCriteria(name, op switch
+                        {
+                            "equal" or "eq" or "==" => true,
+                            "not equal" or "neq" or "!=" or "<>" => false,
+                            _ => throw new NotSupportedException("The field op does not supported for boolean value.")
+                        }, true),
+                        JsonValueKind.False => new PropertyCriteria(name, op switch
+                        {
+                            "equal" or "eq" or "==" => true,
+                            "not equal" or "neq" or "!=" or "<>" => false,
+                            _ => throw new NotSupportedException("The field op does not supported for boolean value.")
+                        }, true),
+                        _ => throw new NotSupportedException("The value kind does not supported.")
+                    };
+                }
+        }
     }
 
     internal static BaseJsonValueNode ConvertValue(IJsonValueNode value, IJsonValueNode thisInstance = null)
