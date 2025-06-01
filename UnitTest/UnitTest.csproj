@@ -25,8 +25,8 @@
     <PackageReference Include="Trivial.Console" Version="9.4.0" />
     <PackageReference Condition="'$(TargetFramework)' != 'net6.0'" Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />
     <PackageReference Condition="'$(TargetFramework)' == 'net6.0'" Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.9.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

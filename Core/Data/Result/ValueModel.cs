@@ -203,3 +203,124 @@ public class NameValueObservableModel<T> : BaseObservableProperties
         }
     }
 }
+
+/// <summary>
+/// The model with observable name, verison and description.
+/// </summary>
+[DataContract]
+public class PackageInfoObservableModel : BaseObservableProperties
+{
+    /// <summary>
+    /// Initializes a new instance of the PackageInfoObservableModel class.
+    /// </summary>
+    public PackageInfoObservableModel()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PackageInfoObservableModel class.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <param name="version">The version.</param>
+    /// <param name="description">The description.</param>
+    public PackageInfoObservableModel(string name, string version, string description = null)
+    {
+        Name = name;
+        Version = version;
+        Description = description;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
+    [Description("The item name.")]
+    public string Name
+
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value, OnChange);
+    }
+
+    /// <summary>
+    /// Gets or sets the version.
+    /// </summary>
+    [DataMember(Name = "version")]
+    [JsonPropertyName("version")]
+    [Description("The version.")]
+    public string Version
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value, OnChange);
+    }
+
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    [DataMember(Name = "description")]
+    [JsonPropertyName("description")]
+    [Description("The description.")]
+    public string Description
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value, OnChange);
+    }
+
+    /// <summary>
+    /// Gets or sets the optional additional object.
+    /// </summary>
+    [JsonIgnore]
+    public object Tag
+    {
+        get => GetCurrentProperty<object>();
+        set => SetCurrentProperty(value);
+    }
+
+    /// <summary>
+    /// Occurs on the property name is changed.
+    /// </summary>
+    /// <param name="newValue">The new value of the property.</param>
+    /// <param name="exist">true if the old value of the property exists; otherwise, false.</param>
+    /// <param name="oldValue">The old value of the property.</param>
+    protected virtual void OnNameChange(object newValue, bool exist, object oldValue)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on the property version is changed.
+    /// </summary>
+    /// <param name="newValue">The new value of the property.</param>
+    /// <param name="exist">true if the old value of the property exists; otherwise, false.</param>
+    /// <param name="oldValue">The old value of the property.</param>
+    protected virtual void OnVersionChange(object newValue, bool exist, object oldValue)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on the property description is changed.
+    /// </summary>
+    /// <param name="newValue">The new value of the property.</param>
+    /// <param name="exist">true if the old value of the property exists; otherwise, false.</param>
+    /// <param name="oldValue">The old value of the property.</param>
+    protected virtual void OnDescriptionChange(object newValue, bool exist, object oldValue)
+    {
+    }
+
+    private void OnChange(string key, object newValue, bool exist, object oldValue)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+        switch (key)
+        {
+            case nameof(Name):
+                OnNameChange(newValue, exist, oldValue);
+                break;
+            case nameof(Version):
+                OnVersionChange(newValue, exist, oldValue);
+                break;
+            case nameof(Description):
+                OnDescriptionChange(newValue, exist, oldValue);
+                break;
+        }
+    }
+}
