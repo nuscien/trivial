@@ -97,7 +97,7 @@ public enum PinyinFinals : byte
     Uo = 16,
 
     /// <summary>
-    /// Final Ve (Yue) (ㄩㄝ).
+    /// Final Ve (Yue) (ㄩㄝ) / ue.
     /// </summary>
     Ve = 17,
 
@@ -107,7 +107,7 @@ public enum PinyinFinals : byte
     Iao = 18,
 
     /// <summary>
-    /// Final Iou (丨ㄡ).
+    /// Final Iou (丨ㄡ) / io.
     /// </summary>
     Iou = 19,
 
@@ -117,7 +117,7 @@ public enum PinyinFinals : byte
     Uai = 20,
 
     /// <summary>
-    /// Final Uei (ㄨㄟ).
+    /// Final Uei (ㄨㄟ) / ui.
     /// </summary>
     Uei = 21,
 
@@ -152,7 +152,7 @@ public enum PinyinFinals : byte
     In = 27,
 
     /// <summary>
-    /// Final Uen (ㄨㄣ).
+    /// Final Uen (ㄨㄣ) / un.
     /// </summary>
     Uen = 28,
 
@@ -199,5 +199,10 @@ public enum PinyinFinals : byte
     /// <summary>
     /// Final Iong (ㄩㄥ).
     /// </summary>
-    Iong = 37
+    Iong = 37,
+
+    /// <summary>
+    /// Final Ng (兀).
+    /// </summary>
+    Ng = 39,
 }

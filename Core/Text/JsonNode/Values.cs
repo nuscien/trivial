@@ -1879,6 +1879,54 @@ public static class JsonValues
         else json.WriteTo(writer);
     }
 
+    /// <summary>
+    /// Deserializes to a collection.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="source">The source.</param>
+    /// <param name="col">The collection to add items deserialized.</param>
+    /// <param name="doNotClear">true if do not clear the colletion before filling; othewise, false.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="InvalidOperationException">col is read-only.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
+    public static void DeserializeTo<T>(this IEnumerable<JsonObjectNode> source, ICollection<T> col, bool doNotClear, JsonSerializerOptions options = default)
+    {
+        if (col is null) throw ObjectConvert.ArgumentNull(nameof(col));
+        if (col.IsReadOnly) throw new InvalidOperationException("col shuold not be read-only.", new ArgumentException("col is read-only but expect a writable collection.", nameof(col)));
+        if (!doNotClear) col.Clear();
+        if (source is null) return;
+        foreach (var item in source)
+        {
+            if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
+            {
+                col.Add(default);
+                continue;
+            }
+            var value = JsonSerializer.Deserialize<T>(item.ToString(), options);
+            col.Add(value);
+        }
+    }
+
+    /// <summary>
+    /// Deserializes to a collection.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="source">The source.</param>
+    /// <param name="col">The collection to add items deserialized.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="InvalidOperationException">col is read-only.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
+    public static void DeserializeTo<T>(this IEnumerable<JsonObjectNode> source, ICollection<T> col, JsonSerializerOptions options = default)
+        => DeserializeTo(source, col, false, options);
+
+    /// <summary>
+    /// Skips the comments during reading JSON.
+    /// </summary>
+    /// <param name="reader">The UTF-8 JSON reader.</param>
     internal static void SkipComments(ref Utf8JsonReader reader)
     {
         while (reader.TokenType == JsonTokenType.Comment)

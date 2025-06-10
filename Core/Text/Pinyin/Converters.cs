@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
@@ -182,6 +183,7 @@ public static partial class PinyinMarks
             PinyinFinals.Van => forFinalOnly ? ToFinalString('v', tone, caseOptions, "an") : ToFinalString("Y", 'u', tone, caseOptions, "an"),
             PinyinFinals.Ve => forFinalOnly ? ToFinalString('u', tone, caseOptions, "e") : ToFinalString("Y", 'u', tone, caseOptions, "e"),
             PinyinFinals.Vn => forFinalOnly ? ToFinalString('u', tone, caseOptions, "n") : ToFinalString("Y", 'u', tone, caseOptions, "n"),
+            PinyinFinals.Ng => ToFinalString('n', tone, caseOptions, "g"),
             _ => (int)final == 7
             ? (tone == 0 ? (caseOptions == Cases.Upper || caseOptions == Cases.Capitalize ? CapitalEh : SmallEh) : ToFinalString('e', tone, caseOptions, "i"))
             : string.Empty
@@ -378,6 +380,7 @@ public static partial class PinyinMarks
                 "ī" or "í" or "ǐ" or "ì" or "Ī" or "Í" or "Ǐ" or "Ì" or "衣" or "ɪ" => PinyinFinals.I,
                 "ū" or "ú" or "ǔ" or "ù" or "Ū" or "Ú" or "Ǔ" or "Ù" or "乌" or "ʊ" => PinyinFinals.U,
                 "ǖ" or "ǘ" or "ǚ" or "ǜ" or "Ǖ" or "Ǘ" or "Ǚ" or "Ǜ" or "迂" => PinyinFinals.V,
+                "ń" or "ň" or "ǹ" or "Ń" or "Ň" or "Ǹ" => PinyinFinals.Ng,
                 "呀" => PinyinFinals.Ia,
                 "耶" => PinyinFinals.Ie,
                 "蛙" => PinyinFinals.Ua,
@@ -399,6 +402,7 @@ public static partial class PinyinMarks
                 "英" => PinyinFinals.Ing,
                 "轰" => PinyinFinals.Ong,
                 "雍" => PinyinFinals.Iong,
+                "嗯" => PinyinFinals.Ng,
                 _ => null
             },
             2 => s.ToLowerInvariant() switch
@@ -438,6 +442,7 @@ public static partial class PinyinMarks
                 "üe" => PinyinFinals.Ve,
                 "ün" => PinyinFinals.Vn,
                 "wu" => PinyinFinals.U,
+                "ng" => PinyinFinals.Ng,
                 _ => null
             },
             3 => s.ToLowerInvariant() switch
@@ -504,6 +509,7 @@ public static partial class PinyinMarks
             if (!ignoreMove)
             {
                 if (!e.MoveNext()) break;
+                i++;
             }
 
             ignoreMove = false;
@@ -523,19 +529,19 @@ public static partial class PinyinMarks
                 if (c == '\a' && final.Length == 0 && !initial.HasValue)
                 {
                     if (lastKind > 0) result.Append(' ');
-                    lastKind = 7;
+                    lastKind = 8;
                     continue;
                 }
 
                 throw new FormatException($"s contains an unsupported character at position {i} which is {c}.");
             }
 
-            if (k == 7)
+            if (k == 8)
             {
-                Append(result, initial, final.ToString(), tone, i, c, cap);
+                if (lastKind != 8) Append(result, initial, final.ToString(), tone, i, c, cap);
                 final.Clear();
                 tone = 0;
-                if (lastKind == 7 && (c == ' ' || c == '　') && result.Length > 0)
+                if (lastKind == 8 && (c == ' ' || c == '　') && result.Length > 0)
                 {
                     var last = result[result.Length - 1];
                     if (last != ' ' && last != '　' && last != '\t')
@@ -550,11 +556,12 @@ public static partial class PinyinMarks
                 if (" 　\t\n\r\"“‘《<（(【[*！？!?·]】)）>》’”".Contains(c))
                 {
                     if (!e.MoveNext()) break;
+                    i++;
                     ignoreMove = true;
                     var next = e.Current;
-                    if (GetKind(next) < 7) cap = char.IsUpper(next);
+                    if (GetKind(next) < 8) cap = char.IsUpper(next);
                 }
-                else if (lastKind != 7)
+                else if (lastKind != 8)
                 {
                     cap = false;
                 }
@@ -586,9 +593,9 @@ public static partial class PinyinMarks
                     _ => null
                 };
                 if (w == null) continue;
-                if (lastKind > 0 && lastKind < 7) result.Append(' ');
+                if (lastKind > 0 && lastKind < 8) result.Append(' ');
                 result.Append(w);
-                lastKind = 7;
+                lastKind = 8;
                 continue;
             }
 
@@ -599,11 +606,12 @@ public static partial class PinyinMarks
                 Append(result, initial, final.ToString(), tone, i, c, cap);
                 final.Clear();
                 tone = 0;
-                if (lastKind != 7 && lastKind != 0) cap = false;
+                if (lastKind != 8 && lastKind != 0) cap = false;
                 lastKind = k;
                 if (c == 'z' || c == 'c' || c == 's' || c == 'Z' || c == 'C' || c == 'S')
                 {
                     if (!e.MoveNext()) break;
+                    i++;
                     var next = e.Current;
                     if (next == 'h' || next == 'H')
                     {
@@ -639,7 +647,7 @@ public static partial class PinyinMarks
 
             if (k == 1)
             {
-                if (lastKind == 7)
+                if (lastKind == 8)
                 {
                     tone = 0;
                     final.Clear();
@@ -654,7 +662,7 @@ public static partial class PinyinMarks
             {
                 var j = "āáǎàōóòòēéěèīíǐìūúǔùǖǘǚǜĀÁǍÀŌÓÒÒĒÉĚÈĪÍǏÌŪÚǓÙǕǗǙǛ".IndexOf(c);
                 tone = j % 4 + 1;
-                final.Append((j / 4 % 6) switch
+                c = (j / 4 % 6) switch
                 {
                     0 => 'a',
                     1 => 'o',
@@ -663,14 +671,15 @@ public static partial class PinyinMarks
                     4 => 'u',
                     5 => 'v',
                     _ => ' '
-                });
+                };
+                final.Append(c);
                 lastKind = k;
                 continue;
             }
 
             if (k == 3)
             {
-                tone = "012345 ¯ˊˇˋ˙轻阴阳上去仄".IndexOf(c) % 6;
+                tone = GetTone(c);
                 if (lastKind == 4 && final.Length == 0)
                 {
                     if (!initial.HasValue)
@@ -684,7 +693,7 @@ public static partial class PinyinMarks
                         _ => throw new FormatException($"s contains a tone after an initial at position {i} which is {c}.")
                     });
                 }
-                else if (lastKind == 7)
+                else if (lastKind == 8)
                 {
                     tone = 0;
                     result.Append(c);
@@ -700,7 +709,7 @@ public static partial class PinyinMarks
 
             if (c == 'ㄨ')
             {
-                if (lastKind == 4 || lastKind == 6)
+                if (lastKind == 4 || lastKind == 6 || lastKind == 7)
                 {
                     final.Append('u');
                     lastKind = 1;
@@ -737,7 +746,7 @@ public static partial class PinyinMarks
                     var nextKind = GetKind(next);
                     if (nextKind == 3)
                     {
-                        Append(result, initial, final.ToString(), "012345 ¯ˊˇˋ˙轻阴阳上去仄".IndexOf(next) % 6, i, c, cap);
+                        Append(result, initial, final.ToString(), GetTone(next), i, c, cap);
                         tone = 0;
                         final.Clear();
                         result.Append('r');
@@ -768,7 +777,81 @@ public static partial class PinyinMarks
             }
 
             if (c == '声' || c == '平') continue;
-            if (lastKind == 3 || lastKind == 6)
+            if (k == 7 && final.Length < 1)
+            {
+                ignoreMove = true;
+                if (c == '兀')
+                {
+                    final.Append("ng");
+                    if (!e.MoveNext()) break;
+                    i++;
+                    var nextKind = GetKind(e.Current);
+                    if (nextKind == 3)
+                    {
+                        tone = GetTone(e.Current);
+                        ignoreMove = false;
+                    }
+                    else
+                    {
+                        tone = 0;
+                    }
+
+                    Append(result, initial, final.ToString(), tone, i, c, cap);
+                    final.Clear();
+                    tone = 0;
+                    continue;
+                }
+
+                tone = c switch
+                {
+                    'ń' or 'Ń' => 2,
+                    'ň' or 'Ň' => 3,
+                    'ǹ' or 'Ǹ' => 4,
+                    _ => 0
+                };
+                if (!e.MoveNext())
+                {
+                    final.Append('n');
+                    break;
+                }
+
+                i++;
+                var next = e.Current;
+                if (next == 'g' || next == 'G')
+                {
+                    final.Append("ng");
+                    if (!e.MoveNext()) break;
+                    i++;
+                    next = e.Current;
+                    var nextKind = GetKind(next);
+                    if (nextKind == 3)
+                    {
+                        tone = GetTone(next);
+                        ignoreMove = false;
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
+                        lastKind = 8;
+                        initial = null;
+                    }
+                    else if (nextKind < 3)
+                    {
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
+                        lastKind = 4;
+                        initial = PinyinInitials.G;
+                    }
+                    else
+                    {
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
+                        lastKind = 8;
+                        initial = null;
+                    }
+
+                    final.Clear();
+                    tone = 0;
+                    continue;
+                }
+            }
+
+            if (lastKind == 3 || lastKind == 6 || lastKind == 7)
             {
                 Append(result, initial, final.ToString(), tone, i, c, cap);
                 final.Clear();
@@ -782,7 +865,7 @@ public static partial class PinyinMarks
                 continue;
             }
 
-            if (lastKind == 7 || lastKind == 0)
+            if (lastKind == 8 || lastKind == 0)
             {
                 if (c == 'ŋ' || c == 'Ŋ')
                 {
@@ -802,15 +885,35 @@ public static partial class PinyinMarks
             if (c == 'n' || c == 'N' || c == 'ㄋ')
             {
                 ignoreMove = true;
-                if (!e.MoveNext()) break;
+                if (!e.MoveNext())
+                {
+                    final.Append('n');
+                    break;
+                }
+
+                i++;
                 var next = e.Current;
                 if (next == 'g' || next == 'G' || next == 'ㄍ')
                 {
-                    if (!e.MoveNext()) break;
+                    if (!e.MoveNext())
+                    {
+                        final.Append("ng");
+                        break;
+                    }
+
                     i++;
                     next = e.Current;
                     var nextKind = GetKind(next);
-                    if (nextKind > 2)
+                    if (nextKind == 3 && final.Length < 1)
+                    {
+                        final.Append("ng");
+                        tone = GetTone(next);
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
+                        final.Clear();
+                        tone = 0;
+                        lastKind = 1;
+                    }
+                    else if (nextKind > 2)
                     {
                         final.Append("ng");
                         lastKind = 1;
@@ -825,6 +928,13 @@ public static partial class PinyinMarks
                         cap = false;
                         lastKind = 4;
                     }
+                }
+                else if (lastKind == 8 || lastKind == 0)
+                {
+                    lastKind = 4;
+                    ignoreMove = true;
+                    initial = PinyinInitials.N;
+                    continue;
                 }
                 else
                 {
@@ -893,6 +1003,85 @@ public static partial class PinyinMarks
     }
 
     /// <summary>
+    /// Converts the Han character to a short number.
+    /// </summary>
+    /// <param name="initial">The Pinyin initial.</param>
+    /// <param name="final">The Pinyin final.</param>
+    /// <param name="tone">The tone.</param>
+    /// <returns>A short number with initial and final information.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The initial, final or tone is out of range.</exception>
+    public static short ZipToShort(PinyinInitials initial, PinyinFinals final, int tone = 0)
+    {
+        if (tone < 0 || tone > 7) throw new ArgumentOutOfRangeException(nameof(tone), "tone should be in 0 and 4.");
+        var a = (byte)initial;
+        var b = (byte)final;
+        if (a > 63) throw new ArgumentOutOfRangeException(nameof(initial), "initial is not supported.");
+        if (b > 63) throw new ArgumentOutOfRangeException(nameof(final), "final is not supported.");
+        var r = a * 512 + tone * 64 + b;
+        if (r < 0 || r > short.MaxValue) throw new ArgumentOutOfRangeException(nameof(tone), "initial or final is not supported.");
+        return (short)r;
+    }
+
+    /// <summary>
+    /// Converts the Han character to a short number.
+    /// </summary>
+    /// <param name="final">The Pinyin final.</param>
+    /// <param name="tone">The tone.</param>
+    /// <returns>A short number with initial and final information.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The initial, final or tone is out of range.</exception>
+    public static short ZipToShort(PinyinFinals final, int tone = 0)
+    {
+        if (tone < 0 || tone > 7) throw new ArgumentOutOfRangeException(nameof(tone), "tone should be in 0 and 4.");
+        var b = (byte)final;
+        if (b > 63) throw new ArgumentOutOfRangeException(nameof(final), "final is not supported.");
+        var r = tone * 64 + b;
+        if (r < 0 || r > short.MaxValue) throw new ArgumentOutOfRangeException(nameof(tone), "initial or tone is not supported.");
+        return (short)r;
+    }
+
+    /// <summary>
+    /// Converts a short number back to Pinyin.
+    /// </summary>
+    /// <param name="value">The value to parse.</param>
+    /// <param name="initial">The Pinyin initial.</param>
+    /// <param name="final">The Pinyin final.</param>
+    /// <param name="tone">The tone.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool Unzip(short value, out PinyinInitials initial, out PinyinFinals final, out int tone)
+    {
+        int a = value;
+        try
+        {
+            if (a > 0)
+            {
+                final = (PinyinFinals)(a % 64);
+                a >>= 6;
+                tone = a % 8;
+                a >>= 3;
+                initial = (PinyinInitials)a;
+                return a > 63;
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ArithmeticException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        initial = 0;
+        final = 0;
+        tone = 0;
+        return false;
+    }
+
+    /// <summary>
     /// Gets kind of the specific character.
     /// </summary>
     /// <param name="c">The character to test.</param>
@@ -904,8 +1093,9 @@ public static partial class PinyinMarks
     /// <item><term>3</term><description>Tones</description></item>
     /// <item><term>4</term><description>Initials and letter w but except letters rgny</description></item>
     /// <item><term>5</term><description>Obsolete initial notations</description></item>
-    /// <item><term>6</term><description>Letters ngrŋy</description></item>
-    /// <item><term>7</term><description>Seperators</description></item>
+    /// <item><term>6</term><description>Letters grŋy</description></item>
+    /// <item><term>7</term><description>Letter n</description></item>
+    /// <item><term>8</term><description>Seperators</description></item>
     /// </list>
     /// </returns>
     private static int GetKind(char c)
@@ -914,9 +1104,10 @@ public static partial class PinyinMarks
         if ("āáǎàōóòòēéěèīíǐìūúǔùǖǘǚǜĀÁǍÀŌÓÒÒĒÉĚÈĪÍǏÌŪÚǓÙǕǗǙǛ".Contains(c)) return 2;
         if ("012345¯ˊˇˋ˙轻阴阳上去仄".Contains(c)) return 3;
         if ("bpmfdtlgkhjqxzcsẑĉŝwBPMFDTLGKHJQXZCSẐĈŜWㄅㄆㄇㄈㄉㄊㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙ".Contains(c)) return 4;
-        if ("兀广万".Contains(c)) return 5;
-        if ("nrŋyNRŊY丨ㄧㄋㄖㄨ".Contains(c)) return 6;
-        if ("' 　\\\t\r\n\"`“‘’”-,.;?¿!&^(（【[{《<￥$%@/·|}>》]】）)_—=+#*，。゜、；？！~…".Contains(c)) return 7;
+        if ("广万".Contains(c)) return 5;
+        if ("rŋyRŊY丨ㄧㄋㄖㄨ".Contains(c)) return 6;
+        if ("nńňǹNŃŇǸ兀".Contains(c)) return 7;
+        if ("' 　\\\t\r\n\"`“‘’”-,.;?¿!&^(（【[{《<￥$%@/·|}>》]】）)_—=+#*，。゜、；？！~…".Contains(c)) return 8;
         return 0;
     }
 
@@ -945,6 +1136,14 @@ public static partial class PinyinMarks
         var sb = new StringBuilder(prefix.ToSpecificCaseInvariant(caseOptions));
         return AppendFinal(sb, final, tone, caseOptions == Cases.Upper ? Cases.Upper : Cases.Lower, rest).ToString();
     }
+
+    /// <summary>
+    /// Gets the tone.
+    /// </summary>
+    /// <param name="c">The tone.</param>
+    /// <returns>The tone.</returns>
+    private static int GetTone(char c)
+        => "012345 ¯ˊˇˋ˙轻阴阳上去仄".IndexOf(c) % 6;
 
     /// <summary>
     /// Returns a System.String that represents the specific character in Pinyin.
@@ -1105,6 +1304,14 @@ public static partial class PinyinMarks
                     4 => CapitalV4,
                     _ => CapitalV
                 },
+                'n' => tone switch
+                {
+                    1 => CapitalN,
+                    2 => CapitalN2,
+                    3 => CapitalN3,
+                    4 => CapitalN4,
+                    _ => CapitalN
+                },
                 _ => string.Empty
             });
         }
@@ -1159,6 +1366,14 @@ public static partial class PinyinMarks
                     3 => SmallV3,
                     4 => SmallV4,
                     _ => SmallV
+                },
+                'n' => tone switch
+                {
+                    1 => SmallN,
+                    2 => SmallN2,
+                    3 => SmallN3,
+                    4 => SmallN4,
+                    _ => SmallN
                 },
                 _ => string.Empty
             });

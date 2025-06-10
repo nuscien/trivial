@@ -37,8 +37,16 @@ public interface IObjectRef<T> : IObjectRef
 }
 
 /// <summary>
-/// Object reference.
+/// Object reference to maintain a singleton or a factory instance.
+/// It can be used to create an instance lazily or to hold a reference to an existing instance.
 /// </summary>
+/// <example>
+/// <code>
+/// var ref1 = new ObjectRef(() => new object());
+/// var ref2 = new ObjectRef(new object());
+/// var ref3 = new ObjectRef(ref1);
+/// </code>
+/// </example>
 [DebuggerDisplay("{ValueToDisplay}")]
 public sealed class ObjectRef : IObjectRef
 {

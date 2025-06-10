@@ -22,7 +22,7 @@ public interface IObjectResolver<T>
 }
 
 /// <summary>
-/// The object resolver.
+/// The object resolver used to create an instance of a type using a factory method or a reference.
 /// </summary>
 /// <typeparam name="T">The type of the instance to create.</typeparam>
 public sealed class FactoryObjectResolver<T> : IObjectResolver<T>

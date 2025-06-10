@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Trivial.Reflection;
 
 /// <summary>
-/// A set of factory used to register and resolve instance.
+/// A set of factory used to register a factory of a specific type and create an instance of that type using the factory registered.
 /// </summary>
 [Guid("B9589B69-A5A1-423E-86BB-85B35C78A2AA")]
 public sealed class FactorySet

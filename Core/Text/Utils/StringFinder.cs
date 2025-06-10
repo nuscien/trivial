@@ -37,7 +37,7 @@ public enum StringsMatchingRules : byte
 }
 
 /// <summary>
-/// The string finder.
+/// The string finder used to find a sub-string in a source string.
 /// </summary>
 [DebuggerDisplay("{Offset} → {Value} → {RestLength}")]
 public class StringFinder

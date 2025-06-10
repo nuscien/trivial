@@ -23,6 +23,19 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <summary>
     /// JSON string collection with white space and new line separated.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// { "tags": "tag1 tag2 tag3" }
+    /// </code>
+    /// <code>
+    /// public class MyClass
+    /// {
+    ///   [JsonPropertyName("tags")]
+    ///   [JsonConverter(typeof(WhiteSpaceSeparatedConverter))]
+    ///   public IEnumerable&lt;string&gt; Tags { get; set; } 
+    /// }
+    /// </code>
+    /// </example>
     public sealed class WhiteSpaceSeparatedConverter : JsonStringListConverter
     {
         private static readonly char[] splitChars = new[] { ' ', '　', '\r', '\n', '\t' };
@@ -38,6 +51,19 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <summary>
     /// JSON string collection with comma separated.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// { "tags": "tag1,tag2,tag3" }
+    /// </code>
+    /// <code>
+    /// public class MyClass
+    /// {
+    ///   [JsonPropertyName("tags")]
+    ///   [JsonConverter(typeof(CommaSeparatedConverter))]
+    ///   public IEnumerable&lt;string&gt; Tags { get; set; }
+    /// }
+    /// </code>
+    /// </example>
     public sealed class CommaSeparatedConverter : JsonStringListConverter
     {
         /// <summary>
@@ -51,6 +77,19 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <summary>
     /// JSON string collection with semicolon separated.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// { "tags": "tag1;tag2;tag3" }
+    /// </code>
+    /// <code>
+    /// public class MyClass
+    /// {
+    ///   [JsonPropertyName("tags")]
+    ///   [JsonConverter(typeof(SemicolonSeparatedConverter))]
+    ///   public IEnumerable&lt;string&gt; Tags { get; set; }
+    /// }
+    /// </code>
+    /// </example>
     public sealed class SemicolonSeparatedConverter : JsonStringListConverter
     {
         /// <summary>
@@ -64,6 +103,19 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <summary>
     /// JSON string collection with enumeration comma separated.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// { "tags": "tag1、tag2、tag3" }
+    /// </code>
+    /// <code>
+    /// public class MyClass
+    /// {
+    ///   [JsonPropertyName("tags")]
+    ///   [JsonConverter(typeof(EnumerationCommaSeparatedConverter))]
+    ///   public IEnumerable&lt;string&gt; Tags { get; set; }
+    /// }
+    /// </code>
+    /// </example>
     public sealed class EnumerationCommaSeparatedConverter : JsonStringListConverter
     {
         /// <summary>
@@ -77,6 +129,19 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <summary>
     /// JSON string collection with semicolon separated.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// { "tags": "tag1；tag2；tag3" }
+    /// </code>
+    /// <code>
+    /// public class MyClass
+    /// {
+    ///   [JsonPropertyName("tags")]
+    ///   [JsonConverter(typeof(ChineseSemicolonSeparatedConverter))]
+    ///   public IEnumerable&lt;string&gt; Tags { get; set; }
+    /// }
+    /// </code>
+    /// </example>
     public sealed class ChineseSemicolonSeparatedConverter : JsonStringListConverter
     {
         /// <summary>
@@ -90,6 +155,19 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <summary>
     /// JSON string collection with vertical bar separated.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// { "tags": "tag1|tag2|tag3" }
+    /// </code>
+    /// <code>
+    /// public class MyClass
+    /// {
+    ///   [JsonPropertyName("tags")]
+    ///   [JsonConverter(typeof(VerticalBarSeparatedConverter))]
+    ///   public IEnumerable&lt;string&gt; Tags { get; set; }
+    /// }
+    /// </code>
+    /// </example>
     public sealed class VerticalBarSeparatedConverter : JsonStringListConverter
     {
         /// <summary>
@@ -131,9 +209,7 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
 
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-    {
-        return typeof(IEnumerable<string>).IsAssignableFrom(typeToConvert);
-    }
+        => typeof(IEnumerable<string>).IsAssignableFrom(typeToConvert);
 
     /// <inheritdoc />
     public override IEnumerable<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

@@ -120,6 +120,16 @@ public static partial class PinyinMarks
     public const string CapitalEh = "Ê";
 
     /// <summary>
+    /// The capital letter Eh with rising tone (ㄝˊ eh).
+    /// </summary>
+    public const string CapitalEh2 = "Ế";
+
+    /// <summary>
+    /// The capital letter Eh with falling tone (ㄝˋ eh).
+    /// </summary>
+    public const string CapitalEh4 = "Ề";
+
+    /// <summary>
     /// The capital letter Er (ㄦ erh).
     /// </summary>
     public const string CapitalEr = "Er";
@@ -205,6 +215,26 @@ public static partial class PinyinMarks
     public const string CapitalV4 = "Ǜ";
 
     /// <summary>
+    /// The capital letter N (兀 Mmm).
+    /// </summary>
+    public const string CapitalN = "N";
+
+    /// <summary>
+    /// The capital letter N with rising tone (兀ˊ Mmm).
+    /// </summary>
+    public const string CapitalN2 = "Ń";
+
+    /// <summary>
+    /// The capital letter N with falling-rising tone (兀ˇ Mmm).
+    /// </summary>
+    public const string CapitalN3 = "Ň";
+
+    /// <summary>
+    /// The capital letter N with falling tone (兀ˋ Mmm).
+    /// </summary>
+    public const string CapitalN4 = "Ǹ";
+
+    /// <summary>
     /// The small letter A (ㄚ a).
     /// </summary>
     public const string SmallA = "a";
@@ -288,6 +318,16 @@ public static partial class PinyinMarks
     /// The small letter Eh (ㄝ eh).
     /// </summary>
     public const string SmallEh = "ê";
+
+    /// <summary>
+    /// The small letter Eh with rising tone (ㄝˊ eh).
+    /// </summary>
+    public const string SmallEh2 = "ế";
+
+    /// <summary>
+    /// The small letter Eh with falling tone (ㄝˋ eh).
+    /// </summary>
+    public const string SmallEh4 = "ề";
 
     /// <summary>
     /// The small letter Er (ㄦ erh).
@@ -378,6 +418,26 @@ public static partial class PinyinMarks
     /// The small letter V (Yu) with falling tone (ㄩˋ yu).
     /// </summary>
     public const string SmallV4 = "ǜ";
+
+    /// <summary>
+    /// The small letter N (兀 Mmm).
+    /// </summary>
+    public const string SmallN = "n";
+
+    /// <summary>
+    /// The small letter N with rising tone (兀ˊ Mmm).
+    /// </summary>
+    public const string SmallN2 = "ń";
+
+    /// <summary>
+    /// The small letter N with falling-rising tone (兀ˇ Mmm).
+    /// </summary>
+    public const string SmallN3 = "ň";
+
+    /// <summary>
+    /// The small letter N with falling tone (兀ˋ Mmm).
+    /// </summary>
+    public const string SmallN4 = "ǹ";
 
     /// <summary>
     /// Checked tone p.

@@ -7,8 +7,33 @@ using System.Text;
 namespace Trivial.Reflection;
 
 /// <summary>
-/// The exception handler instance.
+/// The exception management module used to catch exceptions and handle them in a custom way
+/// by registering specific handlers for different exception types.
 /// </summary>
+/// <example>
+/// <code>
+/// // Define the exception handler for specific exceptions.
+/// var eh = new ExceptionHandler();
+/// eh.Add&lt;ArgumentNullException&gt;(ex => {
+///   Console.WriteLine($"ArgumentNullException caught: {ex.Message}");
+///   return null; // Ignore this exception.
+/// });
+/// eh.Add&lt;InvalidOperationException&gt;(ex => {
+///   Console.WriteLine($"InvalidOperationException caught: {ex.Message}");
+///   return ex.InnerException; // Re-throw the inner exception.
+/// });
+/// 
+/// // Usage.
+/// try
+/// {
+///   // Do something that may throw exceptions.
+/// }
+/// catch (Exception ex)
+/// {
+///   eh.ThrowIfUnhandled(ex);
+/// }
+/// </code>
+/// </example>
 public class ExceptionHandler
 {
     /// <summary>

@@ -9,8 +9,25 @@ using System.Threading.Tasks;
 namespace Trivial.Reflection;
 
 /// <summary>
-/// The initialization in thread-safe mode.
+/// The state management module used to ensure that a certain initialization logic is executed only once when need in a thread-safe manner.
 /// </summary>
+/// <example>
+/// <code>
+/// var count = 0;
+/// var ini = new Initialization(async () => {
+///   // Do some initialization logic here.
+///   await Task.Delay(1000);
+///   count++;
+/// });
+/// 
+/// // Test.
+/// var task = init.EnsureInitAsync();
+/// await init.EnsureInitAsync();
+/// await task;
+/// await init.EnsureInitAsync();
+/// Console.WriteLine(count); // Output: 1
+/// </code>
+/// </example>
 [Guid("EF30759E-EF34-4C68-9994-5769A147BE4E")]
 public class Initialization
 {

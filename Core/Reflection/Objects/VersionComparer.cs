@@ -16,6 +16,11 @@ public class VersionComparer : IComparer<string>
     /// <summary>
     /// Gets a value indicating whether x is wide version scope.
     /// </summary>
+    /// <remarks>
+    /// If IsWideX = true, then x can be compared with y that has different length of version parts
+    /// (that means a.b.c is short for a.b.c.*);
+    /// Otherwise, x will be filled with 0 at rest to compare (a.b.c is short for a.b.c.0).
+    /// </remarks>
     public bool IsWideX { get; set; }
 
     /// <summary>
@@ -34,9 +39,7 @@ public class VersionComparer : IComparer<string>
     /// </list>
     /// </returns>
     public int Compare(string x, string y)
-    {
-        return Compare(x, y, IsWideX);
-    }
+        => Compare(x, y, IsWideX);
 
     /// <summary>
     /// Converts the item to version.

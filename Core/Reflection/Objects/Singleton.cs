@@ -47,7 +47,7 @@ public interface ISingletonResolver
 }
 
 /// <summary>
-/// The base singleton resolver.
+/// The base resolver used to get singleton instances by key.
 /// </summary>
 public abstract class BaseSingletonResolver : ISingletonResolver
 {

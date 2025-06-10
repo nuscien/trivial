@@ -4172,8 +4172,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="returnType">The type of the object to convert to and return.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- The value is type not compatible with the JSON.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
     public object Deserialize(Type returnType, JsonSerializerOptions options = default)
         => JsonSerializer.Deserialize(ToString(), returnType, options);
 
@@ -4183,10 +4183,51 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <typeparam name="T">The type of model to deserialize.</typeparam>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
     public T Deserialize<T>(JsonSerializerOptions options = default)
         => JsonSerializer.Deserialize<T>(ToString(), options);
+
+    /// <summary>
+    /// Deserializes to a collection.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection to add items deserialized.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <param name="doNotClear">true if do not clear the colletion before filling; othewise, false.</param>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="InvalidOperationException">col is read-only.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
+    public void DeserializeTo<T>(ICollection<T> col, bool doNotClear, JsonSerializerOptions options = default)
+    {
+        if (col is null) throw ObjectConvert.ArgumentNull(nameof(col));
+        if (col.IsReadOnly) throw new InvalidOperationException("col shuold not be read-only.", new ArgumentException("col is read-only but expect a writable collection.", nameof(col)));
+        if (!doNotClear) col.Clear();
+        foreach (var item in store)
+        {
+            if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
+            {
+                col.Add(default);
+                continue;
+            }
+            var value = JsonSerializer.Deserialize<T>(item.ToString(), options);
+            col.Add(value);
+        }
+    }
+
+    /// <summary>
+    /// Deserializes to a collection.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection to add items deserialized.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="InvalidOperationException">col is read-only.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
+    public void DeserializeTo<T>(ICollection<T> col, JsonSerializerOptions options = default)
+        => DeserializeTo(col, false, options);
 
     /// <summary>
     /// Deserializes an item.
@@ -4195,9 +4236,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
     public T DeserializeValue<T>(int index, JsonSerializerOptions options = default)
     {
         var item = store[index];
@@ -4217,9 +4258,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="parser">The string parser.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- T is not compatible with the JSON.</exception>
     public T DeserializeValue<T>(int index, Func<string, T> parser, JsonSerializerOptions options = default)
     {
         var item = store[index];
