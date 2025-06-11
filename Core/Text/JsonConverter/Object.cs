@@ -156,19 +156,14 @@ public sealed class JsonValueNodeConverter : JsonConverterFactory
         public override JsonArrayNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             JsonValues.SkipComments(ref reader);
-            switch (reader.TokenType)
+            return reader.TokenType switch
             {
-                case JsonTokenType.Null:
-                    return null;
-                case JsonTokenType.StartArray:
-                    return JsonArrayNode.ParseValue(ref reader);
-                case JsonTokenType.String:
-                    return JsonArrayNode.TryParse(reader.GetString()) ?? throw new JsonException("Expects an array but it was a string.");
-                case JsonTokenType.False:
-                    return null;
-            }
-
-            throw new JsonException("Expects an array.");
+                JsonTokenType.Null => null,
+                JsonTokenType.StartArray => JsonArrayNode.ParseValue(ref reader),
+                JsonTokenType.String => JsonArrayNode.TryParse(reader.GetString()) ?? throw new JsonException("Expects an array but it was a string."),
+                JsonTokenType.False => null,
+                _ => throw new JsonException("Expects an array."),
+            };
         }
 
         /// <inheritdoc />

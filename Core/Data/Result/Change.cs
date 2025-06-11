@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -39,127 +40,152 @@ public delegate void KeyValueEventHandler<TKey, TValue>(object sender, KeyValueE
 /// <summary>
 /// The method to change.
 /// </summary>
+[Description("The method of value changing.")]
 public enum ChangeMethods : byte
 {
     /// <summary>
     /// Unknown.
     /// </summary>
+    [Description("Unknown change.")]
     Unknown = 0,
 
     /// <summary>
     /// Unchanged.
     /// </summary>
+    [Description("Nothing changed.")]
     Unchanged = 1,
 
     /// <summary>
     /// The value has been updated but keep the same as original.
     /// </summary>
+    [Description("The new value is same with the old one.")]
     Same = 2,
 
     /// <summary>
     /// Create or add.
     /// </summary>
+    [Description("A new item added.")]
     Add = 3,
 
     /// <summary>
     /// Replace.
     /// </summary>
+    [Description("The value is updated by a new one.")]
     Update = 4,
 
     /// <summary>
     /// Delta update.
     /// </summary>
+    [Description("A property or other kind of member of the object is changed.")]
     MemberModify = 5,
 
     /// <summary>
     /// Delete.
     /// </summary>
+    [Description("The value is deleted.")]
     Remove = 6,
 
     /// <summary>
     /// The source is not valid any more.
     /// </summary>
+    [Description("The object is no longer valid to access.")]
     Invalid = 7
 }
 
 /// <summary>
 /// The kinds of change error.
 /// </summary>
+[Description("The kinds of change error.")]
 public enum ChangeErrorKinds : byte
 {
     /// <summary>
     /// No error.
     /// </summary>
+    [Description("No error.")]
     None = 0,
 
     /// <summary>
     /// Invalid argument or bad request.
     /// </summary>
+    [Description("Invalid argument or bad request.")]
     Argument = 1,
 
     /// <summary>
     /// Unauthorized access.
     /// </summary>
+    [Description("Unauthorized access.")]
     Unauthorized = 2,
 
     /// <summary>
     /// Forbidden.
     /// </summary>
+    [Description("Forbidden.")]
     Forbidden = 3,
 
     /// <summary>
     /// The source resource is not found or is gone.
     /// </summary>
+    [Description("The source resource is not found or is gone.")]
     NotFound = 4,
 
     /// <summary>
     /// The key is out of range or invalid.
     /// </summary>
+    [Description("The key is out of range or invalid.")]
     Key = 5,
 
     /// <summary>
     /// One, some or all of parameters are invalid.
     /// </summary>
+    [Description("One, some or all of parameters are invalid.")]
     Validation = 6,
 
     /// <summary>
     /// Not supported.
     /// </summary>
+    [Description("Not supported.")]
     Unsupported = 7,
 
     /// <summary>
     /// The data provider works incorrectly.
     /// </summary>
+    [Description("The data provider works incorrectly.")]
     Provider = 8,
 
     /// <summary>
     /// The data to update is obsolete or conflicted.
     /// </summary>
+    [Description("The data to update is obsolete or conflicted.")]
     Conflict = 9,
 
     /// <summary>
     /// The service is busy or the request is rejected.
     /// </summary>
+    [Description("The service is busy or the request is rejected.")]
     Busy = 10,
 
     /// <summary>
     /// Cancellation request.
     /// </summary>
+    [Description("Cancellation request.")]
     Canceled = 11,
 
     /// <summary>
     /// Timeout.
     /// </summary>
+    [Description("Timeout.")]
     Timeout = 12,
 
     /// <summary>
     /// Internal service error.
     /// </summary>
+    [Description("Internal service error.")]
     Service = 13,
 
     /// <summary>
     /// Other special error defined by application.
     /// </summary>
+    [Description("Other special error defined by application.")]
     Application = 14
 }
 

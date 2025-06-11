@@ -964,6 +964,33 @@ public static class StringExtensions
     /// <summary>
     /// Gets the description.
     /// </summary>
+    /// <param name="value">The enum value.</param>
+    /// <returns>The description.</returns>
+    public static string GetDescription(Enum value)
+    {
+        if (value == null) return null;
+        try
+        {
+            var type = value.GetType();
+            var name = Enum.GetName(type, value);
+            if (string.IsNullOrWhiteSpace(name)) return value.ToString();
+            var field = type.GetField(name);
+            var attr = field.GetCustomAttributes<DescriptionAttribute>()?.FirstOrDefault();
+            return string.IsNullOrWhiteSpace(attr?.Description) ? name : attr.Description;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the description.
+    /// </summary>
     /// <param name="memberInfo">The member information.</param>
     /// <returns>The description.</returns>
     public static string GetDescription(MemberInfo memberInfo)
@@ -1003,6 +1030,45 @@ public static class StringExtensions
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Gets the description mapping of each enum.
+    /// </summary>
+    /// <param name="type">The enum type.</param>
+    /// <returns>A mapping of enum and description.</returns>
+    public static Dictionary<string, string> GetEnumDescriptionMapping(Type type)
+    {
+        if (type == null || !type.IsEnum) return null;
+        var values = Enum.GetValues(type);
+        var dict = new Dictionary<string, string>();
+        foreach (Enum value in values)
+        {
+            dict[value.ToString()] = GetDescription(value);
+        }
+
+        return dict;
+    }
+
+    /// <summary>
+    /// Gets the description mapping of each enum.
+    /// </summary>
+    /// <typeparam name="T">THe type of enum.</typeparam>
+    /// <returns>A mapping of enum and description.</returns>
+    public static Dictionary<T, string> GetEnumDescriptionMapping<T>() where T : struct, Enum
+    {
+#if NETFRAMEWORK
+        var values = Enum.GetValues(typeof(T));
+#else
+        var values = Enum.GetValues<T>();
+#endif
+        var dict = new Dictionary<T, string>();
+        foreach (T value in values)
+        {
+            dict[value] = GetDescription(value);
+        }
+
+        return dict;
     }
 
     /// <summary>

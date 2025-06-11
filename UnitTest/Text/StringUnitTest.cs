@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Reflection;
+using Trivial.Security;
 
 namespace Trivial.Text;
 
@@ -57,5 +59,29 @@ public class StringUnitTest
         Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", true));
         Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning to you", " ", " to", StringComparison.OrdinalIgnoreCase, false, 6));
         Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", StringComparison.OrdinalIgnoreCase, true));
+    }
+
+    /// <summary>
+    /// Tests the description.
+    /// </summary>
+    [TestMethod]
+    public void TestDescription()
+    {
+        var s = StringExtensions.GetDescription(PropertySettingPolicies.Allow);
+        Assert.IsTrue(s.Length > 6);
+        var d1 = StringExtensions.GetEnumDescriptionMapping<PropertySettingPolicies>();
+        Assert.AreEqual(s, d1[PropertySettingPolicies.Allow]);
+        var d2 = StringExtensions.GetEnumDescriptionMapping(typeof(PropertySettingPolicies));
+        Assert.AreEqual(s, d2[nameof(PropertySettingPolicies.Allow)]);
+        s = StringExtensions.GetDescription((PropertySettingPolicies)19);
+        Assert.AreEqual("19", s);
+        s = StringExtensions.GetDescription(typeof(JsonWebTokenPayload).GetProperty(nameof(JsonWebTokenPayload.Id)));
+        Assert.IsTrue(s.Length > 6);
+        var uri = StringExtensions.TryCreateUri("https://www.kingcean.net");
+        Assert.IsNotNull(uri);
+        uri = StringExtensions.TryCreateUri("https://www.kingcean.net", UriKind.RelativeOrAbsolute);
+        Assert.IsNotNull(uri);
+        uri = StringExtensions.TryCreateUri("hello", UriKind.Absolute);
+        Assert.IsNull(uri);
     }
 }

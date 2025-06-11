@@ -23,21 +23,25 @@ namespace Trivial.Reflection;
 /// <summary>
 /// The policies used to set property.
 /// </summary>
+[Description("The policies about if the properties are allowed to set values.")]
 public enum PropertySettingPolicies
 {
     /// <summary>
     /// Writable property.
     /// </summary>
+    [Description("The properties are writable.")]
     Allow = 0,
 
     /// <summary>
     /// Read-only property but skip error when set value.
     /// </summary>
+    [Description("The properties are read-only. Any update will be ignored.")]
     Skip = 1,
 
     /// <summary>
     /// Read-only property and require to throw an exception when set value.
     /// </summary>
+    [Description("The properties are read-only. Any update will occur an exception thrown.")]
     Forbidden = 2
 }
 

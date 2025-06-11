@@ -26,7 +26,7 @@ using Trivial.Text;
 namespace Trivial.Data;
 
 /// <summary>
-/// The collection result.
+/// The result with message.
 /// </summary>
 [DataContract]
 [Guid("FFF9B1F6-12E5-44B1-BAC4-3CB9C78F02BF")]
@@ -188,7 +188,7 @@ public class DataResult<T> : MessageResult
 }
 
 /// <summary>
-/// The data result.
+/// The data result with additional information.
 /// </summary>
 [DataContract]
 [Guid("151653E9-0220-447D-919C-4F5A7732CAE4")]
@@ -250,7 +250,7 @@ public class DataResult<TData, TInfo> : DataResult<TData>
 }
 
 /// <summary>
-/// The data result.
+/// The JSON data result.
 /// </summary>
 [DataContract]
 [Guid("53843D30-66F1-4AC8-A7DD-509ED7E50FD8")]
@@ -448,7 +448,7 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
 }
 
 /// <summary>
-/// The collection result.
+/// The error result with message.
 /// </summary>
 [DataContract]
 [Guid("ED51EAB1-B281-46EF-9AFD-7B4E75EF9F4D")]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -661,6 +662,7 @@ public class JsonWebTokenPayload
     [DataMember(Name = "jti", EmitDefaultValue = false)]
     [JsonPropertyName("jti")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A unique identifier used to prevent the JWT from being replayed.")]
     public string Id { get; set; }
 
     /// <summary>
@@ -672,6 +674,7 @@ public class JsonWebTokenPayload
     [DataMember(Name = "iss", EmitDefaultValue = false)]
     [JsonPropertyName("iss")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The principal that issued the JWT.")]
     public string Issuer { get; set; }
 
     /// <summary>
@@ -684,6 +687,7 @@ public class JsonWebTokenPayload
     [DataMember(Name = "sub", EmitDefaultValue = false)]
     [JsonPropertyName("sub")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The principal that is the subject of the JWT.")]
     public string Subject { get; set; }
 
     /// <summary>
@@ -699,6 +703,7 @@ public class JsonWebTokenPayload
     [JsonPropertyName("aud")]
     [JsonConverter(typeof(JsonStringListConverter))]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The recipients that the JWT is intended for.")]
     public IEnumerable<string> Audience { get; set; }
 
     /// <summary>
@@ -717,6 +722,7 @@ public class JsonWebTokenPayload
     [DataMember(Name = "exp", EmitDefaultValue = false)]
     [JsonPropertyName("exp")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The expiration time (Unix timestamp) on or after which the JWT must not be accepted for processing.")]
     public long? ExpirationTick
     {
         get => WebFormat.ParseUnixTimestamp(Expiration);
@@ -739,6 +745,7 @@ public class JsonWebTokenPayload
     [DataMember(Name = "nbf", EmitDefaultValue = false)]
     [JsonPropertyName("nbf")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Unix timestamp before which the JWT must not be accepted for processing.")]
     public long? NotBeforeTick
     {
         get => WebFormat.ParseUnixTimestamp(NotBefore);
@@ -760,6 +767,7 @@ public class JsonWebTokenPayload
     [DataMember(Name = "iat", EmitDefaultValue = false)]
     [JsonPropertyName("iat")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Unix timestamp at which the JWT was issued.")]
     public long? IssuedAtTick
     {
         get => WebFormat.ParseUnixTimestamp(IssuedAt);
