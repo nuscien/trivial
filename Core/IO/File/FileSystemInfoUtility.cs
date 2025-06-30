@@ -22,7 +22,7 @@ public static class FileSystemInfoUtility
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="destPath">The destinate directory path.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The destination directory.</returns>
     private static DirectoryInfo CopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
     {
@@ -694,6 +694,34 @@ public static class FileSystemInfoUtility
     /// Gets the directory information instance of the sub-folder.
     /// </summary>
     /// <param name="dir">The directory information.</param>
+    /// <param name="folderNamePath">The path of sub-directory folder name.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static FileInfo TryGetFileInfo(DirectoryInfo dir, IEnumerable<string> folderNamePath, string fileName)
+    {
+        dir = TryGetSubDirectory(dir, folderNamePath);
+        if (dir == null) return null;
+        return TryGetFileInfo(dir, fileName);
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderNamePath">The path of sub-directory folder name.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static FileInfo TryGetFileInfo(DirectoryInfo dir, ReadOnlySpan<string> folderNamePath, string fileName)
+    {
+        dir = TryGetSubDirectory(dir, folderNamePath);
+        if (dir == null) return null;
+        return TryGetFileInfo(dir, fileName);
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="dir">The directory information.</param>
     /// <param name="folderName">The folder name.</param>
     /// <returns>The directory information instance; or null, if accesses failed.</returns>
     public static DirectoryInfo TryGetSubDirectory(DirectoryInfo dir, string folderName)
@@ -769,6 +797,143 @@ public static class FileSystemInfoUtility
         if (folder == null || !folder.Exists) return null;
         folder = TryGetSubDirectory(folder, folderName2);
         return string.IsNullOrEmpty(folderName3) ? folder : TryGetSubDirectory(folder, folderName3);
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderNamePath">The path of sub-directory folder name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static DirectoryInfo TryGetSubDirectory(DirectoryInfo dir, IEnumerable<string> folderNamePath)
+    {
+        if (folderNamePath == null) return dir;
+        foreach (var folder in folderNamePath)
+        {
+            dir = TryGetSubDirectory(dir, folder);
+            if (dir == null) return null;
+        }
+
+        return dir;
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderNamePath">The path of sub-directory folder name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static DirectoryInfo TryGetSubDirectory(DirectoryInfo dir, ReadOnlySpan<string> folderNamePath)
+    {
+        foreach (var folder in folderNamePath)
+        {
+            dir = TryGetSubDirectory(dir, folder);
+            if (dir == null) return null;
+        }
+
+        return dir;
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="createIfNonExist">true if create one if the directory does not exist; otherwise, false.</param>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderName">The folder name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static DirectoryInfo TryGetSubDirectory(bool createIfNonExist, DirectoryInfo dir, string folderName)
+    {
+        var d = TryGetSubDirectory(dir, folderName);
+        try
+        {
+            if (!dir.Exists) dir.Create();
+            if (d == null)
+            {
+                if (!createIfNonExist) return null;
+                d.CreateSubdirectory(folderName);
+            }
+            else if (!d.Exists)
+            {
+                d.Create();
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return d;
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="createIfNonExist">true if create one if the directory does not exist; otherwise, false.</param>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderName">The folder name.</param>
+    /// <param name="folderName2">The folder name 2.</param>
+    /// <param name="folderName3">The folder name 3.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static DirectoryInfo TryGetSubDirectory(bool createIfNonExist, DirectoryInfo dir, string folderName, string folderName2, string folderName3 = null)
+    {
+        var folder = TryGetSubDirectory(createIfNonExist, dir, folderName);
+        if (folder == null || !folder.Exists) return null;
+        folder = TryGetSubDirectory(createIfNonExist, folder, folderName2);
+        return string.IsNullOrEmpty(folderName3) ? folder : TryGetSubDirectory(createIfNonExist, folder, folderName3);
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="createIfNonExist">true if create one if the directory does not exist; otherwise, false.</param>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderNamePath">The path of sub-directory folder name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static DirectoryInfo TryGetSubDirectory(bool createIfNonExist, DirectoryInfo dir, IEnumerable<string> folderNamePath)
+    {
+        if (folderNamePath == null) return dir;
+        foreach (var folder in folderNamePath)
+        {
+            dir = TryGetSubDirectory(createIfNonExist, dir, folder);
+            if (dir == null) return null;
+        }
+
+        return dir;
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="createIfNonExist">true if create one if the directory does not exist; otherwise, false.</param>
+    /// <param name="dir">The directory information.</param>
+    /// <param name="folderNamePath">The path of sub-directory folder name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static DirectoryInfo TryGetSubDirectory(bool createIfNonExist, DirectoryInfo dir, ReadOnlySpan<string> folderNamePath)
+    {
+        foreach (var folder in folderNamePath)
+        {
+            dir = TryGetSubDirectory(createIfNonExist, dir, folder);
+            if (dir == null) return null;
+        }
+
+        return dir;
     }
 
     /// <summary>
