@@ -122,7 +122,7 @@ public sealed class FactorySet
     }
 
     /// <summary>
-    /// Register a singleton instance.
+    /// OnRegisterInternal a singleton instance.
     /// </summary>
     /// <typeparam name="T">The type of the singleton.</typeparam>
     /// <param name="singleton">The singleton to register.</param>
@@ -365,7 +365,7 @@ public class RoutedFactory<T>
     }
 
     /// <summary>
-    /// Register a singleton instance.
+    /// OnRegisterInternal a singleton instance.
     /// </summary>
     /// <param name="key">The key.</param>
     /// <param name="singleton">The singleton to register.</param>

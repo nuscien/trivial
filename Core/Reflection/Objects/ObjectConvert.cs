@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -388,6 +389,22 @@ public static class ObjectConvert
     {
         if (handler == null) return;
         var args = new KeyValueEventArgs<TKey, TValue>(key, value);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="TSource">The type of source.</typeparam>
+    /// <typeparam name="TKey">The type of property key.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="source">The source</param>
+    /// <param name="key">The property key.</param>
+    public static void Invoke<TSource, TKey>(this SourcePropertyEventHandler<TSource, TKey> handler, object sender, TSource source, TKey key)
+    {
+        if (handler == null) return;
+        var args = new SourcePropertyEventArgs<TSource, TKey>(source, key);
         handler(sender, args);
     }
 

@@ -364,7 +364,7 @@ public class SingletonResolver : BaseSingletonResolver
         => Register(key, Activator.CreateInstance<T>);
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
@@ -385,7 +385,7 @@ public class SingletonResolver : BaseSingletonResolver
     }
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
@@ -395,7 +395,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolve(key, new FactoryObjectRef<T>(factory));
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
@@ -405,7 +405,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolve(key, new LazyObjectRef<T>(lazy));
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="reference">The object reference.</param>
@@ -414,7 +414,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolve(null, reference);
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="factory">The instance factory.</param>
@@ -423,7 +423,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolve(null, factory);
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="lazy">The lazy instance.</param>
@@ -432,7 +432,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolve(null, lazy);
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
@@ -441,7 +441,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolve(key, Activator.CreateInstance<T>);
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
@@ -462,7 +462,7 @@ public class SingletonResolver : BaseSingletonResolver
     }
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="key">The key.</param>
@@ -483,7 +483,7 @@ public class SingletonResolver : BaseSingletonResolver
     }
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="factory">The instance factory.</param>
@@ -492,7 +492,7 @@ public class SingletonResolver : BaseSingletonResolver
         => EnsureResolveAsync(null, factory);
 
     /// <summary>
-    /// Resolves a singleton instance. Register one if non-exist.
+    /// Resolves a singleton instance. OnRegisterInternal one if non-exist.
     /// </summary>
     /// <typeparam name="T">The type of the instance to register.</typeparam>
     /// <param name="task">The task to get the instance.</param>

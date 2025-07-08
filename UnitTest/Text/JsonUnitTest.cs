@@ -418,6 +418,74 @@ public class JsonUnitTest
 #else
         Assert.IsNull(jsonl);
 #endif
+
+        json = new()
+        {
+            { "a", "bcdefg" },
+            { "h", "ijklmn" },
+            { "o", "pq" }
+        };
+        json.SetRange(new JsonObjectNode
+        {
+            { "o", "ooo" },
+            { "r", "st" }
+        }, true);
+        Assert.AreEqual(4, json.Count);
+        Assert.AreEqual("pq", json.GetValue<string>("o"));
+        Assert.IsTrue(json.ContainsKey("r"));
+        json.SetRange(new JsonObjectNode
+        {
+            { "abc", 12 },
+            { "h", true },
+            { "v", "v" }
+        }, new List<string> { "defg", "h", "v" }, false);
+        Assert.AreEqual(5, json.Count);
+        Assert.IsTrue(json.GetValue<bool>("h"));
+        Assert.AreEqual("v", json.GetStringValue("v"));
+        Assert.IsFalse(json.ContainsKey("abc"));
+        json.SetRange(new JsonObjectNode
+        {
+            { "h", false },
+            { "u", 0 }
+        }, false);
+        Assert.AreEqual(6, json.Count);
+        Assert.IsFalse(json.GetValue<bool>("h"));
+        Assert.AreEqual(0, json.GetInt32Value("u"));
+        json.SetRange(new JsonObjectNode
+        {
+            { "a", new JsonArrayNode() },
+            { "h", "ello" },
+            { "w", new JsonObjectNode() }
+        }, new List<string> { "h", "o", "w" }, true);
+        Assert.AreEqual(7, json.Count);
+        Assert.AreEqual("bcdefg", json.GetStringValue("a"));
+        Assert.AreEqual(JsonValueKind.Object, json.GetValueKind("w"));
+        json.SetRange(new JsonObjectNode
+        {
+            { "a", "ijklmn" },
+            { "w", "W" }
+        }, new Dictionary<string, string>
+        {
+            { "h", "a" },
+            { "w", "w" }
+        }, false);
+        Assert.AreEqual(7, json.Count);
+        Assert.AreEqual("bcdefg", json.GetStringValue("a"));
+        Assert.AreEqual("ijklmn", json.GetStringValue("h"));
+        Assert.AreEqual("W", json.GetStringValue("w"));
+        json.SetRange(new JsonObjectNode
+        {
+            { "a", "lpha" },
+            { "X", "yz" }
+        }, new Dictionary<string, string>
+        {
+            { "a", "a" },
+            { "x", "X" }
+        }, true);
+        Assert.AreEqual(8, json.Count);
+        Assert.AreEqual("bcdefg", json.GetStringValue("a"));
+        Assert.AreEqual("yz", json.GetStringValue("x"));
+        Assert.IsFalse(json.ContainsKey("X"));
     }
 
     /// <summary>

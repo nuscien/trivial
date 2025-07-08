@@ -38,6 +38,15 @@ public delegate void DataEventHandler<T>(object sender, DataEventArgs<T> e);
 public delegate void KeyValueEventHandler<TKey, TValue>(object sender, KeyValueEventArgs<TKey, TValue> e);
 
 /// <summary>
+/// The data event handler.
+/// </summary>
+/// <typeparam name="TSource">The type of the source.</typeparam>
+/// <typeparam name="TKey">The type of the property key.</typeparam>
+/// <param name="sender">The sender.</param>
+/// <param name="e">The event arguments.</param>
+public delegate void SourcePropertyEventHandler<TSource, TKey>(object sender, SourcePropertyEventArgs<TSource, TKey> e);
+
+/// <summary>
 /// The method to change.
 /// </summary>
 [Description("The method of value changing.")]
@@ -434,6 +443,35 @@ public class KeyValueEventArgs<TKey, TValue> : EventArgs
     /// <returns>The key value pair.</returns>
     public static explicit operator KeyValuePair<TKey, TValue>(KeyValueEventArgs<TKey, TValue> args)
         => args == null ? new() : new(args.Key, args.Value);
+}
+
+/// <summary>
+/// The event arguments with key and value pair.
+/// </summary>
+/// <typeparam name="TSource">The type of the source.</typeparam>
+/// <typeparam name="TKey">The type of the property key.</typeparam>
+public class SourcePropertyEventArgs<TSource, TKey> : EventArgs
+{
+    /// <summary>
+    /// Initializes a new instance of the SourcePropertyEventArgs class.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="key">The property key.</param>
+    public SourcePropertyEventArgs(TSource source, TKey key)
+    {
+        Source = source;
+        Key = key;
+    }
+
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
+    public TSource Source { get; }
+
+    /// <summary>
+    /// Gets the key.
+    /// </summary>
+    public TKey Key { get; }
 }
 
 /// <summary>

@@ -1924,6 +1924,20 @@ public static class JsonValues
         => DeserializeTo(source, col, false, options);
 
     /// <summary>
+    /// Writes a specific value to JSON.
+    /// </summary>
+    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to write to JSON.</param>
+    /// <param name="options">The JSON serializer options being used.</param>
+    internal static void Write<T>(Utf8JsonWriter writer, string key, T value, JsonSerializerOptions options)
+    {
+        var converter = (JsonConverter<T>)options.GetConverter(typeof(T));
+        writer.WritePropertyName(key);
+        converter.Write(writer, value, options);
+    }
+
+    /// <summary>
     /// Skips the comments during reading JSON.
     /// </summary>
     /// <param name="reader">The UTF-8 JSON reader.</param>

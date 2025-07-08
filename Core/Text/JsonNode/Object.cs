@@ -6515,6 +6515,82 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Sets properties.
     /// </summary>
+    /// <param name="json">Another JSON object to add.</param>
+    /// <param name="keys">The property keys to copy.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count of property added.</returns>
+    public int SetRange(JsonObjectNode json, IEnumerable<string> keys, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (json is null) return count;
+        if (skipDuplicate)
+        {
+            if (ReferenceEquals(json, this)) return count;
+            foreach (var key in keys)
+            {
+                var v = json.TryGetValue(key);
+                if (ContainsKey(key)) continue;
+                if (v is null) store.Remove(key);
+                else store[key] = v;
+                count++;
+            }
+        }
+        else
+        {
+            if (ReferenceEquals(json, this)) json = json.Clone();
+            foreach (var key in keys)
+            {
+                var v = json.TryGetValue(key);
+                if (v is null) store.Remove(key);
+                else store[key] = v;
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">Another JSON object to add.</param>
+    /// <param name="keyMapping">The property key mapping to copy. The key is the new property key, the value is the one of source.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count of property added.</returns>
+    public int SetRange(JsonObjectNode json, IDictionary<string, string> keyMapping, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (json is null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var p in keyMapping)
+            {
+                var key = p.Key;
+                var v = json.TryGetValue(p.Value);
+                if (ContainsKey(key)) continue;
+                if (v is null) store.Remove(key);
+                else store[key] = v;
+                count++;
+            }
+        }
+        else
+        {
+            foreach (var p in keyMapping)
+            {
+                var key = p.Key;
+                var v = json.TryGetValue(p.Value);
+                if (v is null) store.Remove(key);
+                else store[key] = v;
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
     /// <param name="array">The JSON array to add.</param>
     /// <param name="propertyMapping">The mapping of index to property key; or null for convert index to string format.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>

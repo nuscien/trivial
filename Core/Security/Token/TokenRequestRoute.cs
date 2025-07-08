@@ -32,9 +32,9 @@ namespace Trivial.Security;
 /// <code>
 /// // Create a route and register the handlers.
 /// var route = new TokenRequestRoute&lt;UserInfo&gt;();
-/// route.Register((PasswordTokenRequestBody req, CancellationToken cancellationToken)
+/// route.OnRegisterInternal((PasswordTokenRequestBody req, CancellationToken cancellationToken)
 ///     => UserManager.LoginByPasswordAsync(req.UserName, req.Password, cancellationToken));
-/// route.Register((RefreshTokenRequestBody req, CancellationToken cancellationToken)
+/// route.OnRegisterInternal((RefreshTokenRequestBody req, CancellationToken cancellationToken)
 ///     => UserManager.LoginByRefreshTokenAsync(req.RefreshToken, cancellationToken));
 ///
 /// // Then you can handle following login request.
@@ -183,6 +183,30 @@ public class TokenRequestRoute<T>
             var resp = await h(info);
             return new(resp.User, resp);
         };
+
+    /// <summary>
+    /// Removes a handler.
+    /// </summary>
+    /// <param name="method">The name of the method to be invoked.</param>
+    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    public bool Remove(string method)
+        => method != null && handlers.Remove(method);
+
+    /// <summary>
+    /// Removes a set of handler.
+    /// </summary>
+    /// <param name="methods">The method name.</param>
+    /// <returns>The count of items removed.</returns>
+    public int Remove(IEnumerable<string> methods)
+    {
+        var i = 0;
+        foreach (var method in methods)
+        {
+            if (Remove(method)) i++;
+        }
+
+        return i;
+    }
 
     /// <summary>
     /// Signs in.
