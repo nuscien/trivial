@@ -161,9 +161,9 @@ public class JsonRpcRequestRoute
     /// <summary>
     /// Processes.
     /// </summary>
-    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="request">The JSON-RPC request object collection.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
-    /// <returns>The JSON-RPC response object.</returns>
+    /// <returns>The JSON-RPC response object collection.</returns>
     public async IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessAsync(IEnumerable<JsonRpcRequestObject> request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (request == null) yield break;
@@ -188,9 +188,9 @@ public class JsonRpcRequestRoute
     /// <summary>
     /// Processes.
     /// </summary>
-    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="request">The JSON-RPC request object collection.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
-    /// <returns>The JSON-RPC response object.</returns>
+    /// <returns>The JSON-RPC response object collection.</returns>
     public IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessBatchAsync(string request, CancellationToken cancellationToken = default)
     {
         var req = JsonSerializer.Deserialize<IEnumerable<JsonRpcRequestObject>>(request);
@@ -206,6 +206,18 @@ public class JsonRpcRequestRoute
     public Task<BaseJsonRpcResponseObject> ProcessAsync(Stream request, CancellationToken cancellationToken = default)
     {
         var req = JsonSerializer.Deserialize<JsonRpcRequestObject>(request);
+        return ProcessAsync(req, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object collection.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object collection.</returns>
+    public IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessBatchAsync(Stream request, CancellationToken cancellationToken = default)
+    {
+        var req = JsonSerializer.Deserialize<IEnumerable<JsonRpcRequestObject>>(request);
         return ProcessAsync(req, cancellationToken);
     }
 }

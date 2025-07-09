@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Trivial.Console" Version="9.5.0" />
+    <PackageReference Include="Trivial.Console" Version="9.6.0" />
     <PackageReference Condition="'$(TargetFramework)' != 'net6.0'" Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Condition="'$(TargetFramework)' == 'net6.0'" Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.9.3" />
