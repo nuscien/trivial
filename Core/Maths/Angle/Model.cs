@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Text.Json.Serialization;
 using Trivial.Reflection;
+using Trivial.Text;
 
 namespace Trivial.Maths;
 

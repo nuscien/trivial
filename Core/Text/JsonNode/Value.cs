@@ -510,9 +510,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(JsonNullNode leftValue, JsonNullNode rightValue)
-    {
-        return true;
-    }
+        => true;
 
     /// <summary>
     /// Compares two instances to indicate if they are different.
@@ -522,7 +520,5 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(JsonNullNode leftValue, JsonNullNode rightValue)
-    {
-        return false;
-    }
+        => false;
 }
