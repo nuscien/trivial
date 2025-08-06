@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Data;
 using Trivial.Reflection;
+using Trivial.Text;
 
 namespace Trivial.Tasks;
 
@@ -17,17 +19,34 @@ namespace Trivial.Tasks;
 /// </summary>
 public class JsonRpcRequestRoute
 {
-    private Dictionary<string, JsonRpcRequestHandler> handlers = new();
+    private readonly Dictionary<string, JsonRpcRequestHandler> handlers;
 
-    ///// <summary>
-    ///// Gets a value indicating whether the method name is case-insensitive.
-    ///// </summary>
-    //public bool CaseInsensitive { get; set; }
+    /// <summary>
+    /// Initializes a new instance of the JsonRpcRequestRoute class.
+    /// </summary>
+    public JsonRpcRequestRoute()
+    {
+        handlers = new();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonRpcRequestRoute class.
+    /// </summary>
+    /// <param name="comparer">The equality comparer implementation to use when comparing handler keys, or null to use the default one for the type of the key.</param>
+    public JsonRpcRequestRoute(IEqualityComparer<string> comparer)
+    {
+        handlers = new(comparer);
+    }
 
     /// <summary>
     /// Gets all method names registerred.
     /// </summary>
     public IEnumerable<string> Methods => handlers.Keys;
+
+    /// <summary>
+    /// Gets or sets the additional tag.
+    /// </summary>
+    public object Tag { get; set; }
 
     /// <summary>
     /// Registers a handler to process JSON-PRC request.
@@ -101,6 +120,14 @@ public class JsonRpcRequestRoute
         if (handlers.TryGetValue(method, out var handler)) return handler;
         return null;
     }
+    
+    /// <summary>
+    /// Tests if contain the specific method.
+    /// </summary>
+    /// <param name="method">The name of the method.</param>
+    /// <returns>true if contains; otherwise, false.</returns>
+    public bool Contains(string method)
+        => method != null && handlers.ContainsKey(method);
 
     /// <summary>
     /// Removes a handler.
@@ -154,8 +181,9 @@ public class JsonRpcRequestRoute
     public async Task<BaseJsonRpcResponseObject> ProcessAsync(JsonRpcRequestObject request, CancellationToken cancellationToken = default)
     {
         if (request?.Method == null) return null;
-        if (!handlers.TryGetValue(request.Method, out var handler)) return null;
-        return await handler.ProcessInternalAsync(request, this, cancellationToken);
+        return handlers.TryGetValue(request.Method, out var handler)
+            ? await handler.ProcessInternalAsync(request, this, cancellationToken)
+            : new ErrorJsonRpcResponseObject(request, JsonRpcConstants.MethodNotFound, $"Method {request.Method} does not found.");
     }
 
     /// <summary>
@@ -169,6 +197,52 @@ public class JsonRpcRequestRoute
         if (request == null) yield break;
         foreach (var req in request)
         {
+            var resp = await ProcessAsync(req, cancellationToken);
+            if (resp != null) yield return resp;
+        }
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object collection.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object collection.</returns>
+    public async IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessAsync(IAsyncEnumerable<JsonRpcRequestObject> request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        if (request == null) yield break;
+        await foreach (var req in request)
+        {
+            var resp = await ProcessAsync(req, cancellationToken);
+            if (resp != null) yield return resp;
+        }
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object.</returns>
+    public Task<BaseJsonRpcResponseObject> ProcessAsync(JsonObjectNode request, CancellationToken cancellationToken = default)
+    {
+        JsonRpcRequestObject req = request;
+        return ProcessAsync(req, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object.</returns>
+    public async IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessAsync(JsonArrayNode request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        if (request == null) yield break;
+        foreach (var item in request)
+        {
+            if (item is not JsonObjectNode json) continue;
+            JsonRpcRequestObject req = json;
             yield return await ProcessAsync(req, cancellationToken);
         }
     }
@@ -179,10 +253,84 @@ public class JsonRpcRequestRoute
     /// <param name="request">The JSON-RPC request object.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The JSON-RPC response object.</returns>
-    public Task<BaseJsonRpcResponseObject> ProcessAsync(string request, CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessAsync(IEnumerable<JsonObjectNode> request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var req = JsonSerializer.Deserialize<JsonRpcRequestObject>(request);
-        return ProcessAsync(req, cancellationToken);
+        if (request == null) yield break;
+        foreach (var item in request)
+        {
+            JsonRpcRequestObject req = item;
+            yield return await ProcessAsync(req, cancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object.</returns>
+    public async IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessAsync(IAsyncEnumerable<JsonObjectNode> request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        if (request == null) yield break;
+        await foreach (var item in request)
+        {
+            JsonRpcRequestObject req = item;
+            yield return await ProcessAsync(req, cancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="options">Options to control the behavior during reading.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object.</returns>
+    public async Task<BaseJsonRpcResponseObject> ProcessAsync(string request, JsonSerializerOptions options, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request)) return null;
+        JsonRpcRequestObject req;
+        try
+        {
+            req = JsonSerializer.Deserialize<JsonRpcRequestObject>(request, options);
+        }
+        catch (NotSupportedException ex)
+        {
+            return new ErrorJsonRpcResponseObject(null as string, JsonRpcConstants.ParseError, string.Concat(ex.Message ?? "Parse error"));
+        }
+        catch (JsonException ex)
+        {
+            return new ErrorJsonRpcResponseObject(null as string, JsonRpcConstants.ParseError, string.Concat(ex.Message ?? "Parse error"));
+        }
+
+        return await ProcessAsync(req, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object.</returns>
+    public Task<BaseJsonRpcResponseObject> ProcessAsync(string request, CancellationToken cancellationToken = default)
+        => ProcessAsync(request, default, cancellationToken);
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object collection.</param>
+    /// <param name="options">Options to control the behavior during reading.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object collection.</returns>
+    public async IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessBatchAsync(string request, JsonSerializerOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request)) yield break;
+        var req = JsonSerializer.Deserialize<IEnumerable<JsonRpcRequestObject>>(request, options);
+        var col = ProcessAsync(req, cancellationToken);
+        await foreach (var item in col)
+        {
+            yield return item;
+        }
     }
 
     /// <summary>
@@ -192,9 +340,33 @@ public class JsonRpcRequestRoute
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The JSON-RPC response object collection.</returns>
     public IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessBatchAsync(string request, CancellationToken cancellationToken = default)
+        => ProcessBatchAsync(request, default, cancellationToken);
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object.</param>
+    /// <param name="options">Options to control the behavior during reading.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object.</returns>
+    public async Task<BaseJsonRpcResponseObject> ProcessAsync(Stream request, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
-        var req = JsonSerializer.Deserialize<IEnumerable<JsonRpcRequestObject>>(request);
-        return ProcessAsync(req, cancellationToken);
+        if (request == null) return null;
+        JsonRpcRequestObject req;
+        try
+        {
+            req = await JsonSerializer.DeserializeAsync<JsonRpcRequestObject>(request, options, cancellationToken);
+        }
+        catch (NotSupportedException ex)
+        {
+            return new ErrorJsonRpcResponseObject(null as string, JsonRpcConstants.ParseError, string.Concat(ex.Message ?? "Parse error"));
+        }
+        catch (JsonException ex)
+        {
+            return new ErrorJsonRpcResponseObject(null as string, JsonRpcConstants.ParseError, string.Concat(ex.Message ?? "Parse error"));
+        }
+
+        return await ProcessAsync(req, cancellationToken);
     }
 
     /// <summary>
@@ -204,8 +376,18 @@ public class JsonRpcRequestRoute
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The JSON-RPC response object.</returns>
     public Task<BaseJsonRpcResponseObject> ProcessAsync(Stream request, CancellationToken cancellationToken = default)
+        => ProcessAsync(request, default, cancellationToken);
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="request">The JSON-RPC request object collection.</param>
+    /// <param name="options">Options to control the behavior during reading.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON-RPC response object collection.</returns>
+    public IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessBatchAsync(Stream request, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
-        var req = JsonSerializer.Deserialize<JsonRpcRequestObject>(request);
+        var req = JsonSerializer.Deserialize<IEnumerable<JsonRpcRequestObject>>(request);
         return ProcessAsync(req, cancellationToken);
     }
 
@@ -216,10 +398,7 @@ public class JsonRpcRequestRoute
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The JSON-RPC response object collection.</returns>
     public IAsyncEnumerable<BaseJsonRpcResponseObject> ProcessBatchAsync(Stream request, CancellationToken cancellationToken = default)
-    {
-        var req = JsonSerializer.Deserialize<IEnumerable<JsonRpcRequestObject>>(request);
-        return ProcessAsync(req, cancellationToken);
-    }
+        => ProcessBatchAsync(request, default, cancellationToken);
 }
 
 /// <summary>

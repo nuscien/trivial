@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Trivial.Data;
 using Trivial.Maths;
+using Trivial.Reflection;
 using Trivial.Web;
 
 namespace Trivial.Text;
@@ -31,7 +32,7 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.IntegerConverter))]
 [Guid("46D19567-7B97-42B8-9BC5-01CFB01E320B")]
-public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonIntegerNode>
+public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, IObjectRef<decimal>, IObjectRef<float>, IObjectRef<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonIntegerNode>
 #if NET8_0_OR_GREATER
     , IParsable<JsonIntegerNode>, IUnaryNegationOperators<JsonIntegerNode, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, long, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, int, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, long, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, int, JsonIntegerNode>
 #endif
@@ -138,6 +139,26 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonIntegerNode>.IsZero => Value == 0L;
+
+    /// <summary>
+    /// Gets the source value.
+    /// </summary>
+    int IObjectRef<int>.Value => (int)Value;
+
+    /// <summary>
+    /// Gets the source value.
+    /// </summary>
+    decimal IObjectRef<decimal>.Value => Value;
+
+    /// <summary>
+    /// Gets the source value.
+    /// </summary>
+    float IObjectRef<float>.Value => Value;
+
+    /// <summary>
+    /// Gets the source value.
+    /// </summary>
+    double IObjectRef<double>.Value => Value;
 
     /// <summary>
     /// Tests if the number value is macthed by the specific condition.
@@ -1514,7 +1535,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.DoubleConverter))]
 [Guid("25098B53-EC11-48E1-A8FD-AFB685C38BA9")]
-public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDoubleNode>
+public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDoubleNode>
 #if NET8_0_OR_GREATER
     , IParsable<JsonDoubleNode>, IUnaryNegationOperators<JsonDoubleNode, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, double, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, double, JsonDoubleNode>
 #endif
@@ -1647,6 +1668,11 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonDoubleNode>.IsZero => Value == 0d;
+
+    /// <summary>
+    /// Gets the source value.
+    /// </summary>
+    float IObjectRef<float>.Value => (float)Value;
 
     /// <summary>
     /// Tests if the number value is macthed by the specific condition.
@@ -3083,7 +3109,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.DecimalConverter))]
 [Guid("2DE9E34B-A394-4BF7-B814-2A6765420E05")]
-public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDecimalNode>
+public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDecimalNode>
 #if NET8_0_OR_GREATER
     , IParsable<JsonDecimalNode>, IUnaryNegationOperators<JsonDecimalNode, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, decimal, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, decimal, JsonDecimalNode>
 #endif
@@ -3216,6 +3242,11 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IAdvancedAdditionCapable<JsonDecimalNode>.IsZero => Value == decimal.Zero;
+
+    /// <summary>
+    /// Gets the source value.
+    /// </summary>
+    double IObjectRef<double>.Value => (double)Value;
 
     /// <summary>
     /// Tests if the number value is macthed by the specific condition.

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -69,6 +70,7 @@ public interface IConciseModelDescriptive
 /// <summary>
 /// The concise model content.
 /// </summary>
+[Guid("D3C103E6-9E75-4F39-8847-4B3F67ACF781")]
 public class ConciseModel : BaseObservableProperties, IConciseModel
 {
     /// <summary>

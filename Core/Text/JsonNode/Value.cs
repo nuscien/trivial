@@ -22,7 +22,7 @@ namespace Trivial.Text;
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
 [DebuggerDisplay("{Value}")]
-public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T> where T : IEquatable<T>
+public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T>, IObjectRef<T> where T : IEquatable<T>
 {
     /// <summary>
     /// Initializes a new instance of the JsonNull class.
@@ -40,9 +40,13 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     protected override object RawValue => Value;
 
     /// <summary>
-    /// Gets the value.
+    /// Gets the source value.
     /// </summary>
     public T Value { get; }
+
+    object IObjectRef.Value => Value;
+
+    bool IObjectRef.IsValueCreated => true;
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.

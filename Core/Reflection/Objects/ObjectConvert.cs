@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Trivial.Data;
+using Trivial.Text;
 
 namespace Trivial.Reflection;
 
@@ -23,13 +24,13 @@ public static class ObjectConvert
     /// Converts the given object to a specific struct.
     /// </summary>
     /// <param name="type">The type of object to return.</param>
-    /// <param name="value">The value to convert.</param>
+    /// <param name="value">The boxed to convert.</param>
     /// <returns>An object converted.</returns>
     /// <exception cref="InvalidCastException">Failed to convert.</exception>
-    /// <exception cref="FormatException">value is not in a format recognized by conversion type.</exception>
-    /// <exception cref="ArgumentNullException">type or value was null.</exception>
-    /// <exception cref="ArgumentException">value was not the one in the type or content format supported.</exception>
-    /// <exception cref="OverflowException">value was outside the range of the underlying type of the specific type to convert.</exception>
+    /// <exception cref="FormatException">boxed is not in a format recognized by conversion type.</exception>
+    /// <exception cref="ArgumentNullException">type or boxed was null.</exception>
+    /// <exception cref="ArgumentException">boxed was not the one in the type or content format supported.</exception>
+    /// <exception cref="OverflowException">boxed was outside the range of the underlying type of the specific type to convert.</exception>
     public static object Invoke(Type type, object value)
     {
         if (type == null) throw ArgumentNull(nameof(type));
@@ -154,20 +155,20 @@ public static class ObjectConvert
     /// Converts the given object to a specific struct.
     /// </summary>
     /// <typeparam name="T">The type of object to return.</typeparam>
-    /// <param name="value">The value to convert.</param>
+    /// <param name="value">The boxed to convert.</param>
     /// <returns>An object converted.</returns>
     /// <exception cref="InvalidCastException">Failed to convert.</exception>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentException">value is not the one in the type or content format supported.</exception>
-    /// <exception cref="OverflowException">value is outside the range of the underlying type of the specific type to convert.</exception>
+    /// <exception cref="ArgumentNullException">boxed is null.</exception>
+    /// <exception cref="ArgumentException">boxed is not the one in the type or content format supported.</exception>
+    /// <exception cref="OverflowException">boxed is outside the range of the underlying type of the specific type to convert.</exception>
     public static T Invoke<T>(object value)
         => (T)Invoke(typeof(T), value);
 
     /// <summary>
     /// Tries to convert the given object to a specific struct.
     /// </summary>
-    /// <typeparam name="T">The type of the value type instance to return.</typeparam>
-    /// <param name="value">The value to convert.</param>
+    /// <typeparam name="T">The type of the boxed type instance to return.</typeparam>
+    /// <param name="value">The boxed to convert.</param>
     /// <returns>An struct converted.</returns>
     public static T? TryInvokeForStruct<T>(object value) where T : struct
     {
@@ -202,7 +203,7 @@ public static class ObjectConvert
     /// Tries to convert the given object to a specific struct.
     /// </summary>
     /// <typeparam name="T">The type of reference type instance to return.</typeparam>
-    /// <param name="value">The value to convert.</param>
+    /// <param name="value">The boxed to convert.</param>
     /// <returns>An struct converted.</returns>
     public static T TryInvokeForClass<T>(object value) where T : class
     {
@@ -236,8 +237,8 @@ public static class ObjectConvert
     /// <summary>
     /// Tries to convert the given object to a specific struct.
     /// </summary>
-    /// <typeparam name="T">The type of the value type instance to return.</typeparam>
-    /// <param name="value">The value to convert.</param>
+    /// <typeparam name="T">The type of the boxed type instance to return.</typeparam>
+    /// <param name="value">The boxed to convert.</param>
     /// <param name="output">The result output.</param>
     /// <returns>true if convert succeeded; otherwise, false.</returns>
     public static bool TryInvokeForStruct<T>(object value, out T output) where T : struct
@@ -262,8 +263,8 @@ public static class ObjectConvert
     /// <summary>
     /// Tries to convert the given object to a specific struct.
     /// </summary>
-    /// <typeparam name="T">The type of the value type instance to return.</typeparam>
-    /// <param name="value">The value to convert.</param>
+    /// <typeparam name="T">The type of the boxed type instance to return.</typeparam>
+    /// <param name="value">The boxed to convert.</param>
     /// <param name="output">The result output.</param>
     /// <returns>true if convert succeeded; otherwise, false.</returns>
     public static bool TryInvokeForClass<T>(object value, out T output) where T : class
@@ -380,11 +381,11 @@ public static class ObjectConvert
     /// Occurs the event handler.
     /// </summary>
     /// <typeparam name="TKey">The type of key.</typeparam>
-    /// <typeparam name="TValue">The type of value</typeparam>
+    /// <typeparam name="TValue">The type of boxed</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="sender">The sender.</param>
     /// <param name="key">The key.</param>
-    /// <param name="value">The value.</param>
+    /// <param name="value">The boxed.</param>
     public static void Invoke<TKey, TValue>(this KeyValueEventHandler<TKey, TValue> handler, object sender, TKey key, TValue value)
     {
         if (handler == null) return;
@@ -414,10 +415,10 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of the data.</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="sender">The sender.</param>
-    /// <param name="oldValue">The old value.</param>
-    /// <param name="newValue">The new value.</param>
+    /// <param name="oldValue">The old boxed.</param>
+    /// <param name="newValue">The new boxed.</param>
     /// <param name="method">The method to change.</param>
-    /// <param name="key">The property key of the value changed.</param>
+    /// <param name="key">The property key of the boxed changed.</param>
     public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, ChangeMethods method, string key = null)
     {
         if (handler == null) return;
@@ -431,11 +432,11 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of the data.</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="sender">The sender.</param>
-    /// <param name="oldValue">The old value.</param>
-    /// <param name="newValue">The new value.</param>
+    /// <param name="oldValue">The old boxed.</param>
+    /// <param name="newValue">The new boxed.</param>
     /// <param name="method">The method to change.</param>
     /// <param name="triggerType">The type identifier of the trigger.</param>
-    /// <param name="key">The property key of the value changed.</param>
+    /// <param name="key">The property key of the boxed changed.</param>
     public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, ChangeMethods method, Guid triggerType, string key = null)
     {
         if (handler == null) return;
@@ -449,10 +450,10 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of the data.</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="sender">The sender.</param>
-    /// <param name="oldValue">The old value.</param>
-    /// <param name="newValue">The new value.</param>
-    /// <param name="key">The property key of the value changed.</param>
-    /// <param name="autoMethod">true if set method automatically by value parameters; otherwise, false.</param>
+    /// <param name="oldValue">The old boxed.</param>
+    /// <param name="newValue">The new boxed.</param>
+    /// <param name="key">The property key of the boxed changed.</param>
+    /// <param name="autoMethod">true if set method automatically by boxed parameters; otherwise, false.</param>
     public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, string key = null, bool autoMethod = false)
     {
         if (handler == null) return;
@@ -466,10 +467,10 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of the data.</typeparam>
     /// <param name="handler">The handler.</param>
     /// <param name="sender">The sender.</param>
-    /// <param name="oldValue">The old value.</param>
-    /// <param name="newValue">The new value.</param>
+    /// <param name="oldValue">The old boxed.</param>
+    /// <param name="newValue">The new boxed.</param>
     /// <param name="triggerType">The type identifier of the trigger.</param>
-    /// <param name="key">The property key of the value changed.</param>
+    /// <param name="key">The property key of the boxed changed.</param>
     public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, Guid triggerType, string key = null)
     {
         if (handler == null) return;
@@ -563,19 +564,19 @@ public static class ObjectConvert
         => IsGenericEnumerable(type, out _);
 
     /// <summary>
-    /// Tests if the given type is a nullable value type.
+    /// Tests if the given type is a nullable boxed type.
     /// </summary>
     /// <param name="type">The type to test.</param>
-    /// <returns>true if the type is a nullable value type.</returns>
+    /// <returns>true if the type is a nullable boxed type.</returns>
     public static bool IsNullableValueType(Type type)
         => type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
     /// <summary>
-    /// Tests if the given type is a nullable value type.
+    /// Tests if the given type is a nullable boxed type.
     /// </summary>
     /// <param name="type">The type to test.</param>
-    /// <param name="value">The type of the value type.</param>
-    /// <returns>true if the type is a nullable value type.</returns>
+    /// <param name="value">The type of the boxed type.</param>
+    /// <returns>true if the type is a nullable boxed type.</returns>
     public static bool IsNullableValueType(Type type, out Type value)
     {
         if (!IsNullableValueType(type))
@@ -680,9 +681,9 @@ public static class ObjectConvert
     }
 
     /// <summary>
-    /// Tries to get a specific property value.
+    /// Tries to get a specific property boxed.
     /// </summary>
-    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <typeparam name="T">The type of the property boxed.</typeparam>
     /// <param name="obj">The target object.</param>
     /// <param name="propertyName">The property name.</param>
     /// <param name="result">The result.</param>
@@ -734,9 +735,9 @@ public static class ObjectConvert
     }
 
     /// <summary>
-    /// Tries to get a specific property value.
+    /// Tries to get a specific property boxed.
     /// </summary>
-    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <typeparam name="T">The type of the property boxed.</typeparam>
     /// <param name="obj">The target object.</param>
     /// <param name="prop">The property info.</param>
     /// <param name="result">The result.</param>
@@ -783,6 +784,21 @@ public static class ObjectConvert
         }
 
         result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="obj">The object to resolve typed instance.</param>
+    /// <param name="value">The value resolved.</param>
+    /// <returns>true if has; otherwise, false.</returns>
+    public static bool TryGet<T>(object obj, out T value)
+    {
+        if (TryGetForSimple(obj, out value)) return true;
+        if (obj is BaseNestedParameter n) return n.ParameterIs(out value);
+        if (obj is TypedNestedParameter t) return t.TryGet(out value);
         return false;
     }
 
@@ -1017,6 +1033,81 @@ public static class ObjectConvert
         if (ReferenceEquals(a, b)) return true;
         if (a is null || b is null) return false;
         return a.Equals(b);
+    }
+
+    internal static bool TryGetForSimple<T>(object obj, out T boxed)
+    {
+        if (obj is null)
+        {
+            if (typeof(T) == typeof(DBNull))
+            {
+                boxed = (T)(object)DBNull.Value;
+                return true;
+            }
+
+            boxed = default;
+            return false;
+        }
+
+        if (obj is T o)
+        {
+            boxed = o;
+            return true;
+        }
+
+        try
+        {
+            if (obj is IObjectRef<T> r)
+            {
+                boxed = r.Value;
+                return true;
+            }
+
+            if (obj is Lazy<T> l)
+            {
+                boxed = l.Value;
+                return true;
+            }
+
+            if (obj is IObjectResolver<T> h)
+            {
+                boxed = h.GetInstance();
+                return true;
+            }
+
+            if (obj is IJsonValueNode<T> j)
+            {
+                boxed = j.Value;
+                return true;
+            }
+        }
+        catch (MemberAccessException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (KeyNotFoundException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+
+        boxed = default;
+        return false;
     }
 
     internal static T ParseEnum<T>(string s) where T : struct

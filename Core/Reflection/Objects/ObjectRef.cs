@@ -14,7 +14,7 @@ namespace Trivial.Reflection;
 public interface IObjectRef
 {
     /// <summary>
-    /// Gets the value.
+    /// Gets the source value.
     /// </summary>
     object Value { get; }
 

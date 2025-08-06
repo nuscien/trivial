@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Tasks;
 
@@ -242,14 +244,15 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="duration">The duration between each number.</param>
     /// <param name="count">The length.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A sequence.</returns>
     /// <exception cref="ArgumentOutOfRangeException">duration should be greater than zero millisecond (0ms).</exception>
-    public static async IAsyncEnumerable<int> CreateNumberRangeAsync(TimeSpan duration, int count)
+    public static async IAsyncEnumerable<int> CreateNumberRangeAsync(TimeSpan duration, int count, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (duration.TotalMilliseconds < 0) throw new ArgumentOutOfRangeException(nameof(duration), "duration should be greater than zero millisecond (0ms).");
         for (var i = 0; i < count; i++)
         {
-            await Task.Delay(duration);
+            await Task.Delay(duration, cancellationToken);
             yield return i;
         }
     }
@@ -258,8 +261,9 @@ public static partial class ListExtensions
     /// Creates a range of number with duration.
     /// </summary>
     /// <param name="policy">The policy to sleep between each number.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A sequence.</returns>
-    public static async IAsyncEnumerable<int> CreateNumberRangeAsync(IRetryPolicy policy)
+    public static async IAsyncEnumerable<int> CreateNumberRangeAsync(IRetryPolicy policy, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var instance = policy?.CreateInstance();
         if (instance == null) yield break;
@@ -268,7 +272,7 @@ public static partial class ListExtensions
         {
             var next = instance.Next();
             if (!next.HasValue) yield break;
-            if (next.Value.TotalMilliseconds > 0) await Task.Delay(next.Value);
+            if (next.Value.TotalMilliseconds > 0) await Task.Delay(next.Value, cancellationToken);
             yield return i;
             i++;
         }

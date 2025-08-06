@@ -8278,7 +8278,47 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         file.Refresh();
     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="file">The file to write.</param>
+    /// <param name="style">The indent style.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentNullException">The file path was null.</exception>
+    /// <exception cref="NotSupportedException">The file was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public async Task WriteToAsync(FileInfo file, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
+    {
+        if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
+        await File.WriteAllTextAsync(file.FullName, ToString(style) ?? "null", cancellationToken);
+        file.Refresh();
+    }
+
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="file">The file to write.</param>
+    /// <param name="priorityKeyOrder">The additional order of key.</param>
+    /// <param name="onlyPriorityKeys">true if remove the rest; otherwise, false.</param>
+    /// <param name="style">The indent style.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentNullException">The file path was null.</exception>
+    /// <exception cref="NotSupportedException">The file was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public async Task WriteToAsync(FileInfo file, IEnumerable<string> priorityKeyOrder, bool onlyPriorityKeys = false, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
+    {
+        if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
+        await File.WriteAllTextAsync(file.FullName, ToString(priorityKeyOrder, onlyPriorityKeys, style) ?? "null", cancellationToken);
+        file.Refresh();
+    }
+
     /// <summary>
     /// Writes to file.
     /// </summary>
@@ -9596,6 +9636,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="options">Options to control the reader behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
     /// <exception cref="JsonException">obj or its property does not represent a valid single JSON object.</exception>
+    /// <exception cref="NotSupportedException">There is no compatible JSON converter for the type of obj or its serializable members.</exception>
     public static JsonObjectNode ConvertFrom(object obj, JsonSerializerOptions options = default)
     {
         if (obj is null) return null;
@@ -9765,6 +9806,40 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         if (json == null) json = new();
         else json.Clear();
         json.SetRange(resp);
+    }
+
+    /// <summary>
+    /// Sets property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    internal void SetValueInternal<T>(string key, T value)
+    {
+        try
+        {
+            var json = JsonValues.ToJsonValue(value);
+            if (json == null) return;
+            if (ReferenceEquals(json, this)) json = Clone();
+            SetValue(key, json);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
     }
 
     private static JsonObjectNode TryGetObjectValueByProperty(JsonObjectNode json, string key)

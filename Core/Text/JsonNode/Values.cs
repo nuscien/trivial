@@ -7,11 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Collection;
 using Trivial.Data;
@@ -857,7 +859,7 @@ public static class JsonValues
     }
 
     /// <summary>
-    /// Filters a sequence of values based on a condition.
+    /// Gets the all JSON object items which contains the specific property from the collection.
     /// </summary>
     /// <param name="source">A string collection to filter.</param>
     /// <param name="kind">The kind to filter.</param>
@@ -866,147 +868,6 @@ public static class JsonValues
     {
         if (source == null) return null;
         return source.Where(ele => ele.ValueKind == kind);
-    }
-
-    /// <summary>
-    /// Filters the JSON object collection by the property.
-    /// </summary>
-    /// <param name="col">The JSON object collection.</param>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The expected value of the property.</param>
-    /// <returns>The collection after filter.</returns>
-    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value)
-    {
-        if (col == null) yield break;
-        foreach (var item in col)
-        {
-            if (item?.TryGetStringValue(key, true, out var s) != true || value != s) continue;
-            yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Filters the JSON object collection by the property.
-    /// </summary>
-    /// <param name="col">The JSON object collection.</param>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The expected value of the property.</param>
-    /// <param name="callback">The callback with item, original index and filtered index.</param>
-    /// <returns>The collection after filter.</returns>
-    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value, Action<JsonObjectNode, int, int> callback)
-    {
-        if (col == null) yield break;
-        var i = -1;
-        var j = -1;
-        foreach (var item in col)
-        {
-            i++;
-            if (item?.TryGetStringValue(key, true, out var s) != true || value != s) continue;
-            j++;
-            yield return item;
-            callback?.Invoke(item, i, j);
-        }
-    }
-
-    /// <summary>
-    /// Filters the JSON object collection by the property.
-    /// </summary>
-    /// <param name="col">The JSON object collection.</param>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The expected value of the property.</param>
-    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <returns>The collection after filter.</returns>
-    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType)
-    {
-        if (col == null) yield break;
-        if (value == null)
-        {
-            foreach (var item in col)
-            {
-                if (!item.IsNullOrUndefined(key)) continue;
-                yield return item;
-            }
-
-            yield break;
-        }
-
-        foreach (var item in col)
-        {
-            if (item?.TryGetStringValue(key, true, out var s) != true || !value.Equals(s, comparisonType)) continue;
-            yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Filters the JSON object collection by the property.
-    /// </summary>
-    /// <param name="col">The JSON object collection.</param>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The expected value of the property.</param>
-    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <param name="callback">The callback with item, original index and filtered index.</param>
-    /// <returns>The collection after filter.</returns>
-    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType, Action<JsonObjectNode, int, int> callback)
-    {
-        if (col == null) yield break;
-        var i = -1;
-        var j = -1;
-        if (value == null)
-        {
-            foreach (var item in col)
-            {
-                i++;
-                if (!item.IsNullOrUndefined(key)) continue;
-                j++;
-                yield return item;
-                callback?.Invoke(item, i, j);
-            }
-
-            yield break;
-        }
-
-        foreach (var item in col)
-        {
-            i++;
-            if (item?.TryGetStringValue(key, true, out var s) != true || !value.Equals(s, comparisonType)) continue;
-            j++;
-            yield return item;
-            callback?.Invoke(item, i, j);
-        }
-    }
-
-    /// <summary>
-    /// Filters the JSON object collection by the property.
-    /// </summary>
-    /// <param name="col">The JSON object collection.</param>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The expected value of the property.</param>
-    /// <returns>The collection after filter.</returns>
-    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, int value)
-    {
-        if (col == null) yield break;
-        foreach (var item in col)
-        {
-            if (item?.TryGetInt32Value(key, out var s) != true || value != s) continue;
-            yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Filters the JSON object collection by the property.
-    /// </summary>
-    /// <param name="col">The JSON object collection.</param>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The expected value of the property.</param>
-    /// <returns>The collection after filter.</returns>
-    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, long value)
-    {
-        if (col == null) yield break;
-        foreach (var item in col)
-        {
-            if (item?.TryGetInt64Value(key, out var s) != true || value != s) continue;
-            yield return item;
-        }
     }
 
     /// <summary>
@@ -1022,6 +883,48 @@ public static class JsonValues
         foreach (var item in col)
         {
             if (item is not null && item.TryGetStringValue(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value, bool strictMode)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item?.TryGetStringValue(key, strictMode, out var s) != true || value != s) continue;
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="callback">The callback with item, original index and filtered index.</param>
+    /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value, Action<JsonObjectNode, int, int> callback, bool strictMode = false)
+    {
+        if (col == null) yield break;
+        var i = -1;
+        var j = -1;
+        foreach (var item in col)
+        {
+            i++;
+            if (item?.TryGetStringValue(key, strictMode, out var s) != true || value != s) continue;
+            j++;
+            yield return item;
+            callback?.Invoke(item, i, j);
         }
     }
 
@@ -1055,6 +958,75 @@ public static class JsonValues
     /// <summary>
     /// Gets the all JSON object items which contains the specific property from the collection.
     /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType, bool strictMode)
+    {
+        if (col == null) yield break;
+        if (value == null)
+        {
+            foreach (var item in col)
+            {
+                if (!item.IsNullOrUndefined(key)) continue;
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        foreach (var item in col)
+        {
+            if (item?.TryGetStringValue(key, strictMode, out var s) != true || !value.Equals(s, comparisonType)) continue;
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <param name="callback">The callback with item, original index and filtered index.</param>
+    /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType, Action<JsonObjectNode, int, int> callback, bool strictMode = false)
+    {
+        if (col == null) yield break;
+        var i = -1;
+        var j = -1;
+        if (value == null)
+        {
+            foreach (var item in col)
+            {
+                i++;
+                if (!item.IsNullOrUndefined(key)) continue;
+                j++;
+                yield return item;
+                callback?.Invoke(item, i, j);
+            }
+
+            yield break;
+        }
+
+        foreach (var item in col)
+        {
+            i++;
+            if (item?.TryGetStringValue(key, strictMode, out var s) != true || !value.Equals(s, comparisonType)) continue;
+            j++;
+            yield return item;
+            callback?.Invoke(item, i, j);
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
@@ -1065,6 +1037,22 @@ public static class JsonValues
         foreach (var item in col)
         {
             if (item is not null && item.TryGetInt32Value(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, long value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.TryGetInt64Value(key) == value) yield return item;
         }
     }
 
@@ -1201,34 +1189,34 @@ public static class JsonValues
     }
 
     /// <summary>
-    /// Converts to JSON object node collection.
+    /// Converts a set of JSON object host to JSON object nodes.
     /// </summary>
-    /// <param name="collection">The collection of the item to convert.</param>
-    /// <returns>A JSON object node collection converted.</returns>
-    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<IJsonObjectHost> collection)
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <returns>The JSON object nodes.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes<T>(this IEnumerable<T> source) where T : IJsonObjectHost
     {
-        if (collection == null) yield break;
-        foreach (var item in collection)
+        if (source == null) yield break;
+        foreach (var item in source)
         {
             yield return item?.ToJson();
         }
     }
 
     /// <summary>
-    /// Converts to JSON array.
+    /// Converts a set of JSON object host to JSON object nodes.
     /// </summary>
-    /// <param name="collection">The collection of the item to convert.</param>
-    /// <returns>A JSON array node converted.</returns>
-    public static JsonArrayNode ToJsonArrayNode(this IEnumerable<IJsonObjectHost> collection)
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The JSON object nodes.</returns>
+    public static async IAsyncEnumerable<JsonObjectNode> ToJsonObjectNodesAsync<T>(this IAsyncEnumerable<T> source, [EnumeratorCancellation] CancellationToken cancellationToken = default) where T : IJsonObjectHost
     {
-        if (collection == null) return null;
-        var arr = new JsonArrayNode();
-        foreach (var item in collection)
+        if (source == null) yield break;
+        await foreach (var item in source.WithCancellation(cancellationToken))
         {
-            arr.Add(item);
+            yield return item?.ToJson();
         }
-
-        return arr;
     }
 
     /// <summary>
@@ -1241,6 +1229,24 @@ public static class JsonValues
         if (collection == null) return null;
         var arr = new JsonArrayNode();
         arr.AddRange(collection);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode<T>(this IEnumerable<T> collection) where T : IJsonObjectHost
+    {
+        if (collection == null) return null;
+        var arr = new JsonArrayNode();
+        foreach (var item in collection)
+        {
+            arr.Add(item);
+        }
+
         return arr;
     }
 
@@ -1547,19 +1553,21 @@ public static class JsonValues
     /// </summary>
     /// <param name="stream">The stream to write.</param>
     /// <param name="obj">The object to serialize.</param>
+    /// <param name="skipSeekBack">true if skip seeking stream back; otherwise, false.</param>
     /// <param name="options">The serializer options.</param>
     /// <param name="converter">The optional fallback converter.</param>
     /// <returns>A JSON string.</returns>
-    public static void WriteTo(Stream stream, object obj, JsonSerializerOptions options = null, Action<Stream, object, Type, JsonSerializerOptions> converter = null)
+    public static void WriteTo(Stream stream, object obj, bool skipSeekBack, JsonSerializerOptions options = null, Action<Stream, object, Type, JsonSerializerOptions> converter = null)
     {
         if (stream?.CanWrite != true) return;
         var writer = new Utf8JsonWriter(stream);
         var t = obj.GetType();
+        var canSeek = stream.CanSeek && !skipSeekBack;
         if (obj == null)
         {
             writer.WriteNullValue();
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1567,7 +1575,7 @@ public static class JsonValues
         {
             json.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1575,7 +1583,7 @@ public static class JsonValues
         {
             jsonDoc.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1583,7 +1591,7 @@ public static class JsonValues
         {
             jsonEle.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1591,7 +1599,7 @@ public static class JsonValues
         {
             jsonNode.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1604,7 +1612,7 @@ public static class JsonValues
                 var sw = new StreamWriter(stream, Encoding.UTF8);
                 sw.Write(str);
                 sw.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
         }
@@ -1613,7 +1621,7 @@ public static class JsonValues
         {
             tokenReq.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1627,7 +1635,7 @@ public static class JsonValues
 
             writer.WriteEndObject();
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1635,7 +1643,7 @@ public static class JsonValues
         {
             writer.WriteStringValue(s);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1651,7 +1659,7 @@ public static class JsonValues
             }
 
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1661,7 +1669,7 @@ public static class JsonValues
             if (node is null) writer.WriteNullValue();
             else node.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1669,7 +1677,7 @@ public static class JsonValues
         {
             writer.WriteStringValue(obj.ToString());
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1679,7 +1687,7 @@ public static class JsonValues
             {
                 writer.WriteBooleanValue(b);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1687,7 +1695,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i32);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1695,7 +1703,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i64);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1703,7 +1711,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(f1);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1711,7 +1719,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i32u);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1719,7 +1727,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i64u);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1727,7 +1735,7 @@ public static class JsonValues
             {
                 writer.WriteStringValue(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1735,7 +1743,7 @@ public static class JsonValues
             {
                 writer.WriteStringValue(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1743,7 +1751,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(f2);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1751,7 +1759,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(f3);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1759,7 +1767,7 @@ public static class JsonValues
             {
                 writer.WriteStringValue(ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture));
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1767,7 +1775,7 @@ public static class JsonValues
             {
                 writer.WriteStringValue(obj.ToString());
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1775,7 +1783,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i8);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1783,7 +1791,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i16);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1791,7 +1799,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue(i16u);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1800,7 +1808,7 @@ public static class JsonValues
             {
                 writer.WriteNumberValue((float)ha);
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1808,7 +1816,7 @@ public static class JsonValues
             {
                 writer.WriteStringValue(date.ToString("yyyy-MM-dd"));
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 #endif
@@ -1818,7 +1826,7 @@ public static class JsonValues
                 if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) writer.WriteNumberValue((long)i128);
                 else writer.WriteStringValue(i128.ToString("g"));
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 
@@ -1827,7 +1835,7 @@ public static class JsonValues
                 if (i128u <= JsonIntegerNode.MaxSafeInteger) writer.WriteNumberValue((long)i128u);
                 else writer.WriteStringValue(i128u.ToString("g"));
                 writer.Flush();
-                stream.Position = 0;
+                if (canSeek) stream.Position = 0;
                 return;
             }
 #endif
@@ -1837,7 +1845,7 @@ public static class JsonValues
         {
             writer.WriteNullValue();
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1845,7 +1853,7 @@ public static class JsonValues
         {
             writer.WriteStringValue(obj.ToString());
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
@@ -1855,16 +1863,27 @@ public static class JsonValues
             if (json is null) writer.WriteNullValue();
             else json.WriteTo(writer);
             writer.Flush();
-            stream.Position = 0;
+            if (canSeek) stream.Position = 0;
             return;
         }
 
         if (converter is not null) converter(stream, obj, t, options);
         else if (options is null) JsonSerializer.Serialize(stream, obj, t);
         else JsonSerializer.Serialize(stream, obj, t, options);
-        stream.Position = 0;
+        if (canSeek) stream.Position = 0;
         return;
     }
+
+    /// <summary>
+    /// Serializes an object into JSON format.
+    /// </summary>
+    /// <param name="stream">The stream to write.</param>
+    /// <param name="obj">The object to serialize.</param>
+    /// <param name="options">The serializer options.</param>
+    /// <param name="converter">The optional fallback converter.</param>
+    /// <returns>A JSON string.</returns>
+    public static void WriteTo(Stream stream, object obj, JsonSerializerOptions options = null, Action<Stream, object, Type, JsonSerializerOptions> converter = null)
+        => WriteTo(stream, obj, false, options, converter);
 
     /// <summary>
     /// Writes this instance to the specified writer as a JSON value.
@@ -1936,6 +1955,239 @@ public static class JsonValues
         writer.WritePropertyName(key);
         converter.Write(writer, value, options);
     }
+
+    /// <summary>
+    /// Converts an object to JSON value node.
+    /// </summary>
+    /// <param name="obj">The object to serialize.</param>
+    /// <param name="options">The serializer options.</param>
+    /// <returns>A JSON value node.</returns>
+    public static BaseJsonValueNode ToJsonValue(object obj, JsonSerializerOptions options = null)
+    {
+        var t = obj.GetType();
+        if (obj == null)
+        {
+            return Null;
+        }
+
+        if (obj is IJsonValueNode jv)
+        {
+            return ConvertValue(jv);
+        }
+
+        if (obj is JsonDocument jsonDoc)
+        {
+            return jsonDoc;
+        }
+
+        if (obj is JsonElement jsonEle)
+        {
+            return jsonEle;
+        }
+
+        if (obj is System.Text.Json.Nodes.JsonNode jsonNode)
+        {
+            return jsonNode;
+        }
+
+        if (obj is Security.TokenRequest tokenReq)
+        {
+            return tokenReq.ToJsonObjectNode();
+        }
+
+        if (obj is IEnumerable<KeyValuePair<string, string>> col)
+        {
+            var o = new JsonObjectNode();
+            o.SetRange(col);
+            return o;
+        }
+
+        if (obj is string s)
+        {
+            return new JsonStringNode(s);
+        }
+
+        if (obj is Uri uri)
+        {
+            return new JsonStringNode(uri);
+        }
+
+
+        if (obj is Net.HttpUri || obj is Net.AppDeepLinkUri uri3)
+        {
+            return new JsonStringNode(obj.ToString());
+        }
+
+        if (t.IsValueType)
+        {
+            if (obj is bool b)
+            {
+                return b ? JsonBooleanNode.True : JsonBooleanNode.False;
+            }
+
+            if (obj is int i32)
+            {
+                return new JsonIntegerNode(i32);
+            }
+
+            if (obj is long i64)
+            {
+                return new JsonIntegerNode(i64);
+            }
+
+            if (obj is float f1)
+            {
+                return new JsonDoubleNode(f1);
+            }
+
+            if (obj is uint i32u)
+            {
+                return new JsonIntegerNode(i32u);
+            }
+
+            if (obj is ulong i64u)
+            {
+                return new JsonIntegerNode(i64u);
+            }
+
+            if (obj is DateTime d)
+            {
+                return new JsonStringNode(d);
+            }
+
+            if (obj is DateTimeOffset dto)
+            {
+                return new JsonStringNode(dto);
+            }
+
+            if (obj is double f2)
+            {
+                return new JsonDoubleNode(f2);
+            }
+
+            if (obj is decimal f3)
+            {
+                return new JsonDecimalNode(f3);
+            }
+
+            if (obj is TimeSpan ts)
+            {
+                return new JsonStringNode(ts);
+            }
+
+            if (t == typeof(Guid) || t == typeof(Angle) || t == typeof(Geography.Longitude) || t == typeof(Geography.Latitude))
+            {
+                return new JsonStringNode(obj.ToString());
+            }
+
+            if (obj is byte i8)
+            {
+                return new JsonIntegerNode(i8);
+            }
+
+            if (obj is short i16)
+            {
+                return new JsonIntegerNode(i16);
+            }
+
+            if (obj is ushort i16u)
+            {
+                return new JsonIntegerNode(i16u);
+            }
+
+#if NET6_0_OR_GREATER
+            if (obj is Half ha)
+            {
+                return new JsonDoubleNode((float)ha);
+            }
+
+            if (obj is DateOnly date)
+            {
+                return new JsonStringNode(date.ToString("yyyy-MM-dd"));
+            }
+#endif
+#if NET8_0_OR_GREATER
+            if (obj is Int128 i128)
+            {
+                if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128);
+                else return new JsonStringNode(i128.ToString("g"));
+            }
+
+            if (obj is UInt128 i128u)
+            {
+                if (i128u <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128u);
+                else return new JsonStringNode(i128u.ToString("g"));
+            }
+#endif
+        }
+
+        if (t == typeof(DBNull))
+        {
+            return Null;
+        }
+
+        if (t == typeof(StringBuilder) || t == typeof(Angle.Model) || t == typeof(Geography.Longitude.Model) || t == typeof(Geography.Latitude.Model))
+        {
+            return new JsonStringNode(obj.ToString());
+        }
+
+        if (obj is IJsonObjectHost jsonHost)
+        {
+            return jsonHost.ToJson() ?? Null;
+        }
+
+        if (ObjectConvert.IsGenericEnumerable(t))
+        {
+            try
+            {
+                return JsonArrayNode.ConvertFrom(obj, options);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (JsonException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+        }
+
+        try
+        {
+            return JsonObjectNode.ConvertFrom(obj, options);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+
+        return Undefined;
+    }
+
 
     /// <summary>
     /// Skips the comments during reading JSON.

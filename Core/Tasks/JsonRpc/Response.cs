@@ -14,7 +14,7 @@ namespace Trivial.Tasks;
 /// A base response object for JSON based stateless light-weight remote procedure call protocol.
 /// </summary>
 [JsonConverter(typeof(JsonRpcResponseJsonConverter))]
-public abstract class BaseJsonRpcResponseObject
+public abstract class BaseJsonRpcResponseObject : IJsonObjectHost
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseJsonRpcResponseObject"/> class.
@@ -87,22 +87,31 @@ public abstract class BaseJsonRpcResponseObject
     /// </summary>
     /// <param name="writer">The UTF-8 JSON writer to write to.</param>
     /// <param name="options">The JSON serializer options being used.</param>
-    public void Write(Utf8JsonWriter writer, JsonSerializerOptions options)
+    public void Write(Utf8JsonWriter writer, JsonSerializerOptions options = default)
+        => ToJson().WriteTo(writer);
+
+    /// <summary>
+    /// Fills the properties of JSON object to this entity.
+    /// </summary>
+    /// <param name="json">The JSON object to read.</param>
+    /// <exception cref="InvalidOperationException">The identifier is not matched.</exception>
+    protected virtual void Fill(JsonObjectNode json)
     {
-        writer.WriteStartObject();
-        writer.WriteString("jsonrpc", Version);
-        if (Id != null) writer.WriteString("id", Id);
-        WriteProperties(writer, options);
-        writer.WriteEndObject();
     }
 
     /// <summary>
-    /// Writes further properties to JSON.
+    /// Converts to JSON object node.
     /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected virtual void WriteProperties(Utf8JsonWriter writer, JsonSerializerOptions options)
+    /// <returns>The JSON object node about current instance.</returns>
+    public JsonObjectNode ToJson()
     {
+        var json = new JsonObjectNode()
+        {
+            { "jsonrpc", Version },
+            { "id", Id },
+        };
+        Fill(json);
+        return json;
     }
 }
 
@@ -239,13 +248,12 @@ public class SuccessJsonRpcResponseObject<T> : SuccessJsonRpcResponseObject
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public new T Result { get; }
 
-    /// <summary>
-    /// Writes parameter to JSON.
-    /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected override void WriteProperties(Utf8JsonWriter writer, JsonSerializerOptions options)
-        => JsonValues.Write(writer, "result", Result, options);
+    /// <inheritdoc />
+    protected override void Fill(JsonObjectNode json)
+    {
+        base.Fill(json);
+        json.SetValueInternal("result", Result);
+    }
 }
 
 /// <summary>
@@ -326,15 +334,12 @@ public class ErrorJsonRpcResponseObject : BaseJsonRpcResponseObject
     /// </summary>
     public string Message { get; }
 
-    /// <summary>
-    /// Writes current object to JSON.
-    /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected override void WriteProperties(Utf8JsonWriter writer, JsonSerializerOptions options)
+    /// <inheritdoc />
+    protected override void Fill(JsonObjectNode json)
     {
-        writer.WriteNumber("code", Code);
-        if (Message != null) writer.WriteString("message", Message);
+        base.Fill(json);
+        json.SetValue("code", Code);
+        if (Message != null) json.SetValue("message", Message);
     }
 }
 
@@ -414,13 +419,12 @@ public class ErrorJsonRpcResponseObject<T> : ErrorJsonRpcResponseObject
     /// </summary>
     public T Data { get; }
 
-    /// <summary>
-    /// Writes error data to JSON.
-    /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected override void WriteProperties(Utf8JsonWriter writer, JsonSerializerOptions options)
-        => JsonValues.Write(writer, "error", Data, options);
+    /// <inheritdoc />
+    protected override void Fill(JsonObjectNode json)
+    {
+        base.Fill(json);
+        json.SetValueInternal("error", Data);
+    }
 }
 
 /// <summary>
@@ -488,14 +492,11 @@ public class StreamStateJsonRpcResponseObject : BaseJsonRpcResponseObject
     /// </summary>
     public string Message { get; }
 
-    /// <summary>
-    /// Writes current object to JSON.
-    /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected override void WriteProperties(Utf8JsonWriter writer, JsonSerializerOptions options)
+    /// <inheritdoc />
+    protected override void Fill(JsonObjectNode json)
     {
-        writer.WriteString("stream", Message);
+        base.Fill(json);
+        json.SetValue("stream", Message);
     }
 }
 

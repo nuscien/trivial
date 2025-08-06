@@ -246,6 +246,9 @@ public class TokenRequest
         data.Remove(TokenRequestBody.ClientSecretProperty);
         return data.ToString();
     }
+
+    internal JsonObjectNode ToJsonObjectNode()
+        => ToJsonObject();
 }
 
 /// <summary>

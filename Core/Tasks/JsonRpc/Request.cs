@@ -14,7 +14,7 @@ namespace Trivial.Tasks;
 /// A request object for JSON based stateless light-weight remote procedure call protocol.
 /// </summary>
 [JsonConverter(typeof(JsonRpcRequestJsonConverter))]
-public class JsonRpcRequestObject
+public class JsonRpcRequestObject : IJsonObjectHost
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonRpcRequestObject{T}"/> class.
@@ -122,23 +122,71 @@ public class JsonRpcRequestObject
     /// </summary>
     /// <param name="writer">The UTF-8 JSON writer to write to.</param>
     /// <param name="options">The JSON serializer options being used.</param>
-    public void Write(Utf8JsonWriter writer, JsonSerializerOptions options)
+    public void Write(Utf8JsonWriter writer, JsonSerializerOptions options = default)
+        => ToJson().WriteTo(writer);
+
+    /// <summary>
+    /// Fills the properties of JSON object to this entity.
+    /// </summary>
+    /// <param name="json">The JSON object to read.</param>
+    /// <exception cref="InvalidOperationException">The identifier is not matched.</exception>
+    protected virtual void Fill(JsonObjectNode json)
     {
-        writer.WriteStartObject();
-        writer.WriteString("jsonrpc", Version);
-        if (Id != null) writer.WriteString("id", Id);
-        if (Method != null) writer.WriteString("method", Method);
-        WriteParameter(writer, options);
-        writer.WriteEndObject();
     }
 
     /// <summary>
-    /// Writes parameter to JSON.
+    /// Converts to JSON object node.
     /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected virtual void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options)
+    /// <returns>The JSON object node about current instance.</returns>
+    public JsonObjectNode ToJson()
     {
+        var json = new JsonObjectNode()
+        {
+            { "jsonrpc", Version },
+            { "id", Id },
+            { "method", Method }
+        };
+        Fill(json);
+        return json;
+    }
+
+    /// <summary>
+    /// Converts a JSON object to JSON-RPC request object.
+    /// </summary>
+    /// <param name="json">The JSON object to convert.</param>
+    public static implicit operator JsonRpcRequestObject(JsonObjectNode json)
+    {
+        if (json == null) return null;
+        var id = json.TryGetStringValue("id");
+        var v = json.TryGetStringTrimmedValue("jsonrpc", true);
+        var method = json.TryGetStringValue("method");
+        const string parameter = "params";
+        var kind = json.GetValueKind(parameter);
+        switch (kind)
+        {
+            case JsonValueKind.Object:
+                return new JsonRpcRequestObject<JsonObjectNode>(v, id, method, json.TryGetObjectValue(parameter));
+            case JsonValueKind.Array:
+                return new JsonRpcRequestObject<JsonArrayNode>(v, id, method, json.TryGetArrayValue(parameter));
+            case JsonValueKind.String:
+                return new JsonRpcRequestObject<string>(v, id, method, json.TryGetStringValue(parameter));
+            case JsonValueKind.True:
+                return new JsonRpcRequestObject<bool>(v, id, method, true);
+            case JsonValueKind.False:
+                return new JsonRpcRequestObject<bool>(v, id, method, false);
+            case JsonValueKind.Number:
+                {
+                    if (json.GetValue(parameter) is not IJsonNumberNode num) break;
+                    if (!num.IsInteger)
+                        return new JsonRpcRequestObject<double>(v, id, method, num.GetDouble());
+                    var i = num.GetInt64();
+                    return i > int.MaxValue || i < int.MinValue
+                        ? new JsonRpcRequestObject<long>(v, id, method, i)
+                        : new JsonRpcRequestObject<int>(v, id, method, (int)i);
+                }
+        }
+
+        return new JsonRpcRequestObject(v, id, method);
     }
 }
 
@@ -212,13 +260,12 @@ public class JsonRpcRequestObject<T> : JsonRpcRequestObject
     [JsonPropertyName("params")]
     public T Parameter { get; }
 
-    /// <summary>
-    /// Writes parameter to JSON.
-    /// </summary>
-    /// <param name="writer">The UTF-8 JSON writer to write to.</param>
-    /// <param name="options">The JSON serializer options being used.</param>
-    protected override void WriteParameter(Utf8JsonWriter writer, JsonSerializerOptions options)
-        => JsonValues.Write(writer, "params", Parameter, options);
+    /// <inheritdoc />
+    protected override void Fill(JsonObjectNode json)
+    {
+        base.Fill(json);
+        json.SetValueInternal("params", Parameter);
+    }
 }
 
 /// <summary>
@@ -234,37 +281,7 @@ internal sealed class JsonRpcRequestJsonConverter : JsonConverter<JsonRpcRequest
         if (reader.TokenType != JsonTokenType.StartObject)
             throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object.");
         var json = JsonObjectNode.ParseValue(ref reader);
-        if (json == null) return null;
-        var id = json.TryGetStringValue("id");
-        var v = json.TryGetStringTrimmedValue("jsonrpc", true);
-        var method = json.TryGetStringValue("method");
-        const string parameter = "params";
-        var kind = json.GetValueKind(parameter);
-        switch (kind)
-        {
-            case JsonValueKind.Object:
-                return new JsonRpcRequestObject<JsonObjectNode>(v, id, method, json.TryGetObjectValue(parameter));
-            case JsonValueKind.Array:
-                return new JsonRpcRequestObject<JsonArrayNode>(v, id, method, json.TryGetArrayValue(parameter));
-            case JsonValueKind.String:
-                return new JsonRpcRequestObject<string>(v, id, method, json.TryGetStringValue(parameter));
-            case JsonValueKind.True:
-                return new JsonRpcRequestObject<bool>(v, id, method, true);
-            case JsonValueKind.False:
-                return new JsonRpcRequestObject<bool>(v, id, method, false);
-            case JsonValueKind.Number:
-                {
-                    if (json.GetValue(parameter) is not IJsonNumberNode num) break;
-                    if (!num.IsInteger)
-                        return new JsonRpcRequestObject<double>(v, id, method, num.GetDouble());
-                    var i = num.GetInt64();
-                    return i > int.MaxValue || i < int.MinValue
-                        ? new JsonRpcRequestObject<long>(v, id, method, i)
-                        : new JsonRpcRequestObject<int>(v, id, method, (int)i);
-                }
-        }
-
-        return new JsonRpcRequestObject(v, id, method);
+        return json;
     }
 
     /// <inheritdoc />
