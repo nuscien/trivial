@@ -815,7 +815,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// Updates an element.
     /// </summary>
     /// <param name="index">The zero-based index at which the new elements should be updated.</param>
-    /// <param name="action">An action to update the value of the specific element.</param>
+    /// <param name="action">An Handler to update the value of the specific element.</param>
     /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- index is greater than count of the list.</exception>
     public void Update(int index, Func<T, T> action)
     {
@@ -842,7 +842,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// Updates an element.
     /// </summary>
     /// <param name="index">The zero-based index at which the new elements should be updated.</param>
-    /// <param name="action">An action to update the value of the specific element.</param>
+    /// <param name="action">An Handler to update the value of the specific element.</param>
     /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- index is greater than count of the list.</exception>
     public void Update(int index, Func<T, int, T> action)
     {
@@ -866,7 +866,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     }
 
     /// <summary>
-    /// Replaces an item to a new one. Only the first one will be replaced. No action if the old item does not exist.
+    /// Replaces an item to a new one. Only the first one will be replaced. No Handler if the old item does not exist.
     /// </summary>
     /// <param name="oldItem">The old item to remove.</param>
     /// <param name="newItem">The new item to update.</param>

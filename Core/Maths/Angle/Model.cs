@@ -9,8 +9,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.Json.Serialization;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -23,7 +25,7 @@ public partial struct Angle
     /// The angle model.
     /// </summary>
     [JsonConverter(typeof(JsonAngleModelConverter))]
-    public class Model : IAngle, ICloneable, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
+    public class Model : IAngle, ICloneable, IObjectRef<double>, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
 #if NET8_0_OR_GREATER
 , IAdditionOperators<Model, IAngle, Model>, ISubtractionOperators<Model, IAngle, Model>, IMultiplyOperators<Model, int, Model>, IMultiplyOperators<Model, long, Model>, IMultiplyOperators<Model, float, Model>, IMultiplyOperators<Model, double, Model>, IDivisionOperators<Model, int, Model>, IDivisionOperators<Model, long, Model>, IDivisionOperators<Model, float, Model>, IDivisionOperators<Model, double, Model>, IUnaryNegationOperators<Model, Model>, IParsable<Model>
 #endif
@@ -290,50 +292,49 @@ public partial struct Angle
         [JsonIgnore]
         public bool IsNegative => raw < 0;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        bool IObjectRef.IsValueCreated => true;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        object IObjectRef.Value => Degrees;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        double IObjectRef<double>.Value => Degrees;
+
         /// <summary>
         /// Converts a number to angle model.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Model(double value)
-        {
-            return new Model(value);
-        }
+            => new(value);
 
         /// <summary>
         /// Converts a number to angle model.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Model(int value)
-        {
-            return new Model(value);
-        }
+            => new(value);
 
         /// <summary>
         /// Converts an angle to angle model.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Model(Angle value)
-        {
-            return new Model(value.Degrees);
-        }
+            => new(value.Degrees);
 
         /// <summary>
         /// Converts a number to angle model.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Model(Text.JsonIntegerNode value)
-        {
-            return new Model(value.Value);
-        }
+            => new(value.Value);
 
         /// <summary>
         /// Converts a number to angle model.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Model(Text.JsonDoubleNode value)
-        {
-            return new Model(value.Value);
-        }
+            => new(value.Value);
 
         /// <summary>
         /// Converts a string to angle model.

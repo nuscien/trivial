@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.InteropServices;
@@ -112,7 +113,7 @@ public class MessageResult : BaseObservableProperties
 /// </summary>
 [DataContract]
 [Guid("151653E9-0220-447D-919C-4F5A7732CAE4")]
-public class DataResult<T> : MessageResult
+public class DataResult<T> : MessageResult, IObjectRef<T>
 {
     /// <summary>
     /// Initializes a new instance of the DataResult class.
@@ -169,6 +170,15 @@ public class DataResult<T> : MessageResult
     /// </summary>
     [JsonIgnore]
     public bool IsNull => Data is null;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    bool IObjectRef.IsValueCreated => true;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    object IObjectRef.Value => Data;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    T IObjectRef<T>.Value => Data;
 
     /// <summary>
     /// Gets the type of the data.

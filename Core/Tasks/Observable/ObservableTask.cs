@@ -180,7 +180,7 @@ public abstract class ObservableTask<T>
     public event EventHandler CancellationRequested;
 
     /// <summary>
-    /// Adds or removes an event handler after the action is finished.
+    /// Adds or removes an event handler after the Handler is finished.
     /// </summary>
     public event ResultEventHandler<T> Finished;
 

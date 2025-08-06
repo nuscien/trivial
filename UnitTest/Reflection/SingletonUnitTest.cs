@@ -38,6 +38,35 @@ public class SingletonUnitTest
         Assert.AreEqual(17, a.Arcminute);
         var b = ObjectConvert.Invoke<bool>(true);
         Assert.IsTrue(b);
+        var t = new TypedNestedParameter();
+        t.Register(s);
+        t.Register(f);
+        t.Register(d);
+        t.Register(a);
+        t.Register(b);
+        t.Register(t);
+        var n = new TestNestedParameter(new TestNestedParameter(t));
+        Assert.AreEqual(s, ObjectConvert.TryGet<string>(n));
+        Assert.AreEqual(f, ObjectConvert.TryGet<float>(n));
+        Assert.AreEqual(d, ObjectConvert.TryGet<DateTime>(n));
+        Assert.AreEqual(a, ObjectConvert.TryGet<Angle>(n));
+        Assert.AreEqual(b, ObjectConvert.TryGet<bool>(n));
+        Assert.AreEqual(t, ObjectConvert.TryGet<TypedNestedParameter>(n));
+        Assert.IsTrue(t.Contains<TypedNestedParameter>());
+        Assert.AreEqual(t, t.TryGet<TypedNestedParameter>());
+        Assert.AreEqual(0, t.TryGet<int>());
+        t.Remove<string>();
+        t.Remove(typeof(TypedNestedParameter));
+        Assert.IsFalse(t.Contains(typeof(string)));
+        Assert.IsFalse(t.Contains<TypedNestedParameter>());
+        Assert.IsNull(t.TryGet<string>());
+        n = new(b);
+        Assert.IsTrue(ObjectConvert.TryGet<bool>(n));
+        Assert.AreEqual(1, ObjectConvert.TryGet<int>(n));
+        n = new(f);
+        Assert.AreEqual(f, ObjectConvert.TryGet<float>(n));
+        Assert.AreEqual((double)f, ObjectConvert.TryGet<double>(n));
+        Assert.IsNull(ObjectConvert.TryGet<Uri>(n));
     }
 
     /// <summary>
@@ -172,4 +201,8 @@ public class SingletonUnitTest
         Assert.AreEqual(JsonValueKind.Object, json.ValueKind);
         Assert.AreEqual(JsonValueKind.Array, jsonFactory.Create("arr").ValueKind);
     }
+}
+
+internal class TestNestedParameter(object parameter) : BaseNestedParameter(parameter)
+{
 }

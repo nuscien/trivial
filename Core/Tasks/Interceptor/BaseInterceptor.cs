@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
 public abstract class BaseInterceptor<T>
 {
@@ -40,7 +40,7 @@ public abstract class BaseInterceptor<T>
     private InterceptorPolicy policy;
 
     /// <summary>
-    /// The optional action to execute.
+    /// The optional Handler to execute.
     /// </summary>
     private readonly Func<InterceptorEventArgs<T>, Task> action;
 
@@ -69,7 +69,7 @@ public abstract class BaseInterceptor<T>
     /// <summary>
     /// Initializes a new instance of the BaseInterceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public BaseInterceptor(Action<T> action, InterceptorPolicy policy)
         : this(policy)
@@ -80,9 +80,9 @@ public abstract class BaseInterceptor<T>
     /// <summary>
     /// Initializes a new instance of the BaseInterceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public BaseInterceptor(Func<T, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : this(policy)
     {
@@ -95,8 +95,8 @@ public abstract class BaseInterceptor<T>
     /// Initializes a new instance of the BaseInterceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public BaseInterceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<T>, Task> action, bool doNotWait = false)
         : this(policy)
     {
@@ -181,9 +181,9 @@ public abstract class BaseInterceptor<T>
     }
 
     /// <summary>
-    /// Waits for all invoking action tasks.
+    /// Waits for all invoking Handler tasks.
     /// </summary>
-    /// <returns>A task that represents the completion of all of the invoking action tasks.</returns>
+    /// <returns>A task that represents the completion of all of the invoking Handler tasks.</returns>
     public async Task WaitAsync()
     {
         while (tasks.Count > 0)
@@ -215,10 +215,10 @@ public abstract class BaseInterceptor<T>
         => () => InvokeAsync(arg);
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg">The argument</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T arg)
         => () => _ = InvokeAsync(arg);
 

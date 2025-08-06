@@ -346,6 +346,17 @@ public class AppAccessingKey
     /// </summary>
     /// <param name="id">The app id.</param>
     /// <param name="secret">The secret key.</param>
+    public AppAccessingKey(string id, ReadOnlySpan<char> secret)
+    {
+        Id = id;
+        Secret = secret.ToSecure();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the AppAccessingKey class.
+    /// </summary>
+    /// <param name="id">The app id.</param>
+    /// <param name="secret">The secret key.</param>
     public AppAccessingKey(string id, SecureString secret)
     {
         Id = id;

@@ -18,10 +18,41 @@ public static class SecureStringExtensions
     /// <param name="obj">The secure string instance.</param>
     /// <param name="value">The string to append.</param>
     /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
+    public static void AppendString(this SecureString obj, string value)
+    {
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
+        if (value == null) return;
+        foreach (var c in value)
+        {
+            obj.AppendChar(c);
+        }
+    }
+
+    /// <summary>
+    /// Appends a string into a secure string instance.
+    /// </summary>
+    /// <param name="obj">The secure string instance.</param>
+    /// <param name="value">The string to append.</param>
+    /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
     public static void AppendString(this SecureString obj, IEnumerable<char> value)
     {
         if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         if (value == null) return;
+        foreach (var c in value)
+        {
+            obj.AppendChar(c);
+        }
+    }
+
+    /// <summary>
+    /// Appends a string into a secure string instance.
+    /// </summary>
+    /// <param name="obj">The secure string instance.</param>
+    /// <param name="value">The string to append.</param>
+    /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
+    public static void AppendString(this SecureString obj, ReadOnlySpan<char> value)
+    {
+        if (obj == null) throw ObjectConvert.ArgumentNull(nameof(obj));
         foreach (var c in value)
         {
             obj.AppendChar(c);
@@ -130,6 +161,18 @@ public static class SecureStringExtensions
     }
 
     /// <summary>
+    /// Converts a string to a secure string instance.
+    /// </summary>
+    /// <param name="value">The string to convert.</param>
+    /// <returns>The secure string instance.</returns>
+    public static SecureString ToSecure(this ReadOnlySpan<char> value)
+    {
+        var obj = new SecureString();
+        AppendString(obj, value);
+        return obj;
+    }
+
+    /// <summary>
     /// Converts a string builder instance to a secure string instance.
     /// </summary>
     /// <param name="value">The string to convert.</param>
@@ -138,7 +181,7 @@ public static class SecureStringExtensions
     {
         if (value == null) return null;
         var obj = new SecureString();
-        AppendString(obj, value.ToString());
+        AppendString(obj, value);
         return obj;
     }
 

@@ -154,7 +154,7 @@ public abstract class AsyncCommandHandler : ICommandHandler
     /// <param name="args">The arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>A task that represents the completion of all of the invoking action tasks.</returns>
+    /// <returns>A task that represents the completion of all of the invoking Handler tasks.</returns>
     protected abstract Task OnProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -223,7 +223,7 @@ public abstract class BaseCommandVerb
     /// Occurs on processing.
     /// </summary>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>A task that represents the completion of all of the invoking action tasks.</returns>
+    /// <returns>A task that represents the completion of all of the invoking Handler tasks.</returns>
     protected abstract Task OnProcessAsync(CancellationToken cancellationToken = default);
 
     /// <summary>

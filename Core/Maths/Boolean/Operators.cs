@@ -50,7 +50,7 @@ public enum BasicCompareOperator : byte
 public enum UnaryBooleanOperator : byte
 {
     /// <summary>
-    /// No action.
+    /// No Handler.
     /// </summary>
     Default = 0,
 

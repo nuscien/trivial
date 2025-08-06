@@ -9,8 +9,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.Json.Serialization;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -18,7 +20,7 @@ namespace Trivial.Maths;
 /// The struct of degree (angle).
 /// </summary>
 [JsonConverter(typeof(JsonAngleConverter))]
-public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
+public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
 #if NET8_0_OR_GREATER
 , IAdditionOperators<Angle, IAngle, Angle>, ISubtractionOperators<Angle, IAngle, Angle>, IMultiplyOperators<Angle, int, Angle>, IMultiplyOperators<Angle, long, Angle>, IMultiplyOperators<Angle, float, Angle>, IMultiplyOperators<Angle, double, Angle>, IDivisionOperators<Angle, int, Angle>, IDivisionOperators<Angle, long, Angle>, IDivisionOperators<Angle, float, Angle>, IDivisionOperators<Angle, double, Angle>, IUnaryNegationOperators<Angle, Angle>, IParsable<Angle>
 #endif
@@ -199,41 +201,42 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     [JsonIgnore]
     public bool IsNegative { get; }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    bool IObjectRef.IsValueCreated => true;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    object IObjectRef.Value => Degrees;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    double IObjectRef<double>.Value => Degrees;
+
     /// <summary>
     /// Converts a number to angle.
     /// </summary>
     /// <param name="value">The raw value.</param>
     public static implicit operator Angle(double value)
-    {
-        return new Angle(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts a number to angle.
     /// </summary>
     /// <param name="value">The raw value.</param>
     public static implicit operator Angle(int value)
-    {
-        return new Angle(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts a number to angle.
     /// </summary>
     /// <param name="value">The raw value.</param>
     public static implicit operator Angle(Text.JsonIntegerNode value)
-    {
-        return new Angle(value.Value);
-    }
+        => new(value.Value);
 
     /// <summary>
     /// Converts a number to angle.
     /// </summary>
     /// <param name="value">The raw value.</param>
     public static implicit operator Angle(Text.JsonDoubleNode value)
-    {
-        return new Angle(value.Value);
-    }
+        => new(value.Value);
 
     /// <summary>
     /// Converts a string to angle.

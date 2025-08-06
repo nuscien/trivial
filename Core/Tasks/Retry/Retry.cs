@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The record instance for action retry.
+/// The record instance for Handler retry.
 /// </summary>
 internal class InternalRetryInstance : RetryInstance
 {
@@ -145,7 +145,7 @@ public class RetryTask<T> where T : IRetryPolicy
     /// Initializes a new instance of the RetryTask class.
     /// </summary>
     /// <param name="retryPolicy">The retry policy.</param>
-    /// <param name="action">The action to process.</param>
+    /// <param name="action">The Handler to process.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
     public RetryTask(T retryPolicy, Action<RetryEventArgs> action = null, Reflection.ExceptionHandler exceptionHandler = null)
     {
@@ -158,7 +158,7 @@ public class RetryTask<T> where T : IRetryPolicy
     /// Initializes a new instance of the RetryTask class.
     /// </summary>
     /// <param name="retryPolicy">The retry policy.</param>
-    /// <param name="action">The action to process.</param>
+    /// <param name="action">The Handler to process.</param>
     /// <param name="exceptionHandler">The exception handler.</param>
     public RetryTask(T retryPolicy, Action action, Reflection.ExceptionHandler exceptionHandler = null)
         : this(retryPolicy, action is null ? null : ev => action(), exceptionHandler)
@@ -278,7 +278,7 @@ public class RetryTask<T> where T : IRetryPolicy
 }
 
 /// <summary>
-/// The record instance for action retry.
+/// The record instance for Handler retry.
 /// </summary>
 public abstract class RetryInstance
 {

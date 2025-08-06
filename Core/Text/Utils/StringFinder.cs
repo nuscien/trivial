@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -40,6 +41,7 @@ public enum StringsMatchingRules : byte
 /// The string finder used to find a sub-string in a source string.
 /// </summary>
 [DebuggerDisplay("{Offset} → {Value} → {RestLength}")]
+[Guid("65098129-C8DE-406B-82C3-C6A8B9A02A8A")]
 public class StringFinder
 {
 #pragma warning disable IDE0057

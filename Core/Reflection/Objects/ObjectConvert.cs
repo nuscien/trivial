@@ -62,9 +62,9 @@ public static class ObjectConvert
             }
             else if (type.IsValueType)
             {
-                Text.StringExtensions.AssertNotWhiteSpace(nameof(value), str);
+                StringExtensions.AssertNotWhiteSpace(nameof(value), str);
                 if (type == typeof(bool))
-                    return Text.JsonBooleanNode.Parse(str);
+                    return JsonBooleanNode.Parse(str);
                 if (type == typeof(int))
                     return Maths.Numbers.ParseToInt32(str, 10);
                 if (type == typeof(long))
@@ -100,9 +100,9 @@ public static class ObjectConvert
             {
                 return JsonEncodedText.Encode(str);
             }
-            else if (type == typeof(Text.JsonStringNode))
+            else if (type == typeof(JsonStringNode))
             {
-                return new Text.JsonStringNode(str);
+                return new JsonStringNode(str);
             }
 
             try
@@ -332,9 +332,7 @@ public static class ObjectConvert
     /// <param name="propertyNames">The optional property names to map.</param>
     /// <returns>A typed instance based on the fields.</returns>
     public static T Invoke<T>(IReadOnlyList<string> fields, IEnumerable<string> propertyNames)
-    {
-        return Invoke<T>(fields, null, propertyNames);
-    }
+        => Invoke<T>(fields, null, propertyNames);
 
     /// <summary>
     /// Returns the typed instance.
@@ -788,6 +786,17 @@ public static class ObjectConvert
     }
 
     /// <summary>
+    /// Tries to get a specific property boxed.
+    /// </summary>
+    /// <typeparam name="T">The type of the property boxed.</typeparam>
+    /// <param name="obj">The target object.</param>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="defaultValue">The fallback value if not found.</param>
+    /// <returns>The value of property.</returns>
+    public static T TryGetProperty<T>(object obj, string propertyName, T defaultValue)
+        => TryGetProperty(obj, propertyName, out T value) ? value : defaultValue;
+
+    /// <summary>
     /// Tries to get the value of a specific type.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
@@ -801,6 +810,16 @@ public static class ObjectConvert
         if (obj is TypedNestedParameter t) return t.TryGet(out value);
         return false;
     }
+
+    /// <summary>
+    /// Tries to get the value of a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="obj">The object to resolve typed instance.</param>
+    /// <param name="defaultValue">The fallback value if not found.</param>
+    /// <returns>The value resolved.</returns>
+    public static T TryGet<T>(object obj, T defaultValue = default)
+        => TryGet(obj, out T value) ? value : defaultValue;
 
     /// <summary>
     /// Gets the description.
@@ -1075,10 +1094,197 @@ public static class ObjectConvert
                 return true;
             }
 
-            if (obj is IJsonValueNode<T> j)
+            if (obj is IJsonValueNode j)
             {
-                boxed = j.Value;
-                return true;
+                if (obj is IJsonValueNode<T> jv)
+                {
+                    boxed = jv.Value;
+                    return true;
+                }
+                else if (typeof(T) == typeof(JsonValueKind))
+                {
+                    boxed = (T)(object)j.ValueKind;
+                    return true;
+                }
+            }
+
+            if (obj.GetType().IsValueType)
+            {
+                var type = typeof(T);
+                if (type.IsValueType || type == typeof(string))
+                {
+                    if (obj is bool b)
+                    {
+                        if (type == typeof(int))
+                        {
+                            boxed = (T)(object)(b ? 1 : 0);
+                            return true;
+                        }
+                        else if (type == typeof(string))
+                        {
+                            boxed = (T)(object)b.ToString(CultureInfo.InvariantCulture);
+                            return true;
+                        }
+                    }
+                    else if (obj is int i)
+                    {
+                        if (type == typeof(long))
+                        {
+                            boxed = (T)(object)(long)i;
+                            return true;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            boxed = (T)(object)(double)i;
+                            return true;
+                        }
+                        else if (type == typeof(float))
+                        {
+                            boxed = (T)(object)(float)i;
+                            return true;
+                        }
+                        else if (type == typeof(decimal))
+                        {
+                            boxed = (T)(object)(decimal)i;
+                            return true;
+                        }
+                        else if (type == typeof(short))
+                        {
+                            boxed = (T)(object)(short)i;
+                            return true;
+                        }
+                        else if (type == typeof(string))
+                        {
+                            boxed = (T)(object)i.ToString("g", CultureInfo.InvariantCulture);
+                            return true;
+                        }
+                    }
+                    else if (obj is long i2)
+                    {
+                        if (type == typeof(int))
+                        {
+                            boxed = (T)(object)(int)i2;
+                            return true;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            boxed = (T)(object)(double)i2;
+                            return true;
+                        }
+                        else if (type == typeof(float))
+                        {
+                            boxed = (T)(object)(float)i2;
+                            return true;
+                        }
+                        else if (type == typeof(decimal))
+                        {
+                            boxed = (T)(object)(decimal)i2;
+                            return true;
+                        }
+                        else if (type == typeof(short))
+                        {
+                            boxed = (T)(object)(short)i2;
+                            return true;
+                        }
+                        else if (type == typeof(string))
+                        {
+                            boxed = (T)(object)i2.ToString("g", CultureInfo.InvariantCulture);
+                            return true;
+                        }
+                    }
+                    else if (obj is double i5)
+                    {
+                        if (type == typeof(int))
+                        {
+                            boxed = (T)(object)(int)i5;
+                            return true;
+                        }
+                        else if (type == typeof(long))
+                        {
+                            boxed = (T)(object)(long)i5;
+                            return true;
+                        }
+                        else if (type == typeof(float))
+                        {
+                            boxed = (T)(object)(float)i5;
+                            return true;
+                        }
+                        else if (type == typeof(decimal))
+                        {
+                            boxed = (T)(object)(decimal)i5;
+                            return true;
+                        }
+                        else if (type == typeof(string))
+                        {
+                            boxed = (T)(object)i5.ToString("g", CultureInfo.InvariantCulture);
+                            return true;
+                        }
+                    }
+                    else if (obj is float i6)
+                    {
+                        if (type == typeof(int))
+                        {
+                            boxed = (T)(object)(int)i6;
+                            return true;
+                        }
+                        else if (type == typeof(long))
+                        {
+                            boxed = (T)(object)(long)i6;
+                            return true;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            boxed = (T)(object)(double)i6;
+                            return true;
+                        }
+                        else if (type == typeof(decimal))
+                        {
+                            boxed = (T)(object)(decimal)i6;
+                            return true;
+                        }
+                        else if (type == typeof(string))
+                        {
+                            boxed = (T)(object)i6.ToString("g", CultureInfo.InvariantCulture);
+                            return true;
+                        }
+                    }
+                    else if (obj is decimal i7)
+                    {
+                        if (type == typeof(int))
+                        {
+                            boxed = (T)(object)(int)i7;
+                            return true;
+                        }
+                        else if (type == typeof(long))
+                        {
+                            boxed = (T)(object)(long)i7;
+                            return true;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            boxed = (T)(object)(double)i7;
+                            return true;
+                        }
+                        else if (type == typeof(float))
+                        {
+                            boxed = (T)(object)(float)i7;
+                            return true;
+                        }
+                        else if (type == typeof(string))
+                        {
+                            boxed = (T)(object)i7.ToString("g", CultureInfo.InvariantCulture);
+                            return true;
+                        }
+                    }
+                    else if (obj is Guid guid)
+                    {
+                        if (type == typeof(string))
+                        {
+                            boxed = (T)(object)guid.ToString();
+                            return true;
+                        }
+                    }
+                }
             }
         }
         catch (MemberAccessException)
@@ -1103,6 +1309,12 @@ public static class ObjectConvert
         {
         }
         catch (FormatException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 

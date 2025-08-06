@@ -42,7 +42,7 @@ public enum InterceptorModes : byte
 /// The policy of interceptor.
 /// </summary>
 /// <remarks>
-/// This is used to full control how the specific action invokes.
+/// This is used to full control how the specific Handler invokes.
 /// It contains following properties to set the condition to match.
 /// <list type="bullet">
 /// <item>Limitation of invoking times. So we can set an optional minimum count and an optional maximum count as a window to allow the invoking actions.</item>
@@ -211,7 +211,7 @@ public sealed class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy
     /// <param name="duration">The duration.</param>
     /// <returns>A interceptor policy.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.

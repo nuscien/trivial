@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Trivial.Reflection;
@@ -52,6 +55,13 @@ public class TypedNestedParameter
     private readonly Dictionary<Type, object> store = new();
 
     /// <summary>
+    /// Gets all types registered.
+    /// </summary>
+    [JsonIgnore]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public IReadOnlyCollection<Type> TypesRegistered => store.Keys;
+
+    /// <summary>
     /// Registers the value of a specific type.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
@@ -84,12 +94,36 @@ public class TypedNestedParameter
         => store[typeof(T)] = value;
 
     /// <summary>
+    /// Removes the specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
+    public bool Remove<T>()
+        => store.Remove(typeof(T));
+
+    /// <summary>
+    /// Removes the specific type.
+    /// </summary>
+    /// <param name="type">The type of value.</param>
+    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
+    public bool Remove(Type type)
+        => type != null && store.Remove(type);
+
+    /// <summary>
     /// Tests whether the value of a specific type is registered.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
     /// <returns>true if contains; otherwise, false.</returns>
     public bool Contains<T>()
         => store.ContainsKey(typeof(T));
+
+    /// <summary>
+    /// Tests whether the value of a specific type is registered.
+    /// </summary>
+    /// <param name="type">The type of value.</param>
+    /// <returns>true if contains; otherwise, false.</returns>
+    public bool Contains(Type type)
+        => type != null && store.ContainsKey(type);
 
     /// <summary>
     /// Gets the value of a specific type.
@@ -139,6 +173,14 @@ public class TypedNestedParameter
                 throw new NotSupportedException(errorMessage, ex);
             }
             catch (FormatException ex)
+            {
+                throw new NotSupportedException(errorMessage, ex);
+            }
+            catch (OverflowException ex)
+            {
+                throw new NotSupportedException(errorMessage, ex);
+            }
+            catch (ExternalException ex)
             {
                 throw new NotSupportedException(errorMessage, ex);
             }

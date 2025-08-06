@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The extensions for action retry.
+/// The extensions for Handler retry.
 /// </summary>
 public static class RetryExtensions
 {
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The action to process.</param>
+    /// <param name="action">The Handler to process.</param>
     /// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The processing retry result.</returns>
@@ -53,20 +53,20 @@ public static class RetryExtensions
     }
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The action to process.</param>
+    /// <param name="action">The Handler to process.</param>
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
     public static Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Action action, params Type[] exceptionTypesForRetry)
         => ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The async action to process.</param>
+    /// <param name="action">The async Handler to process.</param>
     /// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The processing retry result.</returns>
@@ -103,16 +103,16 @@ public static class RetryExtensions
     }
 
     ///// <summary>
-    ///// Processes an action with this retry policy.
+    ///// Processes an Handler with this retry policy.
     ///// </summary>
     ///// <param name="policy">The retry policy.</param>
-    ///// <param name="action">The async action to process.</param>
+    ///// <param name="Handler">The async Handler to process.</param>
     ///// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
     ///// <param name="cancellationToken">The optional cancellation token.</param>
     ///// <returns>The processing retry result.</returns>
-    //public static Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Func<CancellationToken, Task> action, Func<Exception, bool> needThrow, CancellationToken cancellationToken = default)
+    //public static Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Func<CancellationToken, Task> Handler, Func<Exception, bool> needThrow, CancellationToken cancellationToken = default)
     //{
-    //    return ProcessAsync(policy, action, ex =>
+    //    return ProcessAsync(policy, Handler, ex =>
     //    {
     //        return needThrow(ex) ? ex : null;
     //    }, cancellationToken);
@@ -129,10 +129,10 @@ public static class RetryExtensions
         => ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The async action to process.</param>
+    /// <param name="action">The async Handler to process.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
@@ -140,10 +140,10 @@ public static class RetryExtensions
         => ProcessAsync(policy, action, HitException(exceptionTypesForRetry), cancellationToken);
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The async action which will return a result to process.</param>
+    /// <param name="action">The async Handler which will return a result to process.</param>
     /// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The processing retry result.</returns>
@@ -181,16 +181,16 @@ public static class RetryExtensions
     }
 
     ///// <summary>
-    ///// Processes an action with this retry policy.
+    ///// Processes an Handler with this retry policy.
     ///// </summary>
     ///// <param name="policy">The retry policy.</param>
-    ///// <param name="action">The async action which will return a result to process.</param>
+    ///// <param name="Handler">The async Handler which will return a result to process.</param>
     ///// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
     ///// <param name="cancellationToken">The optional cancellation token.</param>
     ///// <returns>The processing retry result.</returns>
-    //public static Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<T>> action, Func<Exception, bool> needThrow, CancellationToken cancellationToken = default)
+    //public static Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<T>> Handler, Func<Exception, bool> needThrow, CancellationToken cancellationToken = default)
     //{
-    //    return ProcessAsync(policy, action, ex =>
+    //    return ProcessAsync(policy, Handler, ex =>
     //    {
     //        return needThrow(ex) ? ex : null;
     //    }, cancellationToken);
@@ -207,10 +207,10 @@ public static class RetryExtensions
         => ProcessAsync(policy, action, HitException(exceptionTypesForRetry));
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The async action which will return a result to process.</param>
+    /// <param name="action">The async Handler which will return a result to process.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <param name="exceptionTypesForRetry">The exception types for retry.</param>
     /// <returns>The processing retry result.</returns>
@@ -218,10 +218,10 @@ public static class RetryExtensions
         => ProcessAsync(policy, action, HitException(exceptionTypesForRetry), cancellationToken);
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The async action to process to return a value indicating whether success and a result if success.</param>
+    /// <param name="action">The async Handler to process to return a value indicating whether success and a result if success.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The processing retry result.</returns>
     public static async Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<(bool, T)>> action, CancellationToken cancellationToken)
@@ -260,10 +260,10 @@ public static class RetryExtensions
     }
 
     /// <summary>
-    /// Processes an action with this retry policy.
+    /// Processes an Handler with this retry policy.
     /// </summary>
     /// <param name="policy">The retry policy.</param>
-    /// <param name="action">The async action to process to return an exception if failed and a result if success.</param>
+    /// <param name="action">The async Handler to process to return an exception if failed and a result if success.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The processing retry result.</returns>
     public static async Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<(Exception, T)>> action, CancellationToken cancellationToken)

@@ -84,7 +84,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <exception cref="IOException">An I/O error occurred.</exception>
     /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
-    /// <exception cref="SecurityException">The user does not have permission to perform this action.</exception>
+    /// <exception cref="SecurityException">The user does not have permission to perform this Handler.</exception>
     public int CursorLeft => handlerCache == null ? Console.CursorLeft : handlerCache.CursorLeft;
 
     /// <summary>
@@ -92,7 +92,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <exception cref="IOException">An I/O error occurred.</exception>
     /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
-    /// <exception cref="SecurityException">The user does not have permission to perform this action.</exception>
+    /// <exception cref="SecurityException">The user does not have permission to perform this Handler.</exception>
     public int CursorTop => handlerCache == null ? Console.CursorTop : handlerCache.CursorTop;
 
     /// <summary>
@@ -100,7 +100,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <exception cref="IOException">An I/O error occurred.</exception>
     /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
-    /// <exception cref="SecurityException">The user does not have permission to perform this action.</exception>
+    /// <exception cref="SecurityException">The user does not have permission to perform this Handler.</exception>
     public int BufferWidth => handlerCache == null ? Console.BufferWidth : handlerCache.BufferWidth;
 
     /// <summary>
@@ -108,7 +108,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <exception cref="IOException">An I/O error occurred.</exception>
     /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
-    /// <exception cref="SecurityException">The user does not have permission to perform this action.</exception>
+    /// <exception cref="SecurityException">The user does not have permission to perform this Handler.</exception>
     public int BufferHeight => handlerCache == null ? Console.BufferHeight : handlerCache.BufferHeight;
 
     /// <summary>

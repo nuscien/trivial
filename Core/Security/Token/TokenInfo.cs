@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text.Json.Serialization;
-
-using Trivial.Text;
-using Trivial.Data;
 using Trivial.Collection;
+using Trivial.Data;
 using Trivial.Net;
+using Trivial.Reflection;
+using Trivial.Text;
 
 namespace Trivial.Security;
 
@@ -579,6 +580,34 @@ public class TokenInfo
                 scheme ?? TokenType,
                 StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase))
             : new AuthenticationHeaderValue(scheme ?? TokenType);
+
+    /// <summary>
+    /// Converts to the authentication header value.
+    /// </summary>
+    /// <param name="token">The token info.</param>
+    /// <returns>An instance of the authentication header value.</returns>
+    public static explicit operator AuthenticationHeaderValue(TokenInfo token)
+        => token?.ToAuthenticationHeaderValue();
+
+    /// <summary>
+    /// Converts to the token container.
+    /// </summary>
+    /// <param name="token">The token info.</param>
+    /// <returns>An instance of the token container.</returns>
+    public static explicit operator TokenContainer(TokenInfo token)
+        => token is null ? null : new(token);
+
+    /// <summary>
+    /// Converts to the JSON string.
+    /// </summary>
+    /// <param name="token">The token info.</param>
+    /// <returns>An instance of the JSON string.</returns>
+    public static explicit operator JsonStringNode(TokenInfo token)
+    {
+        var s = token?.AccessToken?.Trim();
+        if (string.IsNullOrWhiteSpace(s)) return null;
+        return new($"{token.TokenType} {s}".TrimStart());
+    }
 }
 
 /// <summary>
@@ -711,6 +740,22 @@ public class TokenContainer
     /// <param name="ev">The event arguments.</param>
     protected virtual void OnSend(object sender, SendingEventArgs ev)
         => WriteAuthenticationHeaderValue(ev.RequestMessage.Headers);
+
+    /// <summary>
+    /// Converts to the token info.
+    /// </summary>
+    /// <param name="container">The token container.</param>
+    /// <returns>An instance of the token info.</returns>
+    public static explicit operator TokenInfo(TokenContainer container)
+        => container?.Token;
+
+    /// <summary>
+    /// Converts to the authentication header value.
+    /// </summary>
+    /// <param name="container">The token container.</param>
+    /// <returns>An instance of the authentication header value.</returns>
+    public static explicit operator AuthenticationHeaderValue(TokenContainer container)
+        => container?.ToAuthenticationHeaderValue();
 }
 
 /// <summary>
@@ -909,7 +954,7 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// Converts to the token info and user entity.
     /// </summary>
     /// <param name="token">The token.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator Reflection.SelectionRelationship<T, TokenInfo>(BaseAccountTokenInfo<T> token)
+    /// <returns>An instance of the relationship.</returns>
+    public static explicit operator SelectionRelationship<T, TokenInfo>(BaseAccountTokenInfo<T> token)
         => token is null ? new() : new(token.User, token);
 }

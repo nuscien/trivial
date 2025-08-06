@@ -781,11 +781,41 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Gets the JSON format string of the value.
+    /// </summary>
+    /// <param name="source">The source object.</param>
+    /// <param name="removeQuotes">true if remove the quotes; otherwise, false.</param>
+    /// <returns>The JSON format string.</returns>
+    public static string ToString(this IJsonValueNode<string> source, bool removeQuotes)
+        => source?.Value != null ? JsonStringNode.ToJson(source.Value, removeQuotes) : (removeQuotes ? null : "null");
+
+    /// <summary>
+    /// Gets a value from the specific ones.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="source">The source value.</param>
+    /// <param name="trueValue">The value of true.</param>
+    /// <param name="falseValue">The value of false.</param>
+    /// <param name="nullValue">The value of null.</param>
+    /// <returns>A value.</returns>
+    public static T PickOut<T>(IJsonValueNode<bool> source, T trueValue, T falseValue, T nullValue)
+        => source == null ? nullValue : (source.Value ? trueValue : falseValue);
+
+    /// <summary>
     /// Switches.
     /// </summary>
     /// <typeparam name="T">The type of the JSON node.</typeparam>
     /// <param name="source">The JSON node source.</param>
     /// <returns>A switch-case context for the JSON node.</returns>
+    /// <example>
+    /// <code>
+    /// json.Switch()
+    ///     .Case(100, () => { /* handle case for integer 100 */ })
+    ///     .Case&lt;int&gt;(i => { /* handle case for any other integer */ })
+    ///     .Case&lt;string&gt;(s => { /* handle case for any string */ })
+    ///     .Default(() => { /* handle default case */ });
+    /// </code>
+    /// </example>
     public static JsonSwitchContext<T, JsonObjectNode> Switch<T>(this T source) where T : IJsonValueNode
         => new(source, new());
 

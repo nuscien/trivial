@@ -44,8 +44,10 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// </summary>
     public T Value { get; }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     object IObjectRef.Value => Value;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool IObjectRef.IsValueCreated => true;
 
     /// <summary>

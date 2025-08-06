@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
@@ -81,6 +82,26 @@ public static class StringExtensions
     /// <returns>The specific case equivalent of the current string.</returns>
     public static string ToSpecificCaseInvariant(this string source, Cases options)
         => ToSpecificCase(source, options, CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Returns a copy of this string converted to specific case, using the casing rules of the specified culture.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="options">The specific case.</param>
+    /// <param name="culture">An object that supplies culture-specific casing rules.</param>
+    /// <returns>The specific case equivalent of the current string.</returns>
+    /// <exception cref="ArgumentNullException">culture is null.</exception>
+    public static string ToSpecificCase(this IObjectRef<string> source, Cases options, CultureInfo culture = null)
+        => ToSpecificCase(source?.Value, options, culture);
+
+    /// <summary>
+    /// Returns a copy of this string converted to specific case, using the casing rules of the invariant culture.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="options">The specific case.</param>
+    /// <returns>The specific case equivalent of the current string.</returns>
+    public static string ToSpecificCaseInvariant(this IObjectRef<string> source, Cases options)
+        => ToSpecificCase(source?.Value, options, CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Breaks lines.
@@ -960,6 +981,246 @@ public static class StringExtensions
 
         return null;
     }
+
+
+    /// <summary>
+    /// Indicates whether the specified string is null or an empty string ("").
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
+    public static bool IsNullOrEmpty(this IObjectRef<string> obj)
+        => string.IsNullOrEmpty(obj?.Value);
+
+    /// <summary>
+    /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
+    public static bool IsNullOrWhiteSpace(this IObjectRef<string> obj)
+        => string.IsNullOrWhiteSpace(obj?.Value);
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns>true if it is matched; otherwise, false.</returns>
+    public static bool IsMatched(this IObjectRef<string> obj, Data.StringCondition condition)
+        => condition == null || condition.IsMatched(obj?.Value);
+
+    /// <summary>
+    /// Creates a new read-only span over the string value.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <returns>The read-only span representation of the string.</returns>
+    public static ReadOnlySpan<char> AsSpan(this IObjectRef<string> obj)
+        => obj?.Value == null ? ReadOnlySpan<char>.Empty : obj.Value.AsSpan();
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int IndexOf(this IObjectRef<string> obj, string value, int start = 0)
+        => obj?.Value?.IndexOf(value, start) ?? (value == null ? string.Empty.IndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int IndexOf(this IObjectRef<string> obj, string value, int start, int count)
+        => obj?.Value?.IndexOf(value, start, count) ?? (value == null ? string.Empty.IndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position and examines a specified number of character positions.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+    /// <param name="startIndex">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentException">count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus startIndex.</exception>
+    public static int IndexOf(this IObjectRef<string> obj, string value, StringComparison comparisonType, int startIndex = 0, int? count = null)
+        => obj?.Value == null ? -1 : (count.HasValue ? obj.Value.IndexOf(value, startIndex, count.Value, comparisonType) : obj.Value.IndexOf(value, startIndex, comparisonType));
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int IndexOf(this IObjectRef<string> obj, char value, int start = 0)
+        => obj?.Value?.IndexOf(value, start) ?? -1;
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int IndexOf(this IObjectRef<string> obj, char value, int start, int count)
+        => obj?.Value?.IndexOf(value, start, count) ?? -1;
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int LastIndexOf(this IObjectRef<string> obj, string value, int start = 0)
+        => obj?.Value?.LastIndexOf(value, start) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int LastIndexOf(this IObjectRef<string> obj, string value, int start, int count)
+        => obj?.Value?.LastIndexOf(value, start, count) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string for the specified number of character positions. A parameter specifies the type of comparison to performwhen searching for the specified string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+    /// <param name="startIndex">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentException">count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus startIndex.</exception>
+    public static int LastIndexOf(this IObjectRef<string> obj, string value, StringComparison comparisonType, int startIndex = 0, int? count = null)
+        => obj?.Value == null ? -1 : (count.HasValue ? obj.Value.LastIndexOf(value, startIndex, count.Value, comparisonType) : obj.Value.LastIndexOf(value, startIndex, comparisonType));
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int LastIndexOf(this IObjectRef<string> obj, char value, int start = 0)
+        => obj?.Value?.LastIndexOf(value, start) ?? -1;
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public static int LastIndexOf(this IObjectRef<string> obj, char value, int start, int count)
+        => obj?.Value?.LastIndexOf(value, start, count) ?? -1;
+
+    /// <summary>
+    /// Returns a value indicating whether a specified substring occurs within this string value.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to seek.</param>
+    /// <returns>true if the value parameter occurs within this string, or if value is the empty string (""); otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool Contains(this IObjectRef<string> obj, string value)
+        => obj?.Value?.Contains(value) ?? false;
+
+    /// <summary>
+    /// Returns a value indicating whether a specified character occurs within this string value.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The character to seek.</param>
+    /// <returns>true if the value parameter occurs within this string, or if value is the empty string (""); otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool Contains(this IObjectRef<string> obj, char value)
+        => obj?.Value?.Contains(value) ?? false;
+
+    /// <summary>
+    /// Determines whether a specified string is a prefix of the current instance.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to compare.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool StartsWith(this IObjectRef<string> obj, string value)
+        => obj?.Value?.StartsWith(value) ?? false;
+
+    /// <summary>
+    /// Determines whether a specified string is a prefix of the current instance.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to compare.</param>
+    /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool StartsWith(this IObjectRef<string> obj, string value, StringComparison comparisonType)
+        => obj?.Value?.StartsWith(value, comparisonType) ?? false;
+
+    /// <summary>
+    /// Determines whether a specified string is a prefix of the current instance.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The character to compare.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool StartsWith(this IObjectRef<string> obj, char value)
+        => obj?.Value?.StartsWith(value) ?? false;
+
+    /// <summary>
+    /// Determines whether the end of this string instance matches the specified string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to compare to the substring at the end of this instance.</param>
+    /// <returns>true if value matches the end of this instance; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool EndsWith(this IObjectRef<string> obj, string value)
+        => obj?.Value?.EndsWith(value) ?? false;
+
+    /// <summary>
+    /// Determines whether the end of this string instance matches the specified string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The string to compare to the substring at the end of this instance.</param>
+    /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
+    /// <returns>true if value matches the end of this instance; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool EndsWith(this IObjectRef<string> obj, string value, StringComparison comparisonType)
+        => obj?.Value?.EndsWith(value, comparisonType) ?? false;
+
+    /// <summary>
+    /// Determines whether the end of this string instance matches the specified string.
+    /// </summary>
+    /// <param name="obj">The source object.</param>
+    /// <param name="value">The character to compare.</param>
+    /// <returns>true if value matches the end of this instance; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool EndsWith(this IObjectRef<string> obj, char value)
+        => obj?.Value?.EndsWith(value) ?? false;
 
     /// <summary>
     /// Gets the description.

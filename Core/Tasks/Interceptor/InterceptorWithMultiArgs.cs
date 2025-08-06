@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
 public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
 {
     /// <summary>
@@ -33,7 +33,7 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2), policy)
@@ -43,7 +43,7 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -53,9 +53,9 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2), policy, doNotWait)
     {
@@ -64,9 +64,9 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -76,8 +76,8 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -110,20 +110,20 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
         => () => InvokeAsync(new Tuple<T1, T2>(arg1, arg2));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2)
         => () => _ = InvokeAsync(new Tuple<T1, T2>(arg1, arg2));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2>> Action(Action<Tuple<T1, T2>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2>(action, policy);
@@ -131,28 +131,28 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2> Action(Action<T1, T2> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, Task> Action(Func<T1, T2, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -166,11 +166,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -181,11 +181,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -195,11 +195,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -210,10 +210,10 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -224,8 +224,8 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -236,7 +236,7 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -250,11 +250,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -265,11 +265,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -279,11 +279,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -294,10 +294,10 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -308,8 +308,8 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -319,11 +319,11 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-/// <typeparam name="T3">The type of action handler argument 3.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+/// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
 public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
 {
     /// <summary>
@@ -346,7 +346,7 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2, T3> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3), policy)
@@ -356,7 +356,7 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2, T3>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -366,9 +366,9 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, T3, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3), policy, doNotWait)
     {
@@ -377,9 +377,9 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2, T3>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -389,8 +389,8 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2, T3>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -426,21 +426,21 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
         => () => InvokeAsync(new Tuple<T1, T2, T3>(arg1, arg2, arg3));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
     /// <param name="arg3">The argument 3.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2, T3 arg3)
         => () => _ = InvokeAsync(new Tuple<T1, T2, T3>(arg1, arg2, arg3));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2, T3>> Action(Action<Tuple<T1, T2, T3>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2, T3>(action, policy);
@@ -448,28 +448,28 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3> Action(Action<T1, T2, T3> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, Task> Action(Func<T1, T2, T3, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -483,11 +483,11 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -498,11 +498,11 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -512,11 +512,11 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -527,10 +527,10 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -541,7 +541,7 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -555,11 +555,11 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -570,11 +570,11 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -584,11 +584,11 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -599,10 +599,10 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -612,12 +612,12 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-/// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-/// <typeparam name="T4">The type of action handler argument 4.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+/// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+/// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
 public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>>
 {
     /// <summary>
@@ -640,7 +640,7 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2, T3, T4> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4), policy)
@@ -650,7 +650,7 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2, T3, T4>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -660,9 +660,9 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, T3, T4, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4), policy, doNotWait)
     {
@@ -671,9 +671,9 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2, T3, T4>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -683,8 +683,8 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2, T3, T4>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -723,22 +723,22 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
         => () => InvokeAsync(new Tuple<T1, T2, T3, T4>(arg1, arg2, arg3, arg4));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
     /// <param name="arg3">The argument 3.</param>
     /// <param name="arg4">The argument 4.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         => () => _ = InvokeAsync(new Tuple<T1, T2, T3, T4>(arg1, arg2, arg3, arg4));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2, T3, T4>> Action(Action<Tuple<T1, T2, T3, T4>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2, T3, T4>(action, policy);
@@ -746,28 +746,28 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4> Action(Action<T1, T2, T3, T4> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, Task> Action(Func<T1, T2, T3, T4, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -781,11 +781,11 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -796,11 +796,11 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -810,11 +810,11 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -825,10 +825,10 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -839,7 +839,7 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -853,11 +853,11 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -868,11 +868,11 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -882,11 +882,11 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -897,10 +897,10 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -910,13 +910,13 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-/// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-/// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-/// <typeparam name="T5">The type of action handler argument 5.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+/// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+/// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+/// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
 public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3, T4, T5>>
 {
     /// <summary>
@@ -939,7 +939,7 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2, T3, T4, T5> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5), policy)
@@ -949,7 +949,7 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2, T3, T4, T5>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -959,9 +959,9 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, T3, T4, T5, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5), policy, doNotWait)
     {
@@ -970,9 +970,9 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2, T3, T4, T5>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -982,8 +982,8 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2, T3, T4, T5>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -1025,23 +1025,23 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
         => () => InvokeAsync(new Tuple<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
     /// <param name="arg3">The argument 3.</param>
     /// <param name="arg4">The argument 4.</param>
     /// <param name="arg5">The argument 5.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         => () => _ = InvokeAsync(new Tuple<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2, T3, T4, T5>> Action(Action<Tuple<T1, T2, T3, T4, T5>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2, T3, T4, T5>(action, policy);
@@ -1049,34 +1049,34 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5> Action(Action<T1, T2, T3, T4, T5> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, Task> Action(Func<T1, T2, T3, T4, T5, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5>(action, policy, doNotWait).InvokeAsync;
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-/// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-/// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-/// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-/// <typeparam name="T6">The type of action handler argument 6.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+/// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+/// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+/// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+/// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
 public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2, T3, T4, T5, T6>>
 {
     /// <summary>
@@ -1099,7 +1099,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2, T3, T4, T5, T6> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5, arg.Item6), policy)
@@ -1109,7 +1109,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2, T3, T4, T5, T6>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -1119,9 +1119,9 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, T3, T4, T5, T6, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5, arg.Item6), policy, doNotWait)
     {
@@ -1130,9 +1130,9 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2, T3, T4, T5, T6>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -1142,8 +1142,8 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2, T3, T4, T5, T6>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -1188,7 +1188,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
         => () => InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
@@ -1196,16 +1196,16 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// <param name="arg4">The argument 4.</param>
     /// <param name="arg5">The argument 5.</param>
     /// <param name="arg6">The argument 6.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         => () => _ = InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2, T3, T4, T5, T6>> Action(Action<Tuple<T1, T2, T3, T4, T5, T6>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2, T3, T4, T5, T6>(action, policy);
@@ -1213,35 +1213,35 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5, T6> Action(Action<T1, T2, T3, T4, T5, T6> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5, T6>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, T6, Task> Action(Func<T1, T2, T3, T4, T5, T6, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5, T6>(action, policy, doNotWait).InvokeAsync;
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-/// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-/// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-/// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-/// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-/// <typeparam name="T7">The type of action handler argument 7.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+/// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+/// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+/// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+/// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+/// <typeparam name="T7">The type of Handler handler argument 7.</typeparam>
 public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1, T2, T3, T4, T5, T6, T7>>
 {
     /// <summary>
@@ -1264,7 +1264,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2, T3, T4, T5, T6, T7> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5, arg.Item6, arg.Item7), policy)
@@ -1274,7 +1274,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2, T3, T4, T5, T6, T7>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -1284,9 +1284,9 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, T3, T4, T5, T6, T7, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5, arg.Item6, arg.Item7), policy, doNotWait)
     {
@@ -1295,9 +1295,9 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2, T3, T4, T5, T6, T7>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -1307,8 +1307,8 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2, T3, T4, T5, T6, T7>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -1356,7 +1356,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
         => () => InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
@@ -1365,16 +1365,16 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// <param name="arg5">The argument 5.</param>
     /// <param name="arg6">The argument 6.</param>
     /// <param name="arg7">The argument 7.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         => () => _ = InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2, T3, T4, T5, T6, T7>> Action(Action<Tuple<T1, T2, T3, T4, T5, T6, T7>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2, T3, T4, T5, T6, T7>(action, policy);
@@ -1382,36 +1382,36 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5, T6, T7> Action(Action<T1, T2, T3, T4, T5, T6, T7> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, T6, T7, Task> Action(Func<T1, T2, T3, T4, T5, T6, T7, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7>(action, policy, doNotWait).InvokeAsync;
 }
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-/// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-/// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-/// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-/// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-/// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-/// <typeparam name="T7">The type of action handler argument 7.</typeparam>
-/// <typeparam name="T8">The type of action handler argument 8.</typeparam>
+/// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+/// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+/// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+/// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+/// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+/// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+/// <typeparam name="T7">The type of Handler handler argument 7.</typeparam>
+/// <typeparam name="T8">The type of Handler handler argument 8.</typeparam>
 public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>>
 {
     /// <summary>
@@ -1434,7 +1434,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5, arg.Item6, arg.Item7, arg.Rest), policy)
@@ -1444,7 +1444,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -1454,9 +1454,9 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T1, T2, T3, T4, T5, T6, T7, T8, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(arg.Item1, arg.Item2, arg.Item3, arg.Item4, arg.Item5, arg.Item6, arg.Item7, arg.Rest), policy, doNotWait)
     {
@@ -1465,9 +1465,9 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -1477,8 +1477,8 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -1529,7 +1529,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
         => () => InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 
     /// <summary>
-    /// Creates an action with fixed argument.
+    /// Creates an Handler with fixed argument.
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
@@ -1539,16 +1539,16 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// <param name="arg6">The argument 6.</param>
     /// <param name="arg7">The argument 7.</param>
     /// <param name="arg8">The argument 8.</param>
-    /// <returns>An action to invoke.</returns>
+    /// <returns>An Handler to invoke.</returns>
     public Action FixArgumentAction(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         => () => _ = InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>> Action(Action<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>> action, InterceptorPolicy policy)
     {
         var interceptor = new Interceptor<T1, T2, T3, T4, T5, T6, T7, T8>(action, policy);
@@ -1556,21 +1556,21 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     }
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Action(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7, T8>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, T6, T7, T8, Task> Action(Func<T1, T2, T3, T4, T5, T6, T7, T8, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7, T8>(action, policy, doNotWait).InvokeAsync;
 }

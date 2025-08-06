@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
-/// <typeparam name="T">The type of action handler argument.</typeparam>
+/// <typeparam name="T">The type of Handler handler argument.</typeparam>
 public class Interceptor<T> : BaseInterceptor<T>
 {
     /// <summary>
@@ -32,7 +32,7 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action<T> action, InterceptorPolicy policy)
         : base(action, policy)
@@ -42,9 +42,9 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<T, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action, policy, doNotWait)
     {
@@ -54,8 +54,8 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<T>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -69,28 +69,28 @@ public class Interceptor<T> : BaseInterceptor<T>
         => _ = InvokeAsync(arg);
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T> Action(Action<T> action, InterceptorPolicy policy)
         => new Interceptor<T>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T, Task> Action(Func<T, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -104,11 +104,11 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -119,11 +119,11 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -133,11 +133,11 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -148,10 +148,10 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -162,8 +162,8 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -174,7 +174,7 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -188,11 +188,11 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -203,11 +203,11 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -217,11 +217,11 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -232,10 +232,10 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -246,8 +246,8 @@ public class Interceptor<T> : BaseInterceptor<T>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.

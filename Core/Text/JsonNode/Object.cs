@@ -43,14 +43,38 @@ namespace Trivial.Text;
 ///
 /// // Get the values of the specific properties from the JSON object.
 /// var num = json.GetInt32Value("prop-a"); // 1234
+/// num = json.GetValue&lt;int&gt;("prop-a"); // 1234
+/// num = json.TryGetInt32Value("prop-a") ?? 0; // 1234
 /// var numStr = json.GetStringValue("prop-a"); // "1234"
+/// var kind = json.GetValueKind("prop-a"); // JsonValueKind.Number
 ///
-/// // Set and override any property.
+/// // Set, override and remove any property.
 /// json.SetValue("prop-a", 5678);
 /// num = json.GetInt32Value("prop-a"); // 5678
+/// json.SetValue("prop-a", "uvw");
+/// kind = json.GetValueKind("prop-a"); // JsonValueKind.String
+/// json.Remove("prop-a"); // json.ContainsKey("prop-a") == false
+/// json.SetValue("prop-a", 1234); // json.ContainsKey("prop-a") == true
+/// kind = json.GetValueKind("prop-a"); // JsonValueKind.Number
 /// 
 /// // Converts to a string in JSON format.
 /// var jsonStr = json.ToString(IndentStyles.Compact);
+/// 
+/// // Switch-case routing and callback hanlders registered.
+/// json.SwitchValue("prop-a")
+///     .Case&lt;string&gt;(s => { /* not matched */ })
+///     .Case&lt;int&gt;(s => { /* matched and i == 1234 */ })
+///     .Default(() => { /* not matched */ });
+/// json.SwitchValue("prop-b")
+///     .Case("uvw", () => { /* not matched */ })
+///     .Case("opq", () => { /* matched */ })
+///     .Default(() => { /* not matched */ });
+/// json.SwitchValue("prop-c")
+///     .Case("uvw", () => { /* not matched */ })
+///     .Default(node => { /* matched and node == JsonBooleanNode.True */ });
+/// json.SwitchValue("prop-d")
+///     .Case(node => node is JsonArrayNode arr &amp;&amp; arr.Length == 2, node => { /* matched and node is the JsonArrayNode */ })
+///     .Default(node => { /* not matched */ });
 /// </code>
 /// </example>
 [Serializable]
@@ -4107,6 +4131,20 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonStringNode value)
+    {
+        AssertKey(key);
+        if (value?.Value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, value);
+    }
+
+    /// <summary>
     /// Sets the value of the specific property; or removes the property if the value is null.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -4500,6 +4538,20 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonIntegerNode value)
+    {
+        AssertKey(key);
+        if (value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, long? value)
     {
         if (value.HasValue) SetValue(key, value.Value);
@@ -4668,6 +4720,34 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonDoubleNode value)
+    {
+        AssertKey(key);
+        if (value is null || value.ValueKind == JsonValueKind.Null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonDecimalNode value)
+    {
+        AssertKey(key);
+        if (value is null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, bool value)
     {
         AssertKey(key);
@@ -4696,6 +4776,25 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, IJsonValueNode<bool> value)
+    {
+        AssertKey(key);
+        if (value is null)
+        {
+            SetProperty(key, JsonValues.Null);
+            return;
+        }
+
+        SetProperty(key, value.Value ? JsonBooleanNode.True : JsonBooleanNode.False);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonBooleanNode value)
     {
         AssertKey(key);
         if (value is null)
@@ -7991,12 +8090,18 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    /// <example>
+    /// <code>
+    /// var valueSwitch = json.SwitchValue("value");
+    /// if (valueSwitch != null) valueSwitch
+    ///     .Case(100, () => { /* handle case for integer 100 */ })
+    ///     .Case&lt;int&gt;(i => { /* handle case for any other integer */ })
+    ///     .Case&lt;string&gt;(s => { /* handle case for any string */ })
+    ///     .Default(() => { /* handle default case */ });
+    /// </code>
+    /// </example>
     public JsonSwitchContext<BaseJsonValueNode, string> SwitchValue(string key)
-    {
-        var prop = TryGetValue(key);
-        if (prop == null) return null;
-        return new(prop, key);
-    }
+        => SwitchValue(false, key, key);
 
     /// <summary>
     /// Switches.
@@ -8006,9 +8111,43 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="args">The argument object.</param>
     /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
     public JsonSwitchContext<BaseJsonValueNode, T> SwitchValue<T>(string key, T args)
+        => SwitchValue(false, key, args);
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <param name="undefinedIfNotFound">true if returns the switch context with undefined value if no such property; otherwise, false, to return null.</param>
+    /// <param name="key">The key of the property.</param>
+    /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    /// <example>
+    /// <code>
+    /// json.SwitchValue(true, "value")
+    ///     .Case(100, () => { /* handle case for integer 100 */ })
+    ///     .Case&lt;int&gt;(i => { /* handle case for any other integer */ })
+    ///     .Case&lt;string&gt;(s => { /* handle case for any string */ })
+    ///     .Default(() => { /* handle default case */ });
+    /// </code>
+    /// </example>
+    public JsonSwitchContext<BaseJsonValueNode, string> SwitchValue(bool undefinedIfNotFound, string key)
+        => SwitchValue(undefinedIfNotFound, key, key);
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <typeparam name="T">The type of the args.</typeparam>
+    /// <param name="undefinedIfNotFound">true if returns the switch context with undefined value if no such property; otherwise, false, to return null.</param>
+    /// <param name="key">The key of the property.</param>
+    /// <param name="args">The argument object.</param>
+    /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    public JsonSwitchContext<BaseJsonValueNode, T> SwitchValue<T>(bool undefinedIfNotFound, string key, T args)
     {
         var prop = TryGetValue(key);
-        if (prop == null) return null;
+        if (prop == null)
+        {
+            if (undefinedIfNotFound) prop = JsonValues.Undefined;
+            else return null;
+        }
+
         return new(prop, args);
     }
 

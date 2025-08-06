@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Trivial.Reflection;
 
 namespace Trivial.Data;
 
@@ -340,7 +341,7 @@ public class ChangeEventArgs<T> : EventArgs
 /// </summary>
 /// <typeparam name="T">The type of the state.</typeparam>
 [DebuggerDisplay("Data")]
-public class DataEventArgs<T> : EventArgs
+public class DataEventArgs<T> : EventArgs, IObjectRef<T>
 {
     /// <summary>
     /// Initializes a new instance of the DataEventArgs class.
@@ -370,6 +371,15 @@ public class DataEventArgs<T> : EventArgs
     /// Gets the additional message.
     /// </summary>
     public string Message { get; }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    bool IObjectRef.IsValueCreated => true;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    object IObjectRef.Value => Data;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    T IObjectRef<T>.Value => Data;
 
     /// <inheritdoc />
     public override string ToString()

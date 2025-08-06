@@ -143,21 +143,25 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// <summary>
     /// Gets the source value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     int IObjectRef<int>.Value => (int)Value;
 
     /// <summary>
     /// Gets the source value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     decimal IObjectRef<decimal>.Value => Value;
 
     /// <summary>
     /// Gets the source value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     float IObjectRef<float>.Value => Value;
 
     /// <summary>
     /// Gets the source value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     double IObjectRef<double>.Value => Value;
 
     /// <summary>
@@ -1672,6 +1676,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// <summary>
     /// Gets the source value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     float IObjectRef<float>.Value => (float)Value;
 
     /// <summary>
@@ -3246,6 +3251,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// <summary>
     /// Gets the source value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     double IObjectRef<double>.Value => (double)Value;
 
     /// <summary>

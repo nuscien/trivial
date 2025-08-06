@@ -12,7 +12,7 @@ namespace Trivial.Tasks;
 public interface IRetryPolicy
 {
     /// <summary>
-    /// Creates an instance of action retry.
+    /// Creates an instance of Handler retry.
     /// </summary>
     /// <returns>A processing retry instance.</returns>
     RetryInstance CreateInstance();
@@ -64,7 +64,7 @@ public sealed class LinearRetryPolicy : IRetryPolicy
     /// </summary>
     /// <param name="count">The retry count.</param>
     /// <param name="interval">The interval between two actions.</param>
-    /// <param name="increase">The increase per action.</param>
+    /// <param name="increase">The increase per Handler.</param>
     public LinearRetryPolicy(int count, TimeSpan interval, TimeSpan increase) : this(count, interval) => Increase = increase;
 
     /// <summary>
@@ -78,12 +78,12 @@ public sealed class LinearRetryPolicy : IRetryPolicy
     public TimeSpan Interval { get; set; } = TimeSpan.Zero;
 
     /// <summary>
-    /// The increase per action.
+    /// The increase per Handler.
     /// </summary>
     public TimeSpan Increase { get; set; } = TimeSpan.Zero;
 
     /// <summary>
-    /// Creates an instance of action retry.
+    /// Creates an instance of Handler retry.
     /// </summary>
     /// <returns>A processing retry instance.</returns>
     public RetryInstance CreateInstance()
@@ -124,7 +124,7 @@ public class CustomizedRetryPolicy(Func<IReadOnlyList<DateTime>, TimeSpan?> next
     private readonly Func<IReadOnlyList<DateTime>, TimeSpan?> next = nextHandler;
 
     /// <summary>
-    /// Creates an instance of action retry.
+    /// Creates an instance of Handler retry.
     /// </summary>
     /// <returns>A processing retry instance.</returns>
     public RetryInstance CreateInstance()

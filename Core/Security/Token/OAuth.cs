@@ -95,6 +95,16 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>
     /// <param name="tokenCached">The token information instance cached.</param>
+    public OAuthClient(string appId, ReadOnlySpan<char> secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the OAuthHttpClient class.
+    /// </summary>
+    /// <param name="appId">The app id.</param>
+    /// <param name="secretKey">The secret key.</param>
+    /// <param name="tokenCached">The token information instance cached.</param>
     public OAuthClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
     {
     }
@@ -125,6 +135,24 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <param name="scope">The scope.</param>
     /// <param name="tokenCached">The token information instance cached.</param>
     public OAuthClient(string appId, string secretKey, Uri tokenResolveUri, IEnumerable<string> scope, TokenInfo tokenCached = null) : this(appId, secretKey, tokenCached)
+    {
+        TokenResolverUri = tokenResolveUri;
+        if (scope == null) return;
+        foreach (var ele in scope)
+        {
+            Scope.Add(ele);
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the OAuthHttpClient class.
+    /// </summary>
+    /// <param name="appId">The app id.</param>
+    /// <param name="secretKey">The secret key.</param>
+    /// <param name="tokenResolveUri">The token resolve URI.</param>
+    /// <param name="scope">The scope.</param>
+    /// <param name="tokenCached">The token information instance cached.</param>
+    public OAuthClient(string appId, ReadOnlySpan<char> secretKey, Uri tokenResolveUri, IEnumerable<string> scope, TokenInfo tokenCached = null) : this(appId, secretKey, tokenCached)
     {
         TokenResolverUri = tokenResolveUri;
         if (scope == null) return;

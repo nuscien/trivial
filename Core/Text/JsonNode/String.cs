@@ -492,33 +492,11 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
 #endif
 
     /// <summary>
-    /// Indicates whether the specified string is null or an empty string ("").
-    /// </summary>
-    /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
-    public bool IsNullOrEmpty()
-        => string.IsNullOrEmpty(Value);
-
-    /// <summary>
-    /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
-    /// </summary>
-    /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
-    public bool IsNullOrWhiteSpace()
-        => string.IsNullOrWhiteSpace(Value);
-
-    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string.</returns>
     public override string ToString()
         => Value != null ? ToJson(Value) : "null";
-
-    /// <summary>
-    /// Gets the JSON format string of the value.
-    /// </summary>
-    /// <param name="removeQuotes">true if remove the quotes; otherwise, false.</param>
-    /// <returns>The JSON format string.</returns>
-    public string ToString(bool removeQuotes)
-        => Value != null ? ToJson(Value, removeQuotes) : (removeQuotes ? null : "null");
 
     /// <summary>
     /// Parses the value to an enum.
@@ -669,120 +647,6 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
-    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int IndexOf(string value, int start = 0)
-        => Value?.IndexOf(value, start) ?? (value == null ? string.Empty.IndexOf(value) : -1);
-
-    /// <summary>
-    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <param name="count">The number of character positions to examine.</param>
-    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int IndexOf(string value, int start, int count)
-        => Value?.IndexOf(value, start, count) ?? (value == null ? string.Empty.IndexOf(value) : -1);
-
-    /// <summary>
-    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position and examines a specified number of character positions.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
-    /// <param name="startIndex">The search starting position.</param>
-    /// <param name="count">The number of character positions to examine.</param>
-    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentException">count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus startIndex.</exception>
-    public int IndexOf(string value, StringComparison comparisonType, int startIndex = 0, int? count = null)
-        => Value == null ? -1 : (count.HasValue ? Value.IndexOf(value, startIndex, count.Value, comparisonType) : Value.IndexOf(value, startIndex, comparisonType));
-
-    /// <summary>
-    /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int IndexOf(char value, int start = 0)
-        => Value?.IndexOf(value, start) ?? -1;
-
-    /// <summary>
-    /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <param name="count">The number of character positions to examine.</param>
-    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int IndexOf(char value, int start, int count)
-        => Value?.IndexOf(value, start, count) ?? -1;
-
-    /// <summary>
-    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int LastIndexOf(string value, int start = 0)
-        => Value?.LastIndexOf(value, start) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
-
-    /// <summary>
-    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <param name="count">The number of character positions to examine.</param>
-    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int LastIndexOf(string value, int start, int count)
-        => Value?.LastIndexOf(value, start, count) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
-
-    /// <summary>
-    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string for the specified number of character positions. A parameter specifies the type of comparison to performwhen searching for the specified string.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
-    /// <param name="startIndex">The search starting position.</param>
-    /// <param name="count">The number of character positions to examine.</param>
-    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
-    /// <exception cref="ArgumentNullException">value is null.</exception>
-    /// <exception cref="ArgumentException">count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus startIndex.</exception>
-    public int LastIndexOf(string value, StringComparison comparisonType, int startIndex = 0, int? count = null)
-        => Value == null ? -1 : (count.HasValue ? Value.LastIndexOf(value, startIndex, count.Value, comparisonType) : Value.LastIndexOf(value, startIndex, comparisonType));
-
-    /// <summary>
-    /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int LastIndexOf(char value, int start = 0)
-        => Value?.LastIndexOf(value, start) ?? -1;
-
-    /// <summary>
-    /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
-    /// </summary>
-    /// <param name="value">The string to seek.</param>
-    /// <param name="start">The search starting position.</param>
-    /// <param name="count">The number of character positions to examine.</param>
-    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
-    public int LastIndexOf(char value, int start, int count)
-        => Value?.LastIndexOf(value, start, count) ?? -1;
-
-    /// <summary>
     /// Retrieves a substring from this instance. The substring starts at a specified character position and has a specified length.
     /// </summary>
     /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
@@ -795,14 +659,6 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         if (str != null && str.Length == Length) return this;
         return new(str);
     }
-
-    /// <summary>
-    /// Tests if the number value is macthed by the specific condition.
-    /// </summary>
-    /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
-    public bool IsMatched(Data.StringCondition condition)
-        => condition == null || condition.IsMatched(Value);
 
     /// <summary>
     /// Converts to a JSON array.
@@ -836,13 +692,6 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <returns>A JSON array node.</returns>
     public JsonArrayNode ToJsonArray(char separator, StringSplitOptions options = StringSplitOptions.None, bool trimEachItem = false)
         => ToJsonArray([separator], options, trimEachItem);
-
-    /// <summary>
-    /// Creates a new read-only span over the string value.
-    /// </summary>
-    /// <returns>The read-only span representation of the string.</returns>
-    public ReadOnlySpan<char> AsSpan()
-        => Value == null ? ReadOnlySpan<char>.Empty : Value.AsSpan();
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.

@@ -999,7 +999,7 @@ public class SingletonKeeper<T>
     /// Creates a timer to renew the singleton.
     /// </summary>
     /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
-    /// <param name="isPaused">A handler to let the timer know if the renew action is paused.</param>
+    /// <param name="isPaused">A handler to let the timer know if the renew Handler is paused.</param>
     /// <returns>The timer.</returns>
     public System.Timers.Timer CreateRenewTimer(TimeSpan interval, Func<bool> isPaused = null)
     {

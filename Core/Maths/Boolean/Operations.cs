@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Trivial.Collection;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -139,6 +140,30 @@ public static class BooleanOperations
             CriteriaBooleanOperator.Or => "|",
             _ => null
         };
+
+    /// <summary>
+    /// Gets a value from the specific ones.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="source">The source value.</param>
+    /// <param name="trueValue">The value of true.</param>
+    /// <param name="falseValue">The value of false.</param>
+    /// <param name="nullValue">The value of null.</param>
+    /// <returns>A value.</returns>
+    public static T PickOut<T>(bool? source, T trueValue, T falseValue, T nullValue)
+        => source.HasValue ? (source.Value ? trueValue : falseValue) : nullValue;
+
+    /// <summary>
+    /// Gets a value from the specific ones.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="source">The source value.</param>
+    /// <param name="trueValue">The value of true.</param>
+    /// <param name="falseValue">The value of false.</param>
+    /// <param name="nullValue">The value of null.</param>
+    /// <returns>A value.</returns>
+    public static T PickOut<T>(IObjectRef<bool> source, T trueValue, T falseValue, T nullValue)
+        => source == null ? nullValue : (source.Value ? trueValue : falseValue);
 
     /// <summary>
     /// Converts the formulars to string.

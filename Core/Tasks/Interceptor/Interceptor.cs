@@ -8,24 +8,24 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The handler interceptor to determine whether the current invoking action can run right now, later or never.
+/// The handler interceptor to determine whether the current invoking Handler can run right now, later or never.
 /// </summary>
 /// <remarks>
-/// <para>Create a policy by <see cref="InterceptorPolicy" /> to determine when the invoking action can be executed;
+/// <para>Create a policy by <see cref="InterceptorPolicy" /> to determine when the invoking Handler can be executed;
 /// or call one of following helpers.</para>
 /// <list type="bullet">
 /// <item>
 /// <para>Debounce</para>
-/// <para>You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
+/// <para>You may request to call a specific Handler several times in a short time but only the last one should be processed and previous ones should be ignored.
 /// A sample scenario is real-time search.</para>
 /// </item>
 /// <item>
 /// <para>Throttle</para>
-/// <para>You may want to request to call an action only once in a short time even if you request to call several times. The rest will be ignored.</para>
+/// <para>You may want to request to call an Handler only once in a short time even if you request to call several times. The rest will be ignored.</para>
 /// </item>
 /// <item>
 /// <para>Times</para>
-/// <para>You can define an action can be only processed only when request to call in the specific times range and others will be ignored.
+/// <para>You can define an Handler can be only processed only when request to call in the specific times range and others will be ignored.
 /// A sample scenario is double click.</para>
 /// </item>
 /// <item>
@@ -57,7 +57,7 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
     public Interceptor(Action action, InterceptorPolicy policy)
         : base(action is null ? null : arg => action(), policy)
@@ -67,9 +67,9 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(Func<Task> action, InterceptorPolicy policy, bool doNotWait = false)
         : base(action is null ? null : arg => action(), policy, doNotWait)
     {
@@ -79,8 +79,8 @@ public class Interceptor : BaseInterceptor<object>
     /// Initializes a new instance of the Interceptor class.
     /// </summary>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="action">The action to register to execute.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
     public Interceptor(InterceptorPolicy policy, Func<InterceptorEventArgs<object>, Task> action, bool doNotWait = false)
         : base(policy, action, doNotWait)
     {
@@ -100,28 +100,28 @@ public class Interceptor : BaseInterceptor<object>
         => _ = InvokeAsync(null);
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action Action(Action action, InterceptorPolicy policy)
         => new Interceptor(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<Task> Action(Func<Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -135,11 +135,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -150,11 +150,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -164,11 +164,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -179,10 +179,10 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -193,8 +193,8 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -205,7 +205,7 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -219,11 +219,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -234,11 +234,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -248,11 +248,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -263,10 +263,10 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -277,8 +277,8 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -287,31 +287,31 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T> Action<T>(Action<T> action, InterceptorPolicy policy)
         => new Interceptor<T>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T, Task> Action<T>(Func<T, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -325,12 +325,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -341,12 +341,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -356,12 +356,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -372,11 +372,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -387,9 +387,9 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -400,8 +400,8 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -415,12 +415,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -431,12 +431,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -446,12 +446,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -462,11 +462,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -477,9 +477,9 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double click.
     /// </summary>
-    /// <typeparam name="T">The type of action handler argument.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <typeparam name="T">The type of Handler handler argument.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -488,34 +488,34 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2> Action<T1, T2>(Action<T1, T2> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, Task> Action<T1, T2>(Func<T1, T2, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -529,13 +529,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -546,13 +546,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -562,13 +562,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -579,12 +579,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -595,10 +595,10 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -609,9 +609,9 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -625,13 +625,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -642,13 +642,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -658,13 +658,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -675,12 +675,12 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -691,10 +691,10 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -703,37 +703,37 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3> Action<T1, T2, T3>(Action<T1, T2, T3> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, Task> Action<T1, T2, T3>(Func<T1, T2, T3, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -747,14 +747,14 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -765,14 +765,14 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -782,14 +782,14 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -800,13 +800,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -817,11 +817,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -832,10 +832,10 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a debounce interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="delay">Delay time span.</param>
     /// <returns>The interceptor policy.</returns>
     /// <remarks>
@@ -849,14 +849,14 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a throttle interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="duration">The duration.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
-    /// You may want to request to call an action only once in a short time
+    /// You may want to request to call an Handler only once in a short time
     /// even if you request to call several times.
     /// The rest will be ignored.
     /// So the handler will be frozen for a while after it has processed.
@@ -867,14 +867,14 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates a multi-hit interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remark>
     /// The handler to process for the specific times and it will be reset after a while.
     /// </remark>
@@ -884,14 +884,14 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="min">The minmum invoking count.</param>
     /// <param name="max">The maxmum invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -902,13 +902,13 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded at a specific times.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="count">The invoking count.</param>
     /// <param name="timeout">The time span between each invoking.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -919,11 +919,11 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Creates an interceptor policy responded as double-click.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
-    /// <returns>The action with the specific interceptor policy integration.</returns>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
+    /// <returns>The Handler with the specific interceptor policy integration.</returns>
     /// <remarks>
     /// A handler to process at last only when request to call in the specific times range.
     /// A sample scenario is double click.
@@ -932,157 +932,157 @@ public class Interceptor : BaseInterceptor<object>
         => Action(action, InterceptorPolicy.DoubleClick());
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4> Action<T1, T2, T3, T4>(Action<T1, T2, T3, T4> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, Task> Action<T1, T2, T3, T4>(Func<T1, T2, T3, T4, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5> Action<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, Task> Action<T1, T2, T3, T4, T5>(Func<T1, T2, T3, T4, T5, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5, T6> Action<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5, T6>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, T6, Task> Action<T1, T2, T3, T4, T5, T6>(Func<T1, T2, T3, T4, T5, T6, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5, T6>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-    /// <typeparam name="T7">The type of action handler argument 7.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+    /// <typeparam name="T7">The type of Handler handler argument 7.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5, T6, T7> Action<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-    /// <typeparam name="T7">The type of action handler argument 7.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+    /// <typeparam name="T7">The type of Handler handler argument 7.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, T6, T7, Task> Action<T1, T2, T3, T4, T5, T6, T7>(Func<T1, T2, T3, T4, T5, T6, T7, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7>(action, policy, doNotWait).InvokeAsync;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-    /// <typeparam name="T7">The type of action handler argument 7.</typeparam>
-    /// <typeparam name="T8">The type of action handler argument 8.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+    /// <typeparam name="T7">The type of Handler handler argument 7.</typeparam>
+    /// <typeparam name="T8">The type of Handler handler argument 8.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Action<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, InterceptorPolicy policy)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7, T8>(action, policy).InvokeBegin;
 
     /// <summary>
-    /// Creates an action with interceptor policy.
+    /// Creates an Handler with interceptor policy.
     /// </summary>
-    /// <typeparam name="T1">The type of action handler argument 1.</typeparam>
-    /// <typeparam name="T2">The type of action handler argument 2.</typeparam>
-    /// <typeparam name="T3">The type of action handler argument 3.</typeparam>
-    /// <typeparam name="T4">The type of action handler argument 4.</typeparam>
-    /// <typeparam name="T5">The type of action handler argument 5.</typeparam>
-    /// <typeparam name="T6">The type of action handler argument 6.</typeparam>
-    /// <typeparam name="T7">The type of action handler argument 7.</typeparam>
-    /// <typeparam name="T8">The type of action handler argument 8.</typeparam>
-    /// <param name="action">The action to register to execute.</param>
+    /// <typeparam name="T1">The type of Handler handler argument 1.</typeparam>
+    /// <typeparam name="T2">The type of Handler handler argument 2.</typeparam>
+    /// <typeparam name="T3">The type of Handler handler argument 3.</typeparam>
+    /// <typeparam name="T4">The type of Handler handler argument 4.</typeparam>
+    /// <typeparam name="T5">The type of Handler handler argument 5.</typeparam>
+    /// <typeparam name="T6">The type of Handler handler argument 6.</typeparam>
+    /// <typeparam name="T7">The type of Handler handler argument 7.</typeparam>
+    /// <typeparam name="T8">The type of Handler handler argument 8.</typeparam>
+    /// <param name="action">The Handler to register to execute.</param>
     /// <param name="policy">The interceptor policy.</param>
-    /// <param name="doNotWait">true if do not wait for the action result; otherwise, false.</param>
-    /// <returns>The action with interceptor policy integration.</returns>
+    /// <param name="doNotWait">true if do not wait for the Handler result; otherwise, false.</param>
+    /// <returns>The Handler with interceptor policy integration.</returns>
     public static Func<T1, T2, T3, T4, T5, T6, T7, T8, Task> Action<T1, T2, T3, T4, T5, T6, T7, T8>(Func<T1, T2, T3, T4, T5, T6, T7, T8, Task> action, InterceptorPolicy policy, bool doNotWait = false)
         => new Interceptor<T1, T2, T3, T4, T5, T6, T7, T8>(action, policy, doNotWait).InvokeAsync;
 }
