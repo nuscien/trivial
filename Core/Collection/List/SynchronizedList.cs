@@ -15,6 +15,7 @@ namespace Trivial.Collection;
 
 /// <summary>
 /// Represents a thread-safe list of objects.
+/// It uses reader writer lock slim to control access to the list.
 /// </summary>
 /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
 public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged, INotifyCollectionChanged

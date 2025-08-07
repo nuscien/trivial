@@ -2,7 +2,7 @@
 
 Utility for barcode symbology and numbering system EAN.
 
-In `Trivial.Data` [namespace](../) of `Trivial.Mime.dll` [library](../../).
+In `Trivial.Data` [namespace](../) of `Trivial.Messages.dll` [library](../../).
 
 ## EAN
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -52,7 +53,24 @@ public abstract class BaseNestedParameter(object parameter)
 /// </summary>
 public class TypedNestedParameter
 {
-    private readonly Dictionary<Type, object> store = new();
+    private readonly Dictionary<Type, object> store;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypedNestedParameter"/> class.
+    /// </summary>
+    public TypedNestedParameter()
+    {
+        store = new();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TypedNestedParameter"/> class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its registry for current state.</param>
+    public TypedNestedParameter(TypedNestedParameter copy)
+    {
+        store = new(copy.store);
+    }
 
     /// <summary>
     /// Gets all types registered.
@@ -108,6 +126,23 @@ public class TypedNestedParameter
     /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
     public bool Remove(Type type)
         => type != null && store.Remove(type);
+
+    /// <summary>
+    /// Removes the specific type.
+    /// </summary>
+    /// <param name="types">The types to remove.</param>
+    /// <returns>The count of item removed.</returns>
+    public int Remove(IEnumerable<Type> types)
+    {
+        var i = 0;
+        if (types == null) return i;
+        foreach (var type in types)
+        {
+            if (Remove(type)) i++;
+        }
+
+        return i;
+    }
 
     /// <summary>
     /// Tests whether the value of a specific type is registered.
@@ -177,6 +212,14 @@ public class TypedNestedParameter
                 throw new NotSupportedException(errorMessage, ex);
             }
             catch (OverflowException ex)
+            {
+                throw new NotSupportedException(errorMessage, ex);
+            }
+            catch (ArithmeticException ex)
+            {
+                throw new NotSupportedException(errorMessage, ex);
+            }
+            catch (NotImplementedException ex)
             {
                 throw new NotSupportedException(errorMessage, ex);
             }

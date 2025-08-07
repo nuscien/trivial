@@ -63,7 +63,7 @@ namespace Trivial.Text;
 /// // Switch-case routing and callback hanlders registered.
 /// json.SwitchValue("prop-a")
 ///     .Case&lt;string&gt;(s => { /* not matched */ })
-///     .Case&lt;int&gt;(s => { /* matched and i == 1234 */ })
+///     .Case&lt;int&gt;(i => { /* matched and i == 1234 */ })
 ///     .Default(() => { /* not matched */ });
 /// json.SwitchValue("prop-b")
 ///     .Case("uvw", () => { /* not matched */ })

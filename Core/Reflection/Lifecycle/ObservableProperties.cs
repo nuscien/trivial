@@ -206,8 +206,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return true;
         }
 
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.");
+        return RejectSet();
     }
 
     /// <summary>
@@ -233,8 +232,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return true;
         }
 
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.");
+        return RejectSet();
     }
 
     /// <summary>
@@ -259,8 +257,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return true;
         }
 
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.");
+        return RejectSet();
     }
 
     /// <summary>
@@ -285,8 +282,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return true;
         }
 
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.");
+        return RejectSet();
     }
 
     /// <summary>
@@ -305,6 +301,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             if (v is T result) return result;
             var typeE = typeof(T);
             if (typeE.IsInterface || typeE.IsAbstract) return defaultValue;
+            if (v is null) return default;
             var typeO = v.GetType();
             if (v is string s)
             {
@@ -362,7 +359,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                 {
                     return (T)(object)JsonEncodedText.Encode(s);
                 }
-                else if (typeE == typeof(JsonStringNode))
+                else if (typeE == typeof(JsonStringNode) || typeE == typeof(IJsonValueNode<string>))
                 {
                     return (T)(object)new JsonStringNode(s);
                 }
@@ -494,6 +491,16 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             {
                 if (typeE == typeof(string))
                     return (T)(object)Security.SecureStringExtensions.ToUnsecureString(secure);
+                else if (typeE == typeof(StringBuilder))
+                    return (T)(object)new StringBuilder(Security.SecureStringExtensions.ToUnsecureString(secure));
+            }
+            else if (v is BaseNestedParameter n)
+            {
+                if (n.ParameterIs(out T nr)) return nr;
+            }
+            else if (v is TypedNestedParameter tn)
+            {
+                if (tn.TryGet(out T nr)) return nr;
             }
 
             return defaultValue;
@@ -574,8 +581,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return true;
         }
 
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.");
+        return RejectSet();
     }
 
     /// <summary>
@@ -637,8 +643,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             }
         }
 
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.");
+        return RejectSet();
     }
 
     /// <summary>
@@ -866,6 +871,12 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
             throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
         return false;
+    }
+
+    private bool RejectSet()
+    {
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+        throw new InvalidOperationException("Forbid to set property.", new UnauthorizedAccessException("No permission to set property."));
     }
 }
 

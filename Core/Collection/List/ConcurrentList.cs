@@ -17,6 +17,7 @@ namespace Trivial.Collection;
 
 /// <summary>
 /// Represents a thread-safe list of objects.
+/// It uses a locker to control access to the list.
 /// </summary>
 /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
 internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged, INotifyCollectionChanged

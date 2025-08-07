@@ -1314,6 +1314,12 @@ public static class ObjectConvert
         catch (OverflowException)
         {
         }
+        catch (ArithmeticException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
         catch (ExternalException)
         {
         }

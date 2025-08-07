@@ -4,7 +4,7 @@ In `Trivial.Web` namespace of `Trivial.dll` [library](../).
 
 - [Web format](./format)
 
-In `Trivial.Web` namespace of `Trivial.Mime.dll` library.
+In `Trivial.Web` namespace of `Trivial.Messages.dll` library.
 
 - [Mime constants](./mime)
 

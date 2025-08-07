@@ -2,7 +2,7 @@
 
 Utility for Code 128 and GS1-128.
 
-In `Trivial.Data` [namespace](../) of `Trivial.Mime.dll` [library](../../).
+In `Trivial.Data` [namespace](../) of `Trivial.Messages.dll` [library](../../).
 
 ## Code 128
 

@@ -26,18 +26,58 @@ var packageInfo = await webClient.SendAsync(HttpMethod.Get, url);
 // packageInfo.Name == "datasense"
 ```
 
-And you can also deserialize following types for JSON values accessing directly.
-
-- `System.Text.Json.JsonDocument`
-- `Newtonsoft.Json.Linq.JObject`
-- `Newtonsoft.Json.Linq.JArray`
-- `Trivial.Text.JsonObject`
-- `Trivial.Text.JsonArray`
+You can also set the generic argument type as `JsonObjectNode` so that you can get the DOM.
 
 ```csharp
 // Suppose you have a class NameAndDescription with properties Name and Description.
-var webClient2 = new JsonHttpClient<JObject>();
+var webClient2 = new JsonHttpClient<JsonObjectNode>();
 var json = await webClient2.SendAsync(HttpMethod.Get, url);
 
-// packageInfo["Name"] == "datasense"
+// json.TryGetValue<string>("Name") == "datasense"
 ```
+
+## Server-sent event
+
+The class `JsonHttpClient` also support server-sent event (SSE) by setting
+the generic argument type as `IAsyncEnumerable<ServerSentEventInfo>`.
+
+```csharp
+var http = new JsonHttpClient<IAsyncEnumerable<ServerSentEventInfo>>();
+var sse = http.GetAsync(A-URL-TO-STREAM-MESSAGE);
+await foreach (var item in sse)
+{
+    if (item.EventName != "message") continue;
+    var data = item.GetJsonData();
+    Process(data);  // or get item.DataString (original string in data field).
+}
+```
+
+For server-side (ASP.NET) to push data,
+you may use `ToActionResult` extension method in `Trivial.Web` package.
+
+```csharp
+public IActionResult Streaming() // This method is in a controller
+{
+    IAsyncEnumerable<ServerSentEventInfo> sse = GetStreamingData();
+    return sse.ToActionResult();
+}
+```
+
+## Common-used types
+
+The following types are the common-used for the generic argument type of `JsonHttpClient<T>`.
+
+| Description of HTTP response content | Generic argument type `T` |
+| -------------------- | ---------- |
+| `application/json` (JSON object) | `JsonObjectNode` |
+| JSON array | `JsonArrayNode` |
+| `application/jsonl` (JSON object lines) | `IAsyncEnumerable<JsonObjectNode>` |
+| `text/event-stream` (SSE) | `IAsyncEnumerable<ServerSentEventInfo>` |
+| `application/x-www-form-urlencoded` | `QueryData` |
+| Text | `string` |
+| Text in multiple lines | `IAsyncEnumerable<string>` |
+
+For JSON DOM cases, you can also set `T` as following type.
+
+- JSON object: `Newtonsoft.Json.Linq.JObject` or `System.Text.Json.JsonDocument`.
+- JSON array: `Newtonsoft.Json.Linq.JArray`.
