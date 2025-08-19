@@ -131,6 +131,8 @@ public class NodePathBreadcrumb<T> : NodePathBreadcrumb
 /// <summary>
 /// A model with the relationship between the item selected and its parent.
 /// </summary>
+/// <typeparam name="TParent">The type of parent.</typeparam>
+/// <typeparam name="TItem">The type of item.</typeparam>
 public class SelectionRelationship<TParent, TItem>
 {
     /// <summary>

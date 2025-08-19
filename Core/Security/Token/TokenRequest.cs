@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -333,8 +334,8 @@ public class AppAccessingKey
     /// <summary>
     /// Initializes a new instance of the AppAccessingKey class.
     /// </summary>
-    /// <param name="id">The app id.</param>
-    /// <param name="secret">The secret key.</param>
+    /// <param name="id">The app identifier or app access key.</param>
+    /// <param name="secret">The app secret key.</param>
     public AppAccessingKey(string id, string secret = null)
     {
         Id = id;
@@ -344,8 +345,8 @@ public class AppAccessingKey
     /// <summary>
     /// Initializes a new instance of the AppAccessingKey class.
     /// </summary>
-    /// <param name="id">The app id.</param>
-    /// <param name="secret">The secret key.</param>
+    /// <param name="id">The app identifier or app access key.</param>
+    /// <param name="secret">The app secret key.</param>
     public AppAccessingKey(string id, ReadOnlySpan<char> secret)
     {
         Id = id;
@@ -355,8 +356,8 @@ public class AppAccessingKey
     /// <summary>
     /// Initializes a new instance of the AppAccessingKey class.
     /// </summary>
-    /// <param name="id">The app id.</param>
-    /// <param name="secret">The secret key.</param>
+    /// <param name="id">The app identifier or app access key.</param>
+    /// <param name="secret">The app secret key.</param>
     public AppAccessingKey(string id, SecureString secret)
     {
         Id = id;
@@ -374,19 +375,98 @@ public class AppAccessingKey
     }
 
     /// <summary>
-    /// The app id.
+    /// The app identifier or app access key.
     /// </summary>
     public string Id { get; set; }
 
     /// <summary>
-    /// The secret key.
+    /// The app secret key.
     /// </summary>
     public SecureString Secret { get; set; }
+
+    /// <summary>
+    /// Sets the secret key.
+    /// </summary>
+    /// <param name="secret">The secret key to set.</param>
+    public void SetSecret(string secret)
+        => Secret = secret.ToSecure();
+
+    /// <summary>
+    /// Sets the secret key.
+    /// </summary>
+    /// <param name="secret">The secret key to set.</param>
+    public void SetSecret(ReadOnlySpan<char> secret)
+        => Secret = secret.ToSecure();
 
     /// <summary>
     /// Gets additional string bag.
     /// </summary>
     public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
+
+    /// <summary>
+    /// Loads from environment variables to set.
+    /// </summary>
+    /// <param name="id">The key of environment variable of app identifier or app access key.</param>
+    /// <param name="secret">The key of environment variable of app secret key.</param>
+    /// <returns>true if gets all these information; otherwise, false.</returns>
+    public bool LoadFromEnvironment(string id, string secret)
+        => LoadFromEnvironment(id, secret, false);
+
+    /// <summary>
+    /// Loads from environment variables to set.
+    /// </summary>
+    /// <param name="id">The key of environment variable of app identifier or app access key.</param>
+    /// <param name="secret">The key of environment variable of app secret key.</param>
+    /// <param name="skipIfFails">true if skip to set if fails to load; otherwise, false.</param>
+    /// <returns>true if gets all these information; otherwise, false.</returns>
+    public bool LoadFromEnvironment(string id, string secret, bool skipIfFails)
+    {
+        id = GetFromEnvironment(id);
+        secret = GetFromEnvironment(secret);
+        var succ = id != null && secret != null;
+        if (!succ && skipIfFails) return false;
+        Id = id;
+        Secret = secret?.ToSecure();
+        return succ;
+    }
+
+    /// <summary>
+    /// Loads from environment variables to set.
+    /// </summary>
+    /// <param name="id">The key of environment variable of app identifier or app access key.</param>
+    /// <param name="secret">The key of environment variable of app secret key.</param>
+    /// <param name="target">The target used of environment variable.</param>
+    /// <param name="skipIfFails">true if skip to set if fails to load; otherwise, false.</param>
+    /// <returns>true if gets all these information; otherwise, false.</returns>
+    public bool LoadFromEnvironment(string id, string secret, EnvironmentVariableTarget target, bool skipIfFails = false)
+        => LoadFromEnvironment(id, target, secret, target, skipIfFails);
+
+    /// <summary>
+    /// Loads from environment variables to set.
+    /// </summary>
+    /// <param name="id">The key of environment variable of app identifier or app access key.</param>
+    /// <param name="idTarget">The target used of environment variable of app identifier or app access key.</param>
+    /// <param name="secret">The key of environment variable of app secret key.</param>
+    /// <param name="secretTarget">The target used of environment variable of app secret key.</param>
+    /// <param name="skipIfFails">true if skip to set if fails to load; otherwise, false.</param>
+    /// <returns>true if gets all these information; otherwise, false.</returns>
+    public bool LoadFromEnvironment(string id, EnvironmentVariableTarget idTarget, string secret, EnvironmentVariableTarget secretTarget, bool skipIfFails = false)
+    {
+        id = GetFromEnvironment(id, idTarget);
+        secret = GetFromEnvironment(secret, secretTarget);
+        var succ = id != null && secret != null;
+        if (!succ && skipIfFails) return false;
+        Id = id;
+        Secret = secret?.ToSecure();
+        return succ;
+    }
+
+    /// <summary>
+    /// Returns a System.String that represents the current AppAccessingKey.
+    /// </summary>
+    /// <returns>A System.String that represents the current AppAccessingKey.</returns>
+    public override string ToString()
+        => Id ?? string.Empty;
 
     /// <summary>
     /// Tests if the app accessing key is null or empty.
@@ -406,12 +486,21 @@ public class AppAccessingKey
         return true;
     }
 
-    /// <summary>
-    /// Returns a System.String that represents the current AppAccessingKey.
-    /// </summary>
-    /// <returns>A System.String that represents the current AppAccessingKey.</returns>
-    public override string ToString()
-        => Id ?? string.Empty;
+    private static string GetFromEnvironment(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return null;
+        var v = Environment.GetEnvironmentVariable(key);
+        if (string.IsNullOrEmpty(v)) return null;
+        return v;
+    }
+
+    private static string GetFromEnvironment(string key, EnvironmentVariableTarget target)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return null;
+        var v = Environment.GetEnvironmentVariable(key, target);
+        if (string.IsNullOrEmpty(v)) return null;
+        return v;
+    }
 }
 
 /// <summary>
@@ -1162,8 +1251,8 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     {
         token = token?.Trim();
         if (string.IsNullOrEmpty(token)) return null;
-        if (token.ToLower().StartsWith("basic ")) token = token.Substring(6).Trim();
-        if (token.ToLower().StartsWith("basic ")) token = token.Substring(6).Trim();
+        if (token.StartsWith("basic ", StringComparison.OrdinalIgnoreCase)) token = token.Substring(6).Trim();
+        if (token.StartsWith("basic ", StringComparison.OrdinalIgnoreCase)) token = token.Substring(6).Trim();
         if (token.IndexOf(' ') > 0 || token.Length < 4)
             throw new FormatException("The token value is invalid.");
         try

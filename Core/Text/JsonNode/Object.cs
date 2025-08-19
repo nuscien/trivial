@@ -8100,8 +8100,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     ///     .Default(() => { /* handle default case */ });
     /// </code>
     /// </example>
-    public JsonSwitchContext<BaseJsonValueNode, string> SwitchValue(string key)
-        => SwitchValue(false, key, key);
+    public JsonSwitchContext<BaseJsonValueNode, object> SwitchValue(string key)
+        => SwitchValue<object>(false, key, null);
 
     /// <summary>
     /// Switches.
@@ -8128,8 +8128,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     ///     .Default(() => { /* handle default case */ });
     /// </code>
     /// </example>
-    public JsonSwitchContext<BaseJsonValueNode, string> SwitchValue(bool undefinedIfNotFound, string key)
-        => SwitchValue(undefinedIfNotFound, key, key);
+    public JsonSwitchContext<BaseJsonValueNode, object> SwitchValue(bool undefinedIfNotFound, string key)
+        => SwitchValue<object>(undefinedIfNotFound, key, null);
 
     /// <summary>
     /// Switches.

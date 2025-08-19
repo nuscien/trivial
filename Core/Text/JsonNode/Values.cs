@@ -816,8 +816,8 @@ public static class JsonValues
     ///     .Default(() => { /* handle default case */ });
     /// </code>
     /// </example>
-    public static JsonSwitchContext<T, JsonObjectNode> Switch<T>(this T source) where T : IJsonValueNode
-        => new(source, new());
+    public static JsonSwitchContext<T, object> Switch<T>(this T source) where T : IJsonValueNode
+        => new(source, null);
 
     /// <summary>
     /// Switches.

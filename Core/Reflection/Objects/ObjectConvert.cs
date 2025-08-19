@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -372,6 +373,37 @@ public static class ObjectConvert
     {
         if (handler == null) return;
         var args = new DataEventArgs<T>(data, message);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="result">The data result.</param>
+    public static void Invoke<T>(this DataEventHandler<T> handler, object sender, DataResult<T> result)
+    {
+        if (handler == null) return;
+        var args = result == null ? new DataEventArgs<T>(default) : new DataEventArgs<T>(result.Data, result.Message);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="TParent">The type of parent.</typeparam>
+    /// <typeparam name="TItem">The type of item.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="parent">The parent.</param>
+    /// <param name="itemSelected">The item selected.</param>
+    /// <param name="message">The additional message.</param>
+    public static void Invoke<TParent, TItem>(this DataEventHandler<SelectionRelationship<TParent, TItem>> handler, object sender, TParent parent, TItem itemSelected, string message = null)
+    {
+        if (handler == null) return;
+        var args = new DataEventArgs<SelectionRelationship<TParent, TItem>>(new(parent, itemSelected), message);
         handler(sender, args);
     }
 
@@ -808,6 +840,7 @@ public static class ObjectConvert
         if (TryGetForSimple(obj, out value)) return true;
         if (obj is BaseNestedParameter n) return n.ParameterIs(out value);
         if (obj is TypedNestedParameter t) return t.TryGet(out value);
+        if (obj is ObjectParameter p) return p.Is(out value);
         return false;
     }
 
@@ -1285,6 +1318,12 @@ public static class ObjectConvert
                         }
                     }
                 }
+            }
+
+            if (obj is ObjectParameter<T> p)
+            {
+                boxed = p.Value;
+                return true;
             }
         }
         catch (MemberAccessException)

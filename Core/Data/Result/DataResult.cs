@@ -145,6 +145,16 @@ public class DataResult<T> : MessageResult, IObjectRef<T>
     /// <summary>
     /// Initializes a new instance of the DataResult class.
     /// </summary>
+    /// <param name="args">The event args to copy its data and message.</param>
+    public DataResult(DataEventArgs<T> args)
+        : base(args?.Message)
+    {
+        if (args != null) Data = args.Data;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DataResult class.
+    /// </summary>
     /// <param name="copy">The instance to copy its properties.</param>
     protected DataResult(DataResult<T> copy)
         : base(copy)
@@ -237,6 +247,16 @@ public class DataResult<TData, TInfo> : DataResult<TData>
     /// <summary>
     /// Initializes a new instance of the DataResult class.
     /// </summary>
+    /// <param name="args">The event args to copy its data and message.</param>
+    protected DataResult(DataEventArgs<TData> args)
+        : base(args)
+    {
+        if (args is DataResult<TData, TInfo> a) AdditionalInfo = a.AdditionalInfo;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DataResult class.
+    /// </summary>
     /// <param name="copy">The instance to copy its properties.</param>
     protected DataResult(DataResult<TData, TInfo> copy)
         : base(copy)
@@ -289,6 +309,27 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
     /// <param name="message">The message.</param>
     public JsonDataResult(JsonObjectNode data, string message)
         : base(data, null, message)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDataResult class.
+    /// </summary>
+    /// <param name="args">The event args to copy its data and message.</param>
+    /// <param name="additional">The object of additional information.</param>
+    public JsonDataResult(DataEventArgs<JsonObjectNode> args, JsonObjectNode additional)
+        : base(args)
+    {
+        AdditionalInfo = additional;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDataResult class.
+    /// </summary>
+    /// <param name="args">The event args to copy its data and message.</param>
+    /// <param name="additional">true if initializes a new JSON object; otherwise, false.</param>
+    public JsonDataResult(DataEventArgs<JsonObjectNode> args, bool additional = false)
+        : this(args, additional ? new JsonObjectNode() : null)
     {
     }
 

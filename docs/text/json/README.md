@@ -56,7 +56,7 @@ has = json.ContainsKey("prop-e"); // false
 At last, you can write to an instance of `System.Text.Json.Utf8JsonWriter` by `WriteTo` member method or get the JSON format string by `ToString` member method.
 
 ```csharp
-var jsonStr = json.ToString(IndentStyles.Compact); // "{\"prop-a\":5678,…}"
+var jsonStr = json.ToString(IndentStyles.Compact); // "{ \"prop-a\": 5678, … }"
 ```
 
 ## JSON access in thread-safe

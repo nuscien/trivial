@@ -645,7 +645,7 @@ public class JsonWebTokenHeader
 }
 
 /// <summary>
-/// The base JWT payload model.
+/// The base Json Web Token payload model.
 /// </summary>
 [DataContract]
 public class JsonWebTokenPayload
@@ -704,7 +704,7 @@ public class JsonWebTokenPayload
     [JsonConverter(typeof(JsonStringListConverter))]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The recipients that the JWT is intended for.")]
-    public IEnumerable<string> Audience { get; set; }
+    public List<string> Audience { get; set; }
 
     /// <summary>
     /// Gets or sets an optional expiration date time.

@@ -43,6 +43,7 @@ public abstract class BaseNestedParameter(object parameter)
         if (maxRecurrence < 1) return false;
         if (Parameter is BaseNestedParameter n) return n.ParameterIs(maxRecurrence - 1, out value);
         if (Parameter is TypedNestedParameter t) return t.TryGet(out value);
+        if (Parameter is ObjectParameter p) return p.Is(maxRecurrence - 1, out value);
         value = default;
         return false;
     }
@@ -244,6 +245,7 @@ public class TypedNestedParameter
         {
             if (ObjectConvert.TryGetForSimple(v, out value)) return true;
             if (v is BaseNestedParameter n) return ObjectConvert.TryGetForSimple(n.Parameter, out value);
+            if (v is ObjectParameter p) return p.Is(out value);
         }
 
         value = default;
@@ -258,4 +260,79 @@ public class TypedNestedParameter
     /// <returns>The value resolved.</returns>
     public T TryGet<T>(T defaultValue = default)
         => TryGet(out T value) ? value : defaultValue;
+}
+
+/// <summary>
+/// The parameter with an object value.
+/// </summary>
+public class ObjectParameter
+{
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    public object Value { get; set; }
+
+    /// <summary>
+    /// Tries to convert the value in a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="value">The value converted.</param>
+    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    public bool Is<T>(out T value)
+        => Is(10, out value);
+
+    /// <summary>
+    /// Tries to convert the value in a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="maxRecurrence">The maximum recurrence count.</param>
+    /// <param name="value">The value converted.</param>
+    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    public bool Is<T>(int maxRecurrence, out T value)
+    {
+        if (ObjectConvert.TryGetForSimple(Value, out value)) return true;
+        if (maxRecurrence < 1) return false;
+        if (Value is BaseNestedParameter n) return n.ParameterIs(maxRecurrence - 1, out value);
+        if (Value is TypedNestedParameter t) return t.TryGet(out value);
+        if (Value is ObjectParameter p) return p.Is(maxRecurrence - 1, out value);
+        value = default;
+        return false;
+    }
+}
+
+/// <summary>
+/// The parameter with an object value.
+/// </summary>
+public class ObjectParameter<T>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectParameter{T}"/> class with a value.
+    /// </summary>
+    public ObjectParameter()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectParameter{T}"/> class with a value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public ObjectParameter(T value)
+    {
+        Value = value;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectParameter{T}"/> class with a value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public ObjectParameter(IObjectRef<T> value)
+    {
+        if (value is null) return;
+        Value = value.Value;
+    }
+
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    public T Value { get; set; }
 }

@@ -2774,6 +2774,15 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
         };
 
     /// <summary>
+    /// Tries to convert the args in a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="value">The value converted.</param>
+    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    public bool ArgsIs<T>(out T value)
+        => ObjectConvert.TryGet(Args, out value);
+
+    /// <summary>
     /// Clones.
     /// </summary>
     /// <returns>A new instance.</returns>
