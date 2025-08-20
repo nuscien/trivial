@@ -1620,6 +1620,72 @@ public static class StringExtensions
         return sb.ToString();
     }
 
+    internal static List<string> GetCultureCodes(CultureInfo culture)
+    {
+        try
+        {
+            culture ??= CultureInfo.CurrentUICulture ?? CultureInfo.CurrentCulture;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+
+        var name = culture?.Name;
+        if (string.IsNullOrWhiteSpace(name)) return null;
+        var names = new List<string>();
+        var col = name.Split('-');
+        var last = string.Empty;
+        foreach (var item in col)
+        {
+            if (string.IsNullOrEmpty(item)) continue;
+            if (last.Length == 0)
+            {
+                last = item;
+                names.Add(item);
+            }
+            else
+            {
+                last = string.Concat(last, "-", item);
+                names.Insert(0, last);
+            }
+        }
+
+        if (name.StartsWith("zh-"))
+        {
+            switch (name)
+            {
+                case "zh-CN":
+                    names.Insert(1, "zh-Hans");
+                    names.Insert(0, "zh-Hans-CN");
+                    break;
+                case "zh-SG":
+                    names.Insert(1, "zh-Hans");
+                    names.Insert(0, "zh-Hans-SG");
+                    break;
+                case "zh-TW":
+                    names.Insert(1, "zh-Hant");
+                    names.Insert(0, "zh-Hant-TW");
+                    names.Add("zh-Hans");
+                    break;
+                case "zh-HK":
+                    names.Insert(1, "zh-Hant");
+                    names.Insert(0, "zh-Hant-HK");
+                    names.Add("zh-Hans");
+                    break;
+                case "zh-MO":
+                    names.Insert(1, "zh-Hant");
+                    names.Insert(0, "zh-Hant-SG");
+                    names.Add("zh-Hans");
+                    break;
+            }
+        }
+
+        return names;
+    }
+
     internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex)
 #if NET6_0_OR_GREATER
         => sb.Append(input.AsSpan(startIndex));

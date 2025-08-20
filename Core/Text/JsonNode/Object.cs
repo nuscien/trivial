@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -1989,6 +1990,47 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="culture">The culture; or null, to use current UI culture.</param>
+    /// <returns>A string.</returns>
+    public string TryGetStringValueByCulture(string key, CultureInfo culture = null)
+    {
+        if (string.IsNullOrEmpty(key)) return null;
+        var names = StringExtensions.GetCultureCodes(culture);
+        if (names == null || names.Count < 1) return TryGetStringValue(key);
+        foreach (var item in names)
+        {
+            var v = TryGetStringValue(string.Concat(key, "#", item));
+            if (v is not null) return v;
+        }
+
+        return TryGetStringValue(key);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="returnNullIfEmpty">true if returns null when the value is empty or white space; otherwise, false.</param>
+    /// <param name="culture">The culture; or null, to use current UI culture.</param>
+    /// <returns>A string.</returns>
+    public string TryGetStringTrimmedValueByCulture(string key, bool returnNullIfEmpty = false, CultureInfo culture = null)
+    {
+        if (string.IsNullOrEmpty(key)) return null;
+        var names = StringExtensions.GetCultureCodes(culture);
+        if (names == null || names.Count < 1) return TryGetStringTrimmedValue(key, returnNullIfEmpty);
+        foreach (var item in names)
+        {
+            var v = TryGetStringTrimmedValue(string.Concat(key, "#", item), returnNullIfEmpty);
+            if (v is not null) return v;
+        }
+
+        return TryGetStringTrimmedValue(key, returnNullIfEmpty);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="trueString">The string value of true.</param>
     /// <param name="falseString">The string value of false.</param>
     /// <param name="ignoreIfNotBoolean">true if return null if the kind of property is not boolean; otherwise, false, that means it will return the string value if it is a string or a number.</param>
@@ -3028,6 +3070,26 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="culture">The culture; or null, to use current UI culture.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetObjectValueByCulture(string key, CultureInfo culture = null)
+    {
+        if (string.IsNullOrEmpty(key)) return null;
+        var names = StringExtensions.GetCultureCodes(culture);
+        if (names == null || names.Count < 1) return TryGetObjectValue(key);
+        foreach (var item in names)
+        {
+            var v = TryGetObjectValue(string.Concat(key, "#", item));
+            if (v is not null) return v;
+        }
+
+        return TryGetObjectValue(key);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="root">The root node.</param>
     /// <param name="httpClientResolver">The optional HTTP client resolver.</param>
     /// <returns>The JSON object node; or null, if gets failed.</returns>
@@ -3393,6 +3455,26 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>The value; or null, if non-exists.</returns>
     public BaseJsonValueNode TryGetValue(ReadOnlySpan<char> key)
         => TryGetValueOrNull(key);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="culture">The culture; or null, to use current UI culture.</param>
+    /// <returns>The value; or null, if non-exists.</returns>
+    public BaseJsonValueNode TryGetValueByCulture(string key, CultureInfo culture = null)
+    {
+        if (key.Contains("#")) return TryGetValueOrNull(key);
+        var names = StringExtensions.GetCultureCodes(culture);
+        if (names == null || names.Count < 1) return TryGetValueOrNull(key);
+        foreach (var item in names)
+        {
+            var v = TryGetValueOrNull(string.Concat(key, "#", item));
+            if (v is not null) return v;
+        }
+
+        return TryGetValueOrNull(key);
+    }
 
     /// <summary>
     /// Tries to get the value of the specific property.

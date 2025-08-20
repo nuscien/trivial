@@ -76,7 +76,7 @@ public class JwtUnitTest
         var req = new ProtectedResourceMetadataLink(uri)
         {
             Realm = realm,
-            Scope = new() { "read", "list" }
+            Scopes = new() { "read", "list" }
         };
         var s = req.ToString();
         req = ProtectedResourceMetadataLink.TryParse(s);
@@ -84,16 +84,16 @@ public class JwtUnitTest
         Assert.IsNotNull(req?.Uri);
         Assert.AreEqual(uri.OriginalString, req.Url);
         Assert.AreEqual(realm, req.Realm);
-        Assert.IsNotNull(req.Scope);
-        Assert.AreEqual(2, req.Scope.Count);
-        Assert.AreEqual("read", req.Scope[0]);
-        Assert.AreEqual("list", req.Scope[1]);
-        req.Scope = null;
+        Assert.IsNotNull(req.Scopes);
+        Assert.AreEqual(2, req.Scopes.Count);
+        Assert.AreEqual("read", req.Scopes[0]);
+        Assert.AreEqual("list", req.Scopes[1]);
+        req.Scopes = null;
         s = req.ToString();
         req = ProtectedResourceMetadataLink.TryParse(s);
         Assert.AreEqual(uri.OriginalString, req.Url);
         Assert.AreEqual(realm, req.Realm);
-        Assert.IsNull(req.Scope);
+        Assert.IsNull(req.Scopes);
         var meta = new ProtectedResourceMetadataResponse
         {
             Id = uri.OriginalString,

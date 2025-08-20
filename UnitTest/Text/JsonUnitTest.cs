@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -486,6 +487,46 @@ public class JsonUnitTest
         Assert.AreEqual("bcdefg", json.GetStringValue("a"));
         Assert.AreEqual("yz", json.GetStringValue("x"));
         Assert.IsFalse(json.ContainsKey("X"));
+        json.SetValue("title", "Testing");
+        json.SetValue("title#en", "Test");
+        json.SetValue("title#zh-Hans", "测试");
+        Assert.AreEqual("Testing", json.TryGetStringValue("title"));
+        try
+        {
+            var lang = CultureInfo.GetCultureInfo("en-US");
+            if (lang is not null) Assert.AreEqual("Test", json.TryGetStringValueByCulture("title", lang));
+            if (lang is not null) Assert.IsNull(json.TryGetObjectValueByCulture("obj", lang));
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        try
+        {
+            var lang = CultureInfo.GetCultureInfo("en-UK");
+            if (lang is not null) Assert.AreEqual("Test", json.TryGetStringTrimmedValueByCulture("title", true, lang));
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        try
+        {
+            var lang = CultureInfo.GetCultureInfo("zh-CN");
+            if (lang is not null) Assert.AreEqual("测试", json.TryGetStringTrimmedValueByCulture("title", true, lang));
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        try
+        {
+            var lang = CultureInfo.GetCultureInfo("fr-FR");
+            if (lang is not null) Assert.AreEqual("Testing", json.TryGetStringValueByCulture("title", lang));
+        }
+        catch (ArgumentException)
+        {
+        }
     }
 
     /// <summary>

@@ -319,8 +319,13 @@ public class ProtectedResourceMetadataResponse
     /// </summary>
     /// <param name="payload">The payload.</param>
     /// <param name="sign">The signature provider.</param>
-    public void SetSignedMetadata<T>(T payload, ISignatureProvider sign)
-        => SetSignedMetadata(new JsonWebToken<T>(payload, sign));
+    public JsonWebToken<T> SetSignedMetadata<T>(T payload, ISignatureProvider sign)
+    {
+        if (payload is null) return null;
+        var jwt = new JsonWebToken<T>(payload, sign);
+        SetSignedMetadata(jwt);
+        return jwt;
+    }
 }
 
 /// <summary>
@@ -666,6 +671,14 @@ public class AuthorizationServerMetadataResponse
     /// <summary>
     /// Sets the signed metedata.
     /// </summary>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>The JSON Web Token.</returns>
+    public JsonWebToken<JsonObjectNode> SetSignedMetadata(ISignatureProvider sign)
+        => SetSignedMetadata(Issuer, sign);
+
+    /// <summary>
+    /// Sets the signed metedata.
+    /// </summary>
     /// <param name="issuer">The issuer.</param>
     /// <param name="sign">The signature provider.</param>
     /// <returns>The JSON Web Token.</returns>
@@ -684,6 +697,11 @@ public class AuthorizationServerMetadataResponse
     /// </summary>
     /// <param name="payload">The payload.</param>
     /// <param name="sign">The signature provider.</param>
-    public void SetSignedMetadata<T>(T payload, ISignatureProvider sign)
-        => SetSignedMetadata(new JsonWebToken<T>(payload, sign));
+    public JsonWebToken<T> SetSignedMetadata<T>(T payload, ISignatureProvider sign)
+    {
+        if (payload is null) return null;
+        var jwt = new JsonWebToken<T>(payload, sign);
+        SetSignedMetadata(jwt);
+        return jwt;
+    }
 }
