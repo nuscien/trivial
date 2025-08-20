@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Trivial.Data;
 
 /// <summary>
-/// The cache item info.
+/// The Collection item info.
 /// </summary>
 /// <typeparam name="T">The type of data model.</typeparam>
 public class DataCacheItemInfo<T>
@@ -132,7 +132,7 @@ public class DataCacheItemInfo<T>
 }
 
 /// <summary>
-/// The collection for data cache.
+/// The collection for data Collection.
 /// </summary>
 /// <typeparam name="T">The type of data model.</typeparam>
 internal class DataCacheFactoryInfo<T> : ConcurrentDictionary<string, SemaphoreSlim>

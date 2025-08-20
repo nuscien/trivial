@@ -16,7 +16,7 @@ namespace Trivial.Collection;
 public class KeyedDataMapping<T> : IDictionary<string, T>
 {
     /// <summary>
-    /// The mapping cache.
+    /// The mapping Collection.
     /// </summary>
     private readonly Dictionary<string, T> mapping = new();
 
@@ -85,7 +85,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     public KeyedInstanceResolver<T> BackupGetter { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether auto cache for backup getter result is disabled.
+    /// Gets or sets a value indicating whether auto Collection for backup getter result is disabled.
     /// </summary>
     public bool IsAutoCacheDisabled { get; set; }
 

@@ -673,7 +673,7 @@ public class JsonUnitTest
             .Case(router, () => { json.IncreaseValue("num"); })
             .Default(json.Clear)
             .Finally(() => { json.IncreaseValue("num", 9); });
-        Assert.IsInstanceOfType(sc.Args, typeof(JsonObjectNode));
+        Assert.IsNull(sc.Args);
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(2, sc.Count);
         Assert.AreEqual(5, json.Count);

@@ -68,7 +68,7 @@ public enum PropertySettingPolicies
 public abstract class BaseObservableProperties : INotifyPropertyChanged
 {
     /// <summary>
-    /// Data cache.
+    /// Data Collection.
     /// </summary>
     private readonly Dictionary<string, object> cache = new();
 
@@ -811,7 +811,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-    /// <returns>true if the cache contains an element with the specified key; otherwise, false.</returns>
+    /// <returns>true if the Collection contains an element with the specified key; otherwise, false.</returns>
     private bool TryGetPropertyInternal(string key, out object value)
     {
         if (cache.TryGetValue(key, out value)) return true;

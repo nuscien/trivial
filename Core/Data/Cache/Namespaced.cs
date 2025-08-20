@@ -12,7 +12,7 @@ using Trivial.Text;
 namespace Trivial.Data;
 
 /// <summary>
-/// The thread-safe cache for keyed data with namespace.
+/// The thread-safe Collection for keyed data with namespace.
 /// </summary>
 /// <typeparam name="T">The type of data model.</typeparam>
 public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOnlyList<DataCacheItemInfo<T>>
@@ -23,22 +23,22 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     private DateTime cleanUpTime = DateTime.Now;
 
     /// <summary>
-    /// The cache data list for namespace ones.
+    /// The Collection data list for namespace ones.
     /// </summary>
     private readonly ConcurrentDictionary<string, DataCacheItemInfo<T>> items = new ();
 
     /// <summary>
-    /// The cache data factories.
+    /// The Collection data factories.
     /// </summary>
     private readonly ConcurrentDictionary<string, DataCacheFactoryInfo<T>> factories = new ();
 
     /// <summary>
-    /// Adds or removes an event handler on the cache item is added;
+    /// Adds or removes an event handler on the Collection item is added;
     /// </summary>
     public event DataEventHandler<DataCacheItemInfo<T>> AddedOrUpdated;
 
     /// <summary>
-    /// Gets the maxinum count of the elements contained in the cache item collection; or null, if no limitation.
+    /// Gets the maxinum count of the elements contained in the Collection item collection; or null, if no limitation.
     /// </summary>
     public int? MaxCount { get; set; }
 
@@ -63,7 +63,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     int IReadOnlyCollection<DataCacheItemInfo<T>>.Count => AsEnumerable().Count();
 
     /// <summary>
-    /// Gets the count of elements contained in the collection cache.
+    /// Gets the count of elements contained in the collection Collection.
     /// </summary>
     public int CacheCount => (items != null ? items.Count : 0);
 
@@ -110,13 +110,13 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
-    /// Gets the cache item info.
+    /// Gets the Collection item info.
     /// </summary>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>
-    /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+    /// <param name="initialization">The value initialization. It will be called to generate a new value when no Collection.</param>
     /// <param name="expiration">The expiration for initialization.</param>
-    /// <returns>The cache item info.</returns>
+    /// <returns>The Collection item info.</returns>
     public DataCacheItemInfo<T> GetInfo(string ns, string id, Func<T> initialization = null, TimeSpan? expiration = null)
     {
         if (string.IsNullOrEmpty(id)) return null;
@@ -128,23 +128,23 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
-    /// Gets the cache item info.
+    /// Gets the Collection item info.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>The cache item info.</returns>
+    /// <returns>The Collection item info.</returns>
     public DataCacheItemInfo<T> GetInfo(Func<DataCacheItemInfo<T>, bool> predicate)
         => predicate == null
         ? items.ToList().Select(ele => ele.Value).LastOrDefault()
         : items.ToList().Select(ele => ele.Value).LastOrDefault(predicate);
 
     /// <summary>
-    /// Gets the cache item info.
+    /// Gets the Collection item info.
     /// </summary>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>
-    /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+    /// <param name="initialization">The value initialization. It will be called to generate a new value when no Collection.</param>
     /// <param name="expiration">The expiration for initialization.</param>
-    /// <returns>The cache item info.</returns>
+    /// <returns>The Collection item info.</returns>
     public async Task<DataCacheItemInfo<T>> GetInfoAsync(string ns, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
     {
         if (string.IsNullOrWhiteSpace(id)) return null;
@@ -154,13 +154,13 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
-    /// Gets the cache item info.
+    /// Gets the Collection item info.
     /// </summary>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier.</param>
-    /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+    /// <param name="initialization">The value initialization. It will be called to generate a new value when no Collection.</param>
     /// <param name="expiration">The expiration for initialization.</param>
-    /// <returns>The cache item info.</returns>
+    /// <returns>The Collection item info.</returns>
     public async Task<T> GetAsync(string ns, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
     {
         var result = await GetInfoAsync(ns, id, initialization, expiration);
@@ -169,7 +169,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
-    /// Tries to get the cache item info.
+    /// Tries to get the Collection item info.
     /// </summary>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>
@@ -182,7 +182,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
-    /// Tries to get the cache item data.
+    /// Tries to get the Collection item data.
     /// </summary>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>
@@ -202,7 +202,7 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     }
 
     /// <summary>
-    /// Tries to get the cache item data.
+    /// Tries to get the Collection item data.
     /// </summary>
     /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
     /// <param name="id">The identifier in the resource group.</param>

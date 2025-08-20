@@ -660,7 +660,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     }
 
     /// <summary>
-    /// Clears cache.
+    /// Clears Collection.
     /// </summary>
     protected void ClearCache()
         => cache.Clear();
@@ -669,7 +669,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// Resets the source JSON object node.
     /// </summary>
     /// <param name="parent">The source JSON object node.</param>
-    /// <param name="keepCache">true if need keeping the cache; otherwise, false.</param>
+    /// <param name="keepCache">true if need keeping the Collection; otherwise, false.</param>
     protected void ResetParent(JsonObjectNode parent, bool keepCache = false)
     {
         var oldParent = Source;

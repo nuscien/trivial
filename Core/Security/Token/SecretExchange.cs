@@ -48,24 +48,24 @@ namespace Trivial.Security;
 ///       Server side sends a server encrypt key and its identifier.
 ///       This key is a public key (marked as S-Key-Public here) for encryption.
 ///       Its private key (marked as S-Key-Private here) is used to decrypt.
-///       Both keys and its identifier (marked as S-Key-Id here) should cache in server.
+///       Both keys and its identifier (marked as S-Key-Id here) should Collection in server.
 ///     </item>
 ///     <item>
 ///       Client creates a pair of private key and public key.
 ///       The private key (marked as C-Key-Private here) is used to decrypt data
 ///       and the public key (marked as C-Key-Public here) is used to encrypt.
-///       The key pair should cache in client with an identifier (marked as C-Key-Id here).
+///       The key pair should Collection in client with an identifier (marked as C-Key-Id here).
 ///     </item>
 ///     <item>
 ///       Client uses S-Key-Public to encrypt the form now
 ///       and send it back to server with the S-Key-Id, C-Key-Public and C-Key-Id.
-///       Client also need cache S-Key-Id and S-Key-Public in local.
+///       Client also need Collection S-Key-Id and S-Key-Public in local.
 ///     </item>
 ///     <item>
 ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the form.
 ///       Then generates a secret and encrypt it by C-Key-Public.
 ///       Then send the secret encrypted back to client with C-Key-Id.
-///       Server also need cache C-Key-Id and C-Key-Public with a mapping relationship with the token.
+///       Server also need Collection C-Key-Id and C-Key-Public with a mapping relationship with the token.
 ///     </item>
 ///     <item>
 ///       Client uses C-Key-Id to find C-Key-Private to decrypt the secret.

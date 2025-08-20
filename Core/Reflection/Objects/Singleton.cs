@@ -838,8 +838,8 @@ public class SingletonKeeper<T>
     /// <summary>
     /// Initializes a new instance of the SingletonKeeper class.
     /// </summary>
-    /// <param name="cache">The cache.</param>
-    /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+    /// <param name="cache">The Collection.</param>
+    /// <param name="refreshDate">The latest refresh succeeded date time of Collection.</param>
     public SingletonKeeper(T cache, DateTime? refreshDate = null)
     {
         HasCache = true;
@@ -851,8 +851,8 @@ public class SingletonKeeper<T>
     /// Initializes a new instance of the SingletonKeeper class.
     /// </summary>
     /// <param name="resolveHandler">The resovle handler.</param>
-    /// <param name="cache">The cache.</param>
-    /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+    /// <param name="cache">The Collection.</param>
+    /// <param name="refreshDate">The latest refresh succeeded date time of Collection.</param>
     public SingletonKeeper(Func<Task<T>> resolveHandler, T cache, DateTime? refreshDate = null) : this(cache, refreshDate)
     {
         renew = resolveHandler;
@@ -865,17 +865,17 @@ public class SingletonKeeper<T>
     protected WaitHandle SemaphoreSlimAvailableWaitHandle => semaphoreSlim.AvailableWaitHandle;
 
     /// <summary>
-    /// Adds or removes after the cache is updated.
+    /// Adds or removes after the Collection is updated.
     /// </summary>
     public event ChangeEventHandler<T> Renewed;
 
     /// <summary>
-    /// Gets the cache.
+    /// Gets the Collection.
     /// </summary>
     public T Cache { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether has cache.
+    /// Gets a value indicating whether has Collection.
     /// </summary>
     public bool HasCache { get; private set; }
 
@@ -919,13 +919,13 @@ public class SingletonKeeper<T>
     public TimeSpan LockRenewSpan { get; set; } = TimeSpan.Zero;
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => HasCache ? Cache : Tasks.TaskStates.Pending;
 
     /// <summary>
     /// Gets the instance.
-    /// It will load from cache if it does not expired; otherwise, renew one, and then return.
+    /// It will load from Collection if it does not expired; otherwise, renew one, and then return.
     /// </summary>
     /// <returns>The instance.</returns>
     public Task<T> GetAsync()
@@ -974,7 +974,7 @@ public class SingletonKeeper<T>
         => disabled = null;
 
     /// <summary>
-    /// Sets the cache flag as false.
+    /// Sets the Collection flag as false.
     /// </summary>
     public void ClearCache()
     {
@@ -1023,7 +1023,7 @@ public class SingletonKeeper<T>
     }
 
     /// <summary>
-    /// Tests if the cache is valid.
+    /// Tests if the Collection is valid.
     /// </summary>
     /// <returns>true if valid; otherwise, false.</returns>
     protected virtual Task<bool> NeedRenewAsync()
@@ -1208,8 +1208,8 @@ public class SingletonRenewTimer<T>
     /// </summary>
     /// <param name="resolveHandler">The resovle handler.</param>
     /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
-    /// <param name="cache">The cache.</param>
-    /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+    /// <param name="cache">The Collection.</param>
+    /// <param name="refreshDate">The latest refresh succeeded date time of Collection.</param>
     public SingletonRenewTimer(Func<Task<T>> resolveHandler, TimeSpan interval, T cache, DateTime? refreshDate = null)
         : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval)
     {
@@ -1221,8 +1221,8 @@ public class SingletonRenewTimer<T>
     /// <param name="resolveHandler">The resovle handler.</param>
     /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
     /// <param name="immediately">true if renew immediately; otherwise, false, by default.</param>
-    /// <param name="cache">The cache.</param>
-    /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+    /// <param name="cache">The Collection.</param>
+    /// <param name="refreshDate">The latest refresh succeeded date time of Collection.</param>
     public SingletonRenewTimer(Func<Task<T>> resolveHandler, TimeSpan interval, bool immediately, T cache, DateTime? refreshDate = null)
         : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval, immediately)
     {
@@ -1237,7 +1237,7 @@ public class SingletonRenewTimer<T>
     }
 
     /// <summary>
-    /// Adds or removes after the cache is updated.
+    /// Adds or removes after the Collection is updated.
     /// </summary>
     public event ChangeEventHandler<T> Renewed
     {
@@ -1301,12 +1301,12 @@ public class SingletonRenewTimer<T>
     public SingletonKeeper<T> Keeper { get; }
 
     /// <summary>
-    /// Gets the cache.
+    /// Gets the Collection.
     /// </summary>
     public T Cache => Keeper.Cache;
 
     /// <summary>
-    /// Gets a value indicating whether has cache.
+    /// Gets a value indicating whether has Collection.
     /// </summary>
     public bool HasCache => Keeper.HasCache;
 
@@ -1316,7 +1316,7 @@ public class SingletonRenewTimer<T>
     public DateTime? RefreshDate => Keeper.RefreshDate;
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => HasCache ? Cache : Tasks.TaskStates.Pending;
 
@@ -1340,7 +1340,7 @@ public class SingletonRenewTimer<T>
     public Task<T> RenewIfCanAsync() => Keeper.RenewIfCanAsync();
 
     /// <summary>
-    /// Sets the cache flag as false.
+    /// Sets the Collection flag as false.
     /// </summary>
     public void ClearCache() => Keeper.ClearCache();
 

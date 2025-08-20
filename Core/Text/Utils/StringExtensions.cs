@@ -1332,6 +1332,53 @@ public static class StringExtensions
         return dict;
     }
 
+    internal static Dictionary<string, string> TryParseJsonStrings(string s)
+    {
+        var col = s.Split(',');
+        var r = new Dictionary<string, string>();
+        string key = null;
+        foreach (var item in col)
+        {
+            if (key != null)
+            {
+                var rest = IsEndWithQuote(item);
+                if (rest < 0)
+                {
+                    r[key] += string.Concat(',', item);
+                }
+                else
+                {
+                    r[key] = ExtractFromJsonString(string.Concat(r[key], ',', item.Substring(0, rest)));
+                    key = null;
+                }
+
+                continue;
+            }
+
+            var i = item.IndexOf('=');
+            if (i < 0)
+            {
+                r[item.Trim()] = null;
+                continue;
+            }
+
+            var k = item.Substring(0, i).Trim();
+            var v = item.Substring(i + 1).TrimStart();
+            if (v.StartsWith('"'))
+            {
+                v = v.Substring(1);
+                var rest = IsEndWithQuote(v);
+                if (rest < 0) key = k;
+                else v = ExtractFromJsonString(v.Substring(0, rest));
+            }
+
+            r[k] = v;
+        }
+
+        if (key != null) r[key] = ExtractFromJsonString(r[key]);
+        return r;
+    }
+
     /// <summary>
     /// Converts to string.
     /// </summary>
@@ -1598,5 +1645,20 @@ public static class StringExtensions
 
     private static bool IsNotEmpty(string s)
         => !string.IsNullOrEmpty(s);
+
+    private static int IsEndWithQuote(string s)
+    {
+        s = s.TrimEnd();
+        if (!s.EndsWith('"')) return -1;
+        if (s.Length == 1) return 0;
+        var i = s.Length - 1;
+        if (s[s.Length - 2] != '\\') return i;
+        if (s.Length == 2 || s[s.Length - 3] != '\\' || s.Length == 3) return -1;
+        s = s.Substring(0, s.Length - 3).TrimEnd('\\');
+        return (s.Length - i) % 2 == 0 ? i : -1;
+    }
+
+    private static string ExtractFromJsonString(string s)
+        => JsonObjectNode.TryParse(string.Concat("{ \"v\": \"", s, "\" }"))?.TryGetStringValue("v");
 #pragma warning restore IDE0056, IDE0057, IDE0058
 }

@@ -107,7 +107,7 @@ public sealed class JsonWebToken<T>
         /// <summary>
         /// Gets payload instance.
         /// </summary>
-        /// <param name="forceToRefresh">true if force to refresh the cache; otherwise, false.</param>
+        /// <param name="forceToRefresh">true if force to refresh the Collection; otherwise, false.</param>
         /// <returns>The payload instance.</returns>
         public T GetPayload(bool forceToRefresh = false)
         {
@@ -275,7 +275,7 @@ public sealed class JsonWebToken<T>
             => ToString().GetHashCode();
 
         /// <summary>
-        /// Refreshs the cache.
+        /// Refreshs the Collection.
         /// </summary>
         private void Refresh()
         {
@@ -465,7 +465,7 @@ public sealed class JsonWebToken<T>
     private string headerBase64Url;
 
     /// <summary>
-    /// The signature cache.
+    /// The signature Collection.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string signatureCache;

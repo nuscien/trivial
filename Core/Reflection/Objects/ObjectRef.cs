@@ -82,7 +82,7 @@ public sealed class ObjectRef : IObjectRef
     public bool IsValueCreated => reference.IsValueCreated;
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => reference.IsValueCreated ? reference.Value : TaskStates.Pending;
 
@@ -149,7 +149,7 @@ public sealed class ObjectRef<T> : IObjectRef<T>, IObjectResolver<T>
     public bool IsValueCreated => reference.IsValueCreated;
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => reference.IsValueCreated ? reference.Value : TaskStates.Pending;
 
@@ -258,7 +258,7 @@ internal class LazyObjectRef<T>(Lazy<T> lazy) : IObjectRef<T>, IObjectResolver<T
     public bool IsValueCreated => value.IsValueCreated;
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => value.IsValueCreated ? value.Value : TaskStates.Pending;
 
@@ -300,7 +300,7 @@ internal class FactoryObjectRef : IObjectRef
     public bool IsValueCreated { get; private set; }
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => IsValueCreated ? Value : TaskStates.Pending;
 
@@ -381,7 +381,7 @@ internal class FactoryObjectRef<T> : IObjectRef<T>, IObjectResolver<T>
     public bool IsValueCreated { get; private set; }
 
     /// <summary>
-    /// Gets the value in cache to debugging display; or TaskStates.Pending if the value has not ready.
+    /// Gets the value in Collection to debugging display; or TaskStates.Pending if the value has not ready.
     /// </summary>
     internal object ValueToDisplay => IsValueCreated ? Value : TaskStates.Pending;
 

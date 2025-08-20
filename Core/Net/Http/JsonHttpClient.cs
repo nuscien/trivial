@@ -18,183 +18,6 @@ using Trivial.Web;
 namespace Trivial.Net;
 
 /// <summary>
-/// The maker to create JSON HTTP client.
-/// </summary>
-public interface IJsonHttpClientMaker
-{
-    /// <summary>
-    /// Creates a JSON HTTP client.
-    /// </summary>
-    /// <typeparam name="T">The type of response.</typeparam>
-    /// <param name="callback">An optional callback raised on data received.</param>
-    /// <returns>A new JSON HTTP client.</returns>
-    JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null);
-}
-
-/// <summary>
-/// The event arguments on sending.
-/// </summary>
-/// <param name="requestMessage">The HTTP request message.</param>
-public class SendingEventArgs(HttpRequestMessage requestMessage) : EventArgs
-{
-
-    /// <summary>
-    /// Gets the HTTP request message.
-    /// </summary>
-    public HttpRequestMessage RequestMessage { get; } = requestMessage;
-
-    /// <summary>
-    /// Gets the request URI.
-    /// </summary>
-    public Uri RequestUri => RequestMessage?.RequestUri;
-
-    /// <summary>
-    /// Gets the HTTP request method.
-    /// </summary>
-    public HttpMethod Method => RequestMessage.Method ?? HttpMethod.Get;
-
-    /// <summary>
-    /// Gets the HTTP version used.
-    /// </summary>
-    public Version HttpVersion => RequestMessage.Version;
-}
-
-/// <summary>
-/// The event arguments on received.
-/// </summary>
-public class ReceivedEventArgs : EventArgs
-{
-    /// <summary>
-    /// Initializes a new instance of the ReceivedEventArgs class.
-    /// </summary>
-    /// <param name="ev">The event arguments.</param>
-    public ReceivedEventArgs(ReceivedEventArgs ev)
-    {
-        if (ev == null) return;
-        Header = ev.Header;
-        ReasonPhrase = ev.ReasonPhrase;
-        IsSuccessStatusCode = ev.IsSuccessStatusCode;
-        StatusCode = ev.StatusCode;
-        Content = ev.Content;
-        Version = ev.Version;
-        RequestMessage = ev.RequestMessage;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the ReceivedEventArgs class.
-    /// </summary>
-    /// <param name="responseMessage">The HTTP response message.</param>
-    public ReceivedEventArgs(HttpResponseMessage responseMessage)
-    {
-        if (responseMessage == null) return;
-        Header = responseMessage.Headers;
-        ReasonPhrase = responseMessage.ReasonPhrase;
-        IsSuccessStatusCode = responseMessage.IsSuccessStatusCode;
-        StatusCode = responseMessage.StatusCode;
-        Content = responseMessage.Content;
-        Version = responseMessage.Version;
-        RequestMessage = responseMessage.RequestMessage;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the ReceivedEventArgs class.
-    /// </summary>
-    /// <param name="statusCode">The status code of the HTTP response.</param>
-    /// <param name="content">The content of a HTTP response message.</param>
-    /// <param name="header">The collection of HTTP response headers.</param>
-    public ReceivedEventArgs(HttpStatusCode statusCode, HttpContent content = null, HttpResponseHeaders header = null)
-    {
-        StatusCode = statusCode;
-        Content = content;
-        Header = header;
-        var statusInt = (int)statusCode;
-        IsSuccessStatusCode = statusInt >= 200 && statusInt < 300;
-    }
-
-    /// <summary>
-    /// Gets the collection of HTTP response headers.
-    /// </summary>
-    public HttpResponseHeaders Header { get; }
-
-    /// <summary>
-    /// Gets the reason phrase which typically is sent by servers together with the status code.
-    /// </summary>
-    public string ReasonPhrase { get; }
-
-    /// <summary>
-    /// Gets a value that indicates if the HTTP response was successful.
-    /// </summary>
-    public bool IsSuccessStatusCode { get; }
-
-    /// <summary>
-    /// Gets the status code of the HTTP response.
-    /// </summary>
-    public HttpStatusCode? StatusCode { get; }
-
-    /// <summary>
-    /// Gets the content of a HTTP response message.
-    /// </summary>
-    public HttpContent Content { get; }
-
-    /// <summary>
-    /// Gets the HTTP message version.
-    /// </summary>
-    public Version Version { get; }
-
-    /// <summary>
-    /// Gets the request message which led to this response message.
-    /// </summary>
-    public HttpRequestMessage RequestMessage { get; }
-}
-
-/// <summary>
-/// The event arguments on received.
-/// </summary>
-/// <typeparam name="T">The type of the result.</typeparam>
-public class ReceivedEventArgs<T> : ReceivedEventArgs
-{
-    /// <summary>
-    /// Initializes a new instance of the ReceivedEventArgs class.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <param name="ev">The event arguments.</param>
-    public ReceivedEventArgs(object result, ReceivedEventArgs ev) : base(ev)
-    {
-        if (result == null) return;
-        try
-        {
-            Result = (T)result;
-        }
-        catch (InvalidCastException)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the ReceivedEventArgs class.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <param name="responseMessage">The HTTP response message.</param>
-    public ReceivedEventArgs(T result, HttpResponseMessage responseMessage) : base(responseMessage)
-    {
-        Result = result;
-    }
-
-    /// <summary>
-    /// Gets the result.
-    /// </summary>
-    public T Result { get; }
-
-    /// <summary>
-    /// Converts to a specific received event arguments.
-    /// </summary>
-    /// <typeparam name="U">The type of result.</typeparam>
-    /// <returns>A received data event arguments.</returns>
-    public ReceivedEventArgs<U> ConvertTo<U>()
-        => new(Result, this);
-}
-
-/// <summary>
 /// JSON format serialization HTTP client with advanced options.
 /// </summary>
 /// <typeparam name="T">The type of the result.</typeparam>
@@ -319,6 +142,11 @@ public class JsonHttpClient<T>
     /// Gets additional string bag.
     /// </summary>
     public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
+
+    /// <summary>
+    /// Gets or sets the Collection.
+    /// </summary>
+    public IJsonHttpClientCache<T> Cache { get; set; }
 
     /// <summary>
     /// Gets HTTP client instance.
@@ -863,6 +691,14 @@ public class JsonHttpClient<T>
     /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
     protected virtual async Task<T> SendAsync(HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken = default)
     {
+        var cache = Cache;
+        if (cache != null)
+        {
+            cache.OnSend(request.RequestUri, request.Method);
+            if (request.Method != HttpMethod.Get || request.Headers?.Range != null) cache = null;
+            else if (cache.TryGet(request.RequestUri, request.Headers?.Authorization, out var resultFromCache)) return resultFromCache;
+        }
+
         var result = await RetryExtensions.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
         {
             var resp = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -870,11 +706,18 @@ public class JsonHttpClient<T>
                 throw FailedHttpException.Create(resp);
             var obj = Deserializer != null
 #if NET6_0_OR_GREATER
-                    ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
+                ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
 #else
                 ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer)
 #endif
                 : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content, cancellationToken);
+            if (cache != null && resp.IsSuccessStatusCode)
+            {
+                var control = resp.Headers?.CacheControl;
+                if (control != null && !control.NoStore)
+                    cache.OnReceive(request.RequestUri, request.Headers?.Authorization, resp.Headers, obj);
+            }
+
             return obj;
         }, GetExceptionInternal, cancellationToken);
         return result.Result;

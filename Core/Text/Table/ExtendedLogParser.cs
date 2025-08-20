@@ -17,7 +17,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     private const char fieldSeperator = ' ';
 
     /// <summary>
-    /// THe cache of directive.
+    /// THe Collection of directive.
     /// </summary>
     private readonly Dictionary<string, string> directives = new();
 

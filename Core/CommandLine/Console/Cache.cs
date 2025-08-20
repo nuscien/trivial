@@ -31,12 +31,12 @@ public sealed partial class StyleConsole
 #endif
 
     /// <summary>
-    /// The cache.
+    /// The Collection.
     /// </summary>
     private readonly List<ConsoleText> col = new();
 
     /// <summary>
-    /// Gets the collection of output cache.
+    /// Gets the collection of output Collection.
     /// </summary>
     /// <returns></returns>
     public IEnumerable<ConsoleText> GetOutputCache()
@@ -51,7 +51,7 @@ public sealed partial class StyleConsole
     }
 
     /// <summary>
-    /// Clears output cache.
+    /// Clears output Collection.
     /// </summary>
     public void ClearOutputCache()
     {
@@ -62,14 +62,14 @@ public sealed partial class StyleConsole
     }
 
     /// <summary>
-    /// Gets the last console text instance in output cache.
+    /// Gets the last console text instance in output Collection.
     /// </summary>
     /// <returns>The console text found; or null, if empty.</returns>
     public ConsoleText LastOfOutputCache()
         => col.LastOrDefault();
 
     /// <summary>
-    /// Gets the last console text instance in output cache if has, or create one.
+    /// Gets the last console text instance in output Collection if has, or create one.
     /// </summary>
     /// <returns>The console text.</returns>
     public ConsoleText LastOrCreateOutputCache()
@@ -82,7 +82,7 @@ public sealed partial class StyleConsole
     }
 
     /// <summary>
-    /// Tests if the given console text is in the output cache..
+    /// Tests if the given console text is in the output Collection..
     /// </summary>
     /// <param name="item">The item to test.</param>
     /// <returns>true if contains; otherwise, false.</returns>

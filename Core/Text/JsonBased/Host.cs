@@ -152,7 +152,7 @@ public class JsonObjectHostService(JsonObjectNode parent) : BaseJsonObjectHostSe
         => base.SyncToParent();
 
     /// <summary>
-    /// Clears cache.
+    /// Clears Collection.
     /// </summary>
     public new void ClearCache()
         => base.ClearCache();
@@ -161,7 +161,7 @@ public class JsonObjectHostService(JsonObjectNode parent) : BaseJsonObjectHostSe
     /// Resets the parent JSON object node.
     /// </summary>
     /// <param name="parent">The parent JSON object node.</param>
-    /// <param name="keepCache">true if need keeping the cache; otherwise, false.</param>
+    /// <param name="keepCache">true if need keeping the Collection; otherwise, false.</param>
     public new void ResetParent(JsonObjectNode parent, bool keepCache = false)
         => base.ResetParent(parent, keepCache);
 

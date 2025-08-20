@@ -56,7 +56,7 @@ public class EquipartitionTaskContainer
     public EquipartitionTask this[string group, string taskId] => this[group].First(t => t.Id == taskId);
 
     /// <summary>
-    /// Gets the group identifier list in cache.
+    /// Gets the group identifier list in Collection.
     /// </summary>
     public IReadOnlyCollection<string> GroupIds => cache.Keys;
 

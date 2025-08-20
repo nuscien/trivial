@@ -29,7 +29,7 @@ public abstract class BaseInterceptor<T>
     private int latestRequestCount = 0;
 
     /// <summary>
-    /// The cache of the latest event arguments.
+    /// The Collection of the latest event arguments.
     /// </summary>
     private InterceptorEventArgs<T> latestArgs = null;
 

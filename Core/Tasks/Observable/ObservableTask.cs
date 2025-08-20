@@ -165,7 +165,7 @@ public abstract class ObservableTask<T>
     private readonly List<DateTime> retryTimes = new List<DateTime>();
 
     /// <summary>
-    /// The result cache.
+    /// The result Collection.
     /// </summary>
     private T result = default;
 

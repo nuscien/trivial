@@ -58,7 +58,7 @@ public sealed partial class StyleConsole
     public Modes Mode { get; set; }
 
     /// <summary>
-    /// Gets or sets the handler to flush cache.
+    /// Gets or sets the handler to flush Collection.
     /// </summary>
     public IHandler Handler
     {

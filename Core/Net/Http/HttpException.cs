@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
+using Trivial.Security;
 
 namespace Trivial.Net;
 
@@ -95,6 +96,17 @@ public class FailedHttpException : Exception
         info.AddValue(nameof(StatusCode), statusCode, typeof(int));
     }
 #endif
+
+    /// <summary>
+    /// Gets the protected resource metadata link and other information.
+    /// </summary>
+    /// <param name="skipAssert">true if skip the assertion of status code; otherwise, false.</param>
+    /// <returns>The URI and realm of the protected resource metadata.</returns>
+    public ProtectedResourceMetadataLink GetProtectedResourceMetadataLink(bool skipAssert = false)
+    {
+        if (!skipAssert && StatusCode == HttpStatusCode.Unauthorized) return null;
+        return ProtectedResourceMetadataLink.TryParse(Header);
+    }
 
     internal static FailedHttpException Create(HttpResponseMessage response)
     {
