@@ -135,6 +135,11 @@ public class TokenInfo
     public const string ExpiresInProperty = "expires_in";
 
     /// <summary>
+    /// The ID token property name.
+    /// </summary>
+    public const string IdTokenProperty = "id_token";
+
+    /// <summary>
     /// The error code property name.
     /// </summary>
     public const string ErrorCodeProperty = "error";
@@ -380,6 +385,14 @@ public class TokenInfo
     [JsonPropertyName(RefreshTokenProperty)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string RefreshToken { get; set; }
+
+    /// <summary>
+    /// Gets or sets ID token associated with the authenticated session.
+    /// </summary>
+    [DataMember(Name = IdTokenProperty, EmitDefaultValue = false)]
+    [JsonPropertyName(IdTokenProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string IdToken { get; set; }
 
     /// <summary>
     /// Gets or sets the error code.

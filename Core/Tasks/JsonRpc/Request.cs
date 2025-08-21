@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -75,18 +76,21 @@ public class JsonRpcRequestObject : IJsonObjectHost
     /// Gets the JSON-RPC protocol version.
     /// </summary>
     [JsonPropertyName("jsonrpc")]
+    [Description("The JSON-PRC protocol version.")]
     public string Version { get; }
 
     /// <summary>
     /// Gets the name of the method to be invoked.
     /// </summary>
     [JsonPropertyName("method")]
+    [Description("The name of the method to ve invoked.")]
     public string Method { get; }
 
     /// <summary>
     /// Gets the identifier established by the client; or null, if this request object is a notification.
     /// </summary>
     [JsonPropertyName("id")]
+    [Description("The identifier established by the client; or null, if this request object is a notification.")]
     public string Id { get; }
 
     /// <summary>
@@ -258,6 +262,7 @@ public class JsonRpcRequestObject<T> : JsonRpcRequestObject
     /// Gets the parameter value to be used during the invocation of the method.
     /// </summary>
     [JsonPropertyName("params")]
+    [Description("The parameter value to be used during the invocation of the method.")]
     public T Parameter { get; }
 
     /// <inheritdoc />

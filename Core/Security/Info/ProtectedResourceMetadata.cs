@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
@@ -19,6 +20,7 @@ namespace Trivial.Security;
 /// The base response model of OAuth 2.0 Protected Resource Metadata (RFC-9728).
 /// </summary>
 [DataContract]
+[Guid("C1A9D81A-3319-4D80-BE99-642144777BDC")]
 public class ProtectedResourceMetadataResponse
 {
     /// <summary>
@@ -301,14 +303,42 @@ public class ProtectedResourceMetadataResponse
     /// <summary>
     /// Sets the signed metedata.
     /// </summary>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>The JSON Web Token.</returns>
+    public JsonWebToken<JsonObjectNode> SetSignedMetadata(ISignatureProvider sign)
+        => SetSignedMetadata(Id, null, sign);
+
+    /// <summary>
+    /// Sets the signed metedata.
+    /// </summary>
+    /// <param name="fill">The handler to fill additional properties or update current ones to payload.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>The JSON Web Token.</returns>
+    public JsonWebToken<JsonObjectNode> SetSignedMetadata(Action<JsonObjectNode> fill, ISignatureProvider sign)
+        => SetSignedMetadata(Id, fill, sign);
+
+    /// <summary>
+    /// Sets the signed metedata.
+    /// </summary>
     /// <param name="issuer">The issuer.</param>
     /// <param name="sign">The signature provider.</param>
     /// <returns>The JSON Web Token.</returns>
     public JsonWebToken<JsonObjectNode> SetSignedMetadata(string issuer, ISignatureProvider sign)
+        => SetSignedMetadata(issuer, null, sign);
+
+    /// <summary>
+    /// Sets the signed metedata.
+    /// </summary>
+    /// <param name="issuer">The issuer.</param>
+    /// <param name="fill">The handler to fill additional properties or update current ones to payload.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>The JSON Web Token.</returns>
+    public JsonWebToken<JsonObjectNode> SetSignedMetadata(string issuer, Action<JsonObjectNode> fill, ISignatureProvider sign)
     {
         var json = JsonObjectNode.ConvertFrom(this);
         json.Remove("signed_metadata");
         json.SetValueIfNotEmpty("iss", issuer);
+        fill?.Invoke(json);
         var jwt = new JsonWebToken<JsonObjectNode>(json, sign);
         SetSignedMetadata(jwt);
         return jwt;
@@ -331,6 +361,8 @@ public class ProtectedResourceMetadataResponse
 /// <summary>
 /// The link and other information of protected resource metadata.
 /// </summary>
+[DataContract]
+[Guid("349A8E16-6D6A-43B5-8233-84C9AD162A0E")]
 public class ProtectedResourceMetadataLink
 {
     /// <summary>
@@ -555,16 +587,17 @@ public class ProtectedResourceMetadataLink
 }
 
 /// <summary>
-/// The base response model of OAuth 2.0 Authorization Server Model (RFC-8414).
+/// The base response model of OAuth 2.0 Authorization Server Metadata (RFC-8414).
 /// </summary>
+[DataContract]
+[Guid("CFA1F5FD-460C-49CC-B9FB-66E9A4D79D4F")]
 public class AuthorizationServerMetadataResponse
 {
     /// <summary>
     /// Gets or sets the authorization server's issuer identifier, which is a URL that uses the "https" scheme and has no query or fragment components.
     /// </summary>
-    [DataMember(Name = "issuer", EmitDefaultValue = false)]
+    [DataMember(Name = "issuer")]
     [JsonPropertyName("issuer")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The authorization server's issuer identifier, which is a URL that uses the https scheme and has no query or fragment components.")]
     public string Issuer { get; set; }
 
@@ -615,6 +648,123 @@ public class AuthorizationServerMetadataResponse
     [Description("A list of scope values that this authorization server supports.")]
     public List<string> Scopes { get; set; }
 
+    /// <summary>
+    /// Gets or sets a list of response type values that this authorization server supports.
+    /// </summary>
+    [DataMember(Name = "response_types_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("response_types_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of response type values that this authorization server supports.")]
+    public List<string> ResponseTypes { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of response mode values that this authorization server supports.
+    /// If omitted, the default is ["query", "fragment"].
+    /// </summary>
+    [DataMember(Name = "response_modes_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("response_modes_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of response mode values that this authorization server supports.")]
+    public List<string> ResponseModes { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of grant type values that this authorization server supports.
+    /// </summary>
+    [DataMember(Name = "grant_types_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("grant_types_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of grant type values that this authorization server supports.")]
+    public List<string> GrantTypes { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of client authentication methods supported by this token endpoint.
+    /// If omitted, the default is "client_secret_basic" - the HTTP Basic Authentication Scheme of OAuth 2.0.
+    /// </summary>
+    [DataMember(Name = "token_endpoint_auth_methods_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("token_endpoint_auth_methods_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of client authentication methods supported by this token endpoint.")]
+    public List<string> TokenEndpointAuthMethods { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of the JWS signing algorithms supported by the token endpoint for the signature on the JWT used to authenticate the client at the token endpoint for the "private_key_jwt" and "client_secret_jwt" authentication methods.
+    /// This metadata entry must be present if either of these authentication methods are specified in the "token_endpoint_auth_methods_supported" entry.
+    /// No default algorithms are implied if this entry is omitted.
+    /// </summary>
+    [DataMember(Name = "token_endpoint_auth_signing_alg_values_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("token_endpoint_auth_signing_alg_values_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of the JWS signing algorithms supported by the token endpoint for the signature on the JWT used to authenticate the client at the token endpoint for the private_key_jwt and client_secret_jwt authentication methods.")]
+    public List<string> TokenEndpointAuthSigningAlgorithms { get; set; }
+
+    /// <summary>
+    /// Gets or sets the page containing human-readable information that developers might want or need to know when using the authorization server.
+    /// In particular, if the authorization server does not support Dynamic Client Registration, then information on how to register clients needs to be provided in this documentation.
+    /// </summary>
+    [DataMember(Name = "service_documentation", EmitDefaultValue = false)]
+    [JsonPropertyName("service_documentation")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A page containing human-readable information that developers might want or need to know when using the authorization server.")]
+    public string ServiceDocumentationUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the languages and scripts supported for the user interface, represented as language tag values from BCP 47.
+    /// If omitted, the set of supported languages and scripts is unspecified.
+    /// </summary>
+    [DataMember(Name = "ui_locales_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("ui_locales_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("Languages and scripts supported for the user interface, represented as language tag values from BCP 47.")]
+    public List<string> UILocales { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL that the authorization server provides to the person registering the client to read about the authorization server's requirements on how the client can use the data provided by the authorization server.
+    /// The registration process should display this URL to the person registering the client if it is given.
+    /// </summary>
+    [DataMember(Name = "op_policy_uri", EmitDefaultValue = false)]
+    [JsonPropertyName("op_policy_uri")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A URL that the authorization server provides to the person registering the client to read about the authorization server's requirements on how the client can use the data provided by the authorization server.")]
+    public string PolicyUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL that the authorization server provides to the person registering the client to read about the authorization server's terms of service.
+    /// The registration process should display this URL to the person registering the client if it is given.
+    /// </summary>
+    [DataMember(Name = "op_tos_uri", EmitDefaultValue = false)]
+    [JsonPropertyName("op_tos_uri")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A URL that the authorization server provides to the person registering the client to read about the authorization server's terms of service.")]
+    public string TermsOfServiceUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL of the authorization server's OAuth 2.0 revocation endpoint.
+    /// </summary>
+    [DataMember(Name = "revocation_endpoint", EmitDefaultValue = false)]
+    [JsonPropertyName("revocation_endpoint")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A URL of the authorization server's OAuth 2.0 revocation endpoint.")]
+    public string RevocationEndpoint { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of client authentication methods supported by this revocation endpoint.
+    /// </summary>
+    [DataMember(Name = "revocation_endpoint_auth_methods_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("revocation_endpoint_auth_methods_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of client authentication methods supported by this revocation endpoint.")]
+    public List<string> RevocationEndpointAuthMethods { get; set; }
+
+    /// <summary>
+    /// Gets or sets a list of the JWS signing algorithms supported by the revocation endpoint for the signature on the JWT used to authenticate the client at the revocation endpoint for the "private_key_jwt" and "client_secret_jwt" authentication methods.
+    /// This metadata entry must be present if either of these authentication methods are specified in the "revocation_endpoint_auth_methods_supported" entry.
+    /// No default algorithms are implied if this entry is omitted.
+    /// </summary>
+    [DataMember(Name = "revocation_endpoint_auth_signing_alg_values_supported", EmitDefaultValue = false)]
+    [JsonPropertyName("revocation_endpoint_auth_signing_alg_values_supported")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A list of the JWS signing algorithms supported by the revocation endpoint for the signature on the JWT used to authenticate the client at the revocation endpoint for the private_key_jwt and client_secret_jwt authentication methods.")]
+    public List<string> RevocationEndpointAuthSigningAlgorithms { get; set; }
 
     /// <summary>
     /// Gets or sets the endpoint URL for token validation.
@@ -674,7 +824,16 @@ public class AuthorizationServerMetadataResponse
     /// <param name="sign">The signature provider.</param>
     /// <returns>The JSON Web Token.</returns>
     public JsonWebToken<JsonObjectNode> SetSignedMetadata(ISignatureProvider sign)
-        => SetSignedMetadata(Issuer, sign);
+        => SetSignedMetadata(Issuer, null, sign);
+
+    /// <summary>
+    /// Sets the signed metedata.
+    /// </summary>
+    /// <param name="fill">The handler to fill additional properties or update current ones to payload.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>The JSON Web Token.</returns>
+    public JsonWebToken<JsonObjectNode> SetSignedMetadata(Action<JsonObjectNode> fill, ISignatureProvider sign)
+        => SetSignedMetadata(Issuer, fill, sign);
 
     /// <summary>
     /// Sets the signed metedata.
@@ -683,10 +842,21 @@ public class AuthorizationServerMetadataResponse
     /// <param name="sign">The signature provider.</param>
     /// <returns>The JSON Web Token.</returns>
     public JsonWebToken<JsonObjectNode> SetSignedMetadata(string issuer, ISignatureProvider sign)
+        => SetSignedMetadata(issuer, null, sign);
+
+    /// <summary>
+    /// Sets the signed metedata.
+    /// </summary>
+    /// <param name="issuer">The issuer.</param>
+    /// <param name="fill">The handler to fill additional properties or update current ones to payload.</param>
+    /// <param name="sign">The signature provider.</param>
+    /// <returns>The JSON Web Token.</returns>
+    public JsonWebToken<JsonObjectNode> SetSignedMetadata(string issuer, Action<JsonObjectNode> fill, ISignatureProvider sign)
     {
         var json = JsonObjectNode.ConvertFrom(this);
         json.Remove("signed_metadata");
         json.SetValueIfNotEmpty("iss", issuer);
+        fill?.Invoke(json);
         var jwt = new JsonWebToken<JsonObjectNode>(json, sign);
         SetSignedMetadata(jwt);
         return jwt;

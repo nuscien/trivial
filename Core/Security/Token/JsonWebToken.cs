@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
@@ -775,6 +776,299 @@ public class JsonWebTokenPayload
     }
 
     /// <summary>
+    /// Gets or sets the user authentication date time.
+    /// </summary>
+    [JsonIgnore]
+    public DateTime? AuthTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user authentication Unix timestamp.
+    /// The original property is AuthTime.
+    /// </summary>
+    [DataMember(Name = "auth_time", EmitDefaultValue = false)]
+    [JsonPropertyName("auth_time")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Unix timestamp when the user authentication occurred.")]
+    public long? AuthTimeTick
+    {
+        get => WebFormat.ParseUnixTimestamp(AuthTime);
+        set => AuthTime = WebFormat.ParseUnixTimestamp(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the Client session associated with an ID Token, and to mitigate replay attacks.
+    /// </summary>
+    [DataMember(Name = "nonce", EmitDefaultValue = false)]
+    [JsonPropertyName("nonce")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Client session associated with an ID Token, and to mitigate replay attacks.")]
+    public string Nonce { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Authentication Methods References that are identifiers for authentication methods used in the authentication.
+    /// For instance, values might indicate that both password and OTP authentication methods were used.
+    /// </summary>
+    [DataMember(Name = "amr", EmitDefaultValue = false)]
+    [JsonPropertyName("amr")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Authentication Methods References that are identifiers for authentication methods used in the authentication.")]
+    public List<string> AuthenticationMethodsReferences { get; set; }
+
+    /// <summary>
+    /// Gets or sets the authorized party which the ID Token was issued.
+    /// </summary>
+    [DataMember(Name = "azp", EmitDefaultValue = false)]
+    [JsonPropertyName("azp")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The authorized party which the ID Token was issued.")]
+    public string AuthorizedParty { get; set; }
+
+    /// <summary>
+    /// Gets or sets the hash of access token, Base64url encoded.
+    /// The hash algorithm used is the one used in the alg Header Parameter of the JOSE Header.
+    /// </summary>
+    [DataMember(Name = "at_hash", EmitDefaultValue = false)]
+    [JsonPropertyName("at_hash")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The hash of access token, Base64url encoded.")]
+    public string AccessTokenHash { get; set; }
+
+    /// <summary>
+    /// Gets or sets the hash of code, Base64url encoded.
+    /// The hash algorithm used is the one used in the alg Header Parameter of the JOSE Header.
+    /// </summary>
+    [DataMember(Name = "c_hash", EmitDefaultValue = false)]
+    [JsonPropertyName("c_hash")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The hash of code, Base64url encoded.")]
+    public string CodeHash { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name of the user.
+    /// </summary>
+    [DataMember(Name = "name", EmitDefaultValue = false)]
+    [JsonPropertyName("name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The display name of the user.")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the .
+    /// </summary>
+    [DataMember(Name = "given_name", EmitDefaultValue = false)]
+    [JsonPropertyName("given_name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The given name of the user.")]
+    public string GivenName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the surname of the user.
+    /// </summary>
+    [DataMember(Name = "family_name", EmitDefaultValue = false)]
+    [JsonPropertyName("family_name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The surname of the user.")]
+    public string FamilyName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the middle name of the user.
+    /// </summary>
+    [DataMember(Name = "middle_name", EmitDefaultValue = false)]
+    [JsonPropertyName("middle_name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The middle name of the user.")]
+    public string MiddleName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the nickname.
+    /// </summary>
+    [DataMember(Name = "nickname", EmitDefaultValue = false)]
+    [JsonPropertyName("nickname")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The nickname.")]
+    public string Nickname { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preferred name.
+    /// </summary>
+    [DataMember(Name = "preferred_username", EmitDefaultValue = false)]
+    [JsonPropertyName("preferred_username")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The preferred name.")]
+    public string PreferredName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the profile URL.
+    /// </summary>
+    [DataMember(Name = "profile", EmitDefaultValue = false)]
+    [JsonPropertyName("profile")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The profile URL.")]
+    public string ProfileUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL of the avatar.
+    /// It must refer to an image file, rather than to a Web page containing an image.
+    /// </summary>
+    [DataMember(Name = "picture", EmitDefaultValue = false)]
+    [JsonPropertyName("picture")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The URL of the avatar. It must refer to an image file.")]
+    public string AvatarUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets the website URL.
+    /// </summary>
+    [DataMember(Name = "website", EmitDefaultValue = false)]
+    [JsonPropertyName("website")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The website URL.")]
+    public string Website { get; set; }
+
+    /// <summary>
+    /// Gets or sets the email address.
+    /// </summary>
+    [DataMember(Name = "email", EmitDefaultValue = false)]
+    [JsonPropertyName("email")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The email address.")]
+    public string Email { get; set; }
+
+    /// <summary>
+    /// Gets or sets the gender of the user, e.g. female, male.
+    /// </summary>
+    [DataMember(Name = "gender", EmitDefaultValue = false)]
+    [JsonPropertyName("gender")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The gender of the user, e.g. female, male.")]
+    public string GenderString { get; set; }
+
+    /// <summary>
+    /// Gets or sets the birthday of the user, represented as an ISO 8601-1 YYYY-MM-DD format. The year may be 0000, indicating that it is omitted. To represent only the year, YYYY format is allowed.
+    /// </summary>
+    [DataMember(Name = "birthdate", EmitDefaultValue = false)]
+    [JsonPropertyName("birthdate")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The birthday of the user, represented as an ISO 8601-1 YYYY-MM-DD format. The year may be 0000, indicating that it is omitted. To represent only the year, YYYY format is allowed.")]
+    public string BirthdayString { get; set; }
+
+    /// <summary>
+    /// Gets the year of the birthday of the user.
+    /// It returns null if no such information.
+    /// </summary>
+    [JsonIgnore]
+    public int? BirthdayYear
+    {
+        get
+        {
+            var s = BirthdayString?.Trim();
+            if (string.IsNullOrEmpty(s)) return null;
+            var d = WebFormat.ParseDateIso8601(s);
+            if (d.HasValue) return d.Value.Year > 0 ? d.Value.Year : null;
+            if (!s.Contains('-') && s.Length < 6) return int.TryParse(s, out var year) && year > 0 ? year : 0;
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the month of the birthday of the user.
+    /// It returns null if no such information.
+    /// </summary>
+    [JsonIgnore]
+    public int? BirthdayMonth => WebFormat.ParseDateIso8601(BirthdayString)?.Month;
+
+    /// <summary>
+    /// Gets the day of the birthday of the user.
+    /// It returns null if no such information.
+    /// </summary>
+    [JsonIgnore]
+    public int? BirthdayDay => WebFormat.ParseDateIso8601(BirthdayString)?.Day;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the email address is verified.
+    /// </summary>
+    [DataMember(Name = "email_verified", EmitDefaultValue = false)]
+    [JsonPropertyName("email_verified")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A value indicating whether the email address is verified.")]
+    public bool IsEmailVerified { get; set; }
+
+    /// <summary>
+    /// Gets or sets the phone number.
+    /// E.164 is recommended as the format.
+    /// </summary>
+    [DataMember(Name = "phone_number", EmitDefaultValue = false)]
+    [JsonPropertyName("phone_number")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The phone number.")]
+    public string PhoneNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the phone number is verified.
+    /// </summary>
+    [DataMember(Name = "phone_number_verified", EmitDefaultValue = false)]
+    [JsonPropertyName("phone_number_verified")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("A value indicating whether the phone number is verified.")]
+    public bool IsPhoneNumberVerified { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zone info represented IANA Time Zone Database.
+    /// </summary>
+    [DataMember(Name = "zoneinfo", EmitDefaultValue = false)]
+    [JsonPropertyName("zoneinfo")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The zone info.")]
+    public string ZoneInfo { get; set; }
+
+    /// <summary>
+    /// Gets or sets the locale, represented as language tag values from BCP 47.
+    /// </summary>
+    [DataMember(Name = "locale", EmitDefaultValue = false)]
+    [JsonPropertyName("locale")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The locale, represented as language tag values from BCP 47.")]
+    public string Locale { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preferred postal address.
+    /// </summary>
+    [DataMember(Name = "address", EmitDefaultValue = false)]
+    [JsonPropertyName("address")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The preferred postal address.")]
+    public JsonWebTokenAddressClaim Address { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional information updated date time.
+    /// </summary>
+    [JsonIgnore]
+    public DateTime? UpdatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional information updated  Unix timestamp.
+    /// The original property is UpdatedAt.
+    /// </summary>
+    [DataMember(Name = "updated_at", EmitDefaultValue = false)]
+    [JsonPropertyName("updated_at")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Unix timestamp at which the information is updated.")]
+    public long? UpdatedAtTick
+    {
+        get => WebFormat.ParseUnixTimestamp(UpdatedAt);
+        set => UpdatedAt = WebFormat.ParseUnixTimestamp(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the Authentication Context Class Reference values.
+    /// </summary>
+    [DataMember(Name = "acr", EmitDefaultValue = false)]
+    [JsonPropertyName("acr")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The Authentication Context Class Reference values.")]
+    public List<string> AuthenticationContextClassReferences { get; set; }
+
+    /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.
     /// </summary>
     /// <param name="sign">The signature provider.</param>
@@ -833,6 +1127,22 @@ public class JsonWebTokenPayload
         return comparer is null ? Audience.Contains(value) : Audience.Contains(value, comparer);
     }
 
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Sets the birth date of the user.
+    /// </summary>
+    /// <param name="birthDate">The birth date.</param>
+    public void SetBirthday(DateOnly birthDate)
+        => BirthdayString = birthDate.ToString("yyyy-MM-dd");
+#endif
+
+    /// <summary>
+    /// Sets the birth date of the user.
+    /// </summary>
+    /// <param name="birthDate">The birth date.</param>
+    public void SetBirthday(DateTime birthDate)
+        => BirthdayString = birthDate.ToString("yyyy-MM-dd");
+
     /// <summary>
     /// Writes this instance to the specified writer as a JSON value.
     /// </summary>
@@ -864,4 +1174,85 @@ public class JsonWebTokenPayload
     public static JsonWebToken<JsonWebTokenPayload> operator +(JsonWebTokenPayload payload, ISignatureProvider signature)
         => new(payload, signature);
 #pragma warning restore IDE0057
+}
+
+/// <summary>
+/// The address information used in ID Token, to represent a physical mailing address.
+/// </summary>
+[DataContract]
+public class JsonWebTokenAddressClaim
+{
+    /// <summary>
+    /// Gets or sets the full mailing address, formatted for display or use on a mailing label.
+    /// It may contain multiple lines.
+    /// </summary>
+    [DataMember(Name = "formatted", EmitDefaultValue = false)]
+    [JsonPropertyName("formatted")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The full mailing address, formatted for display or use on a mailing label. It may contain multiple lines.")]
+    public string Formatted { get; set; }
+
+    /// <summary>
+    /// Gets or sets the full street address, which MAY include house number, street name, Post Office Box, and multi-line extended street address information.
+    /// It may contain multiple lines.
+    /// </summary>
+    [DataMember(Name = "street_address", EmitDefaultValue = false)]
+    [JsonPropertyName("street_address")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The full street address, which MAY include house number, street name, Post Office Box, and multi-line extended street address information.")]
+    public string StreetAddress { get; set; }
+
+    /// <summary>
+    /// Gets or sets the city or locality.
+    /// </summary>
+    [DataMember(Name = "locality", EmitDefaultValue = false)]
+    [JsonPropertyName("locality")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The city or locality.")]
+    public string Locality { get; set; }
+
+    /// <summary>
+    /// Gets or sets the state, province, prefecture, or region.
+    /// </summary>
+    [DataMember(Name = "region", EmitDefaultValue = false)]
+    [JsonPropertyName("region")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The state, province, prefecture, or region.")]
+    public string Region { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zip code or postal code.
+    /// </summary>
+    [DataMember(Name = "postal_code", EmitDefaultValue = false)]
+    [JsonPropertyName("postal_code")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The zip code or postal code.")]
+    public string PostalCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the country name.
+    /// </summary>
+    [DataMember(Name = "country", EmitDefaultValue = false)]
+    [JsonPropertyName("country")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The country name.")]
+    public string Country { get; set; }
+
+    /// <summary>
+    /// Returns a string that represents the current object.
+    /// </summary>
+    /// <returns>A string that represents the current object.</returns>
+    public override string ToString()
+    {
+        if (!string.IsNullOrWhiteSpace(Formatted)) return Formatted.Trim();
+        var arr = new List<string>
+        {
+            StreetAddress?.Trim(),
+            Locality?.Trim(),
+            Region?.Trim(),
+            PostalCode?.Trim(),
+            Country?.Trim()
+        };
+        return string.Join(Environment.NewLine, arr.Where(ele => !string.IsNullOrEmpty(ele)));
+    }
 }

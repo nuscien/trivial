@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
+using Trivial.Text;
 
 namespace Trivial.Net;
 
 /// <summary>
 /// The deep link URI struct for apps.
 /// </summary>
+[JsonConverter(typeof(AppDeepLinkUriConverter))]
+[Guid("490DFDF0-75C1-42BE-AD62-D3E26FE9DB5B")]
 public class AppDeepLinkUri : IEquatable<AppDeepLinkUri>, IEquatable<HttpUri>, IEquatable<Uri>, IEquatable<string>
 {
 #pragma warning disable IDE0057
@@ -243,4 +249,47 @@ public class AppDeepLinkUri : IEquatable<AppDeepLinkUri>, IEquatable<HttpUri>, I
         return uri != null ? Parse(uri.ToString()) : null;
     }
 #pragma warning restore IDE0057
+}
+
+/// <summary>
+/// The JSON converter for enum. The output will be an integer value.
+/// </summary>
+internal class AppDeepLinkUriConverter : JsonConverter<AppDeepLinkUri>
+{
+    /// <inheritdoc />
+    public override AppDeepLinkUri Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.String:
+                try
+                {
+                    return HttpUri.Parse(reader.GetString());
+                }
+                catch (FormatException ex)
+                {
+                    throw new JsonException("Invalid HTTPS URI format.", ex);
+                }
+
+            case JsonTokenType.StartObject:
+                var json = JsonObjectNode.ParseValue(ref reader);
+                var v = new AppDeepLinkUri
+                {
+                    Protocal = json.TryGetStringTrimmedValue("protocal", true) ?? json.TryGetStringTrimmedValue("scheme", true) ?? "https",
+                    Path = json.TryGetStringTrimmedValue("path", true),
+                    Hash = json.TryGetStringTrimmedValue("hash", true),
+                };
+                v.Query.ParseSet(json.TryGetStringTrimmedValue("query", true) ?? json.TryGetStringTrimmedValue("q", true), true);
+                return v;
+        }
+
+        throw new JsonException($"Expects a string in app deep URI format but {reader.TokenType}.");
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, AppDeepLinkUri value, JsonSerializerOptions options)
+    {
+        if (value is null) writer.WriteNullValue();
+        else writer.WriteStringValue(value.ToString());
+    }
 }

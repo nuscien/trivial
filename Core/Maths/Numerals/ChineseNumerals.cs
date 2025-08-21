@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Maths;
@@ -8,6 +9,7 @@ namespace Trivial.Maths;
 /// <summary>
 /// The Chinese numerals.
 /// </summary>
+[Guid("2E96C2AC-A53D-46E9-825B-68E3F77A2A6C")]
 public class ChineseNumerals : IIntegerSample, INumberLocalization
 {
     private static readonly string digits1 = "零壹贰叄肆伍陆柒捌玖拾佰仟万亿";

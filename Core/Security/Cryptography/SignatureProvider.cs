@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Trivial.Collection;
 using Trivial.Text;
@@ -429,7 +430,7 @@ public class HashSignatureProvider : ISignatureProvider
 }
 
 /// <summary>
-/// The RSA hash signature for string.
+/// The hash signature for string, by Rivest-Shamir-Adleman algorithm.
 /// </summary>
 [Guid("0A09C949-B088-461E-A886-A72C06C296EB")]
 public class RSASignatureProvider : ISignatureProvider
@@ -676,7 +677,7 @@ public class RSASignatureProvider : ISignatureProvider
         var p = RSAParametersConvert.Parse(secret);
         return p == null
             ? throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.")
-            : new(p.Value, hashAlgorithmName, signAlgorithmName);
+            : new(p.Value, padding, hashAlgorithmName, signAlgorithmName);
     }
 
     /// <summary>
@@ -826,7 +827,7 @@ public class RSASignatureProvider : ISignatureProvider
 
 #if !NETFRAMEWORK
 /// <summary>
-/// The ECDSA hash signature for string.
+/// The hash signature for string, by Elliptic Curve Digital Signature Algorithm.
 /// </summary>
 [Guid("5EB7E921-9CF8-41EA-96D1-9F7DA015FFEE")]
 public class ECDsaSignatureProvider : ISignatureProvider
@@ -836,18 +837,26 @@ public class ECDsaSignatureProvider : ISignatureProvider
     private readonly HashAlgorithmName hashName;
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="secret">The ECDSA parameters.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <param name="secret">The ECC DSA PEM.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
+    public static ECDsaSignatureProvider CreateES512(string secret)
+        => Create(secret, HashAlgorithmName.SHA512, "ES512");
+
+    /// <summary>
+    /// Creates an ECC DSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ECC DSA parameters.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES512(ECParameters secret)
         => new(secret, HashAlgorithmName.SHA512, "ES512");
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="secret">The ECDSA instance created.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <param name="secret">The ECC DSA instance created.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES512(out ECDsa secret)
     {
         secret = ECDsa.Create();
@@ -855,28 +864,36 @@ public class ECDsaSignatureProvider : ISignatureProvider
     }
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="ecdsaInstance">The ECDSA instance.</param>
+    /// <param name="ecdsaInstance">The ECC DSA instance.</param>
     /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES512(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
         => new(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "ES512", needDisposeAlgorithmAutomatically);
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="secret">The ECDSA parameters.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <param name="secret">The ECC DSA PEM.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
+    public static ECDsaSignatureProvider CreateES384(string secret)
+        => Create(secret, HashAlgorithmName.SHA384, "ES384");
+
+    /// <summary>
+    /// Creates an ECC DSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ECC DSA parameters.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES384(ECParameters secret)
         => new(secret, HashAlgorithmName.SHA384, "ES384");
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="secret">The ECDSA instance created.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <param name="secret">The ECC DSA instance created.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES384(out ECDsa secret)
     {
         secret = ECDsa.Create();
@@ -884,28 +901,36 @@ public class ECDsaSignatureProvider : ISignatureProvider
     }
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="ecdsaInstance">The ECDSA instance.</param>
+    /// <param name="ecdsaInstance">The ECC DSA instance.</param>
     /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES384(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
         => new(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "ES384", needDisposeAlgorithmAutomatically);
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="secret">The ECDSA parameters.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <param name="secret">The ECC DSA PEM.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
+    public static ECDsaSignatureProvider CreateES256(string secret)
+        => Create(secret, HashAlgorithmName.SHA256, "ES256");
+
+    /// <summary>
+    /// Creates an ECC DSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ECC DSA parameters.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES256(ECParameters secret)
         => new(secret, HashAlgorithmName.SHA256, "ES256");
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="secret">The ECDSA instance created.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <param name="secret">The ECC DSA instance created.</param>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES256(out ECDsa secret)
     {
         secret = ECDsa.Create();
@@ -913,19 +938,40 @@ public class ECDsaSignatureProvider : ISignatureProvider
     }
 
     /// <summary>
-    /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+    /// Creates an ECC DSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
     /// </summary>
-    /// <param name="ecdsaInstance">The ECDSA instance.</param>
+    /// <param name="ecdsaInstance">The ECC DSA instance.</param>
     /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
-    /// <returns>An ECDSA hash signature provider instance.</returns>
+    /// <returns>An ECC DSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES256(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
         => new(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "ES256", needDisposeAlgorithmAutomatically);
 
     /// <summary>
+    /// Creates an ECC DSA hash signature provider.
+    /// </summary>
+    /// <param name="secret">The ECC DSA key.</param>
+    /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+    /// <param name="signAlgorithmName">The signature algorithm name.</param>
+    /// <returns>An RSA hash signature provider instance.</returns>
+    /// <exception cref="ArgumentNullException">secret was null.</exception>
+    /// <exception cref="ArgumentException">secret was empty or consists only of white-space characters.</exception>
+    private static ECDsaSignatureProvider Create(string secret, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+    {
+        StringExtensions.AssertNotWhiteSpace(nameof(secret), secret);
+        var cert = X509Certificate2.CreateFromPem(secret);
+        var p = cert.GetECDsaPrivateKey();
+        var hasPrivateKey = p is not null;
+        if (!hasPrivateKey) p = cert.GetECDsaPublicKey();
+        return p == null
+            ? throw new FormatException("secret is not a valid ECDsa key. A PEM string expected.")
+            : new(p, hasPrivateKey, hashAlgorithmName, signAlgorithmName);
+    }
+
+    /// <summary>
     /// Initializes a new instance of the ECDsaSignatureProvider class.
     /// </summary>
-    /// <param name="ecdsaParams">The ECDSA parameters.</param>
+    /// <param name="ecdsaParams">The ECC DSA parameters.</param>
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     public ECDsaSignatureProvider(ECParameters ecdsaParams, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
@@ -940,7 +986,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <summary>
     /// Initializes a new instance of the ECDsaSignatureProvider class.
     /// </summary>
-    /// <param name="ecdsaInstance">The ECDSA instance.</param>
+    /// <param name="ecdsaInstance">The ECC DSA instance.</param>
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
@@ -951,7 +997,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <summary>
     /// Initializes a new instance of the ECDsaSignatureProvider class.
     /// </summary>
-    /// <param name="ecdsaInstance">The ECDSA instance.</param>
+    /// <param name="ecdsaInstance">The ECC DSA instance.</param>
     /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
     /// <param name="hashAlgorithmName">The hash algorithm name.</param>
     /// <param name="signAlgorithmName">The signature algorithm name.</param>

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Trivial.IO;
@@ -92,6 +94,7 @@ public interface IDirectoryHostReferenceInfo : IDirectoryReferenceInfo
 /// <summary>
 /// The reference information of file.
 /// </summary>
+[Guid("0AB61760-84ED-498D-B38B-8C72DED30067")]
 public class BaseFileSystemReferenceInfo : IFileSystemReferenceInfo
 {
     /// <summary>
@@ -128,16 +131,19 @@ public class BaseFileSystemReferenceInfo : IFileSystemReferenceInfo
     /// <summary>
     /// Gets the file name.
     /// </summary>
+    [Description("The file name.")]
     public string Name { get; protected set; }
 
     /// <summary>
     /// Gets a value indicating whether the item exists.
     /// </summary>
+    [Description("A value indicating whether the item exists..")]
     public bool Exists { get; protected set; }
 
     /// <summary>
-    /// Gets the file size.
+    /// Gets the date time of last modification of the file.
     /// </summary>
+    [Description("The date time of last modification of the file.")]
     public DateTime LastModification { get; protected set; }
 
     /// <summary>
@@ -149,6 +155,7 @@ public class BaseFileSystemReferenceInfo : IFileSystemReferenceInfo
 /// <summary>
 /// The reference information of directory.
 /// </summary>
+[Guid("38DF3B7F-60C4-4D25-A8FB-4461AC703963")]
 public class BaseDirectoryReferenceInfo : BaseFileSystemReferenceInfo, IDirectoryReferenceInfo
 {
     /// <summary>
@@ -253,6 +260,7 @@ public class BaseDirectoryReferenceInfo : BaseFileSystemReferenceInfo, IDirector
 /// <summary>
 /// The reference information of file.
 /// </summary>
+[Guid("901FD1AD-1988-44EB-9745-CB93482DB967")]
 public class BaseFileReferenceInfo : BaseFileSystemReferenceInfo, IFileReferenceInfo
 {
     private IFileContainerReferenceInfo parent;
@@ -401,6 +409,7 @@ public class BaseFileReferenceInfo : BaseFileSystemReferenceInfo, IFileReference
     /// <summary>
     /// Gets the file size.
     /// </summary>
+    [Description("The file size.")]
     public long Size { get; protected set; }
 
     /// <summary>

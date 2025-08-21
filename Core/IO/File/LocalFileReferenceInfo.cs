@@ -12,6 +12,7 @@ namespace Trivial.IO;
 /// <summary>
 /// The reference information of directory.
 /// </summary>
+[Guid("0F772188-F055-452C-9D88-C71E73235E41")]
 public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryInfo>, IDirectoryHostReferenceInfo
 {
     IFileContainerReferenceInfo parent;
@@ -326,6 +327,7 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
 /// <summary>
 /// The reference information of file.
 /// </summary>
+[Guid("956C9792-EED4-4C6A-BD1E-C616B46BD1CE")]
 public class LocalFileReferenceInfo: BaseFileReferenceInfo<FileInfo>
 {
     /// <summary>
@@ -503,6 +505,7 @@ public class LocalFileReferenceInfo: BaseFileReferenceInfo<FileInfo>
 /// <summary>
 /// The reference information of package (such as compressed) file.
 /// </summary>
+[Guid("0F7661A7-C647-48C4-92F1-AE88E0B54737")]
 public class LocalPackageFileReferenceInfo : LocalFileReferenceInfo, IFileContainerReferenceInfo
 {
     /// <summary>

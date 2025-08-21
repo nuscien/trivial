@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Trivial.Reflection;
 using Trivial.Text;
@@ -26,6 +27,7 @@ public partial struct Angle
     /// The angle model.
     /// </summary>
     [JsonConverter(typeof(JsonAngleModelConverter))]
+    [Guid("CCBBA736-206B-463B-9513-1ED2908E5A9D")]
     public class Model : IAngle, ICloneable, IObjectRef<double>, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
 #if NET8_0_OR_GREATER
 , IAdditionOperators<Model, IAngle, Model>, ISubtractionOperators<Model, IAngle, Model>, IMultiplyOperators<Model, int, Model>, IMultiplyOperators<Model, long, Model>, IMultiplyOperators<Model, float, Model>, IMultiplyOperators<Model, double, Model>, IDivisionOperators<Model, int, Model>, IDivisionOperators<Model, long, Model>, IDivisionOperators<Model, float, Model>, IDivisionOperators<Model, double, Model>, IUnaryNegationOperators<Model, Model>, IParsable<Model>

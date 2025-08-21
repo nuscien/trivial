@@ -1666,19 +1666,40 @@ public static class StringExtensions
                     names.Insert(0, "zh-Hans-SG");
                     break;
                 case "zh-TW":
-                    names.Insert(1, "zh-Hant");
+                    names.Insert(0, "zh-Hans-TW");
+                    names.Insert(2, "zh-Hant");
                     names.Insert(0, "zh-Hant-TW");
                     names.Add("zh-Hans");
                     break;
                 case "zh-HK":
-                    names.Insert(1, "zh-Hant");
+                    names.Insert(0, "zh-Hans-HK");
+                    names.Insert(2, "zh-Hant");
                     names.Insert(0, "zh-Hant-HK");
                     names.Add("zh-Hans");
                     break;
                 case "zh-MO":
-                    names.Insert(1, "zh-Hant");
-                    names.Insert(0, "zh-Hant-SG");
+                    names.Insert(0, "zh-Hans-MO");
+                    names.Insert(2, "zh-Hant");
+                    names.Insert(0, "zh-Hant-MO");
                     names.Add("zh-Hans");
+                    break;
+            }
+        }
+        else if (name.EndsWith("-CN"))
+        {
+            switch (name)
+            {
+                case "ii-CN":
+                case "bo-CN":
+                case "ko-CN":
+                case "mn-CN":
+                case "ug-CN":
+                case "th-CN":
+                case "za-CN":
+                    names.Add("zh-Hans-CN");
+                    names.Add("zh-CN");
+                    names.Add("zh-Hans");
+                    names.Add("zh");
                     break;
             }
         }

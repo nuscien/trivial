@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
@@ -21,6 +22,7 @@ namespace Trivial.Security;
 /// <summary>
 /// The information about changing password.
 /// </summary>
+[Guid("91CF6F91-CC90-49AB-9222-947738389CF3")]
 public class PasswordChanging
 {
     /// <summary>

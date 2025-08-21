@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -60,11 +61,13 @@ public enum Longitudes : byte
 /// <summary>
 /// Latitude.
 /// </summary>
+[Guid("D0B365CC-B266-4A1C-8249-B2FABBBA73D3")]
 public struct Latitude : IEquatable<Latitude>
 {
     /// <summary>
     /// Latitude model.
     /// </summary>
+    [Guid("2FCE08C5-797A-4E0D-8BB2-3D96897F2AA7")]
     public class Model : Angle.Model, ICloneable
     {
         /// <summary>
@@ -455,11 +458,13 @@ public struct Latitude : IEquatable<Latitude>
 /// <summary>
 /// Longitude.
 /// </summary>
+[Guid("459EE246-77FF-4BE8-8F73-31C28A0F8B44")]
 public struct Longitude : IEquatable<Longitude>
 {
     /// <summary>
     /// Longitude model.
     /// </summary>
+    [Guid("AC1C2B92-D66E-410D-AEBC-B6BDD00E1EB0")]
     public class Model : Angle.Model, ICloneable
     {
         /// <summary>
@@ -992,6 +997,7 @@ public struct Longitude : IEquatable<Longitude>
 /// Geolocation with latitude, longitude and optional altitude.
 /// </summary>
 [JsonConverter(typeof(ValueConverter))]
+[Guid("A40A530E-0D87-4CF7-BF00-184BB18F614E")]
 public struct Geolocation : IEquatable<Geolocation>
 {
     /// <summary>
@@ -1069,6 +1075,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// The geolocation model.
     /// </summary>
     [JsonConverter(typeof(ModelConverter))]
+    [Guid("818D8EC5-8E16-4210-AB69-AAF8AD70FCAF")]
     public class Model
     {
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Maths;
@@ -8,6 +9,7 @@ namespace Trivial.Maths;
 /// <summary>
 /// The Japanese numerals.
 /// </summary>
+[Guid("E3A97A53-955F-4BF5-81EF-116B8363F2CE")]
 public class JapaneseNumerals : IIntegerSample, INumberLocalization
 {
     private static readonly string digits = "零一二三四五六七八九十百千万億兆京垓秭穣溝澗正載極";

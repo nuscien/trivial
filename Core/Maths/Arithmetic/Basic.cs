@@ -931,4 +931,55 @@ public static partial class Arithmetic
     /// <returns>One of the parameter, whichever is larger.</returns>
     public static DateTimeOffset Max(DateTimeOffset a, DateTimeOffset b, DateTimeOffset c)
         => Max(Max(a, b), c);
+
+    /// <summary>
+    /// Tries to parse an integer from a substring.
+    /// </summary>
+    /// <param name="s">The source string to parse.</param>
+    /// <param name="start">The start offset.</param>
+    /// <param name="length">The length.</param>
+    /// <param name="value">The result parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    public static bool TryParseSubstring(string s, int start, int length, out int value)
+    {
+        try
+        {
+            return int.TryParse(s.Substring(start, length), out value);
+        }
+        catch (ArgumentException)
+        {
+            value = default;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Tries to parse an integer from a substring.
+    /// </summary>
+    /// <param name="s">The source string to parse.</param>
+    /// <param name="start">The start offset.</param>
+    /// <param name="value">The result parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    public static bool TryParseSubstring(string s, int start, out int value)
+    {
+        try
+        {
+            return int.TryParse(s.Substring(start), out value);
+        }
+        catch (ArgumentException)
+        {
+            value = default;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Tries to parse an integer from a substring.
+    /// </summary>
+    /// <param name="s">The source string to parse.</param>
+    /// <param name="start">The start offset.</param>
+    /// <param name="length">The length; or null, to end.</param>
+    /// <returns>The result parsed; or null, if fails.</returns>
+    public static int? TryParseSubstring(string s, int start = 0, int? length = null)
+        => (length.HasValue ? TryParseSubstring(s, start, length.Value, out var value) : TryParseSubstring(s, start, out value)) ? value : null;
 }

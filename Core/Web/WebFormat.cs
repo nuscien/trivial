@@ -9,6 +9,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Web;
+using Trivial.Maths;
 using Trivial.Net;
 using Trivial.Text;
 
@@ -412,6 +413,105 @@ public static partial class WebFormat
             default:
                 return null;
         }
+    }
+
+    /// <summary>
+    /// Gets the date.
+    /// </summary>
+    /// <returns>The date; or null, if no such information.</returns>
+    internal static DateTime? ParseDateIso8601(string s)
+    {
+        try
+        {
+            s = s?.Trim();
+            if (string.IsNullOrEmpty(s)) return null;
+            switch (s.Length)
+            {
+                case 10:
+                    if (s[4] == '-' && s[7] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 4, out var year)
+                            && Arithmetic.TryParseSubstring(s, 5, 2, out var month)
+                            && Arithmetic.TryParseSubstring(s, 8, 2, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+                    else if (s[5] == '-' && s[7] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 5, out var year)
+                            && Arithmetic.TryParseSubstring(s, 6, 1, out var month)
+                            && Arithmetic.TryParseSubstring(s, 8, 2, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+                    else if (s[5] == '-' && s[8] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 5, out var year)
+                            && Arithmetic.TryParseSubstring(s, 6, 2, out var month)
+                            && Arithmetic.TryParseSubstring(s, 9, 1, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+
+                    return null;
+                case 8:
+                    if (!s.Contains('-'))
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 4, out var year)
+                            && Arithmetic.TryParseSubstring(s, 4, 2, out var month)
+                            && Arithmetic.TryParseSubstring(s, 6, 2, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+                    else if (s[4] == '-' && s[6] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 4, out var year)
+                            && Arithmetic.TryParseSubstring(s, 5, 1, out var month)
+                            && Arithmetic.TryParseSubstring(s, 7, 1, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+
+                    return null;
+                case 11:
+                    if (s[5] == '-' && s[8] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 5, out var year)
+                            && Arithmetic.TryParseSubstring(s, 6, 2, out var month)
+                            && Arithmetic.TryParseSubstring(s, 9, 2, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+
+                    return null;
+                case 9:
+                    if (s[4] == '-' && s[6] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 4, out var year)
+                            && Arithmetic.TryParseSubstring(s, 5, 1, out var month)
+                            && Arithmetic.TryParseSubstring(s, 7, 2, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+                    else if (s[4] == '-' && s[7] == '-')
+                    {
+                        return Arithmetic.TryParseSubstring(s, 0, 4, out var year)
+                            && Arithmetic.TryParseSubstring(s, 5, 2, out var month)
+                            && Arithmetic.TryParseSubstring(s, 8, 1, out var day)
+                            && year > 0 && month > 0 && day > 0
+                            ? new DateTime(year, month, day) : null;
+                    }
+
+                    return null;
+                default:
+                    return null;
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
     }
 
     /// <summary>

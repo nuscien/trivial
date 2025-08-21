@@ -955,6 +955,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
 /// </summary>
 [DataContract]
 [JsonConverter(typeof(Text.JsonNumberConverter))]
+[Guid("2A3B2DD2-CDCC-4AFD-BCF5-C5824BB927F0")]
 public class VersionSimpleInterval : RefValueSimpleInterval<string>
 {
     private Version minVer;

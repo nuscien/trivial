@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using Trivial.Reflection;
 using Trivial.Text;
@@ -21,6 +22,7 @@ namespace Trivial.Maths;
 /// The struct of degree (angle).
 /// </summary>
 [JsonConverter(typeof(JsonAngleConverter))]
+[Guid("582DB0BE-6D3E-41AF-80A3-E0D5EFCB61C9")]
 public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
 #if NET8_0_OR_GREATER
 , IAdditionOperators<Angle, IAngle, Angle>, ISubtractionOperators<Angle, IAngle, Angle>, IMultiplyOperators<Angle, int, Angle>, IMultiplyOperators<Angle, long, Angle>, IMultiplyOperators<Angle, float, Angle>, IMultiplyOperators<Angle, double, Angle>, IDivisionOperators<Angle, int, Angle>, IDivisionOperators<Angle, long, Angle>, IDivisionOperators<Angle, float, Angle>, IDivisionOperators<Angle, double, Angle>, IUnaryNegationOperators<Angle, Angle>, IParsable<Angle>

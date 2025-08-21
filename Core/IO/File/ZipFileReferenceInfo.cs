@@ -19,6 +19,7 @@ namespace Trivial.IO;
 /// <summary>
 /// The reference information of zip file.
 /// </summary>
+[Guid("586441B2-11CF-4953-BC59-3F174249869D")]
 public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHostReferenceInfo
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -240,6 +241,7 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
 /// <summary>
 /// The reference information of zip archive entry.
 /// </summary>
+[Guid("18D701B7-F28A-4688-A0C8-9916E518BCF0")]
 public class ZipArchiveDirectoryReferenceInfo : BaseDirectoryReferenceInfo<IReadOnlyList<string>>, IDirectoryHostReferenceInfo
 {
     private readonly List<ZipArchiveEntryReferenceInfo> files = new();
@@ -357,6 +359,7 @@ public class ZipArchiveDirectoryReferenceInfo : BaseDirectoryReferenceInfo<IRead
 /// <summary>
 /// The reference information of zip archive entry.
 /// </summary>
+[Guid("E69A6C77-2EAB-4499-AD05-CE9AD7D8DFCF")]
 public class ZipArchiveEntryReferenceInfo : BaseFileReferenceInfo
 {
     /// <summary>

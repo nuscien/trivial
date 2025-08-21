@@ -132,6 +132,7 @@ public abstract class BaseFileReferenceClient<T> : IFileReferenceClient where T 
 /// <summary>
 /// The file reference client factory.
 /// </summary>
+[Guid("FC26FC1D-1ADE-4B5A-82D2-A94093D23D96")]
 public class FileReferenceClientFactory : IFileReferenceClient
 {
     private readonly Dictionary<Type, IFileReferenceClient> handlers = new();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Maths;
@@ -7,6 +8,7 @@ namespace Trivial.Maths;
 /// <summary>
 /// The Roman numerals.
 /// </summary>
+[Guid("F2F356AA-63C1-40FA-A488-C73B4D2A084B")]
 public class RomanNumerals : IIntegerSample
 {
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using Trivial.Text;
@@ -10,6 +11,7 @@ namespace Trivial.Maths;
 /// <summary>
 /// The English numerals.
 /// </summary>
+[Guid("97031570-FB7B-49C9-BF86-A06A2DA85F57")]
 public class EnglishNumerals : IIntegerSample, INumberLocalization
 {
     /// <summary>

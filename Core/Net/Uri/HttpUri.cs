@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
 using Trivial.Text;
 
@@ -15,6 +16,7 @@ namespace Trivial.Net;
 /// The HTTP URI struct.
 /// </summary>
 [JsonConverter(typeof(HttpUriConverter))]
+[Guid("A08EEF65-7B24-4EEE-B54C-D8F830626ECB")]
 public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatable<Uri>, IEquatable<string>
 {
 #pragma warning disable IDE0057
