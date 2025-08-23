@@ -1476,6 +1476,9 @@ public static class StringExtensions
         => string.Join(value, col);
 #endif
 
+    internal static string JoinAfterTrim(char value, IEnumerable<string> col)
+        => col is null ? null : Join(value, col.Select(ele => ele?.Trim()).Where(ele => !string.IsNullOrEmpty(ele)));
+
     internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
     {
 #if NETFRAMEWORK

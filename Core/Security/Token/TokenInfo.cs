@@ -357,7 +357,8 @@ public class TokenInfo
     [DataMember(Name = ExpiresInProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ExpiresInProperty)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? ExpiredInSecond {
+    public int? ExpiredInSecond
+    {
         get
         {
             var expiredAfter = ExpiredAfter;

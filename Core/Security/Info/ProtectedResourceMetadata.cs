@@ -216,6 +216,7 @@ public class ProtectedResourceMetadataResponse
             {
                 var col2 = BearerMethods;
                 if (col2 is null) BearerMethods = col;
+                else col = col2;
             }
         }
 
@@ -240,6 +241,7 @@ public class ProtectedResourceMetadataResponse
             {
                 var col2 = DPoPSigningAlgorithms;
                 if (col2 is null) DPoPSigningAlgorithms = col;
+                else col = col2;
             }
         }
 
@@ -264,6 +266,7 @@ public class ProtectedResourceMetadataResponse
             {
                 var col2 = SigningAlgorithms;
                 if (col2 is null) SigningAlgorithms = col;
+                else col = col2;
             }
         }
 
@@ -287,10 +290,36 @@ public class ProtectedResourceMetadataResponse
             {
                 var col2 = TokenFormats;
                 if (col2 is null) TokenFormats = col;
+                else col = col2;
             }
         }
 
         if (!col.Contains("jwt")) col.Add("jwt");
+    }
+
+    /// <summary>
+    /// Adds the item of scope.
+    /// </summary>
+    /// <param name="scope">The scope.</param>
+    public void AddScope(string scope)
+    {
+        var col = Scopes;
+        if (col is null)
+        {
+            col = new();
+            if (Scopes is null)
+            {
+                Scopes = col;
+            }
+            else
+            {
+                var col2 = Scopes;
+                if (col2 is null) Scopes = col;
+                else col = col2;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(scope) && !col.Contains(scope)) col.Add(scope);
     }
 
     /// <summary>
@@ -873,5 +902,30 @@ public class AuthorizationServerMetadataResponse
         var jwt = new JsonWebToken<T>(payload, sign);
         SetSignedMetadata(jwt);
         return jwt;
+    }
+
+    /// <summary>
+    /// Adds the item of scope.
+    /// </summary>
+    /// <param name="scope">The scope.</param>
+    public void AddScope(string scope)
+    {
+        var col = Scopes;
+        if (col is null)
+        {
+            col = new();
+            if (Scopes is null)
+            {
+                Scopes = col;
+            }
+            else
+            {
+                var col2 = Scopes;
+                if (col2 is null) Scopes = col;
+                else col = col2;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(scope) && !col.Contains(scope)) col.Add(scope);
     }
 }

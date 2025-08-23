@@ -329,6 +329,7 @@ public class QueryData : StringKeyValuePairs
     /// <returns>A query string.</returns>
     public string ToString(string url, Encoding encoding = null)
     {
+        if (url == null) return null;
         var qIndex = url.IndexOf("?");
         var str = new StringBuilder(url);
         if (qIndex >= 0)

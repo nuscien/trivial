@@ -382,6 +382,17 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     }
 
     /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotEmpty(string key, string value)
+    {
+        if (string.IsNullOrEmpty(value)) return;
+        Add(key, value, true);
+    }
+
+    /// <summary>
     /// Encodes the key.
     /// </summary>
     /// <param name="key">The key.</param>
