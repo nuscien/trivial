@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -33,6 +34,7 @@ namespace Trivial.Net;
 /// }
 /// </code>
 /// </example>
+[Guid("60135861-0DC5-4766-80A7-556152860DD9")]
 public class ServerSentEventInfo
 {
     private readonly Dictionary<string, string> dict = new();

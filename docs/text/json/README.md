@@ -53,10 +53,27 @@ json.Remove("prop-e");
 has = json.ContainsKey("prop-e"); // false
 ```
 
-At last, you can write to an instance of `System.Text.Json.Utf8JsonWriter` by `WriteTo` member method or get the JSON format string by `ToString` member method.
+## Serialization
+
+You can write to an instance of `System.Text.Json.Utf8JsonWriter` by `WriteTo` member method or get the JSON format string by `ToString` member method.
 
 ```csharp
 var jsonStr = json.ToString(IndentStyles.Compact); // "{ \"prop-a\": 5678, … }"
+```
+
+Call `JsonObjectNode.Parse` to deserialize a JSON format string or its UTF-8 stream to the node object.
+
+```csharp
+json = JsonObjectNode.Parse(jsonStr);
+```
+
+If you have a class to deserialize from the JSON object node, call its `Deserialize` member method.
+Or call `ConvertFrom` static method to convert a class to JSON object node back.
+
+You can also get the YAML string.
+
+```csharp
+var yaml = json.ToYamlString();
 ```
 
 ## JSON access in thread-safe

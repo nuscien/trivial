@@ -457,6 +457,11 @@ public abstract class JsonRpcRequestHandler
     }
 
     /// <summary>
+    /// Gets or sets the schema of input parameter.
+    /// </summary>
+    public BaseJsonNodeSchemaDescription InputSchema { get; protected set; }
+
+    /// <summary>
     /// Gets or sets the description of the handler.
     /// </summary>
     public string Description { get; protected set; }

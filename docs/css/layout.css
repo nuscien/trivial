@@ -23,7 +23,7 @@ code, code a, code span {
     font-family: "Cascadia Code", "Consolas", "Segoe UI", "Microsoft Yahei", "Microsoft JhengHei", "Tahoma", "Helvetica Neue", "Arial", "Geneva", "Verdana", sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 }
 body > header > section, body > footer > section {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     box-sizing: content-box;
     position: relative;
@@ -66,8 +66,7 @@ body > header:first-child > section:first-child > h1 {
     vertical-align: top;
     user-select: none;
 }
-body > header:first-child > section:first-child > h1 > a:first-child > strong:first-child + span,
-body > header:first-child > section:first-child > h1 > strong:first-child + span {
+body > header:first-child > section:first-child > h1 > a:first-child > strong:first-child + span {
     font-weight: lighter;
 }
 body > header:first-child > section:first-child > h1 + ul {
@@ -97,9 +96,7 @@ body > header:first-child > section:first-child > h1 + ul > li {
     vertical-align: top;
 }
 body > header:first-child > section:first-child a,
-body > header:first-child > section:first-child a:visited,
-body > header:first-child > section:first-child > h1 > strong,
-body > header:first-child > section:first-child > h1 > span {
+body > header:first-child > section:first-child a:visited {
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     transition: 0.6s;
@@ -110,6 +107,7 @@ body > header:first-child > section:first-child > h1 + ul > li > a:visited {
     line-height: 52px;
     padding: 0 16px;
     margin: 0;
+    border: 0 none transparent;
     border-radius: 4px;
     display: inline-block;
     vertical-align: top;
@@ -117,7 +115,7 @@ body > header:first-child > section:first-child > h1 + ul > li > a:visited {
 body > header:first-child > section:first-child > h1 + ul > li.state-sel > a,
 body > header:first-child > section:first-child > h1 + ul > li.state-sel > a:visited {
     color: #EEE;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     text-shadow: rgba(192, 240, 255, 0.6) 0 0 10px;
 }
 body > header:first-child > section:first-child a:hover {
@@ -151,13 +149,19 @@ body > header:first-child + header {
     }
     body > header:first-child > section:first-child > h1 + ul > li > a,
     body > header:first-child > section:first-child > h1 + ul > li > a:visited {
-        padding: 0 10px;
+        line-height: 48px;
+        padding: 0 10px 2px 10px;
+        margin: 2px 0 0 0;
+        border-radius: 8px 8px 0 0;
+    }
+    body > header:first-child > section:first-child > h1 + ul > li.state-sel > a,
+    body > header:first-child > section:first-child > h1 + ul > li.state-sel > a:visited {
+        background-color: #222;
     }
 }
 
 /* Footer */
 body > section + footer,
-body > main + footer,
 body > script + footer {
     height: 340px;
     margin: 0;
@@ -165,9 +169,6 @@ body > script + footer {
     background-image: url(../images/bg/bottom.jpg);
     background-position: center;
     background-repeat: no-repeat;
-}
-body > main + footer {
-    margin-top: 80px;
 }
 body > footer > section > div.x-copyright {
     width: 275px;
@@ -200,13 +201,29 @@ body > section > section,
 body > section > h1,
 body > section > h2,
 body > section > h3,
-body > main {
-    font-weight: normal;
-    max-width: 1000px;
+body > section > h4 {
+    max-width: 1200px;
     padding: 0;
     margin: 20px auto;
     position: relative;
     box-sizing: content-box;
+}
+body > section > h1,
+body > section > h2 {
+    color: #D3D3D3;
+    font-weight: 200;
+}
+body > section > h1,
+body > section > h2,
+body > section > h3,
+body > section > h4 {
+    cursor: default;
+    user-select: none;
+}
+body > section > section,
+body > section > h3,
+body > section > h4 {
+    font-weight: normal;
 }
 body > section > h1, body > section > section > h1 {
     font-size: 24px;
@@ -216,58 +233,93 @@ body > section > h2, body > section > section > h2 {
     font-size: 20px;
     line-height: 28px;
 }
-body > section > h3, body > section > section > h3 {
-    font-size: 18px;
-    line-height: 24px;
-}
 body > section > h3 {
     font-size: 16px;
     font-weight: bolder;
     font-style: normal;
     line-height: 30px;
     margin: 0;
-    cursor: default;
+}
+body > section > section > h3 {
+    font-size: 18px;
+    line-height: 24px;
 }
 body > section > h3 > svg, body > section > h3 > span, body > section > h3 > a {
     vertical-align: middle;
+}
+body > section > h4, body > section > section > h4 {
+    font-size: 16px;
+    line-height: 24px;
 }
 body > section > ul, body > section > ul > li {
     background-color: transparent;
 }
 
 /* Links */
-a.link-tile-wide, a.link-tile-wide:visited {
+a.link-tile-wide, a.link-tile-wide:visited,
+a.link-long-button, a.link-long-button:visited,
+a.link-button-normal, a.link-button-normal:visited,
+section.link-tile-wide > a, section.link-tile-wide > a:visited,
+button.link-button-normal, button.link-button-normal:visited {
     color: #CCC;
-    font-size: 18px;
     text-decoration: none;
-    line-height: 24px;
-    width: 190px;
-    background-color: #282828;
-    padding: 24px;
-    margin: 0 4px 4px 0;
-    border: 1px solid #333;
+    background-color: rgba(127, 127, 127, 0.06);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(127, 127, 127, 0.16) rgba(127, 127, 127, 0.08) rgba(127, 127, 127, 0.08) rgba(127, 127, 127, 0.08);
     border-radius: 4px;
-    display: inline-block;
+    cursor: pointer;
+    transition: 0.4s;
 }
-a.link-tile-wide.grouping-more, a.link-tile-wide.grouping-more:visited {
-    width: 60px;
-    text-align: center; 
-}
-a.link-tile-wide:hover {
+a.link-tile-wide:hover, a.link-long-button:hover, a.link-button-normal:hover,
+section.link-tile-wide > a:hover, button.link-button-normal:hover {
     color: #EEE;
     text-decoration: none;
     background-color: #333;
-    border-color: #555;
+    border-width: 1px;
+    border-color: rgba(127, 127, 127, 0.4) rgba(127, 127, 127, 0.3) rgba(127, 127, 127, 0.3) rgba(127, 127, 127, 0.3);
     box-shadow: #111 1px 1px 4px;
+    transition: 0.1s;
 }
-a.link-tile-wide:active {
+a.link-tile-wide:active, a.link-long-button:active, a.link-button-normal:active,
+section.link-tile-wide > a:active, button.link-button-normal:active {
     color: #9EF;
-    background-color: #282828;
+    background-color: rgba(127, 127, 127, 0.08);
     text-decoration: none;
-    border-color: #444;
+    border-width: 1px;
+    border-color: rgba(127, 127, 127, 0.2) rgba(127, 127, 127, 0.2) rgba(127, 127, 127, 0.3) rgba(127, 127, 127, 0.2);
     box-shadow: #111 0 0 4px;
+    transition: 0.1s;
 }
-a.link-tile-wide > img {
+a.link-tile-wide:focus-visible, a.link-long-button:focus-visible, a.link-button-normal:focus-visible,
+section.link-tile-wide > a:focus-visible, button.link-button-normal:focus-visible {
+    outline: 2px solid rgba(102, 221, 255, 0.7);
+    outline-offset: 1px;
+    transition: 0.1s;
+}
+a.link-tile-wide, a.link-tile-wide:visited, section.link-tile-wide > a, section.link-tile-wide > a:visited {
+    font-size: 18px;
+    line-height: 24px;
+    padding: 24px;
+    margin: 0 4px 4px 0;
+}
+a.link-tile-wide, a.link-tile-wide:visited {
+    width: 190px;
+    margin: 0 4px 4px 0;
+    display: inline-block;
+}
+section.link-tile-wide > a, section.link-tile-wide > a:visited {
+    width: auto;
+    margin: 0;
+    display: block;
+}
+a.link-tile-wide:hover, section.link-tile-wide > a:hover {
+    padding: 22px 24px 26px 24px;
+}
+a.link-tile-wide:active, section.link-tile-wide > a:active {
+    padding: 24px;
+}
+a.link-tile-wide > img, section.link-tile-wide > a > img {
     width: 24px;
     height: 24px;
     padding: 0;
@@ -275,7 +327,8 @@ a.link-tile-wide > img {
     vertical-align: middle;
     display: inline-block;
 }
-a.link-tile-wide > svg, a.link-tile-wide:visited > svg {
+a.link-tile-wide > svg, a.link-tile-wide:visited > svg,
+section.link-tile-wide > a > svg, section.link-tile-wide > a:visited > svg {
     fill: #CCC;
     width: 24px;
     height: 24px;
@@ -284,66 +337,50 @@ a.link-tile-wide > svg, a.link-tile-wide:visited > svg {
     vertical-align: middle;
     display: inline-block;
 }
-a.link-tile-wide:hover > svg {
+a.link-tile-wide:hover > svg, section.link-tile-wide > a:hover > svg {
     fill: #EEE;
 }
-a.link-tile-wide:active > svg {
+a.link-tile-wide:active > svg, section.link-tile-wide > a:active > svg {
     fill: #9EF;
 }
-a.link-tile-wide > span {
+a.link-tile-wide > span, section.link-tile-wide > a > span {
     line-height: 24px;
     vertical-align: middle;
     display: inline-block;
 }
+section.link-tile-wide {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 4px;
+    column-gap: 4px;
+}
+a.link-tile-wide.grouping-more, a.grouping-more:visited,
+section.link-tile-wide > a.grouping-more,
+section.link-tile-wide > a.grouping-more:visited {
+    width: 80px;
+    text-align: center; 
+}
+a.link-button-normal, a.link-button-normal:visited,
+button.link-button-normal, button.link-button-normal:visited {
+    padding: 7px 15px;
+    display: inline-block;
+}
 a.link-long-button, a.link-long-button:visited {
-    color: #CCC;
     font-size: 18px;
-    text-decoration: none;
     line-height: 20px;
-    background-color: #282828;
     padding: 24px;
     margin: 0 0 8px 0;
-    border: 1px solid #333;
-    border-radius: 4px;
     display: block;
 }
-a.link-line-button, a.link-line-button:visited {
-    color: #CCC;
-    font-size: 18px;
-    text-decoration: none;
-    line-height: 20px;
-    background-color: #282828;
-    padding: 12px 24px;
-    margin: 0 0 8px 0;
-    border: 1px solid #333;
-    border-radius: 4px;
-    display: block;
+a.link-long-button:hover {
+    padding: 22px 24px 26px 24px;
 }
-a.link-long-button:hover, a.link-line-button:hover {
-    color: #EEE;
-    text-decoration: none;
-    background-color: #333;
-    border-color: #555;
-    box-shadow: #111 1px 1px 4px;
-}
-a.link-long-button:active, a.link-line-button:active {
-    color: #9EF;
-    background-color: #282828;
-    text-decoration: none;
-    border-color: #444;
-    box-shadow: #111 0 0 4px;
+a.link-long-button:active {
+    padding: 24px;
 }
 a.link-long-button > img {
     width: 24px;
     height: 24px;
-    padding: 0;
-    margin: 0 8px 0 0;
-    vertical-align: middle;
-    display: inline-block;
-}
-a.link-line-button > img {
-    width: 16px;
-    height: 16px;
     padding: 0;
     margin: 0 8px 0 0;
     vertical-align: middle;
@@ -358,19 +395,10 @@ a.link-long-button > svg, a.link-long-button:visited > svg {
     vertical-align: middle;
     display: inline-block;
 }
-a.link-line-button > svg, a.link-line-button:visited > svg {
-    fill: #CCC;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    margin: 0 8px 0 0;
-    vertical-align: middle;
-    display: inline-block;
-}
-a.link-long-button:hover > svg, a.link-line-button:hover > svg {
+a.link-long-button:hover > svg {
     fill: #EEE;
 }
-a.link-long-button:active > svg, a.link-line-button:active > svg {
+a.link-long-button:active > svg {
     fill: #9EF;
 }
 a.link-long-button > span {
@@ -378,26 +406,100 @@ a.link-long-button > span {
     vertical-align: middle;
     display: inline-block;
 }
-a.link-line-button > span {
-    line-height: 20px;
-}
-a.link-long-button > span > span, a.link-tile-wide > span > span, a.link-line-button > span > span {
+a.link-long-button > span > span, a.link-tile-wide > span > span, section.link-tile-wide > a > span > span {
     color: #888;
     font-size: 16px;
     transition: 0.4s;
 }
-a.link-long-button:hover > span > span, a.link-tile-wide:hover > span > span, a.link-line-button:hover > span > span {
+a.link-long-button:hover > span > span, a.link-tile-wide:hover > span > span {
     color: #999;
 }
+@media screen and (max-width:1030px) {
+    section.link-tile-wide {
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 4px;
+    }
+}
 @media screen and (max-width:800px) {
+    section.link-tile-wide {
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 4px;
+    }
+}
+@media screen and (max-width:600px) {
     a.link-tile-wide, a.link-tile-wide:visited {
         width: auto;
         margin: 0 0 4px 0;
         display: block;
     }
-    a.link-tile-wide.grouping-more, a.link-tile-wide.grouping-more:visited {
-        width: 80px;
-        padding: 16px;
-        text-align: center; 
+    section.link-tile-wide {
+        grid-template-columns: 1fr;
+        column-gap: 0;
     }
+    a.link-tile-wide.grouping-more, a.link-tile-wide.grouping-more:visited,
+    section.link-tile-wide > a.grouping-more,
+    section.link-tile-wide > a.grouping-more:visited {
+        padding: 16px;
+    }
+    a.link-tile-wide.grouping-more:hover,
+    section.link-tile-wide > a.grouping-more:hover {
+        padding: 14px 16px 18px 16px;
+    }
+    a.link-tile-wide.grouping-more:active,
+    section.link-tile-wide > a.grouping-more:active {
+        padding: 16px;
+    }
+}
+
+/* Link list */
+ul.link-tile-compact {
+    padding: 0;
+    margin: 0;
+    float: none;
+}
+ul.link-tile-compact > li {
+    font-size: 16px;
+    padding: 0;
+    margin: 4px 0;
+}
+ul.link-tile-compact > li.grouping-header {
+    color: #999;
+    padding: 0 20px;
+    cursor: default;
+    user-select: none;
+}
+ul.link-tile-compact > li + li.grouping-header {
+    padding-top: 20px;
+}
+ul.link-tile-compact > li > a, ul.link-tile-compact > li > a:visited {
+    color: #CCC;
+    line-height: 38px;
+    background-color: #282828;
+    padding: 0 19px;
+    margin: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(127, 127, 127, 0.16) rgba(127, 127, 127, 0.08) rgba(127, 127, 127, 0.08) rgba(127, 127, 127, 0.08);
+    border-radius: 4px;
+    border-radius: 4px;
+    display: block;
+    transition: 0.6s;
+}
+ul.link-tile-compact > li > a:hover {
+    color: #9EF;
+    background-color: #333;
+    padding: 0 17px;
+    border-color: rgba(127, 127, 127, 0.4);
+    text-decoration: none;
+    transition: 0.1s;
+    box-shadow: #111 1px 1px 4px;
+}
+ul.link-tile-compact > li > a:active {
+    color: #8CE;
+    background-color: #222;
+    padding: 0 19px;
+    border-color: rgba(127, 127, 127, 0.2) rgba(127, 127, 127, 0.2) rgba(127, 127, 127, 0.3) rgba(127, 127, 127, 0.2);
+    text-decoration: none;
+    transition: 0.1s;
+    box-shadow: #111 0 0 4px;
 }

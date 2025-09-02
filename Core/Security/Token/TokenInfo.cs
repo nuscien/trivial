@@ -213,6 +213,19 @@ public class TokenInfo
     /// Initializes a new instance of the TokenInfo class.
     /// </summary>
     /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="idToken">The ID token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, string refreshToken, JsonWebToken<JsonObjectNode> idToken, IEnumerable<string> scope = null)
+        : this(jwt, refreshToken, scope)
+    {
+        IdToken = idToken?.ToEncodedString();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
     /// <param name="scope">The permission scope.</param>
     public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, IEnumerable<string> scope = null)
         : this(jwt, null, scope)
@@ -263,6 +276,19 @@ public class TokenInfo
         UserId = jwt.Payload.TryGetStringTrimmedValue("sub", true);
         var expiration = jwt.Payload.TryGetDateTimeValue("exp", true);
         if (expiration.HasValue) ExpiredAfter = expiration - DateTime.Now;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the TokenInfo class.
+    /// </summary>
+    /// <param name="jwt">The JSON web token used to generate access token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
+    /// <param name="idToken">The ID token.</param>
+    /// <param name="scope">The permission scope.</param>
+    public TokenInfo(JsonWebToken<JsonObjectNode> jwt, string refreshToken, JsonWebToken<JsonObjectNode> idToken, IEnumerable<string> scope = null)
+        : this(jwt, refreshToken, scope)
+    {
+        IdToken = idToken?.ToEncodedString();
     }
 
     /// <summary>
