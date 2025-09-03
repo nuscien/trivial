@@ -20,7 +20,7 @@ a:active {
     text-decoration: underline;
 }
 code, code a, code span {
-    font-family: "Cascadia Code", "Consolas", "Segoe UI", "Microsoft Yahei", "Microsoft JhengHei", "Tahoma", "Helvetica Neue", "Arial", "Geneva", "Verdana", sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: "Cascadia Code", "Consolas", "Segoe UI", "Microsoft Yahei", "Microsoft JhengHei", monospace, "Tahoma", "Helvetica Neue", "Arial", "Geneva", "Verdana", sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
 }
 body > header > section, body > footer > section {
     max-width: 1200px;
@@ -34,7 +34,7 @@ body > section > section a, body > section > section a:visited {
 body > section > section a:active, body > section > section a:hover {
     transition: 0.1s;
 }
-body > section, body > header, body > footer {
+body > section, body > main, body > header, body > footer {
     padding: 0 20px;
 }
 
@@ -104,10 +104,12 @@ body > header:first-child > section:first-child a:visited {
 }
 body > header:first-child > section:first-child > h1 + ul > li > a,
 body > header:first-child > section:first-child > h1 + ul > li > a:visited {
-    line-height: 52px;
-    padding: 0 16px;
+    line-height: 50px;
+    padding: 0 15px;
     margin: 0;
-    border: 0 none transparent;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
     border-radius: 4px;
     display: inline-block;
     vertical-align: top;
@@ -119,12 +121,12 @@ body > header:first-child > section:first-child > h1 + ul > li.state-sel > a:vis
     text-shadow: rgba(192, 240, 255, 0.6) 0 0 10px;
 }
 body > header:first-child > section:first-child a:hover {
-    color: rgba(64, 192, 255, 1);
+    color: #9EF;
     text-decoration: underline;
     transition: 0.1s;
 }
 body > header:first-child > section:first-child a:active {
-    color: rgba(64, 192, 255, 0.7);
+    color: #8CE;
     text-decoration: none;
     transition: 0.1s;
 }
@@ -141,6 +143,8 @@ body > header:first-child + header {
         display: block;
     }
     body > header:first-child > section:first-child > h1 + ul {
+        background-image: url(../images/bg/title-menu.jpg);
+        background-repeat: repeat-x;
         height: 52px;
         max-width: none;
         padding: 0 10px;
@@ -149,18 +153,20 @@ body > header:first-child + header {
     }
     body > header:first-child > section:first-child > h1 + ul > li > a,
     body > header:first-child > section:first-child > h1 + ul > li > a:visited {
-        line-height: 48px;
-        padding: 0 10px 2px 10px;
+        line-height: 46px;
+        padding: 0 9px 2px 9px;
         margin: 2px 0 0 0;
         border-radius: 8px 8px 0 0;
     }
     body > header:first-child > section:first-child > h1 + ul > li.state-sel > a,
     body > header:first-child > section:first-child > h1 + ul > li.state-sel > a:visited {
         background-color: #222;
+        border-color: #393939 #363636 #222222 #363636;
     }
 }
 
 /* Footer */
+body > main + footer,
 body > section + footer,
 body > script + footer {
     height: 340px;
@@ -197,6 +203,7 @@ body > footer > section > div.x-copyright > img:first-child + span {
 }
 
 /* Body */
+body > main,
 body > section > section,
 body > section > h1,
 body > section > h2,
