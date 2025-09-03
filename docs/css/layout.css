@@ -135,7 +135,7 @@ body > header:first-child + header {
 }
 @media screen and (max-width:800px) {
     body > header:first-child {
-        height: 112px;
+        height: 110px;
         padding: 0;
     }
     body > header:first-child > section:first-child > h1 {
@@ -145,7 +145,7 @@ body > header:first-child + header {
     body > header:first-child > section:first-child > h1 + ul {
         background-image: url(../images/bg/title-menu.jpg);
         background-repeat: repeat-x;
-        height: 52px;
+        height: 50px;
         max-width: none;
         padding: 0 10px;
         display: block;
@@ -153,8 +153,8 @@ body > header:first-child + header {
     }
     body > header:first-child > section:first-child > h1 + ul > li > a,
     body > header:first-child > section:first-child > h1 + ul > li > a:visited {
-        line-height: 46px;
-        padding: 0 9px 2px 9px;
+        line-height: 44px;
+        padding: 0 9px 3px 9px;
         margin: 2px 0 0 0;
         border-radius: 8px 8px 0 0;
     }
@@ -210,10 +210,16 @@ body > section > h2,
 body > section > h3,
 body > section > h4 {
     max-width: 1200px;
-    padding: 0;
     margin: 20px auto;
     position: relative;
     box-sizing: content-box;
+}
+body > section > section,
+body > section > h1,
+body > section > h2,
+body > section > h3,
+body > section > h4 {
+    padding: 0;
 }
 body > section > h1,
 body > section > h2 {
