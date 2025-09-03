@@ -1,0 +1,10 @@
+body {
+    background-image: url(../images/bg/title-shadow.png);
+    background-position: center 60px;
+    background-repeat: no-repeat;
+}
+@media screen and (max-width:800px) {
+    body {
+        background-image: none;
+    }
+}
