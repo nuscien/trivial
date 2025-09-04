@@ -122,12 +122,12 @@ body > header:first-child > section:first-child > h1 + ul > li.state-sel > a:vis
 }
 body > header:first-child > section:first-child a:hover {
     color: #9EF;
-    text-decoration: underline;
+    text-decoration: underline dashed;
     transition: 0.1s;
 }
 body > header:first-child > section:first-child a:active {
     color: #8CE;
-    text-decoration: none;
+    text-decoration: underline dotted;
     transition: 0.1s;
 }
 body > header:first-child + header {
