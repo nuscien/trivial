@@ -111,6 +111,24 @@ public static partial class ColorCalculator
     public static IEnumerable<Color> Lighten(IEnumerable<Color> value, float ratio)
         => value?.Select(ele => Lighten(ele, ratio));
 
+#if NETFRAMEWORK
+    /// <summary>
+    /// Increases brighness.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The brightness ratio to increase. Value is from -1 to 1.</param>
+    public static void Lighten(Bitmap value, double ratio)
+        => Filter(value, Lighten, ratio);
+
+    /// <summary>
+    /// Increases brighness.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The brightness ratio to increase. Value is from -1 to 1.</param>
+    public static void Lighten(Bitmap value, float ratio)
+        => Filter(value, Lighten, ratio);
+#endif
+
     /// <summary>
     /// Decreases brighness.
     /// </summary>
@@ -146,6 +164,24 @@ public static partial class ColorCalculator
     /// <returns>The color after darken.</returns>
     public static IEnumerable<Color> Darken(IEnumerable<Color> value, float ratio)
         => value?.Select(ele => Darken(ele, ratio));
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Decreases brighness.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The brightness ratio to decrease. Value is from -1 to 1.</param>
+    public static void Darken(Bitmap value, double ratio)
+        => Filter(value, Darken, ratio);
+
+    /// <summary>
+    /// Decreases brighness.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The brightness ratio to decrease. Value is from -1 to 1.</param>
+    public static void Darken(Bitmap value, float ratio)
+        => Filter(value, Darken, ratio);
+#endif
 
     /// <summary>
     /// Toggles brightness between light mode and dark mode.
@@ -221,5 +257,22 @@ public static partial class ColorCalculator
     /// <param name="level">The relative saturation level.</param>
     /// <returns>The color toggled.</returns>
     public static IEnumerable<Color> ToggleBrightness(IEnumerable<Color> value, RelativeBrightnessLevels level)
-        => value?.Select(ele => ToggleBrightness(ele));
+        => value?.Select(ele => ToggleBrightness(ele, level));
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Toggles brightness between light mode and dark mode.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    public static void ToggleBrightness(Bitmap value)
+        => Filter(value, ToggleBrightness);
+
+    /// <summary>
+    /// Toggles brightness between light mode and dark mode.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="level">The relative saturation level.</param>
+    public static void ToggleBrightness(Bitmap value, RelativeBrightnessLevels level)
+        => Filter(value, ToggleBrightness, level);
+#endif
 }

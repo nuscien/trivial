@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -608,6 +609,44 @@ public static partial class ColorCalculator
 
     #endregion
     #region Helpers
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Gets the color collection from a bitmap image.
+    /// By left to right, then top to bottom.
+    /// </summary>
+    /// <param name="value">The bitmap image.</param>
+    /// <returns>A sequence of color in the bitmap image.</returns>
+    public static IEnumerable<Color> ToColorCollection(Bitmap value)
+    {
+        if (value == null) yield break;
+        for (var x = 0; x < value.Width; x++)
+        {
+            for (var y = 0; y < value.Height; y++)
+            {
+                Color c;
+                try
+                {
+                    c = value.GetPixel(x, y);
+                }
+                catch (ArgumentException)
+                {
+                    continue;
+                }
+                catch (InvalidOperationException)
+                {
+                    continue;
+                }
+                catch (ExternalException)
+                {
+                    continue;
+                }
+
+                yield return c;
+            }
+        }
+    }
+#endif
 
     private static float TryGetSingleFromMulti(JsonObjectNode node, string keyA, string keyB, string keyC, string keyD, string keyE, float defaultValue)
     {

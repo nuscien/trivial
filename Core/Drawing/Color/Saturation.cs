@@ -89,24 +89,6 @@ public static partial class ColorCalculator
     /// Adds saturate filter.
     /// </summary>
     /// <param name="value">The source color value collection.</param>
-    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
-    /// <returns>A new color with additional saturation.</returns>
-    public static IEnumerable<Color> Saturate(IEnumerable<Color> value, double ratio)
-        => value?.Select(ele => Saturate(ele, ratio));
-
-    /// <summary>
-    /// Adds saturate filter.
-    /// </summary>
-    /// <param name="value">The source color value collection.</param>
-    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
-    /// <returns>A new color with additional saturation.</returns>
-    public static IEnumerable<Color> Saturate(IEnumerable<Color> value, float ratio)
-        => value?.Select(ele => Saturate(ele, ratio));
-
-    /// <summary>
-    /// Adds saturate filter.
-    /// </summary>
-    /// <param name="value">The source color value collection.</param>
     /// <param name="level">The relative saturation level.</param>
     /// <returns>A new color with high saturation.</returns>
     public static Color Saturate(Color value, RelativeSaturationLevels level)
@@ -198,10 +180,54 @@ public static partial class ColorCalculator
     /// Adds saturate filter.
     /// </summary>
     /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
+    /// <returns>A new color with additional saturation.</returns>
+    public static IEnumerable<Color> Saturate(IEnumerable<Color> value, double ratio)
+        => value?.Select(ele => Saturate(ele, ratio));
+
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
+    /// <returns>A new color with additional saturation.</returns>
+    public static IEnumerable<Color> Saturate(IEnumerable<Color> value, float ratio)
+        => value?.Select(ele => Saturate(ele, ratio));
+
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
     /// <param name="level">The relative saturation level.</param>
     /// <returns>A new color with additional saturation.</returns>
     public static IEnumerable<Color> Saturate(IEnumerable<Color> value, RelativeSaturationLevels level)
         => value?.Select(ele => Saturate(ele, level));
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
+    public static void Saturate(Bitmap value, double ratio)
+        => Filter(value, Saturate, ratio);
+
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
+    public static void Saturate(Bitmap value, float ratio)
+        => Filter(value, Saturate, ratio);
+
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="level">The relative saturation level.</param>
+    public static void Saturate(Bitmap value, RelativeSaturationLevels level)
+        => Filter(value, Saturate, level);
+#endif
 
     private static int Saturate(byte channel, byte high, byte low, byte diff, float ratio)
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -316,13 +317,34 @@ public static partial class ColorCalculator
     /// <param name="b">The base bitmap.</param>
     /// <returns>A new bitmap mixed.</returns>
     public static Bitmap Mix(ColorMixTypes type, Bitmap a, Bitmap b)
+        => Mix(Mix, type, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="level">The relative saturation level.</param>
+    /// <param name="a">The blend color.</param>
+    /// <param name="b">The base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static Bitmap Mix(RelativeSaturationLevels level, Bitmap a, Bitmap b)
+        => Mix(Mix, level, a, b);
+
+    /// <summary>
+    /// Mixes bitmaps.
+    /// </summary>
+    /// <param name="merge">The handler of color merge.</param>
+    /// <param name="args">The arguments of color merge.</param>
+    /// <param name="a">The blend bitmap.</param>
+    /// <param name="b">The base bitmap.</param>
+    /// <returns>A new bitmap mixed.</returns>
+    private static Bitmap Mix<T>(Func<T, Color, Color, Color> merge, T args, Bitmap a, Bitmap b)
     {
-        int x, y;
         if (a == null || b == null) return null;
         var w = Math.Max(a.Width, b.Width);
         var h = Math.Max(a.Height, b.Height);
         var n = new Bitmap(w, h);
-        for (x = 0; x < w; x++)
+        int y;
+        for (var x = 0; x < w; x++)
         {
             if (x < a.Width && x < b.Width)
             {
@@ -332,7 +354,7 @@ public static partial class ColorCalculator
                     {
                         var c = a.GetPixel(x, y);
                         var d = b.GetPixel(x, y);
-                        n.SetPixel(x, y, Mix(type, c, d));
+                        n.SetPixel(x, y, merge(args, c, d));
                     }
                     else if (y < a.Height)
                     {

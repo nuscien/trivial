@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -128,6 +129,65 @@ public static partial class ColorCalculator
     public static IEnumerable<Color> Opacity(IEnumerable<Color> value, byte alpha, bool resetOriginalAlpha)
         => value?.Select(ele => Opacity(ele, alpha, resetOriginalAlpha));
 
+#if NETFRAMEWORK
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static void Opacity(Bitmap value, double alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static void Opacity(Bitmap value, float alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static void Opacity(Bitmap value, byte alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static void Opacity(Bitmap value, double alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static void Opacity(Bitmap value, float alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static void Opacity(Bitmap value, byte alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+#endif
+
     /// <summary>
     /// Creates a new color by set a channel to a given color.
     /// </summary>
@@ -235,6 +295,31 @@ public static partial class ColorCalculator
     public static IEnumerable<Color> Invert(IEnumerable<Color> value, float ratio)
         => value?.Select(ele => Invert(ele, ratio));
 
+#if NETFRAMEWORK
+    /// <summary>
+    /// Inverts RGB.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    public static void Invert(Bitmap value)
+        => Filter(value, Invert);
+
+    /// <summary>
+    /// Inverts RGB.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The ratio to change. Value is from 0 to 1.</param>
+    public static void Invert(Bitmap value, double ratio)
+        => Filter(value, Invert, ratio);
+
+    /// <summary>
+    /// Inverts RGB.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="ratio">The ratio to change. Value is from 0 to 1.</param>
+    public static void Invert(Bitmap value, float ratio)
+        => Filter(value, Invert, ratio);
+#endif
+
     /// <summary>
     /// Rotates hue.
     /// </summary>
@@ -323,6 +408,40 @@ public static partial class ColorCalculator
     /// <returns>A new color with hue rotation.</returns>
     public static IEnumerable<Color> RotateHue(IEnumerable<Color> value, float amount)
         => value?.Select(ele => RotateHue(ele, amount));
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Rotates hue.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+    public static void RotateHue(Bitmap value, byte amount)
+        => Filter(value, RotateHue, amount);
+
+    /// <summary>
+    /// Rotates hue.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+    public static void RotateHue(Bitmap value, int amount)
+        => Filter(value, RotateHue, amount);
+
+    /// <summary>
+    /// Rotates hue.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+    public static void RotateHue(Bitmap value, double amount)
+        => Filter(value, RotateHue, amount);
+
+    /// <summary>
+    /// Rotates hue.
+    /// </summary>
+    /// <param name="value">The source color value collection.</param>
+    /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+    public static void RotateHue(Bitmap value, float amount)
+        => Filter(value, RotateHue, amount);
+#endif
 
     /// <summary>
     /// Adjusts color balance.
@@ -423,6 +542,68 @@ public static partial class ColorCalculator
         => value?.Select(ele => ColorBalance(ele, channel, ratio));
 
     /// <summary>
+    /// Adjusts color balance.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="redRatio">The ratio to change for red channel. Value is from -1 to 1.</param>
+    /// <param name="greenRatio">The ratio to change for green channel. Value is from -1 to 1.</param>
+    /// <param name="blueRatio">The ratio to change for blue channel. Value is from -1 to 1.</param>
+    /// <returns>The color collection after color balance.</returns>
+    public static IEnumerable<Color> ColorBalance(IEnumerable<Color> value, double redRatio, double greenRatio, double blueRatio)
+        => value?.Select(ele => ColorBalance(ele, redRatio, greenRatio, blueRatio));
+
+    /// <summary>
+    /// Adjusts color balance.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="redRatio">The ratio to change for red channel. Value is from -1 to 1.</param>
+    /// <param name="greenRatio">The ratio to change for green channel. Value is from -1 to 1.</param>
+    /// <param name="blueRatio">The ratio to change for blue channel. Value is from -1 to 1.</param>
+    /// <returns>The color collection after color balance.</returns>
+    public static IEnumerable<Color> ColorBalance(IEnumerable<Color> value, float redRatio, float greenRatio, float blueRatio)
+        => value?.Select(ele => ColorBalance(ele, redRatio, greenRatio, blueRatio));
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Adjusts color balance.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="channel">The channel to set.</param>
+    /// <param name="ratio">The ratio to change. Value is from -1 to 1.</param>
+    public static void ColorBalance(Bitmap value, ColorChannels channel, double ratio)
+        => Filter(value, ColorBalance, channel, ratio);
+
+    /// <summary>
+    /// Adjusts color balance.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="channel">The channel to set.</param>
+    /// <param name="ratio">The ratio to change. Value is from -1 to 1.</param>
+    public static void ColorBalance(Bitmap value, ColorChannels channel, float ratio)
+        => Filter(value, ColorBalance, channel, ratio);
+
+    /// <summary>
+    /// Adjusts color balance.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="redRatio">The ratio to change for red channel. Value is from -1 to 1.</param>
+    /// <param name="greenRatio">The ratio to change for green channel. Value is from -1 to 1.</param>
+    /// <param name="blueRatio">The ratio to change for blue channel. Value is from -1 to 1.</param>
+    public static void ColorBalance(Bitmap value, double redRatio, double greenRatio, double blueRatio)
+        => Filter(value, ColorBalance, redRatio, greenRatio, blueRatio);
+
+    /// <summary>
+    /// Adjusts color balance.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="redRatio">The ratio to change for red channel. Value is from -1 to 1.</param>
+    /// <param name="greenRatio">The ratio to change for green channel. Value is from -1 to 1.</param>
+    /// <param name="blueRatio">The ratio to change for blue channel. Value is from -1 to 1.</param>
+    public static void ColorBalance(Bitmap value, float redRatio, float greenRatio, float blueRatio)
+        => Filter(value, ColorBalance, redRatio, greenRatio, blueRatio);
+#endif
+
+    /// <summary>
     /// Gets a collection.
     /// </summary>
     /// <param name="from">The color from.</param>
@@ -460,6 +641,173 @@ public static partial class ColorCalculator
 
         yield return to;
     }
+
+#if NETFRAMEWORK
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    public static void Filter(Bitmap value, Func<Color, Color> convert)
+    {
+        if (value == null) return;
+        for (var x = 0; x < value.Width; x++)
+        {
+            for (var y = 0; y < value.Height; y++)
+            {
+                try
+                {
+                    var color = value.GetPixel(x, y);
+                    color = convert(color);
+                    value.SetPixel(x, y, color);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (ExternalException)
+                {
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="args">The argument of color converter.</param>
+    public static void Filter<T>(Bitmap value, Func<Color, T, Color> convert, T args)
+    {
+        if (value == null) return;
+        for (var x = 0; x < value.Width; x++)
+        {
+            for (var y = 0; y < value.Height; y++)
+            {
+                try
+                {
+                    var color = value.GetPixel(x, y);
+                    color = convert(color, args);
+                    value.SetPixel(x, y, color);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (ExternalException)
+                {
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    public static void Filter<TA, TB>(Bitmap value, Func<Color, TA, TB, Color> convert, TA a, TB b)
+    {
+        if (value == null) return;
+        for (var x = 0; x < value.Width; x++)
+        {
+            for (var y = 0; y < value.Height; y++)
+            {
+                try
+                {
+                    var color = value.GetPixel(x, y);
+                    color = convert(color, a, b);
+                    value.SetPixel(x, y, color);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (ExternalException)
+                {
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument 2 of color converter.</param>
+    /// <param name="c">The argument 3 of color converter.</param>
+    public static void Filter<TA, TB, TC>(Bitmap value, Func<Color, TA, TB, TC, Color> convert, TA a, TB b, TC c)
+    {
+        if (value == null) return;
+        for (var x = 0; x < value.Width; x++)
+        {
+            for (var y = 0; y < value.Height; y++)
+            {
+                try
+                {
+                    var color = value.GetPixel(x, y);
+                    color = convert(color, a, b, c);
+                    value.SetPixel(x, y, color);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (ExternalException)
+                {
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument 2 of color converter.</param>
+    /// <param name="c">The argument 3 of color converter.</param>
+    /// <param name="d">The argument 4 of color converter.</param>
+    public static void Filter<TA, TB, TC, TD>(Bitmap value, Func<Color, TA, TB, TC, TD, Color> convert, TA a, TB b, TC c, TD d)
+    {
+        if (value == null) return;
+        for (var x = 0; x < value.Width; x++)
+        {
+            for (var y = 0; y < value.Height; y++)
+            {
+                try
+                {
+                    var color = value.GetPixel(x, y);
+                    color = convert(color, a, b, c, d);
+                    value.SetPixel(x, y, color);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (ExternalException)
+                {
+                }
+            }
+        }
+    }
+#endif
 
     private static int PlusChannel(ref float c, float delta)
     {
