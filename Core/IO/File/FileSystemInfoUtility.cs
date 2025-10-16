@@ -309,11 +309,11 @@ public static class FileSystemInfoUtility
     /// Gets the approximation string of the file size.
     /// </summary>
     /// <param name="size">The file size.</param>
-    /// <param name="unit">The unit.</param>
+    /// <param name="unit">The unit. Includes B, Byte, Bytes, K, KB, M, MB, G, GB, T, TB, P, PB, E, EB.</param>
     /// <returns>A string.</returns>
     public static string ToFileSizeString(ulong size, string unit = "B")
     {
-        if (unit == null) unit = string.Empty;
+        unit ??= string.Empty;
         switch (unit.Trim())
         {
             case "":

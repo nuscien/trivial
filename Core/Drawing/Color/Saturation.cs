@@ -60,14 +60,7 @@ public static partial class ColorCalculator
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     /// <returns>A new color with additional saturation.</returns>
     public static Color Saturate(Color value, double ratio)
-    {
-        if (double.IsNaN(ratio)) return value;
-        var (h, s, l) = ToHSL(value);
-        var saturate = s * ratio;
-        if (saturate < 0) saturate = 0;
-        else if (saturate > 1) saturate = 1;
-        return FromHSL(h, saturate, l);
-    }
+        => double.IsNaN(ratio) ? value : SaturateInternal(value, ratio);
 
     /// <summary>
     /// Adds saturate filter.
@@ -76,14 +69,7 @@ public static partial class ColorCalculator
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     /// <returns>A new color with additional saturation.</returns>
     public static Color Saturate(Color value, float ratio)
-    {
-        if (float.IsNaN(ratio)) return value;
-        var hsl = ToSingleHSL(value);
-        var saturate = hsl.Item2 * ratio;
-        if (saturate < 0) saturate = 0;
-        else if (saturate > 1) saturate = 1;
-        return FromHSL(hsl.Item1, saturate, hsl.Item3);
-    }
+        => float.IsNaN(ratio) ? value : SaturateInternal(value, ratio);
 
     /// <summary>
     /// Adds saturate filter.
@@ -183,7 +169,7 @@ public static partial class ColorCalculator
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     /// <returns>A new color with additional saturation.</returns>
     public static IEnumerable<Color> Saturate(IEnumerable<Color> value, double ratio)
-        => value?.Select(ele => Saturate(ele, ratio));
+        => double.IsNaN(ratio) ? value : value?.Select(ele => SaturateInternal(ele, ratio));
 
     /// <summary>
     /// Adds saturate filter.
@@ -192,7 +178,7 @@ public static partial class ColorCalculator
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     /// <returns>A new color with additional saturation.</returns>
     public static IEnumerable<Color> Saturate(IEnumerable<Color> value, float ratio)
-        => value?.Select(ele => Saturate(ele, ratio));
+        => float.IsNaN(ratio) ? value : value?.Select(ele => SaturateInternal(ele, ratio));
 
     /// <summary>
     /// Adds saturate filter.
@@ -210,7 +196,7 @@ public static partial class ColorCalculator
     /// <param name="value">The source color value collection.</param>
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     public static void Saturate(Bitmap value, double ratio)
-        => Filter(value, Saturate, ratio);
+        => Filter(value, SaturateInternal, ratio);
 
     /// <summary>
     /// Adds saturate filter.
@@ -218,7 +204,7 @@ public static partial class ColorCalculator
     /// <param name="value">The source color value collection.</param>
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     public static void Saturate(Bitmap value, float ratio)
-        => Filter(value, Saturate, ratio);
+        => Filter(value, SaturateInternal, ratio);
 
     /// <summary>
     /// Adds saturate filter.
@@ -321,5 +307,34 @@ public static partial class ColorCalculator
             ToChannel(value.R * ratio + gray * grayRatio),
             ToChannel(value.G * ratio + gray * grayRatio),
             ToChannel(value.B * ratio + gray * grayRatio));
+    }
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value.</param>
+    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
+    /// <returns>A new color with additional saturation.</returns>
+    private static Color SaturateInternal(Color value, double ratio)
+    {
+        var (h, s, l) = ToHSL(value);
+        var saturate = s * ratio;
+        if (saturate < 0) saturate = 0;
+        else if (saturate > 1) saturate = 1;
+        return FromHSL(h, saturate, l);
+    }
+
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
+    /// <param name="value">The source color value.</param>
+    /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
+    /// <returns>A new color with additional saturation.</returns>
+    private static Color SaturateInternal(Color value, float ratio)
+    {
+        var hsl = ToSingleHSL(value);
+        var saturate = hsl.Item2 * ratio;
+        if (saturate < 0) saturate = 0;
+        else if (saturate > 1) saturate = 1;
+        return FromHSL(hsl.Item1, saturate, hsl.Item3);
     }
 }

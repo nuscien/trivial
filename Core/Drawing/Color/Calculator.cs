@@ -129,6 +129,120 @@ public static partial class ColorCalculator
     public static IEnumerable<Color> Opacity(IEnumerable<Color> value, byte alpha, bool resetOriginalAlpha)
         => value?.Select(ele => Opacity(ele, alpha, resetOriginalAlpha));
 
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(ReadOnlySpan<Color> value, double alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(ReadOnlySpan<Color> value, float alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(ReadOnlySpan<Color> value, byte alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(ReadOnlySpan<Color> value, double alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(ReadOnlySpan<Color> value, float alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(ReadOnlySpan<Color> value, byte alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(Color[] value, double alpha)
+        => double.IsNaN(alpha) ? value : Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(Color[] value, float alpha)
+        => float.IsNaN(alpha) ? value : Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(Color[] value, byte alpha)
+        => Filter(value, Opacity, alpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(Color[] value, double alpha, bool resetOriginalAlpha)
+        => double.IsNaN(alpha) ? value : Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(Color[] value, float alpha, bool resetOriginalAlpha)
+        => float.IsNaN(alpha) ? value : Filter(value, Opacity, alpha, resetOriginalAlpha);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color collection with new alpha channel value.</returns>
+    public static Color[] Opacity(Color[] value, byte alpha, bool resetOriginalAlpha)
+        => Filter(value, Opacity, alpha, resetOriginalAlpha);
+
 #if NETFRAMEWORK
     /// <summary>
     /// Calculates to get the color with opacity and a given color.
@@ -609,7 +723,7 @@ public static partial class ColorCalculator
     /// <param name="from">The color from.</param>
     /// <param name="to">The color to.</param>
     /// <param name="count">The count of color to return.</param>
-    /// <returns>A collection of console text.</returns>
+    /// <returns>A collection of color.</returns>
     public static IEnumerable<Color> LinearGradient(Color from, Color to, int count)
     {
         if (count < 1) yield break;
@@ -640,6 +754,191 @@ public static partial class ColorCalculator
         }
 
         yield return to;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter(Color[] value, Func<Color, Color> convert)
+    {
+        if (value == null) return null;
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="args">The argument of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<T>(Color[] value, Func<Color, T, Color> convert, T args)
+    {
+        if (value == null) return null;
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], args);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<TA, TB>(Color[] value, Func<Color, TA, TB, Color> convert, TA a, TB b)
+    {
+        if (value == null) return null;
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], a, b);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    /// <param name="c">The argument 3 of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<TA, TB, TC>(Color[] value, Func<Color, TA, TB, TC, Color> convert, TA a, TB b, TC c)
+    {
+        if (value == null) return null;
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], a, b, c);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    /// <param name="c">The argument 3 of color converter.</param>
+    /// <param name="d">The argument 4 of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<TA, TB, TC, TD>(Color[] value, Func<Color, TA, TB, TC, TD, Color> convert, TA a, TB b, TC c, TD d)
+    {
+        if (value == null) return null;
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], a, b, c, d);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter(ReadOnlySpan<Color> value, Func<Color, Color> convert)
+    {
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="args">The argument of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<T>(ReadOnlySpan<Color> value, Func<Color, T, Color> convert, T args)
+    {
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], args);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<TA, TB>(ReadOnlySpan<Color> value, Func<Color, TA, TB, Color> convert, TA a, TB b)
+    {
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], a, b);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    /// <param name="c">The argument 3 of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<TA, TB, TC>(ReadOnlySpan<Color> value, Func<Color, TA, TB, TC, Color> convert, TA a, TB b, TC c)
+    {
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], a, b, c);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates to convert the colors in the specific bitmap by the given handler..
+    /// </summary>
+    /// <param name="value">The source color collection.</param>
+    /// <param name="convert">The handler of color converter.</param>
+    /// <param name="a">The argument 1 of color converter.</param>
+    /// <param name="b">The argument b of color converter.</param>
+    /// <param name="c">The argument 3 of color converter.</param>
+    /// <param name="d">The argument 4 of color converter.</param>
+    /// <returns>A collection of color.</returns>
+    public static Color[] Filter<TA, TB, TC, TD>(ReadOnlySpan<Color> value, Func<Color, TA, TB, TC, TD, Color> convert, TA a, TB b, TC c, TD d)
+    {
+        var result = new Color[value.Length];
+        for (var i = 0; i < value.Length; i++)
+        {
+            result[i] = convert(value[i], a, b, c, d);
+        }
+        return result;
     }
 
 #if NETFRAMEWORK

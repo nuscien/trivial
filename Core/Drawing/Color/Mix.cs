@@ -283,6 +283,66 @@ public static partial class ColorCalculator
     /// <summary>
     /// Mixes colors.
     /// </summary>
+    /// <param name="type">The type to mix colors.</param>
+    /// <param name="a">The collection of blend color.</param>
+    /// <param name="b">The collection of base color.</param>
+    /// <returns>A new color collection mixed.</returns>
+    public static Color[] Mix(ColorMixTypes type, ReadOnlySpan<Color> a, ReadOnlySpan<Color> b)
+        => Mix(Mix, type, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="level">The relative saturation level.</param>
+    /// <param name="a">The collection of blend color.</param>
+    /// <param name="b">The collection of base color.</param>
+    /// <returns>A new color collection mixed.</returns>
+    public static Color[] Mix(RelativeSaturationLevels level, ReadOnlySpan<Color> a, ReadOnlySpan<Color> b)
+        => Mix(Mix, level, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="merge">The handler to merge each channel.</param>
+    /// <param name="a">The blend color.</param>
+    /// <param name="b">The base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static Color[] Mix(Func<byte, byte, ColorChannels, byte> merge, ReadOnlySpan<Color> a, ReadOnlySpan<Color> b)
+        => Mix(Mix, merge, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="type">The type to mix colors.</param>
+    /// <param name="a">The collection of blend color.</param>
+    /// <param name="b">The collection of base color.</param>
+    /// <returns>A new color collection mixed.</returns>
+    public static Color[] Mix(ColorMixTypes type, Color[] a, Color[] b)
+        => Mix(Mix, type, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="level">The relative saturation level.</param>
+    /// <param name="a">The collection of blend color.</param>
+    /// <param name="b">The collection of base color.</param>
+    /// <returns>A new color collection mixed.</returns>
+    public static Color[] Mix(RelativeSaturationLevels level, Color[] a, Color[] b)
+        => Mix(Mix, level, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="merge">The handler to merge each channel.</param>
+    /// <param name="a">The blend color.</param>
+    /// <param name="b">The base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static Color[] Mix(Func<byte, byte, ColorChannels, byte> merge, Color[] a, Color[] b)
+        => Mix(Mix, merge, a, b);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
     /// <param name="merge">The handler to merge each color.</param>
     /// <param name="kind">The way or options to merge.</param>
     /// <param name="a">The collection of blend color.</param>
@@ -306,6 +366,66 @@ public static partial class ColorCalculator
         {
             yield return arr[i];
         }
+    }
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="merge">The handler to merge each color.</param>
+    /// <param name="kind">The way or options to merge.</param>
+    /// <param name="a">The collection of blend color.</param>
+    /// <param name="b">The collection of base color.</param>
+    /// <returns>A new color collection mixed.</returns>
+    private static Color[] Mix<T>(Func<T, Color, Color, Color> merge, T kind, ReadOnlySpan<Color> a, ReadOnlySpan<Color> b)
+    {
+        var i = -1;
+        var arr = new Color[Math.Max(a.Length, b.Length)];
+        foreach (var item in a)
+        {
+            i++;
+            if (i < b.Length)
+                arr[i] = merge(kind, item, b[i]);
+            else
+                arr[i] = item;
+        }
+
+        i++;
+        for (; i < b.Length; i++)
+        {
+            arr[i] = arr[i];
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="merge">The handler to merge each color.</param>
+    /// <param name="kind">The way or options to merge.</param>
+    /// <param name="a">The collection of blend color.</param>
+    /// <param name="b">The collection of base color.</param>
+    /// <returns>A new color collection mixed.</returns>
+    private static Color[] Mix<T>(Func<T, Color, Color, Color> merge, T kind, Color[] a, ReadOnlySpan<Color> b)
+    {
+        var i = -1;
+        var arr = new Color[Math.Max(a.Length, b.Length)];
+        foreach (var item in a)
+        {
+            i++;
+            if (i < b.Length)
+                arr[i] = merge(kind, item, b[i]);
+            else
+                arr[i] = item;
+        }
+
+        i++;
+        for (; i < b.Length; i++)
+        {
+            arr[i] = arr[i];
+        }
+
+        return arr;
     }
 
 #if NETFRAMEWORK
