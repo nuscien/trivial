@@ -159,6 +159,38 @@ public static partial class ColorCalculator
     /// <summary>
     /// Adds a color on another one.
     /// </summary>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color.</returns>
+    public static Color Overlay(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == 0) return Color.FromArgb(bA, bR, bG, bB);
+        if (bA == 0 || aA == 255) return Color.FromArgb(aA, aR, aG, aB);
+        var ratio = aA * 1f / 255;
+        if (bA < 255) ratio += (255 - bA) / 255f * (1 - ratio);
+        if (ratio >= 1) return Color.FromArgb(aA, aR, aG, aB);
+        var negRatio = 1 - ratio;
+#if NETFRAMEWORK
+        var a = 255 - (int)Math.Round((255d - aA) * (255d - bA) * 255);
+#else
+        var a = 255 - (int)MathF.Round((255f - aA) * (255f - bA) * 255);
+#endif
+        return Color.FromArgb(
+            a,
+            ToChannel(aR * ratio + bR * negRatio),
+            ToChannel(aG * ratio + bG * negRatio),
+            ToChannel(aB * ratio + bB * negRatio));
+    }
+
+    /// <summary>
+    /// Adds a color on another one.
+    /// </summary>
     /// <param name="top">The color on top.</param>
     /// <param name="alpha">Alpha for top color. Value is from 0 to 1.</param>
     /// <param name="bottom">The color on bottom.</param>
@@ -207,21 +239,55 @@ public static partial class ColorCalculator
         => type switch
         {
             ColorMixTypes.Cover => MixByCover(a, b),
-            ColorMixTypes.Lighten => MixByLighten(a, b),
-            ColorMixTypes.Darken => MixByDarken(a, b),
-            ColorMixTypes.Weaken => MixByWeaken(a, b),
-            ColorMixTypes.Wetness => MixByWetness(a, b),
-            ColorMixTypes.Dryness => MixByDryness(a, b),
-            ColorMixTypes.Deepen => MixByDeepen(a, b),
-            ColorMixTypes.Emphasis => MixByEmphasis(a, b),
-            ColorMixTypes.Accent => MixByAccent(a, b),
-            ColorMixTypes.Add => MixByAdd(a, b),
-            ColorMixTypes.Remove => MixByRemove(a, b),
-            ColorMixTypes.Diff => MixByDiff(a, b),
-            ColorMixTypes.Distance => MixByDistance(a, b),
-            ColorMixTypes.Symmetry => MixBySymmetry(a, b),
-            ColorMixTypes.Strengthen => MixByStrengthen(a, b),
-            _ => MixByMean(a, b)
+            ColorMixTypes.Lighten => MixByLighten(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Darken => MixByDarken(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Weaken => MixByWeaken(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Wetness => MixByWetness(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Dryness => MixByDryness(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Deepen => MixByDeepen(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Emphasis => MixByEmphasis(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Accent => MixByAccent(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Add => MixByAdd(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Remove => MixByRemove(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Diff => MixByDiff(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Distance => MixByDistance(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Symmetry => MixBySymmetry(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            ColorMixTypes.Strengthen => MixByStrengthen(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B),
+            _ => MixByMean(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B)
+        };
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="type">The type to mix colors.</param>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static Color Mix(ColorMixTypes type, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => type switch
+        {
+            ColorMixTypes.Cover => MixByCover(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Lighten => MixByLighten(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Darken => MixByDarken(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Weaken => MixByWeaken(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Wetness => MixByWetness(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Dryness => MixByDryness(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Deepen => MixByDeepen(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Emphasis => MixByEmphasis(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Accent => MixByAccent(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Add => MixByAdd(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Remove => MixByRemove(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Diff => MixByDiff(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Distance => MixByDistance(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Symmetry => MixBySymmetry(aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Strengthen => MixByStrengthen(aA, aR, aG, aB, bA, bR, bG, bB),
+            _ => MixByMean(aA, aR, aG, aB, bA, bR, bG, bB)
         };
 
     /// <summary>
@@ -232,7 +298,24 @@ public static partial class ColorCalculator
     /// <param name="b">The base color.</param>
     /// <returns>A new color mixed.</returns>
     public static Color Mix(RelativeSaturationLevels level, Color a, Color b)
-        => Saturate(MixByMean(a, b), level);
+        => Saturate(MixByMean(a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B), level);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="level">The relative saturation level.</param>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static Color Mix(RelativeSaturationLevels level, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => Saturate(MixByMean(aA, aR, aG, aB, bA, bR, bG, bB), level);
+
 
     /// <summary>
     /// Mixes colors.
@@ -242,12 +325,28 @@ public static partial class ColorCalculator
     /// <param name="b">The base color.</param>
     /// <returns>A new color mixed.</returns>
     public static Color Mix(Func<byte, byte, ColorChannels, byte> merge, Color a, Color b)
+        => Mix(merge, a.A, a.R, a.G, a.B, b.A, b.R, b.G, b.B);
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="merge">The handler to merge each channel.</param>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static Color Mix(Func<byte, byte, ColorChannels, byte> merge, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        if (merge == null) return MixByMean(a, b);
-        var red = merge(a.R, b.R, ColorChannels.Red);
-        var green = merge(a.G, b.G, ColorChannels.Green);
-        var blue = merge(a.B, b.B, ColorChannels.Blue);
-        return MixWithAlpha(red, green, blue, a, b);
+        if (merge == null) return MixByMean(aA, aR, aG, aB, bA, bR, bG, bB);
+        var red = merge(aR, bR, ColorChannels.Red);
+        var green = merge(aG, bG, ColorChannels.Green);
+        var blue = merge(aB, bB, ColorChannels.Blue);
+        return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
     /// <summary>
@@ -518,22 +617,22 @@ public static partial class ColorCalculator
     }
 #endif
 
-    private static Color MixByMean(Color a, Color b)
+    private static Color MixByMean(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        if (a.A == b.A)
+        if (aA == bA)
             return Color.FromArgb(
-                a.A,
-                ToChannel((a.R + b.R) / 2),
-                ToChannel((a.G + b.G) / 2),
-                ToChannel((a.B + b.B) / 2));
-        var topAlpha = a.A / 255f;
-        var bottomAlpha = b.A / 255f;
+                aA,
+                ToChannel((aR + bR) / 2),
+                ToChannel((aG + bG) / 2),
+                ToChannel((aB + bB) / 2));
+        var topAlpha = aA / 255f;
+        var bottomAlpha = bA / 255f;
         var total = topAlpha + bottomAlpha;
         return Color.FromArgb(
-            Math.Max(a.A, b.A),
-            ToChannel((a.R * topAlpha + b.R * bottomAlpha) / total),
-            ToChannel((a.G * topAlpha + b.G * bottomAlpha) / total),
-            ToChannel((a.B * topAlpha + b.B * bottomAlpha) / total));
+            Math.Max(aA, bA),
+            ToChannel((aR * topAlpha + bR * bottomAlpha) / total),
+            ToChannel((aG * topAlpha + bG * bottomAlpha) / total),
+            ToChannel((aB * topAlpha + bB * bottomAlpha) / total));
     }
 
     private static Color MixByCover(Color a, Color b)
@@ -551,182 +650,208 @@ public static partial class ColorCalculator
             ToChannel(a.B * ratio + b.B * negRatio));
     }
 
-    private static Color MixByLighten(Color a, Color b)
-        => MixWithAlpha(
-            Math.Max(a.R, b.R),
-            Math.Max(a.G, b.G),
-            Math.Max(a.B, b.B),
-            a,
-            b);
-
-    private static Color MixByDarken(Color a, Color b)
-        => MixWithAlpha(
-            Math.Min(a.R, b.R),
-            Math.Min(a.G, b.G),
-            Math.Min(a.B, b.B),
-            a,
-            b);
-
-    private static Color MixByWetness(Color a, Color b)
-        => MixWithAlpha(
-            Math.Abs(128 - a.R) >= Math.Abs(128 - b.R) ? a.R : b.R,
-            Math.Abs(128 - a.G) >= Math.Abs(128 - b.G) ? a.G : b.G,
-            Math.Abs(128 - a.B) >= Math.Abs(128 - b.B) ? a.B : b.B,
-            a,
-            b);
-
-    private static Color MixByDryness(Color a, Color b)
-        => MixWithAlpha(
-            Math.Abs(128 - a.R) <= Math.Abs(128 - b.R) ? a.R : b.R,
-            Math.Abs(128 - a.G) <= Math.Abs(128 - b.G) ? a.G : b.G,
-            Math.Abs(128 - a.B) <= Math.Abs(128 - b.B) ? a.B : b.B,
-            a,
-            b);
-
-    private static Color MixByWeaken(Color a, Color b)
-        => MixWithAlpha(
-            255 - (255 - a.R) * (255 - b.R) / 255f,
-            255 - (255 - a.G) * (255 - b.G) / 255f,
-            255 - (255 - a.B) * (255 - b.B) / 255f,
-            a,
-            b);
-
-    private static Color MixByDeepen(Color a, Color b)
+    private static Color MixByCover(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        var red = a.R * b.R / 255f;
-        var green = a.G * b.G / 255f;
-        var blue = a.B * b.B / 255f;
-        return MixWithAlpha(red, green, blue, a, b);
-    }
-
-    private static Color MixByEmphasis(Color a, Color b)
-    {
-        var red = (a.R > 127 ? 255 - a.R : a.R) * (b.R > 127 ? 255 - b.R : b.R) / 255f;
-        var green = (a.G > 127 ? 255 - a.G : a.G) * (b.G > 127 ? 255 - b.G : b.G) / 255f;
-        var blue = (a.B > 127 ? 255 - a.B : a.B) * (b.B > 127 ? 255 - b.B : b.B) / 255f;
-        if (a.R > 127) red = (b.R > 127 ? 255 : a.R) - red;
-        else red = b.R > 127 ? a.R + red : red;
-        if (a.G > 127) green = (b.G > 127 ? 255 : a.G) - green;
-        else green = b.G > 127 ? a.G + red : green;
-        if (a.B > 127) blue = (b.B > 127 ? 255 : a.B) - blue;
-        else blue = b.B > 127 ? a.B + blue : blue;
-        return MixWithAlpha(red, green, blue, a, b);
-    }
-
-    private static Color MixByAccent(Color a, Color b)
-    {
-        if (a.A == b.A)
-            return Color.FromArgb(
-                Math.Max(a.A, b.A),
-                ToChannel(a.R + b.R),
-                ToChannel(a.G + b.G),
-                ToChannel(a.B + b.B));
-        float alpha = a.A + b.A;
-        var topAlpha = a.A / alpha;
-        var bottomAlpha = b.A / alpha;
+        if (aA == 0) return Color.FromArgb(bA, bR, bG, bB);
+        if (bA == 0 || aA == 255) return Color.FromArgb(aA, aR, aG, aB);
+        var ratio = aA * 1f / 255;
+        if (bA < 255) ratio += (255 - bA) / 255f * (1 - ratio);
+        if (ratio >= 1) return Color.FromArgb(aA, aR, aG, aB);
+        var negRatio = 1 - ratio;
         return Color.FromArgb(
-            Math.Max(a.A, b.A),
-                ToChannel(a.R * topAlpha + b.R * bottomAlpha),
-                ToChannel(a.G * topAlpha + b.G * bottomAlpha),
-                ToChannel(a.B * topAlpha + b.B * bottomAlpha));
+            Math.Max(aA, bA),
+            ToChannel(aR * ratio + bR * negRatio),
+            ToChannel(aG * ratio + bG * negRatio),
+            ToChannel(aB * ratio + bB * negRatio));
     }
 
-    private static Color MixByAdd(Color a, Color b)
-    {   // ToDo: Finish it.
-        if (a.A == b.A)
-            return Color.FromArgb(
-                Math.Max(a.A, b.A),
-                ToChannel(a.R + b.R),
-                ToChannel(a.G + b.G),
-                ToChannel(a.B + b.B));
-        float alpha = a.A + b.A;
-        var topAlpha = a.A / alpha;
-        var bottomAlpha = b.A / alpha;
-        return Color.FromArgb(
-            Math.Max(a.A, b.A),
-                ToChannel(a.R * topAlpha + b.R * bottomAlpha),
-                ToChannel(a.G * topAlpha + b.G * bottomAlpha),
-                ToChannel(a.B * topAlpha + b.B * bottomAlpha));
-    }
+    private static Color MixByLighten(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            Math.Max(aR, bR),
+            Math.Max(aG, bG),
+            Math.Max(aB, bB),
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
 
-    private static Color MixByRemove(Color a, Color b)
+    private static Color MixByDarken(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            Math.Min(aR, bR),
+            Math.Min(aG, bG),
+            Math.Min(aB, bB),
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static Color MixByWetness(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            Math.Abs(128 - aR) >= Math.Abs(128 - bR) ? aR : bR,
+            Math.Abs(128 - aG) >= Math.Abs(128 - bG) ? aG : bG,
+            Math.Abs(128 - aB) >= Math.Abs(128 - bB) ? aB : bB,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static Color MixByDryness(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            Math.Abs(128 - aR) <= Math.Abs(128 - bR) ? aR : bR,
+            Math.Abs(128 - aG) <= Math.Abs(128 - bG) ? aG : bG,
+            Math.Abs(128 - aB) <= Math.Abs(128 - bB) ? aB : bB,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static Color MixByWeaken(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            255 - (255 - aR) * (255 - bR) / 255f,
+            255 - (255 - aG) * (255 - bG) / 255f,
+            255 - (255 - aB) * (255 - bB) / 255f,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static Color MixByDeepen(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            aR * bR / 255f,
+            aG * bG / 255f,
+            aB * bB / 255f,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static Color MixByEmphasis(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        var red = a.R - b.R;
+        var red = (aR > 127 ? 255 - aR : aR) * (bR > 127 ? 255 - bR : bR) / 255f;
+        var green = (aG > 127 ? 255 - aG : aG) * (bG > 127 ? 255 - bG : bG) / 255f;
+        var blue = (aB > 127 ? 255 - aB : aB) * (bB > 127 ? 255 - bB : bB) / 255f;
+        if (aR > 127) red = (bR > 127 ? 255 : aR) - red;
+        else red = bR > 127 ? aR + red : red;
+        if (aG > 127) green = (bG > 127 ? 255 : aG) - green;
+        else green = bG > 127 ? aG + red : green;
+        if (aB > 127) blue = (bB > 127 ? 255 : aB) - blue;
+        else blue = bB > 127 ? aB + blue : blue;
+        return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
+    }
+
+    private static Color MixByAccent(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return Color.FromArgb(
+                Math.Max(aA, bA),
+                ToChannel(aR + bR),
+                ToChannel(aG + bG),
+                ToChannel(aB + bB));
+        float alpha = aA + bA;
+        var topAlpha = aA / alpha;
+        var bottomAlpha = bA / alpha;
+        return Color.FromArgb(
+            Math.Max(aA, bA),
+                ToChannel(aR * topAlpha + bR * bottomAlpha),
+                ToChannel(aG * topAlpha + bG * bottomAlpha),
+                ToChannel(aB * topAlpha + bB * bottomAlpha));
+    }
+
+    private static Color MixByAdd(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return Color.FromArgb(
+                Math.Max(aA, bA),
+                ToChannel(aR + bR),
+                ToChannel(aG + bG),
+                ToChannel(aB + bB));
+        float alpha = aA + bA;
+        var topAlpha = aA / alpha;
+        var bottomAlpha = bA / alpha;
+        return Color.FromArgb(
+            Math.Max(aA, bA),
+                ToChannel(aR * topAlpha + bR * bottomAlpha),
+                ToChannel(aG * topAlpha + bG * bottomAlpha),
+                ToChannel(aB * topAlpha + bB * bottomAlpha));
+    }
+
+    private static Color MixByRemove(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var red = aR - bR;
         if (red < 0) red = 0;
-        var green = a.G - b.G;
+        var green = aG - bG;
         if (green < 0) green = 0;
-        var blue = a.B - b.B;
+        var blue = aB - bB;
         if (blue < 0) blue = 0;
-        return MixWithAlpha(red, green, blue, a, b);
+        return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
-    private static Color MixByDiff(Color a, Color b)
-        => MixWithAlpha(Math.Abs(a.R - b.R), Math.Abs(a.G - b.G), Math.Abs(a.B - b.B), a, b);
+    private static Color MixByDiff(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            Math.Abs(aR - bR),
+            Math.Abs(aG - bG),
+            Math.Abs(aB - bB),
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
 
-    private static Color MixByDistance(Color a, Color b)
+    private static Color MixByDistance(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        var red = a.R - b.R;
+        var red = aR - bR;
         if (red < 0) red += 256;
-        var green = a.G - b.G;
+        var green = aG - bG;
         if (green < 0) green += 256;
-        var blue = a.B - b.B;
+        var blue = aB - bB;
         if (blue < 0) blue += 256;
-        return MixWithAlpha(red, green, blue, a, b);
+        return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
-    private static Color MixBySymmetry(Color a, Color b)
+    private static Color MixBySymmetry(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        var red = 2 * b.R - a.R;
+        var red = 2 * bR - aR;
         if (red < 0) red = 0;
         else if (red > 255) red = 255;
-        var green = 2 * b.G - a.G;
+        var green = 2 * bG - aG;
         if (green < 0) green = 0;
         else if (green > 255) green = 255;
-        var blue = 2 * b.B - a.B;
+        var blue = 2 * bB - aB;
         if (blue < 0) blue = 0;
         else if (blue > 255) blue = 255;
-        return MixWithAlpha(red, green, blue, a, b);
+        return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
-    private static Color MixByStrengthen(Color a, Color b)
+    private static Color MixByStrengthen(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        var red = 2 * a.R - b.R;
+        var red = 2 * aR - bR;
         if (red < 0) red = 0;
         else if (red > 255) red = 255;
-        var green = 2 * a.G - b.G;
+        var green = 2 * aG - bG;
         if (green < 0) green = 0;
         else if (green > 255) green = 255;
-        var blue = 2 * a.B - b.B;
+        var blue = 2 * aB - bB;
         if (blue < 0) blue = 0;
         else if (blue > 255) blue = 255;
-        return MixWithAlpha(red, green, blue, a, b);
+        return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
-    private static Color MixWithAlpha(int red, int green, int blue, Color a, Color b)
+    private static Color MixWithAlpha(int red, int green, int blue, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        if (a.A == b.A)
-            return Color.FromArgb(Math.Max(a.A, b.A), red, green, blue);
-        var ratio = Math.Abs(a.A - b.A) * 1f / Math.Max(a.A, b.A);
+        if (aA == bA)
+            return Color.FromArgb(Math.Max(aA, bA), red, green, blue);
+        var ratio = Math.Abs(aA - bA) * 1f / Math.Max(aA, bA);
         var negRation = 1 - ratio;
-        var c = a.A > b.A ? a : b;
+        var c = aA > bA;
+        var cR = c ? aR : bR;
+        var cG = c ? aG : bG;
+        var cB = c ? aB : bB;
         return Color.FromArgb(
-            Math.Max(a.A, b.A),
-            ToChannel(red * negRation + c.R * ratio),
-            ToChannel(green * negRation + c.G * ratio),
-            ToChannel(blue * negRation + c.B * ratio));
+            Math.Max(aA, bA),
+            ToChannel(red * negRation + cR * ratio),
+            ToChannel(green * negRation + cG * ratio),
+            ToChannel(blue * negRation + cB * ratio));
     }
 
-    private static Color MixWithAlpha(float red, float green, float blue, Color a, Color b)
+    private static Color MixWithAlpha(float red, float green, float blue, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
-        if (a.A == b.A)
-            return Color.FromArgb(Math.Max(a.A, b.A), ToChannel(red), ToChannel(green), ToChannel(blue));
-        var ratio = Math.Abs(a.A - b.A) * 1f / Math.Max(a.A, b.A);
+        if (aA == bA)
+            return Color.FromArgb(Math.Max(aA, bA), ToChannel(red), ToChannel(green), ToChannel(blue));
+        var ratio = Math.Abs(aA - bA) * 1f / Math.Max(aA, bA);
         var negRation = 1 - ratio;
-        var c = a.A > b.A ? a : b;
+        var c = aA > bA;
+        var cR = c ? aR : bR;
+        var cG = c ? aG : bG;
+        var cB = c ? aB : bB;
         return Color.FromArgb(
-            Math.Max(a.A, b.A),
-            ToChannel(red * negRation + c.R * ratio),
-            ToChannel(green * negRation + c.G * ratio),
-            ToChannel(blue * negRation + c.B * ratio));
+            Math.Max(aA, bA),
+            ToChannel(red * negRation + cR * ratio),
+            ToChannel(green * negRation + cG * ratio),
+            ToChannel(blue * negRation + cB * ratio));
     }
 }
