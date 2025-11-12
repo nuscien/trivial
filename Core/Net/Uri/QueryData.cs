@@ -211,7 +211,7 @@ public class QueryData : StringKeyValuePairs
                 }
                 else if (lastLevelChar == ':' && name == null)
                 {
-                    if (c == '\r' || c == '\n' || c == '\t' || c == ' ' || c == ',' || c == '+')
+                    if (c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ' || c == ',' || c == '+')
                     {
                         sb = null;
                     }
@@ -265,7 +265,7 @@ public class QueryData : StringKeyValuePairs
         if (pos >= 0) query = query.Substring(pos + 1);
         pos = query.IndexOf("#");
         if (pos >= 0) query = query.Substring(0, pos);
-        var arr = query.Split('&', '\r', '\n');
+        var arr = query.Split('&', '\r', '\n', '\f');
         foreach (var item in arr)
         {
             pos = item.IndexOf("=");

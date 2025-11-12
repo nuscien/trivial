@@ -584,7 +584,7 @@ public static class Numbers
             if (i < 0)
             {
                 if (c == ' ' || c == '_' || c == ',') continue;
-                if (c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '\r' || c == '\n' || c == '\f' || c == '\0') break;
                 if (c == '.' && pos == s.Length - 1) break;
                 result = default;
                 return false;
@@ -696,7 +696,7 @@ public static class Numbers
             if (i < 0)
             {
                 if (c == ' ' || c == '_' || c == ',') continue;
-                if (c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '\r' || c == '\n' || c == '\f' || c == '\0') break;
                 if (c == '.' && pos == s.Length - 1) break;
                 result = default;
                 return false;
@@ -947,7 +947,7 @@ public static class Numbers
             if (i < 0)
             {
                 if (c == ' ' || c == '_' || c == ',') continue;
-                if (c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '\r' || c == '\n' || c == '\f' || c == '\0') break;
                 if (c == '.' && pos == s.Length - 1) break;
                 result = default;
                 return false;

@@ -3,7 +3,7 @@
   <Import Project="..\Basic.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net8.0;net6.0;net48;net462;net461</TargetFrameworks>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net6.0;net48;net462;net461</TargetFrameworks>
     <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>

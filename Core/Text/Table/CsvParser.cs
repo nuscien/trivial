@@ -154,7 +154,7 @@ public class CsvParser : BaseLinesStringTableParser
     /// <param name="csv">The CSV text.</param>
     /// <returns>Content of CSV.</returns>
     public static IEnumerable<IReadOnlyList<string>> Parse(string csv)
-        => Parse(StringExtensions.YieldSplit(csv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
+        => Parse(StringExtensions.YieldSplit(csv, '\r', '\n', '\f', StringSplitOptions.RemoveEmptyEntries));
 
     /// <summary>
     /// Parses CSV.

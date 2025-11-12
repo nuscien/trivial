@@ -23,12 +23,12 @@ namespace Trivial.Text;
 public static class StringExtensions
 {
 #pragma warning disable IDE0056, IDE0057, IDE0058
-    private static readonly string[] NewLineSeparators = ["\r\n", "\n", "\r"];
+    private static readonly string[] NewLineSeparators = ["\r\n", "\n", "\r", "\f"];
 
     /// <summary>
     /// Special characters of YAML.
     /// </summary>
-    internal static readonly char[] YamlSpecialChars = [':', '\r', '\n', '\\', '\'', '\"', '\t', ' ', '#', '.', '[', '{', '\\', '/', '@'];
+    internal static readonly char[] YamlSpecialChars = [':', '\r', '\n', '\f', '\\', '\'', '\"', '\t', ' ', '#', '.', '[', '{', '\\', '/', '@'];
 
     /// <summary>
     /// Gets the MIME value of plain text format text.

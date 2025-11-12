@@ -61,16 +61,23 @@ public static partial class ColorCalculator
     /// <returns>The color after lighten.</returns>
     public static Color Lighten(Color value, double ratio)
     {
-        if (ratio == 0) return value;
-        if (ratio > 1) return Color.FromArgb(value.A, 255, 255, 255);
-        if (ratio < -1) return Color.FromArgb(value.A, 0, 0, 0);
-        var bg = ratio > 0 ? 255 : 0;
-        ratio = Math.Abs(ratio);
-        return Color.FromArgb(
-            value.A,
-            ToChannel((bg - value.R) * ratio + value.R),
-            ToChannel((bg - value.G) * ratio + value.G),
-            ToChannel((bg - value.B) * ratio + value.B));
+        if (ratio == 0d || double.IsNaN(ratio)) return value;
+        return LightenInternal(value.A, value.R, value.G, value.B, ratio);
+    }
+
+    /// <summary>
+    /// Increases brighness.
+    /// </summary>
+    /// <param name="alpha">The alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="ratio">The brightness ratio to increase. Value is from -1 to 1.</param>
+    /// <returns>The color after lighten.</returns>
+    public static Color Lighten(byte alpha, byte red, byte green, byte blue, double ratio)
+    {
+        if (ratio == 0d || double.IsNaN(ratio)) return Color.FromArgb(alpha, red, green, blue);
+        return LightenInternal(alpha, red, green, blue, ratio);
     }
 
     /// <summary>
@@ -81,16 +88,23 @@ public static partial class ColorCalculator
     /// <returns>The color after lighten.</returns>
     public static Color Lighten(Color value, float ratio)
     {
-        if (ratio == 0) return value;
-        if (ratio > 1) return Color.FromArgb(value.A, 255, 255, 255);
-        if (ratio < -1) return Color.FromArgb(value.A, 0, 0, 0);
-        var bg = ratio > 0 ? 255 : 0;
-        ratio = Math.Abs(ratio);
-        return Color.FromArgb(
-            value.A,
-            ToChannel((bg - value.R) * ratio + value.R),
-            ToChannel((bg - value.G) * ratio + value.G),
-            ToChannel((bg - value.B) * ratio + value.B));
+        if (ratio == 0 || float.IsNaN(ratio)) return value;
+        return LightenInternal(value.A, value.R, value.G, value.B, ratio);
+    }
+
+    /// <summary>
+    /// Increases brighness.
+    /// </summary>
+    /// <param name="alpha">The alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="ratio">The brightness ratio to increase. Value is from -1 to 1.</param>
+    /// <returns>The color after lighten.</returns>
+    public static Color Lighten(byte alpha, byte red, byte green, byte blue, float ratio)
+    {
+        if (ratio == 0 || float.IsNaN(ratio)) return Color.FromArgb(alpha, red, green, blue);
+        return LightenInternal(alpha, red, green, blue, ratio);
     }
 
     /// <summary>
@@ -141,11 +155,35 @@ public static partial class ColorCalculator
     /// <summary>
     /// Decreases brighness.
     /// </summary>
+    /// <param name="alpha">The alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="ratio">The brightness ratio to decrease. Value is from -1 to 1.</param>
+    /// <returns>The color after darken.</returns>
+    public static Color Darken(byte alpha, byte red, byte green, byte blue, double ratio)
+        => Lighten(alpha, red, green, blue, -ratio);
+
+    /// <summary>
+    /// Decreases brighness.
+    /// </summary>
     /// <param name="value">The source color value.</param>
     /// <param name="ratio">The brightness ratio to decrease. Value is from -1 to 1.</param>
     /// <returns>The color after darken.</returns>
     public static Color Darken(Color value, float ratio)
         => Lighten(value, -ratio);
+
+    /// <summary>
+    /// Decreases brighness.
+    /// </summary>
+    /// <param name="alpha">The alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="ratio">The brightness ratio to decrease. Value is from -1 to 1.</param>
+    /// <returns>The color after darken.</returns>
+    public static Color Darken(byte alpha, byte red, byte green, byte blue, float ratio)
+        => Lighten(alpha, red, green, blue, -ratio);
 
     /// <summary>
     /// Decreases brighness.
@@ -275,4 +313,48 @@ public static partial class ColorCalculator
     public static void ToggleBrightness(Bitmap value, RelativeBrightnessLevels level)
         => Filter(value, ToggleBrightness, level);
 #endif
+
+    /// <summary>
+    /// Increases brighness.
+    /// </summary>
+    /// <param name="alpha">The alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="ratio">The brightness ratio to increase. Value is from -1 to 1.</param>
+    /// <returns>The color after lighten.</returns>
+    private static Color LightenInternal(byte alpha, byte red, byte green, byte blue, double ratio)
+    {
+        if (ratio > 1) return Color.FromArgb(alpha, 255, 255, 255);
+        if (ratio < -1) return Color.FromArgb(alpha, 0, 0, 0);
+        var bg = ratio > 0 ? 255 : 0;
+        ratio = Math.Abs(ratio);
+        return Color.FromArgb(
+            alpha,
+            ToChannel((bg - red) * ratio + red),
+            ToChannel((bg - green) * ratio + green),
+            ToChannel((bg - blue) * ratio + blue));
+    }
+
+    /// <summary>
+    /// Increases brighness.
+    /// </summary>
+    /// <param name="alpha">The alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="ratio">The brightness ratio to increase. Value is from -1 to 1.</param>
+    /// <returns>The color after lighten.</returns>
+    private static Color LightenInternal(byte alpha, byte red, byte green, byte blue, float ratio)
+    {
+        if (ratio > 1) return Color.FromArgb(alpha, 255, 255, 255);
+        if (ratio < -1) return Color.FromArgb(alpha, 0, 0, 0);
+        var bg = ratio > 0 ? 255 : 0;
+        ratio = Math.Abs(ratio);
+        return Color.FromArgb(
+            alpha,
+            ToChannel((bg - red) * ratio + red),
+            ToChannel((bg - green) * ratio + green),
+            ToChannel((bg - blue) * ratio + blue));
+    }
 }

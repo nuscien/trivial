@@ -130,7 +130,7 @@ public class TsvParser : BaseLinesStringTableParser
     /// <param name="tsv">The TSV text.</param>
     /// <returns>Content of TSV.</returns>
     public static IEnumerable<IReadOnlyList<string>> Parse(string tsv)
-        => Parse(StringExtensions.YieldSplit(tsv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
+        => Parse(StringExtensions.YieldSplit(tsv, '\r', '\n', '\f', StringSplitOptions.RemoveEmptyEntries));
 
     /// <summary>
     /// Parses TSV.

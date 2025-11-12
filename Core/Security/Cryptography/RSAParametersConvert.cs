@@ -81,7 +81,7 @@ public static class RSAParametersConvert
             return p;
         }
 
-        var lines = key.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var lines = key.Split(new[] { '\r', '\n', '\f' }, StringSplitOptions.RemoveEmptyEntries);
         if (lines.Length == 0) return null;
         var isPrivate = true;
         var firstLine = lines[0].Trim();

@@ -553,7 +553,7 @@ public static partial class PinyinMarks
                 }
 
                 initial = null;
-                if (" 　\t\n\r\"“‘《<（(【[*！？!?·]】)）>》’”".Contains(c))
+                if (" 　\t\n\r\f\"“‘《<（(【[*！？!?·]】)）>》’”".Contains(c))
                 {
                     if (!e.MoveNext()) break;
                     i++;
@@ -1107,7 +1107,7 @@ public static partial class PinyinMarks
         if ("广万".Contains(c)) return 5;
         if ("rŋyRŊY丨ㄧㄋㄖㄨ".Contains(c)) return 6;
         if ("nńňǹNŃŇǸ兀".Contains(c)) return 7;
-        if ("' 　\\\t\r\n\"`“‘’”-,.;?¿!&^(（【[{《<￥$%@/·|}>》]】）)_—=+#*，。゜、；？！~…".Contains(c)) return 8;
+        if ("' 　\\\t\r\n\f\"`“‘’”-,.;?¿!&^(（【[{《<￥$%@/·|}>》]】）)_—=+#*，。゜、；？！~…".Contains(c)) return 8;
         return 0;
     }
 
@@ -1175,6 +1175,7 @@ public static partial class PinyinMarks
                 case '\r':
                 case '\n':
                 case '\t':
+                case '\f':
                 case '\0':
                     caseOptions = Cases.Capitalize;
                     break;
@@ -1198,6 +1199,7 @@ public static partial class PinyinMarks
                         case '\r':
                         case '\n':
                         case '\t':
+                        case '\f':
                         case '\0':
                             caseOptions = Cases.Capitalize;
                             break;

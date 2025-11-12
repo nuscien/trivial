@@ -38,7 +38,7 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// </example>
     public sealed class WhiteSpaceSeparatedConverter : JsonStringListConverter
     {
-        private static readonly char[] splitChars = new[] { ' ', '　', '\r', '\n', '\t' };
+        private static readonly char[] splitChars = new[] { ' ', '　', '\r', '\n', '\t', '\f' };
 
         /// <summary>
         /// Initializes a new instance of the WhiteSpaceSeparatedConverter class.

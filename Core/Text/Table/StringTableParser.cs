@@ -225,7 +225,7 @@ public abstract class BaseStringTableParser : IEnumerable<IReadOnlyList<string>>
     /// <param name="text">The text includes multiple lines.</param>
     /// <returns>Lines.</returns>
     protected virtual IEnumerable<string> ReadLines(string text)
-        => StringExtensions.YieldSplit(text, '\r', '\n', StringSplitOptions.RemoveEmptyEntries);
+        => StringExtensions.YieldSplit(text, '\r', '\n', '\f', StringSplitOptions.RemoveEmptyEntries);
 
     /// <summary>
     /// Reads lines from a given text reader.

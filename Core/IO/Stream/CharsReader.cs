@@ -248,7 +248,7 @@ public class CharsReader : TextReader
         while (enumerator.MoveNext())
         {
             var c = enumerator.Current;
-            if (c == '\n') return sb.ToString();
+            if (c == '\n' || c == '\f') return sb.ToString();
             if (c == '\r')
             {
                 if (enumerator.MoveNext() && enumerator.Current != '\n') hasRead = true;

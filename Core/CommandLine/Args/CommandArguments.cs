@@ -65,7 +65,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
             return;
         }
 
-        var list = args.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var list = args.Split(new[] { ' ', '\t', '\r', '\n', '\f' }, StringSplitOptions.RemoveEmptyEntries);
         this.args = new List<string>();
         var ignoreKeys = new List<int>();
         var merge = false;
@@ -648,6 +648,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
                 && args[i].IndexOf('\r') < 0
                 && args[i].IndexOf('\n') < 0
                 && args[i].IndexOf('\t') < 0
+                && args[i].IndexOf('\f') < 0
                 && args[i].LastIndexOf('/') <= 0) list.Add(i);
         }
 

@@ -165,6 +165,102 @@ public static partial class ColorCalculator
     /// <summary>
     /// Adds saturate filter.
     /// </summary>
+    /// <param name="alpha">The original alpha channel of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <param name="level">The relative saturation level.</param>
+    /// <returns>A new color with high saturation.</returns>
+    public static Color Saturate(byte alpha, byte red, byte green, byte blue, RelativeSaturationLevels level)
+    {
+        if (red == green && red == blue) return Color.FromArgb(alpha, red, green, blue);
+        var high = Maths.Arithmetic.Max(red, green, blue);
+        var low = Maths.Arithmetic.Min(red, green, blue);
+        switch (level)
+        {
+            case RelativeSaturationLevels.High:
+                {
+                    var highDistance = (byte)(255 - high);
+                    if (highDistance == low) return Color.FromArgb(alpha, red, green, blue);
+                    var diff = Math.Min(highDistance, low);
+                    var ratio = diff / 255f;
+                    return Color.FromArgb(
+                        alpha,
+                        Saturate(red, high, low, diff, ratio),
+                        Saturate(green, high, low, diff, ratio),
+                        Saturate(blue, high, low, diff, ratio));
+                }
+            case RelativeSaturationLevels.Most:
+                {
+                    var diff = Math.Min((byte)(255 - high), low);
+                    var ratio = diff / 255f;
+                    diff = Math.Max((byte)(255 - high), low);
+                    ratio -= ratio * diff / 255f;
+                    return Color.FromArgb(
+                        alpha,
+                        Saturate(red, high, low, diff, ratio),
+                        Saturate(green, high, low, diff, ratio),
+                        Saturate(blue, high, low, diff, ratio));
+                }
+            case RelativeSaturationLevels.Low:
+                {
+                    if ((high > 127 && low > 127) || (high < 128 && low < 128))
+                        return Color.FromArgb(alpha, red, green, blue);
+                    byte newHigh;
+                    byte newLow;
+                    float ratio;
+                    var highDistance = (byte)(255 - high);
+                    if (highDistance == low)
+                        return Color.FromArgb(alpha, red, green, blue);
+                    if (highDistance < low)
+                    {
+                        newHigh = (byte)(255 - low);
+                        ratio = (high - newHigh) / 255f;
+                        newLow = (byte)(127 - (127 - low) * ratio);
+                    }
+                    else
+                    {
+                        newLow = highDistance;
+                        ratio = (newLow - low) / 255f;
+                        newHigh = (byte)(128 + (high - 128) * ratio);
+                    }
+
+                    return Color.FromArgb(
+                        alpha,
+                        Saturate(red, high, low, newHigh, newLow, ratio),
+                        Saturate(green, high, low, newHigh, newLow, ratio),
+                        Saturate(blue, high, low, newHigh, newLow, ratio));
+                }
+            case RelativeSaturationLevels.Gray:
+                return Grayscale(alpha, red, green, blue);
+            case RelativeSaturationLevels.Exposure:
+                {
+                    if (high == 255) return Color.FromArgb(alpha, red, green, blue);
+                    var ratio = (255 - low) / (high - low);
+                    return Color.FromArgb(
+                        alpha,
+                        SaturateExposure(red, high, low, ratio),
+                        SaturateExposure(green, high, low, ratio),
+                        SaturateExposure(blue, high, low, ratio));
+                }
+            case RelativeSaturationLevels.Shadow:
+                {
+                    if (low == 0) return Color.FromArgb(alpha, red, green, blue);
+                    var ratio = high / (high - low);
+                    return Color.FromArgb(
+                        alpha,
+                        SaturateShadow(red, high, low, ratio),
+                        SaturateShadow(green, high, low, ratio),
+                        SaturateShadow(blue, high, low, ratio));
+                }
+            default:
+                return Color.FromArgb(alpha, red, green, blue);
+        }
+    }
+
+    /// <summary>
+    /// Adds saturate filter.
+    /// </summary>
     /// <param name="value">The source color value collection.</param>
     /// <param name="ratio">The saturation ratio to change. Value should equal or be greater than 0.</param>
     /// <returns>A new color with additional saturation.</returns>
@@ -254,6 +350,20 @@ public static partial class ColorCalculator
     {
         var gray = ToChannel((value.R + value.G + value.B) / 3f);
         return Color.FromArgb(value.A, gray, gray, gray);
+    }
+
+    /// <summary>
+    /// Creates a new color by a given one in grayscale.
+    /// </summary>
+    /// <param name="alpha">The channel alpha of the source color.</param>
+    /// <param name="red">The channel red of the source color.</param>
+    /// <param name="green">The channel green of the source color.</param>
+    /// <param name="blue">The channel blue of the source color.</param>
+    /// <returns>A new color with grayscale.</returns>
+    public static Color Grayscale(byte alpha, byte red, byte green, byte blue)
+    {
+        var gray = ToChannel((red + green + blue) / 3f);
+        return Color.FromArgb(alpha, gray, gray, gray);
     }
 
     /// <summary>

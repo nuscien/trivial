@@ -229,7 +229,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     /// <param name="log">The extended log.</param>
     /// <returns>Content of extended log.</returns>
     public static IEnumerable<IReadOnlyList<string>> Parse(string log)
-        => Parse(StringExtensions.YieldSplit(log, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
+        => Parse(StringExtensions.YieldSplit(log, '\r', '\n', '\f', StringSplitOptions.RemoveEmptyEntries));
 
     /// <summary>
     /// Parses extended log.
