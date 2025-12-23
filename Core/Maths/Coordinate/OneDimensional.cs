@@ -118,7 +118,7 @@ public class Point1D<TUnit> : SingleElement<TUnit>, IEquatable<Point1D<TUnit>>, 
 /// </summary>
 [JsonConverter(typeof(DoublePoint1DConverter))]
 public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<DoublePoint1D>, IEquatable<Point1D<float>>, IEquatable<Point1D<int>>, IEquatable<float>, IEquatable<int>, IComparable<Point1D<double>>, IComparable<Point1D<float>>, IComparable<Point1D<int>>, IComparable<double>, IComparable<float>, IComparable<int>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<DoublePoint1D, DoublePoint1D, DoublePoint1D>, ISubtractionOperators<DoublePoint1D, DoublePoint1D, DoublePoint1D>, IUnaryNegationOperators<DoublePoint1D, DoublePoint1D>, IParsable<DoublePoint1D>
 #endif
 {
@@ -432,7 +432,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
         return null;
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Parses the specific input string to a point.
     /// </summary>
@@ -528,7 +528,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
 /// </summary>
 [JsonConverter(typeof(IntPoint1DConverter))]
 public sealed class IntPoint1D : Point1D<int>, IAdvancedAdditionCapable<IntPoint1D>, IComparable<Point1D<double>>, IComparable<Point1D<int>>, IComparable<double>, IComparable<int>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<IntPoint1D, IntPoint1D, IntPoint1D>, ISubtractionOperators<IntPoint1D, IntPoint1D, IntPoint1D>, IUnaryNegationOperators<IntPoint1D, IntPoint1D>, IParsable<IntPoint1D>
 #endif
 {
@@ -721,7 +721,7 @@ public sealed class IntPoint1D : Point1D<int>, IAdvancedAdditionCapable<IntPoint
         return null;
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Parses the specific input string to a point.
     /// </summary>

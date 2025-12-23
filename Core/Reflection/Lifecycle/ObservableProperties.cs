@@ -341,7 +341,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                         return Maths.Numbers.TryParseToUInt16(s, 10, out var i) ? (T)(object)i : defaultValue;
                     if (typeE == typeof(Guid))
                         return Guid.TryParse(s, out var i) ? (T)(object)i : defaultValue;
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
                     if (typeE == typeof(Int128))
                         return Maths.Numbers.TryParseToInt128(s, 10, out var i) ? (T)(object)i : defaultValue;
 #endif
@@ -396,7 +396,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                     && (typeO == typeof(char) || typeO == typeof(float) || typeO == typeof(double) || typeO == typeof(decimal)
                     || typeO == typeof(int) || typeO == typeof(long) || typeO == typeof(short) || typeO == typeof(byte)
                     || typeO == typeof(uint) || typeO == typeof(ulong)) || typeO == typeof(ushort) || typeO == typeof(sbyte)
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
                     || typeO == typeof(Int128) || typeO == typeof(UInt128) || typeO == typeof(Half) || typeO == typeof(DateOnly) || typeO == typeof(TimeOnly)
 #endif
                     || typeO == typeof(bool) || typeO == typeof(Guid) || typeO == typeof(BigInteger) || typeO == typeof(DateTime) || typeO == typeof(DateTimeOffset))
@@ -761,7 +761,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             if (v is JsonElement jEle) return jEle.ToString();
             if (v is uint ui) return ui.ToString("g");
             if (v is ulong ul) return ul.ToString("g");
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
             if (v is Int128 i3) return i3.ToString("g");
             if (v is Half d3) return d3.ToString("g");
             if (v is DateOnly dt2) return dt2.ToString("g");

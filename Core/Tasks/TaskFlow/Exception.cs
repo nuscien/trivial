@@ -32,7 +32,7 @@ public class PreviousTaskException : Exception
         SourceObject = source;
     }
 
-#if !NET8_0_OR_GREATER
+#if !NETCOREAPP
     /// <summary>
     /// Initializes a new instance of the PreviousTaskException class.
     /// </summary>

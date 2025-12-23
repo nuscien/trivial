@@ -592,7 +592,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
                         return Enum.ToObject(type, enumInt);
                     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
                     if (Enum.TryParse(type, enumStr, out object enumObj))
                     {
                         exception = null;
@@ -1552,7 +1552,6 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
         if (value is JsonArray a) return (JsonArrayNode)a;
         if (value is not JsonValue token)
             throw new InvalidCastException($"Only supports JsonValue, JsonObject and JsonArray but its type is {value.GetType().Name}.");
-#if !NET461 && !NET6_0
         switch (token.GetValueKind())
         {
             case JsonValueKind.Null:
@@ -1578,7 +1577,6 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             default:
                 throw new InvalidCastException($"Expect a JSON value but it is {value.GetType().Name}.");
         }
-#endif
 
         {
             if (token.TryGetValue(out string s))

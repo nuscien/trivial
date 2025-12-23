@@ -23,7 +23,7 @@ namespace Trivial.IO;
 public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHostReferenceInfo
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();

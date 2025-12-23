@@ -28,7 +28,7 @@ namespace Trivial.Net
     ""q"": 1234567
 }";
             var q = QueryData.Parse(json);
-            Assert.AreEqual(3, q.Count);
+            Assert.HasCount(3, q);
             Assert.AreEqual(q[0].Value, q["o"]);
             Assert.AreEqual(@"hijk\""lmn""", q[1].Value);
             Assert.AreEqual(q[1].Value, q["p"]);
@@ -37,7 +37,7 @@ namespace Trivial.Net
 
             var query = "a=bcd\\efg+%20&hij=klmn&o=12345&p=67890&q=";
             q = QueryData.Parse(query);
-            Assert.AreEqual(5, q.Count);
+            Assert.HasCount(5, q);
             Assert.AreEqual("bcd\\efg  ", q["a"]);
             Assert.AreEqual(q["a"], q[0].Value);
             Assert.AreEqual("klmn", q["hij"]);
@@ -64,11 +64,11 @@ namespace Trivial.Net
         {
             var url = "https://kingcean.net/test/a?b=cd&e=fg#hijklmn";
             var uri = (HttpUri)new Uri(url);
-            Assert.AreEqual(true, uri.IsSecure);
+            Assert.IsTrue(uri.IsSecure);
             Assert.AreEqual("kingcean.net", uri.Host);
             Assert.AreEqual("/test/a", uri.Path);
-            Assert.AreEqual(2, uri.PathItems.Count);
-            Assert.AreEqual(2, uri.Query.Count);
+            Assert.HasCount(2, uri.PathItems);
+            Assert.HasCount(2, uri.Query);
             Assert.AreEqual("cd", uri.Query["b"]);
             Assert.AreEqual("e", uri.Query[1].Key);
             Assert.AreEqual("fg", uri.Query[1].Value);
@@ -79,13 +79,13 @@ namespace Trivial.Net
 
             url = "https://user:password@kingcean.net:12345/test/a?b=cd&e=fg#hijklmn";
             uri = HttpUri.Parse(url);
-            Assert.AreEqual(true, uri.IsSecure);
+            Assert.IsTrue(uri.IsSecure);
             Assert.AreEqual("kingcean.net", uri.Host);
             Assert.AreEqual("user:password", uri.AccountInfo);
             Assert.AreEqual(12345, uri.Port);
             Assert.AreEqual("/test/a", uri.Path);
-            Assert.AreEqual(2, uri.PathItems.Count);
-            Assert.AreEqual(2, uri.Query.Count);
+            Assert.HasCount(2, uri.PathItems);
+            Assert.HasCount(2, uri.Query);
             Assert.AreEqual("cd", uri.Query["b"]);
             Assert.AreEqual("e", uri.Query[1].Key);
             Assert.AreEqual("fg", uri.Query[1].Value);
@@ -98,8 +98,8 @@ namespace Trivial.Net
             var link = AppDeepLinkUri.Parse(url);
             Assert.AreEqual("trivial", link.Protocal);
             Assert.AreEqual("kingcean.net/test/a", link.Path);
-            Assert.AreEqual(3, link.PathItems.Count);
-            Assert.AreEqual(2, link.Query.Count);
+            Assert.HasCount(3, link.PathItems);
+            Assert.HasCount(2, link.Query);
             Assert.AreEqual("cd", link.Query["b"]);
             Assert.AreEqual("e", link.Query[1].Key);
             Assert.AreEqual("fg", link.Query[1].Value);

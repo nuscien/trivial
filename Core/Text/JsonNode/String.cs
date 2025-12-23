@@ -21,7 +21,7 @@ namespace Trivial.Text;
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.StringConverter))]
 [Guid("F6732685-1CEA-42D3-A13D-42AD3FA235DE")]
 public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IEquatable<char>, IReadOnlyList<char>
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<JsonStringNode, IJsonValueNode<string>, JsonStringNode>, IAdditionOperators<JsonStringNode, string, JsonStringNode>
 #endif
 {
@@ -34,7 +34,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     {
     }
 
-#if NET462_OR_GREATER || NET8_0_OR_GREATER
+#if NET462_OR_GREATER || NETCOREAPP
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>

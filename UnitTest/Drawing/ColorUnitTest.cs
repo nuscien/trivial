@@ -26,9 +26,9 @@ public class ColorUnitTest
     {
         var color = ColorCalculator.Parse("hsl(318.413, 76.518%, 0.51568)");
         var hsl = ColorCalculator.ToHSL(color);
-        Assert.IsTrue(Math.Abs(hsl.Item1 - 318.412) < 0.1);
-        Assert.IsTrue(Math.Abs(hsl.Item2 - 0.77) < 0.1);
-        Assert.IsTrue(Math.Abs(hsl.Item3 - 0.52) < 0.1);
+        Assert.IsLessThan(0.1, Math.Abs(hsl.Item1 - 318.412));
+        Assert.IsLessThan(0.1, Math.Abs(hsl.Item2 - 0.77));
+        Assert.IsLessThan(0.1, Math.Abs(hsl.Item3 - 0.52));
         Assert.AreEqual(226, color.R);
         Assert.AreEqual(37, color.G);
         Assert.AreEqual(168, color.B);
@@ -38,9 +38,9 @@ public class ColorUnitTest
         color = ColorCalculator.Parse("cmyk(0, 0.83628, 0.25664, 0.11373)");
         var cmyk = ColorCalculator.ToCMYK(color);
         Assert.AreEqual(0, cmyk.Item1);
-        Assert.IsTrue(Math.Abs(cmyk.Item2 - 0.83628) < 0.01);
-        Assert.IsTrue(Math.Abs(cmyk.Item3 - 0.25664) < 0.01);
-        Assert.IsTrue(Math.Abs(cmyk.Item4 - 0.11373) < 0.01);
+        Assert.IsLessThan(0.01, Math.Abs(cmyk.Item2 - 0.83628));
+        Assert.IsLessThan(0.01, Math.Abs(cmyk.Item3 - 0.25664));
+        Assert.IsLessThan(0.01, Math.Abs(cmyk.Item4 - 0.11373));
         Assert.AreEqual(226, color.R);
         Assert.AreEqual(37, color.G);
         Assert.AreEqual(168, color.B);
@@ -51,13 +51,13 @@ public class ColorUnitTest
         Assert.AreEqual(226, color.R);
         Assert.AreEqual(37, color.G);
         Assert.AreEqual(168, color.B);
-        Assert.IsTrue(Math.Abs(color.GetHue() - 318.412) < 0.1);
+        Assert.IsLessThan(0.1, Math.Abs(color.GetHue() - 318.412));
         color = ColorCalculator.Parse("rgb(226, 37, 168, 0.8)");
         Assert.AreEqual("rgba(226, 37, 168, 0.8)", ColorCalculator.ToRgbaString(color));
         Assert.AreEqual(168, color.B);
         Assert.AreEqual(102, ColorCalculator.Opacity(color, 0.5).A);
         Assert.AreEqual(128, ColorCalculator.Opacity(color, 0.5, true).A);
-        Assert.IsTrue(ColorCalculator.Darken(color, 0.1).R < 226);
+        Assert.IsLessThan(226, ColorCalculator.Darken(color, 0.1).R);
 
         color = ColorCalculator.Parse("red");
         Assert.AreEqual(255, color.R);
@@ -134,7 +134,7 @@ public class ColorUnitTest
         colors = ColorCalculator.Opacity(colors, 12).ToArray();
         for (var i = 0; i < colors.Length; i++)
         {
-            Assert.IsTrue(colors[i].A <= 12);
+            Assert.IsLessThanOrEqualTo(12, colors[i].A);
         }
     }
 

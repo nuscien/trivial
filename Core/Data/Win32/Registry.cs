@@ -12,7 +12,7 @@ namespace Trivial.Data;
 /// <summary>
 /// The Windows Registry utility.
 /// </summary>
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 #endif
 public static class RegistryUtility

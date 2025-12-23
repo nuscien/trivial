@@ -27,7 +27,7 @@ namespace Trivial.Tasks;
 public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();

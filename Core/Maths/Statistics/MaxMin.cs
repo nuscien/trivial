@@ -113,7 +113,7 @@ public static partial class StatisticalMethod
         return result;
     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
     /// </summary>
@@ -336,7 +336,7 @@ public static partial class StatisticalMethod
         var sum = 0f;
         foreach (var number in numbers)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var exp = MathF.Exp(number);
 #else
             var exp = (float)Math.Exp(number);
@@ -375,7 +375,7 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var exp = MathF.Exp(numbers[i]);
 #else
             var exp = (float)Math.Exp(numbers[i]);
@@ -413,7 +413,7 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var exp = MathF.Exp(numbers[i]);
 #else
             var exp = (float)Math.Exp(numbers[i]);
@@ -544,7 +544,7 @@ public static partial class StatisticalMethod
         return result;
     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Converts a set of number to another calculated by softmin function.
     /// </summary>
@@ -766,7 +766,7 @@ public static partial class StatisticalMethod
         var sum = 0f;
         foreach (var number in numbers)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var exp = MathF.Exp(-number);
 #else
             var exp = (float)Math.Exp(-number);
@@ -805,7 +805,7 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var exp = MathF.Exp(-numbers[i]);
 #else
             var exp = (float)Math.Exp(-numbers[i]);
@@ -843,7 +843,7 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var exp = MathF.Exp(-numbers[i]);
 #else
             var exp = (float)Math.Exp(-numbers[i]);

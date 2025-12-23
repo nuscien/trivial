@@ -13,15 +13,11 @@ steps:
   inputs:
     version: 10.0.x
 
-- task: UseDotNet@2
-  displayName: 'Install .NET SDK 8.0'
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
   inputs:
-    version: 8.0.x
-
-- task: UseDotNet@2
-  displayName: 'Install .NET SDK 6.0'
-  inputs:
-    version: 6.0.x
+    command: 'restore'
+    projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build $(buildConfiguration)'
@@ -34,11 +30,14 @@ steps:
   inputs:
     command: test
     projects: 'UnitTest/UnitTest.csproj'
-    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/'
+    arguments: '--no-build --report-trx --retry-failed-tests 2 --results-directory TestResults'
     publishTestResults: true
 
-- task: PublishCodeCoverageResults@1
-  displayName: 'Publish Code Coverage Result'
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
   inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/TestResults/coverage.net8.0.cobertura.xml'
+    testResultsFormat: 'VSTest'
+    testResultsFiles: '**/*.trx'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+  condition: succeededOrFailed()

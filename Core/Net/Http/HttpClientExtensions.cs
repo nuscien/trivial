@@ -189,7 +189,7 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         if (destination == null) throw ObjectConvert.ArgumentNull(nameof(destination));
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var downloadingStream = await httpContent.ReadAsStreamAsync();
@@ -262,7 +262,7 @@ public static class HttpClientExtensions
         {
             Timeout = TimeSpan.FromDays(2)
         };
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         using var content = await httpClient.GetStreamAsync(uri, cancellationToken);
 #else
         using var content = await httpClient.GetStreamAsync(uri);
@@ -398,7 +398,7 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var type = typeof(T);
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync(cancellationToken);
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
@@ -469,7 +469,7 @@ public static class HttpClientExtensions
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var stream = await httpContent.ReadAsStreamAsync();
@@ -579,7 +579,7 @@ public static class HttpClientExtensions
         return JsonSerializer.DeserializeAsync<T>(stream, options);
     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Deserializes the HTTP JSON content into an object as the specific type.
     /// </summary>
@@ -755,7 +755,7 @@ public static class HttpClientExtensions
     public static async Task<StreamingCollectionResult<T>> DeserializeCollectionResultAsync<T>(this HttpContent httpContent, Action<StreamingCollectionResult<T>, ServerSentEventInfo> callback, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var stream = await httpContent.ReadAsStreamAsync();

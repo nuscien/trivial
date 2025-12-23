@@ -219,7 +219,7 @@ public class Point4D<TSpaceUnit, TTimeUnit> : Point3D<TSpaceUnit>
 /// The point of the 4D (time and space) mathematics coordinate and date time.
 /// </summary>
 public sealed class SpacetimePoint : Point4D<double, DateTime>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<SpacetimePoint, RelativeSpacetimePoint, SpacetimePoint>, ISubtractionOperators<SpacetimePoint, RelativeSpacetimePoint, SpacetimePoint>, ISubtractionOperators<SpacetimePoint, SpacetimePoint, RelativeSpacetimePoint>, IUnaryNegationOperators<SpacetimePoint, SpacetimePoint>
 #endif
 {
@@ -413,7 +413,7 @@ public sealed class SpacetimePoint : Point4D<double, DateTime>, IJsonObjectHost
 /// The point of the 4D (time and space) mathematics coordinate and time span.
 /// </summary>
 public sealed class RelativeSpacetimePoint : Point4D<double, TimeSpan>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<RelativeSpacetimePoint, RelativeSpacetimePoint, RelativeSpacetimePoint>, ISubtractionOperators<RelativeSpacetimePoint, RelativeSpacetimePoint, RelativeSpacetimePoint>, IUnaryNegationOperators<RelativeSpacetimePoint, RelativeSpacetimePoint>
 #endif
 {

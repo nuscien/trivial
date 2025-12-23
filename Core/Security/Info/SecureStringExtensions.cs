@@ -128,7 +128,7 @@ public static class SecureStringExtensions
         }
     }
 
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Appends a string into a secure string instance.
     /// </summary>

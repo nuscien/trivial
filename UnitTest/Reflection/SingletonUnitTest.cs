@@ -29,7 +29,7 @@ public class SingletonUnitTest
         var s = ObjectConvert.Invoke<string>(123);
         Assert.AreEqual("123", s);
         var f = ObjectConvert.Invoke<float>("456.789");
-        Assert.IsTrue(Math.Abs(f - 456.789) < 0.00001);
+        Assert.IsLessThan(0.00001, Math.Abs(f - 456.789));
         var d = ObjectConvert.Invoke<DateTime>("Wed, 17 Jul 2024 11:20:38 GMT");
         Assert.AreEqual(2024, d.Year);
         Assert.AreEqual(7, d.Month);
@@ -166,12 +166,12 @@ public class SingletonUnitTest
         Assert.AreEqual("9876543210", m.Id);
         Assert.IsNull(m.Title);
         Assert.IsNotNull(m.Keywords);
-        Assert.AreEqual(2, m.Keywords.Count);
+        Assert.HasCount(2, m.Keywords);
         m = JsonSerializer.Deserialize<ConciseModel>("{ \"id\": \"9876543210\", \"keywords\": [\"test\", \"another\"] }");
         Assert.AreEqual("9876543210", m.Id);
         Assert.IsNull(m.Title);
         Assert.IsNotNull(m.Keywords);
-        Assert.AreEqual(2, m.Keywords.Count);
+        Assert.HasCount(2, m.Keywords);
     }
 
     /// <summary>

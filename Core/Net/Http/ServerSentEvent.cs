@@ -576,7 +576,7 @@ public class ServerSentEventInfo
         }
     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Parses Server-Sent Event record.
     /// </summary>

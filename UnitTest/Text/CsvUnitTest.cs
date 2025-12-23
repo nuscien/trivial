@@ -25,21 +25,21 @@ public class CsvUnitTest
         var parser = new CsvParser(text);
         var col = parser.ToList();
 
-        Assert.AreEqual(2, col.Count);
-        Assert.AreEqual(5, col[0].Count);
+        Assert.HasCount(2, col);
+        Assert.HasCount(5, col[0]);
         Assert.AreEqual("ab", col[0][0]);
         Assert.AreEqual("cd", col[0][1]);
         Assert.AreEqual("efg,\t", col[0][2]);
         Assert.AreEqual("56789", col[0][3]);
         Assert.AreEqual("!!!", col[0][4]);
-        Assert.AreEqual(4, col[1].Count);
+        Assert.HasCount(4, col[1]);
         Assert.AreEqual("hijk", col[1][0]);
         Assert.AreEqual("l", col[1][1]);
         Assert.AreEqual("mn", col[1][2]);
         Assert.AreEqual("43210", col[1][3]);
 
         var models = parser.ConvertTo<JsonModel>(new[] { "A", "B", "C", "Num" }).ToList();
-        Assert.AreEqual(2, models.Count);
+        Assert.HasCount(2, models);
         Assert.AreEqual("ab", models[0].A);
         Assert.AreEqual("cd", models[0].B);
         Assert.AreEqual("efg,\t", models[0].C);
@@ -50,7 +50,7 @@ public class CsvUnitTest
         Assert.AreEqual(43210, models[1].Num);
 
         var jsons = parser.ConvertTo<JsonObjectNode>(new[] { "A", "B", "C", "Num" }).ToList();
-        Assert.AreEqual(2, jsons.Count);
+        Assert.HasCount(2, jsons);
         Assert.AreEqual("ab", jsons[0].TryGetStringValue("A"));
         Assert.AreEqual("cd", jsons[0].TryGetStringValue("B"));
         Assert.AreEqual("efg,\t", jsons[0].TryGetStringValue("C"));
@@ -64,14 +64,14 @@ public class CsvUnitTest
         parser = new CsvParser(stream);
         col = parser.ToList();
 
-        Assert.AreEqual(2, col.Count);
-        Assert.AreEqual(5, col[0].Count);
+        Assert.HasCount(2, col);
+        Assert.HasCount(5, col[0]);
         Assert.AreEqual("ab", col[0][0]);
         Assert.AreEqual("cd", col[0][1]);
         Assert.AreEqual("efg,\t", col[0][2]);
         Assert.AreEqual("56789", col[0][3]);
         Assert.AreEqual("!!!", col[0][4]);
-        Assert.AreEqual(4, col[1].Count);
+        Assert.HasCount(4, col[1]);
         Assert.AreEqual("hijk", col[1][0]);
         Assert.AreEqual("l", col[1][1]);
         Assert.AreEqual("mn", col[1][2]);
@@ -88,21 +88,21 @@ public class CsvUnitTest
         var parser = new TsvParser(text);
         var col = parser.ToList();
 
-        Assert.AreEqual(2, col.Count);
-        Assert.AreEqual(5, col[0].Count);
+        Assert.HasCount(2, col);
+        Assert.HasCount(5, col[0]);
         Assert.AreEqual("ab", col[0][0]);
         Assert.AreEqual("cd", col[0][1]);
         Assert.AreEqual("efg,\t", col[0][2]);
         Assert.AreEqual("56789", col[0][3]);
         Assert.AreEqual("!!!", col[0][4]);
-        Assert.AreEqual(4, col[1].Count);
+        Assert.HasCount(4, col[1]);
         Assert.AreEqual("hijk", col[1][0]);
         Assert.AreEqual("l", col[1][1]);
         Assert.AreEqual("mn", col[1][2]);
         Assert.AreEqual("43210", col[1][3]);
 
         var models = parser.ConvertTo<JsonModel>(new[] { "A", "B", "C", "Num" }).ToList();
-        Assert.AreEqual(2, models.Count);
+        Assert.HasCount(2, models);
         Assert.AreEqual("ab", models[0].A);
         Assert.AreEqual("cd", models[0].B);
         Assert.AreEqual("efg,\t", models[0].C);
@@ -113,7 +113,7 @@ public class CsvUnitTest
         Assert.AreEqual(43210, models[1].Num);
 
         var jsons = parser.ConvertTo<JsonObjectNode>(new[] { "A", "B", "C", "Num" }).ToList();
-        Assert.AreEqual(2, jsons.Count);
+        Assert.HasCount(2, jsons);
         Assert.AreEqual("ab", jsons[0].TryGetStringValue("A"));
         Assert.AreEqual("cd", jsons[0].TryGetStringValue("B"));
         Assert.AreEqual("efg,\t", jsons[0].TryGetStringValue("C"));
@@ -127,14 +127,14 @@ public class CsvUnitTest
         parser = new TsvParser(stream);
         col = parser.ToList();
 
-        Assert.AreEqual(2, col.Count);
-        Assert.AreEqual(5, col[0].Count);
+        Assert.HasCount(2, col);
+        Assert.HasCount(5, col[0]);
         Assert.AreEqual("ab", col[0][0]);
         Assert.AreEqual("cd", col[0][1]);
         Assert.AreEqual("efg,\t", col[0][2]);
         Assert.AreEqual("56789", col[0][3]);
         Assert.AreEqual("!!!", col[0][4]);
-        Assert.AreEqual(4, col[1].Count);
+        Assert.HasCount(4, col[1]);
         Assert.AreEqual("hijk", col[1][0]);
         Assert.AreEqual("l", col[1][1]);
         Assert.AreEqual("mn", col[1][2]);
@@ -150,10 +150,10 @@ public class CsvUnitTest
         var text = "#Version: 1.0\n#Date: 12-Jan-1996 00:00:00\n#Fields: time cs-method cs-uri\n00:34:23 GET /foo/bar.html\n12:21:16 GET /foo/bar.html\n12:45:52 GET \"/foo/bar.html\"\n12:57:34 GET /foo/bar.html";
         var parser = new ExtendedLogParser(text);
         var col = parser.ToList();
-        Assert.AreEqual(3, parser.Headers.Count);
+        Assert.HasCount(3, parser.Headers);
         Assert.AreEqual("cs-method", parser.Headers[1]);
-        Assert.AreEqual(4, col.Count);
-        Assert.AreEqual(3, col[0].Count);
+        Assert.HasCount(4, col);
+        Assert.HasCount(3, col[0]);
         Assert.AreEqual("12:21:16", col[1][0]);
         Assert.AreEqual("/foo/bar.html", col[2][2]);
         Assert.AreEqual("GET", col[3][1]);
@@ -165,10 +165,10 @@ public class CsvUnitTest
         using var stream = IO.CharsReader.ToStream(text, Encoding.UTF8);
         parser = new ExtendedLogParser(stream);
         col = parser.ToList();
-        Assert.AreEqual(3, parser.Headers.Count);
+        Assert.HasCount(3, parser.Headers);
         Assert.AreEqual("cs-method", parser.Headers[1]);
-        Assert.AreEqual(4, col.Count);
-        Assert.AreEqual(3, col[0].Count);
+        Assert.HasCount(4, col);
+        Assert.HasCount(3, col[0]);
         Assert.AreEqual("12:21:16", col[1][0]);
         Assert.AreEqual("/foo/bar.html", col[2][2]);
         Assert.AreEqual("GET", col[3][1]);

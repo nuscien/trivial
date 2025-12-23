@@ -277,7 +277,7 @@ internal class LazyObjectRef<T>(Lazy<T> lazy) : IObjectRef<T>, IObjectResolver<T
 internal class FactoryObjectRef : IObjectRef
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();
@@ -333,7 +333,7 @@ internal class FactoryObjectRef : IObjectRef
 internal class FactoryObjectRef<T> : IObjectRef<T>, IObjectResolver<T>
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();

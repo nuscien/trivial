@@ -1110,7 +1110,7 @@ public static partial class Arithmetic
         a ??= Array.Empty<T>();
         b ??= Array.Empty<T>();
         var c = new T[Math.Max(a.Length, b.Length)];
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         if (!Vector<T>.IsSupported || (a.Length < 1000 && b.Length < 1000))
         {
             ComputeByArray(c, 0, a, b, defaultValue, compute);
@@ -1155,7 +1155,7 @@ public static partial class Arithmetic
     private static T[] Compute<T>(ReadOnlySpan<T> a, ReadOnlySpan<T> b, T defaultValue, Func<T, T, T> compute, Func<Vector<T>, Vector<T>, Vector<T>> vectorCompute) where T : struct
     {
         var c = new T[Math.Max(a.Length, b.Length)];
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         if (!Vector<T>.IsSupported || (a.Length < 1000 && b.Length < 1000))
         {
             ComputeByArray(c, 0, a, b, defaultValue, compute);

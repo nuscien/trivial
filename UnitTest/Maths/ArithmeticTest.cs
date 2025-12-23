@@ -29,12 +29,12 @@ public class ArithmeticTest
         Assert.IsFalse(Arithmetic.IsPrime(21474836477));
         Assert.IsFalse(await Arithmetic.IsPrimeAsync(21474836477));
         Assert.IsTrue(await Arithmetic.IsPrimeAsync(2147483647L));
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         Assert.IsTrue(await Arithmetic.IsPrimeAsync((Int128)2147483647));
 #endif
         Assert.AreEqual(17, await Arithmetic.PreviousPrimeAsync(19));
-        Assert.IsTrue(await Arithmetic.PreviousPrimeAsync(968455) < 968455);
-        Assert.IsTrue(await Arithmetic.NextPrimeAsync(968455) > 968455);
+        Assert.IsLessThan(968455, await Arithmetic.PreviousPrimeAsync(968455));
+        Assert.IsGreaterThan(968455, await Arithmetic.NextPrimeAsync(968455));
 
         // GCD & LCM
         Assert.AreEqual(64, Arithmetic.Gcd(192, 128));
@@ -71,7 +71,7 @@ public class ArithmeticTest
         Assert.AreEqual(17_000_000L, Numbers.ParseToInt64("17百w", 10));
         Assert.AreEqual(17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
         Assert.AreEqual(-200_000_000_000_000, Numbers.ParseToInt64("-200T", 10));
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         Assert.AreEqual((Int128)17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
         Assert.AreEqual((Int128)(-200_000_000_000_000), Numbers.ParseToInt64("-200T", 10));
 #endif
@@ -235,11 +235,11 @@ public class ArithmeticTest
         var a = new[] { 1, 2, 3, 4 };
         var b = new[] { 5, 6, 7, 8, 9 };
         var c = Arithmetic.Plus(a, b);
-        Assert.AreEqual(5, c.Length);
+        Assert.HasCount(5, c);
         Assert.AreEqual(6, c[0]);
         Assert.AreEqual(9, c[4]);
         c = Arithmetic.Minus(a, b);
-        Assert.AreEqual(5, c.Length);
+        Assert.HasCount(5, c);
         Assert.AreEqual(-4, c[0]);
         Assert.AreEqual(-9, c[4]);
     }
@@ -253,29 +253,29 @@ public class ArithmeticTest
         var a = new List<int> { 1, 2, 3, 4 };
         var b = new List<int> { 5, 6, 7 };
         var c = Arithmetic.Plus(a, b).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.AreEqual(6, c[0]);
         Assert.AreEqual(4, c[3]);
         c = Arithmetic.Plus(a, a, b).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.AreEqual(7, c[0]);
         Assert.AreEqual(8, c[3]);
         c = Arithmetic.Plus(a, 8).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.AreEqual(9, c[0]);
         Assert.AreEqual(12, c[3]);
         c = Arithmetic.Plus(a, b, 8).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.AreEqual(14, c[0]);
         Assert.AreEqual(12, c[3]);
         c = Arithmetic.Minus(a, b).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.AreEqual(-4, c[0]);
         Assert.AreEqual(4, c[3]);
         var d = Random(1000009);
         var e = Random(1000007);
         var f = Arithmetic.Plus(d, e);
-        Assert.AreEqual(d.Length, f.Length);
+        Assert.HasCount(d.Length, f);
         Assert.AreEqual(d.First() + e.First(), f.First());
         Assert.AreEqual(d.Last(), f.Last());
     }
@@ -302,27 +302,27 @@ public class ArithmeticTest
         {
             f, f, f
         });
-        Assert.IsTrue(s.Contains(Environment.NewLine));
-        Assert.IsTrue(s.Length > 20);
+        Assert.Contains(Environment.NewLine, s);
+        Assert.IsGreaterThan(20, s.Length);
 
         Assert.IsFalse(BooleanOperations.Calculate(true, BinaryBooleanOperator.Nand, false, BinaryBooleanOperator.Xnor, false));
         var c = BooleanOperations.Calculate(BinaryBooleanOperator.Nor, [true, false, true, true], [false, false, false]).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.IsFalse(c[0]);
         Assert.IsTrue(c[1]);
         Assert.IsFalse(c[2]);
         Assert.IsTrue(c[3]);
         c = BooleanOperations.Calculate(BinaryBooleanOperator.Or, [false, false, false], [true, false, true, true], true).ToList();
-        Assert.AreEqual(4, c.Count);
+        Assert.HasCount(4, c);
         Assert.IsTrue(c[0]);
         Assert.IsFalse(c[1]);
         Assert.IsTrue(c[2]);
         Assert.IsTrue(c[3]);
         c = BooleanOperations.Calculate(BinaryBooleanOperator.Xor, [false], [true]).ToList();
-        Assert.AreEqual(1, c.Count);
+        Assert.HasCount(1, c);
         Assert.IsTrue(c[0]);
         c = BooleanOperations.Calculate(BinaryBooleanOperator.Xnor, [], []).ToList();
-        Assert.AreEqual(0, c.Count);
+        Assert.IsEmpty(c);
 
         var col = new List<bool>()
         {

@@ -208,7 +208,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateSHA256(bool shortName = false)
         => new(SHA256.Create(), shortName ? "S256" : "SHA256", true);
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Creates a hash signature provider using HMAC SHA-512 keyed hash algorithm.
     /// </summary>
@@ -1211,7 +1211,7 @@ public class KeyedSignatureProvider : ISignatureProvider
     public byte[] Sign(Stream value)
     {
         var bytes = new byte[value.Length];
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         value.ReadExactly(bytes);
 #else
         value.Read(bytes, 0, bytes.Length);
@@ -1243,7 +1243,7 @@ public class KeyedSignatureProvider : ISignatureProvider
     {
         if (data == null || !data.CanRead) return false;
         var bytes = new byte[data.Length];
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         data.ReadExactly(bytes);
 #else
         data.Read(bytes, 0, bytes.Length);

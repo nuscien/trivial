@@ -1652,7 +1652,7 @@ public static class JsonValues
     /// </summary>
     /// <returns>The media type header value of JSON.</returns>
     public static MediaTypeHeaderValue GetJsonMediaTypeHeaderValue()
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         => new(JsonMIME, "utf-8");
 #else
         => new(JsonMIME);
@@ -1663,7 +1663,7 @@ public static class JsonValues
     /// </summary>
     /// <returns>The media type header value of JSON lines.</returns>
     public static MediaTypeHeaderValue GetJsonlMediaTypeHeaderValue()
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
         => new(JsonlMIME, "utf-8");
 #else
         => new(JsonlMIME);
@@ -1924,7 +1924,7 @@ public static class JsonValues
                 return;
             }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             if (obj is Half ha)
             {
                 writer.WriteNumberValue((float)ha);
@@ -1940,8 +1940,7 @@ public static class JsonValues
                 if (canSeek) stream.Position = 0;
                 return;
             }
-#endif
-#if NET8_0_OR_GREATER
+
             if (obj is Int128 i128)
             {
                 if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) writer.WriteNumberValue((long)i128);
@@ -2216,7 +2215,7 @@ public static class JsonValues
                 return new JsonIntegerNode(i16u);
             }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             if (obj is Half ha)
             {
                 return new JsonDoubleNode((float)ha);
@@ -2226,8 +2225,7 @@ public static class JsonValues
             {
                 return new JsonStringNode(date.ToString("yyyy-MM-dd"));
             }
-#endif
-#if NET8_0_OR_GREATER
+
             if (obj is Int128 i128)
             {
                 if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128);
@@ -2547,7 +2545,7 @@ public static class JsonValues
                     Tag = guid,
                 }, breadcrumb);
             }
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             else if (type == typeof(Half))
             {
                 return handler.Convert(type, new JsonNumberSchemaDescription

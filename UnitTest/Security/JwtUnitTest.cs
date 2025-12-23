@@ -32,11 +32,11 @@ public class JwtUnitTest
         };
         var hash = HashSignatureProvider.CreateHS512("key");
         var jwt = payload + hash;
-        Assert.AreEqual(true, jwt.CanSign);
+        Assert.IsTrue(jwt.CanSign);
         Assert.AreEqual(payload, jwt.Payload);
         Assert.AreEqual(hash.Name, jwt.AlgorithmName);
         var header = jwt.ToAuthenticationHeaderValue();
-        Assert.IsTrue(header.Parameter.Length > 10);
+        Assert.IsGreaterThan(10, header.Parameter.Length);
         var jwt2 = JsonWebToken<JsonWebTokenPayload>.Parse(header.Parameter, hash);
         Assert.AreEqual(header.Parameter, jwt2.ToEncodedString());
         var parser = new JsonWebToken<JsonWebTokenPayload>.Parser(header.Parameter);
@@ -54,11 +54,11 @@ public class JwtUnitTest
         payload.SetValue("opqrst", HashUtility.ComputeSHA3512String("uvwxyz"));
         var hash = HashSignatureProvider.CreateHS512("key");
         var jwt = new JsonWebToken<JsonObjectNode>(payload, hash);
-        Assert.AreEqual(true, jwt.CanSign);
+        Assert.IsTrue(jwt.CanSign);
         Assert.AreEqual(payload, jwt.Payload);
         Assert.AreEqual(hash.Name, jwt.AlgorithmName);
         var header = jwt.ToAuthenticationHeaderValue();
-        Assert.IsTrue(header.Parameter.Length > 10);
+        Assert.IsGreaterThan(10, header.Parameter.Length);
         var jwt2 = JsonWebToken<JsonObjectNode>.Parse(header.Parameter, hash);
         Assert.AreEqual(header.Parameter, jwt2.ToEncodedString());
         var parser = new JsonWebToken<JsonObjectNode>.Parser(header.Parameter);
@@ -85,7 +85,7 @@ public class JwtUnitTest
         Assert.AreEqual(uri.OriginalString, req.Url);
         Assert.AreEqual(realm, req.Realm);
         Assert.IsNotNull(req.Scopes);
-        Assert.AreEqual(2, req.Scopes.Count);
+        Assert.HasCount(2, req.Scopes);
         Assert.AreEqual("read", req.Scopes[0]);
         Assert.AreEqual("list", req.Scopes[1]);
         req.Scopes = null;
@@ -112,11 +112,11 @@ public class JwtUnitTest
         meta = await req.GetMetadataAsync(http);
         Assert.IsNotNull(meta);
         Assert.AreEqual(uri.OriginalString, meta.Id);
-        Assert.AreEqual(3, meta.Scopes.Count);
-        Assert.AreEqual(2, meta.DPoPSigningAlgorithms.Count);
+        Assert.HasCount(3, meta.Scopes);
+        Assert.HasCount(2, meta.DPoPSigningAlgorithms);
         Assert.AreEqual("ES256", meta.DPoPSigningAlgorithms[0]);
         Assert.AreEqual("ES512", meta.DPoPSigningAlgorithms[1]);
-        Assert.AreEqual(1, meta.TokenFormats.Count);
+        Assert.HasCount(1, meta.TokenFormats);
         Assert.AreEqual("jwt", meta.TokenFormats[0]);
         Assert.IsNull(meta.JsonWebKeysUrl);
     }

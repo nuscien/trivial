@@ -170,7 +170,7 @@ public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<Point3D<TUnit>>, 
 /// </summary>
 [JsonConverter(typeof(DoublePoint3DConverter))]
 public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, ISubtractionCapable<DoublePoint3D>, INegationCapable<DoublePoint3D>, IEquatable<Vector3>, IEquatable<Point3D<double>>, IEquatable<Point3D<float>>, IEquatable<Point3D<int>>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<DoublePoint3D, DoublePoint3D, DoublePoint3D>, ISubtractionOperators<DoublePoint3D, DoublePoint3D, DoublePoint3D>, IUnaryNegationOperators<DoublePoint3D, DoublePoint3D>
 #endif
 {
@@ -410,7 +410,7 @@ public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoin
 /// </summary>
 [JsonConverter(typeof(IntPoint3DConverter))]
 public sealed class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISubtractionCapable<IntPoint3D>, INegationCapable<IntPoint3D>, IEquatable<Point3D<int>>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<IntPoint3D, IntPoint3D, IntPoint3D>, ISubtractionOperators<IntPoint3D, IntPoint3D, IntPoint3D>, IUnaryNegationOperators<IntPoint3D, IntPoint3D>
 #endif
 {

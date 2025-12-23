@@ -296,7 +296,7 @@ public static partial class ListExtensions
         return arr;
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Converts a collection of boolean to strings.
     /// </summary>
@@ -611,7 +611,7 @@ public static partial class ListExtensions
         return arr;
     }
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Converts a collection of boolean to strings.
     /// </summary>

@@ -25,7 +25,7 @@ public class SchemaUnitTest
         Assert.IsNotNull(schema);
         Assert.AreEqual(Guid.Parse("DD4F9F4E-D127-424A-B04A-696C5071EC7D"), schema.Tag);
         Assert.AreEqual("Unit test.", schema.Description);
-        Assert.AreEqual(5, schema.Properties.Count);
+        Assert.HasCount(5, schema.Properties);
         Assert.AreEqual("Property A.", schema.Properties["str-a"].Description);
         Assert.AreEqual(typeof(JsonStringSchemaDescription), schema.Properties["str-a"].GetType());
         Assert.IsNull(schema.Properties["str-c"].Description);
@@ -45,7 +45,7 @@ public class SchemaUnitTest
         schema = (JsonNodeSchemaDescription)json as JsonObjectSchemaDescription;
         Assert.IsNotNull(schema);
         Assert.AreEqual("Unit test.", schema.Description);
-        Assert.AreEqual(5, schema.Properties.Count);
+        Assert.HasCount(5, schema.Properties);
         schema = new JsonObjectSchemaDescription(new Dictionary<string, JsonNodeSchemaDescription>
         {
             {

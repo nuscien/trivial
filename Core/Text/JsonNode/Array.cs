@@ -55,7 +55,7 @@ namespace Trivial.Text;
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ArrayConverter))]
 [Guid("710F2703-04E9-4C13-9B6A-3403EC89A298")]
 public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IParsable<JsonArrayNode>, IAdditionOperators<JsonArrayNode, JsonArrayNode, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<BaseJsonValueNode>, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<IJsonValueNode>, JsonArrayNode>
 #endif
 {
@@ -4148,7 +4148,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
         => File.WriteAllText(path, ToString(style) ?? "null");
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Writes to file. If the target file already exists, it is overwritten.
     /// </summary>
@@ -4416,7 +4416,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public IEnumerable<BaseJsonValueNode> Take(int count)
         => store.Select(ele => ele ?? JsonValues.Null).Take(count);
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Gets a new enumerable collection that contains the elements from source with the last count elements of the array.
     /// </summary>
@@ -4736,7 +4736,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public ILookup<TKey, TElement> ToLookup<TKey, TElement>(Func<BaseJsonValueNode, TKey> keySelector, Func<BaseJsonValueNode, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         => Enumerable.ToLookup(this, keySelector, elementSelector, comparer);
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Creates a hash set from this JSON array.
     /// </summary>
@@ -5600,7 +5600,6 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <returns>The list of JSON node instance.</returns>
     public static JsonArrayNode Parse(ReadOnlySpan<byte> utf8Json)
     {
-#if NET9_0_OR_GREATER || NET462_OR_GREATER
         var reader = new Utf8JsonReader(utf8Json, new()
         {
             AllowMultipleValues = true,
@@ -5622,16 +5621,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         }
 
         return arr;
-#else
-        var reader = new Utf8JsonReader(utf8Json, new()
-        {
-            CommentHandling = JsonCommentHandling.Skip
-        });
-        return JsonValues.Parse(ref reader, false) as JsonArrayNode;
-#endif
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     static JsonArrayNode IParsable<JsonArrayNode>.Parse(string s, IFormatProvider provider)
         => Parse(s);
 

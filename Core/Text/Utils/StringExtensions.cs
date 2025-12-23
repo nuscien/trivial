@@ -1391,7 +1391,7 @@ public static class StringExtensions
         return await reader.ReadToEndAsync();
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Converts to string.
     /// </summary>
@@ -1711,14 +1711,14 @@ public static class StringExtensions
     }
 
     internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex)
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         => sb.Append(input.AsSpan(startIndex));
 #else
         => sb.Append(input.Substring(startIndex));
 #endif
 
     internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex, int length)
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
         => sb.Append(input.AsSpan(startIndex, length));
 #else
         => sb.Append(input.Substring(startIndex, length));

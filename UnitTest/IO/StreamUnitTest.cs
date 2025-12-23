@@ -23,7 +23,7 @@ namespace Trivial.IO
             var str = "abcdefghijklmnopqrstuvwxyz 中文";
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(str));
             var streamArr = stream.Separate(10).ToList();
-            Assert.IsTrue(streamArr.Count > 0);
+            Assert.IsNotEmpty(streamArr);
             var reader = new CharsReader(streamArr, Encoding.UTF8);
             Assert.AreEqual(str, reader.ReadToEnd());
             foreach (var s in streamArr)
@@ -36,7 +36,7 @@ namespace Trivial.IO
             str = "abcdefg\rhijklmn\nopq rst\r\nuvw xyz";
             using var stream2 = CharsReader.ToStream(str);
             var lines = CharsReader.ReadLines(stream2, Encoding.UTF8).ToList();
-            Assert.AreEqual(4, lines.Count);
+            Assert.HasCount(4, lines);
 
             reader = new CharsReader(str);
             Assert.AreEqual('a', reader.Peek());

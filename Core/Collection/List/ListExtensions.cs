@@ -867,7 +867,7 @@ public static partial class ListExtensions
     /// <param name="list">The source collection.</param>
     /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
     /// <returns>A synchronized list.</returns>
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     public static IList<T> ToSynchronizedList<T>(IEnumerable<T> list, Lock syncRoot)
 #else
     public static IList<T> ToSynchronizedList<T>(IEnumerable<T> list, object syncRoot)
@@ -882,7 +882,7 @@ public static partial class ListExtensions
     /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
     /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
     /// <returns>A synchronized list.</returns>
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     public static IList<T> ToSynchronizedList<T>(List<T> list, Lock syncRoot, bool useSource)
 #else
     public static IList<T> ToSynchronizedList<T>(List<T> list, object syncRoot, bool useSource)

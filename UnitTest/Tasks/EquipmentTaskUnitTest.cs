@@ -76,7 +76,7 @@ public class EquipmentTaskUnitTest
         var status = task1.UpdateFragment(f, EquipartitionTask.FragmentStates.Success);
         Assert.AreEqual(0, task1.GetProcessingFragments().Count());
         Assert.AreEqual(2, task3.GetProcessingFragments().Count());
-        Assert.AreEqual(false, status);
+        Assert.IsFalse(status);
         task3.UpdateFragment(f, EquipartitionTask.FragmentStates.Success);
         Assert.AreEqual(0, task1.GetProcessingFragments().Count());
         Assert.AreEqual(1, task3.GetProcessingFragments().Count());

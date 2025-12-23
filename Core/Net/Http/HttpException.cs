@@ -30,7 +30,7 @@ public class FailedHttpException : Exception
         Header = response.Headers;
     }
 
-#if !NET8_0_OR_GREATER
+#if !NETCOREAPP
     /// <summary>
     /// Initializes a new instance of the FailedHttpException class.
     /// </summary>
@@ -81,7 +81,7 @@ public class FailedHttpException : Exception
     /// </summary>
     public HttpRequestMessage RequestMessage => Response?.RequestMessage;
 
-#if !NET8_0_OR_GREATER
+#if !NETCOREAPP
     /// <summary>
     /// When overridden in a derived class, sets the System.Runtime.Serialization.SerializationInfo with information about the exception.
     /// </summary>

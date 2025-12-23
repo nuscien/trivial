@@ -16,7 +16,7 @@ namespace Trivial.Text;
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.BooleanConverter))]
 [Guid("BB8C0C59-D1D0-47B4-9C94-0DE7680FAFC8")]
 public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IParsable<JsonBooleanNode>
 #endif
 {
@@ -116,7 +116,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public override int GetHashCode()
         => base.GetHashCode();
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Tries to format the value of the current boolean instance into the provided span of characters.
     /// </summary>
@@ -659,7 +659,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
         return result is not null;
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Parses.
     /// </summary>

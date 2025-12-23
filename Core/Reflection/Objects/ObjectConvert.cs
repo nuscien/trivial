@@ -84,7 +84,7 @@ public static class ObjectConvert
                     return Maths.Numbers.ParseToUInt16(str, 10);
                 if (type == typeof(Guid))
                     return Guid.Parse(str);
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
                 if (type == typeof(Int128))
                     return Maths.Numbers.ParseToInt128(str, 10);
 #endif
@@ -965,7 +965,7 @@ public static class ObjectConvert
         for (int i = 0; i < count; i++)
         {
             var j = i * 2;
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var c = hex.AsSpan(j, 2);
 #else
             var c = hex.Substring(j, 2);
@@ -990,7 +990,7 @@ public static class ObjectConvert
         for (int i = 0; i < count; i++)
         {
             var j = i * 2;
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var c = hex.AsSpan(j, 2);
 #else
             var c = hex.Substring(j, 2);
@@ -1021,7 +1021,7 @@ public static class ObjectConvert
         for (int i = 0; i < count; i++)
         {
             var j = i * 2;
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             var c = hex.AsSpan(j, 2);
 #else
             var c = hex.Substring(j, 2);
@@ -1048,7 +1048,7 @@ public static class ObjectConvert
         var bytes = new byte[count];
         for (int i = 0; i < count; i++)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             bytes[i] = int.TryParse(hex.AsSpan(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
 #else
             bytes[i] = int.TryParse(hex.Substring(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
@@ -1069,7 +1069,7 @@ public static class ObjectConvert
         var count = hex.Length / 2;
         for (int i = 0; i < count; i++)
         {
-#if NET6_0_OR_GREATER
+#if NETCOREAPP
             yield return int.TryParse(hex.AsSpan(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
 #else
             yield return int.TryParse(hex.Substring(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;

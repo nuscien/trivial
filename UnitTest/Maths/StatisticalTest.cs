@@ -62,16 +62,16 @@ public class StatisticalTest
         Assert.AreEqual(0, list[8]);
         Assert.AreEqual(1, arr[0]);
         var sample = StatisticalMethod.SampleDeviation(col);
-        Assert.IsTrue(sample > 0);
+        Assert.IsGreaterThan(0, sample);
         sample = StatisticalMethod.StandardDeviation(col);
-        Assert.IsTrue(sample > 0);
+        Assert.IsGreaterThan(0, sample);
         sample = StatisticalMethod.SampleVariance(col);
-        Assert.IsTrue(sample > 0);
+        Assert.IsGreaterThan(0, sample);
         sample = StatisticalMethod.Variance(col);
-        Assert.IsTrue(sample > 0);
+        Assert.IsGreaterThan(0, sample);
         Assert.AreEqual(5, StatisticalMethod.Mean(col));
         Assert.AreEqual(5, StatisticalMethod.Median(col));
         col = StatisticalMethod.Mode(col).ToList();
-        Assert.IsTrue(col.Count == 9);
+        Assert.HasCount(9, col);
     }
 }

@@ -253,7 +253,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// The locker.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();
@@ -812,7 +812,7 @@ public class SingletonKeeper<T>
     private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     private readonly Func<Task<T>> renew;
     private readonly List<Action<T>> callbacks = new();
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     private readonly Lock callbackLocker = new();
 #else
     private readonly object callbackLocker = new();

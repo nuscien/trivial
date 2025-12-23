@@ -539,7 +539,7 @@ public class FailedChangeException : Exception
         Kind = kind;
     }
 
-#if !NET8_0_OR_GREATER
+#if !NETCOREAPP
     /// <summary>
     /// Initializes a new instance of the FailedChangeException class.
     /// </summary>
@@ -560,7 +560,7 @@ public class FailedChangeException : Exception
     /// </summary>
     public ChangeErrorKinds Kind { get; }
 
-#if !NET8_0_OR_GREATER
+#if !NETCOREAPP
     /// <summary>
     /// When overridden in a derived class, sets the System.Runtime.Serialization.SerializationInfo with information about the exception.
     /// </summary>

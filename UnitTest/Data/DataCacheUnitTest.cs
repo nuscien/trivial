@@ -63,9 +63,9 @@ public class DataCacheUnitTest
             for (var j = 0; j < 100; j++)
             {
                 cache["rst"] = j;
-                Assert.IsTrue(cache["rst"] >= 0);
+                Assert.IsGreaterThanOrEqualTo(0, cache["rst"]);
                 cache["uvw"] = j;
-                Assert.IsTrue(cache["uvw"] >= 0);
+                Assert.IsGreaterThanOrEqualTo(0, cache["uvw"]);
             }
         });
 
@@ -77,8 +77,8 @@ public class DataCacheUnitTest
                 var no = cache.GetAsync("*#06#");
                 var j = await cache.GetInfoAsync("1234567890");
                 Assert.IsNotNull(j);
-                Assert.IsTrue(j.Value < 7);
-                Assert.IsTrue(await no < 7);
+                Assert.IsLessThan(7, j.Value);
+                Assert.IsLessThan(7, await no);
             }
 
             tasks.Add(task());
@@ -87,7 +87,7 @@ public class DataCacheUnitTest
         tasks.Add(Task.Delay(100));
         Task.WaitAll(tasks.ToArray());
         Assert.IsTrue(cache.Contains("*#06#"));
-        Assert.IsTrue(cache["*#06#"] < 7);
+        Assert.IsLessThan(7, cache["*#06#"]);
         //if (cache.Count() == 3)
         //{
         //    Console.WriteLine($"{info.UpdateDate} {DateTime.Now} {cache.IsExpired(info)}");
@@ -162,9 +162,9 @@ public class DataCacheUnitTest
             for (var j = 0; j < 100; j++)
             {
                 cache[null, "rst"] = j;
-                Assert.IsTrue(cache[null, "rst"] >= 0);
+                Assert.IsGreaterThanOrEqualTo(0, cache[null, "rst"]);
                 cache[null, "uvw"] = j;
-                Assert.IsTrue(cache[null, "uvw"] >= 0);
+                Assert.IsGreaterThanOrEqualTo(0, cache[null, "uvw"]);
             }
         });
 
@@ -176,8 +176,8 @@ public class DataCacheUnitTest
                 var no = cache.GetAsync("xyz", "*#06#");
                 var j = await cache.GetInfoAsync("xyz", "1234567890");
                 Assert.IsNotNull(j);
-                Assert.IsTrue(j.Value < 7);
-                Assert.IsTrue(await no < 7);
+                Assert.IsLessThan(7, j.Value);
+                Assert.IsLessThan(7, await no);
             }
 
             tasks.Add(task());
@@ -186,7 +186,7 @@ public class DataCacheUnitTest
         tasks.Add(Task.Delay(200));
         Task.WaitAll(tasks.ToArray());
         Assert.IsTrue(cache.Contains("xyz", "*#06#"));
-        Assert.IsTrue(cache["xyz", "*#06#"] < 7);
+        Assert.IsLessThan(7, cache["xyz", "*#06#"]);
         Assert.AreEqual(4, cache.Count());
         Assert.AreEqual(4, cache.CacheCount);
         Assert.AreEqual(99, cache[null, "rst"]);

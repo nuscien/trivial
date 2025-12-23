@@ -146,16 +146,16 @@ public class SetUnitTest
         Assert.IsTrue(d.Contains("6.0.0.0"));
         Assert.IsFalse(d.Contains("6.2.0.100"));
 
-        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0", "1.0.0", false) == 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.1", "1.0.0", false) > 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0", "1.0.1", false) < 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("1.1.0", "1.0.0", false) > 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0", "1.1.0", false) < 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0.0", "1.0.0", false) > 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("10.0.0.0", "9.100.0", false) > 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("10.10.0.0", "9.0.0", false) > 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("9.0.0.0", "10.0.0", false) < 0);
-        Assert.IsTrue(Reflection.VersionComparer.Compare("9.0.0.0", "10.20.0", false) < 0);
+        Assert.AreEqual(0, Reflection.VersionComparer.Compare("1.0.0", "1.0.0", false));
+        Assert.IsGreaterThan(0, Reflection.VersionComparer.Compare("1.0.1", "1.0.0", false));
+        Assert.IsLessThan(0, Reflection.VersionComparer.Compare("1.0.0", "1.0.1", false));
+        Assert.IsGreaterThan(0, Reflection.VersionComparer.Compare("1.1.0", "1.0.0", false));
+        Assert.IsLessThan(0, Reflection.VersionComparer.Compare("1.0.0", "1.1.0", false));
+        Assert.IsGreaterThan(0, Reflection.VersionComparer.Compare("1.0.0.0", "1.0.0", false));
+        Assert.IsGreaterThan(0, Reflection.VersionComparer.Compare("10.0.0.0", "9.100.0", false));
+        Assert.IsGreaterThan(0, Reflection.VersionComparer.Compare("10.10.0.0", "9.0.0", false));
+        Assert.IsLessThan(0, Reflection.VersionComparer.Compare("9.0.0.0", "10.0.0", false));
+        Assert.IsLessThan(0, Reflection.VersionComparer.Compare("9.0.0.0", "10.20.0", false));
     }
 
     /// <summary>

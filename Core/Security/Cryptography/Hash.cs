@@ -177,7 +177,7 @@ public static class HashUtility
     public static string ComputeHashString<T>(Func<T> h, SecureString secureString, Encoding encoding = null) where T : HashAlgorithm
         => ComputeHashString(h, secureString.ToUnsecureString(), encoding);
 
-#if NETFRAMEWORK || NET6_0
+#if NETFRAMEWORK
     /// <summary>
     /// Computes a hash string value of a specific string instance.
     /// </summary>
@@ -214,7 +214,7 @@ public static class HashUtility
     /// <exception cref="ArgumentNullException">name was null.</exception>
     /// <exception cref="ArgumentException">name.Name was null or empty.</exception>
     /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
-#if NETFRAMEWORK || NET6_0
+#if NETFRAMEWORK
     public static HashAlgorithm Create(HashAlgorithmName name)
 #else
     internal static HashAlgorithm Create(HashAlgorithmName name)
@@ -237,7 +237,7 @@ public static class HashUtility
             "SHA512" or "SHA2" => SHA512.Create(),
             "MD5" => MD5.Create(),
             "SHA1" => SHA1.Create(),
-#if NETFRAMEWORK || NET6_0
+#if NETFRAMEWORK
             _ => HashAlgorithm.Create(name.Name)
 #else
             _ => null
@@ -643,7 +643,7 @@ public static class HashUtility
             StringComparer.OrdinalIgnoreCase.Equals(alg(plainText), hash) :
             (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
 
-#if NETFRAMEWORK || NET6_0
+#if NETFRAMEWORK
     /// <summary>
     /// Verifies a hash against a string.
     /// </summary>

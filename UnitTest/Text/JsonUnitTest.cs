@@ -188,6 +188,21 @@ public class JsonUnitTest
         jsonArray.AddRange(jsonArray);
         jsonArray.Remove(2);
         Assert.AreEqual(456, jsonArray.GetInt32Value(1));
+        jsonArray.Add(new JsonObjectNode
+        {
+            { "newProp", new JsonObjectNode {
+                { "deep", "newValue" }
+            } },
+            { "arr", new JsonArrayNode
+            {
+                0
+            } }
+        });
+        Assert.AreEqual("newValue", jsonArray[3, "newProp", "deep"]);
+        Assert.IsTrue(jsonArray.Contains(3));
+        Assert.IsFalse(jsonArray.Contains(4));
+        Assert.IsTrue(jsonArray.TryRemove(3, out _));
+
         jsonArray.InsertRange(1, jsonArray);
         Assert.AreEqual(6, jsonArray.Count);
         Assert.AreEqual("*+-\"\'\\", jsonArray.GetStringValue(0));
@@ -208,7 +223,7 @@ public class JsonUnitTest
         Assert.AreEqual(7, json.GetValue("arr", "0").As<int>());
         Assert.AreEqual(7, json.GetValue("arr", null, null, "0", string.Empty).As<int>());
         Assert.IsNull(json.TryGetValue(new[] { "arr", "0", "x" }));
-        Assert.AreEqual(9, jsonArray.GetStringCollection().ToList().Count);
+        Assert.HasCount(9, jsonArray.GetStringCollection().ToList());
 
         jsonArray.Remove(jsonArray.Count - 1);
         var m = json.Deserialize<JsonModel>();
@@ -218,7 +233,7 @@ public class JsonUnitTest
         Assert.AreEqual(json.GetInt32Value("num"), m.Num);
         Assert.IsInstanceOfType(m.Col, typeof(IEnumerable<int>));
         var list = m.Col.ToList();
-        Assert.AreEqual(jsonArray.Count, list.Count);
+        Assert.HasCount(jsonArray.Count, list);
         Assert.AreEqual(0, list[1]);
         Assert.AreEqual(456, list[2]);
         Assert.AreEqual(8, list[6]);
@@ -245,30 +260,30 @@ public class JsonUnitTest
         Assert.AreEqual(jsonStr, Encoding.UTF8.GetString(stream.ToArray()));
         stream.Position = 0;
         json = JsonObjectNode.Parse(stream);
-        Assert.AreEqual(9, json.Keys.Count);
+        Assert.HasCount(9, json.Keys);
         Assert.AreEqual(jsonStr, json.ToString());
         var jsonNode = (System.Text.Json.Nodes.JsonNode)json;
         Assert.IsNotNull(jsonNode);
         json = jsonNode;
         Assert.IsNotNull(json);
-        Assert.AreEqual(9, json.Keys.Count);
+        Assert.HasCount(9, json.Keys);
         Assert.AreEqual(jsonStr, json.ToString());
         json = JsonSerializer.Deserialize<JsonObjectNode>(jsonStr);
         Assert.IsNotNull(json);
-        Assert.AreEqual(9, json.Keys.Count);
+        Assert.HasCount(9, json.Keys);
 
         jsonStr = JsonSerializer.Serialize(json.ToDictionary());
         var dict = JsonSerializer.Deserialize<Dictionary<string, BaseJsonValueNode>>(jsonStr);
         json.Clear();
         Assert.AreEqual(0, json.Count);
         json.SetRange(dict);
-        Assert.AreEqual(9, json.Keys.Count);
+        Assert.HasCount(9, json.Keys);
         dict.Clear();
-        Assert.AreEqual(9, json.Keys.Count);
+        Assert.HasCount(9, json.Keys);
 
         Assert.IsFalse(jsonArray.IsNull(0));
         Assert.IsTrue(jsonArray.IsNullOrUndefined(100));
-        Assert.IsTrue(jsonArray.EnsureCount(20) > 0);
+        Assert.IsGreaterThan(0, jsonArray.EnsureCount(20));
         jsonArray.SetValue(20, "str");
         Assert.AreEqual("str", jsonArray.GetStringValue(20));
         jsonArray.SetValue(20, DateTime.Now);
@@ -317,7 +332,7 @@ public class JsonUnitTest
         json.Add("4", 1.0);
         json.Add("5", 600L);
         json.Add("6", DateTime.Now);
-        Assert.IsTrue(json.Count > 6);
+        Assert.IsGreaterThan(6, json.Count);
 
         json.Clear();
         Assert.AreEqual(0, json.Count);
@@ -364,7 +379,7 @@ public class JsonUnitTest
         Assert.AreEqual(100L, json.GetInt64Value("number"));
         json.IncreaseValue("number", 1.2);
         json.DecreaseValue("number", 0.3);
-        Assert.IsTrue(json.GetDoubleValue("number") > 100);
+        Assert.IsGreaterThan(100, json.GetDoubleValue("number"));
         Assert.AreEqual(7, numberChangedCount);
 
         var j1 = Serialize<System.Text.Json.Nodes.JsonObject>("{ \"a\": \"bcdefg\", \"h\": \"ijklmn\" }");
@@ -400,15 +415,14 @@ public class JsonUnitTest
         json.Id = Guid.NewGuid().ToString();
         Assert.IsNotNull(json.Id);
         Assert.IsTrue(json.ContainsKey("$id"));
-        Assert.IsTrue(json.ToString().IndexOf('$') < 10);
-        Assert.IsTrue(json.ToString(IndentStyles.Compact).IndexOf('$') < 10);
+        Assert.IsLessThan(10, json.ToString().IndexOf('$'));
+        Assert.IsLessThan(10, json.ToString(IndentStyles.Compact).IndexOf('$'));
         json.Id = null;
         Assert.IsNull(json.Id);
         Assert.IsFalse(json.ContainsKey("$id"));
 
         var bytes = "null {}\n{ \"test\": \"jsonl\", \"num\": 6789 } 3.14 \r\n [0,2,5,false,true]"u8;
         var jsonl = JsonArrayNode.Parse(bytes);
-#if NET9_0_OR_GREATER || NET462_OR_GREATER
         Assert.AreEqual(5, jsonl.Count);
         Assert.AreEqual(JsonValueKind.Null, jsonl[0].ValueKind);
         Assert.AreEqual(3.14, jsonl[3].As<double>());
@@ -416,10 +430,6 @@ public class JsonUnitTest
         json = jsonl[2] as JsonObjectNode;
         Assert.IsTrue(json.ContainsKey("test"));
         Assert.AreEqual(6789, json.TryGetInt32Value("num"));
-#else
-        Assert.IsNull(jsonl);
-#endif
-
         json = new()
         {
             { "a", "bcdefg" },
@@ -592,8 +602,8 @@ public class JsonUnitTest
         Assert.AreEqual(model.E, model2.E);
         Assert.AreEqual(model.F.Count, model2.F.Count);
         Assert.AreEqual(model.G.Count, model2.G.Count);
-        Assert.AreEqual(model.H.Count, model2.H.Count);
-        Assert.AreEqual(model.I.Count - 1, model2.I.Count);
+        Assert.HasCount(model.H.Count, model2.H);
+        Assert.HasCount(model.I.Count - 1, model2.I);
 
         model = new JsonAttributeTestModel
         {
@@ -610,10 +620,10 @@ public class JsonUnitTest
         Assert.AreEqual(model.C, model2.C);
         Assert.AreEqual(model.D, model2.D);
         Assert.AreEqual(model.E, model2.E);
-        Assert.AreEqual(null, model2.F);
-        Assert.AreEqual(null, model2.G);
-        Assert.AreEqual(null, model2.H);
-        Assert.AreEqual(null, model2.I);
+        Assert.IsNull(model2.F);
+        Assert.IsNull(model2.G);
+        Assert.IsNull(model2.H);
+        Assert.IsNull(model2.I);
 
         str = @"{
 ""H"": "":,.;/| "",
@@ -632,9 +642,9 @@ public class JsonUnitTest
 ""W"": 17.24
 }";
         model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
-        Assert.AreEqual(1, model2.H.Count);
+        Assert.HasCount(1, model2.H);
         Assert.AreEqual(":,.;/| ", model2.H[0]);
-        Assert.AreEqual(6, model2.I.Count);
+        Assert.HasCount(6, model2.I);
         Assert.AreEqual((uint)123456, model2.J);
         Assert.IsNotNull(model2.K);
         Assert.AreEqual(12, model2.K.MinValue);
@@ -685,7 +695,7 @@ public class JsonUnitTest
         Assert.IsNull(model2.U);
         Assert.AreEqual(Data.ChangeMethods.Unknown, model2.V);
         Assert.AreEqual(17, model2.W.Degree);
-        Assert.IsTrue(model2.W.Arcminute > 0);
+        Assert.IsGreaterThan(0, model2.W.Arcminute);
         str = JsonSerializer.Serialize(model2);
         Assert.IsNotNull(str);
     }
@@ -767,7 +777,7 @@ public class JsonUnitTest
         {
             Assert.AreEqual("This is a text.", s);
             Assert.AreEqual(10000, i);
-        }).Default(Assert.Fail);
+        }).Default(() => Assert.Fail("Switch unexpected to default route"));
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(1, sc.Count);
         Assert.IsFalse(json.GetValue("arr").Switch().Case<string, int>(TestObject, (s, i) => Assert.Fail()).IsPassed);

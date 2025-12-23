@@ -82,7 +82,7 @@ namespace Trivial.Text;
 [JsonConverter(typeof(JsonValueNodeConverter.ObjectConverter))]
 [Guid("2D5D5CB8-9ACD-4DB6-9B0F-1D766EF64D75")]
 public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IParsable<JsonObjectNode>
 #endif
 {
@@ -4362,7 +4362,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         SetProperty(key, new JsonStringNode(string.Format(value, args)));
     }
 
-#if NET9_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
@@ -9667,7 +9667,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         return Parse(stream, options);
     }
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     static JsonObjectNode IParsable<JsonObjectNode>.Parse(string s, IFormatProvider provider)
         => Parse(s);
 

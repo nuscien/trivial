@@ -840,7 +840,7 @@ public static class Numbers
             _ => null
         };
 
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Parses a string to a number.
     /// </summary>

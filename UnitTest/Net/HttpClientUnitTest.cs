@@ -37,7 +37,7 @@ public class HttpClientUnitTest
         oauth.Scope.Add("another");
         Assert.AreEqual("test another", oauth.ScopeString);
         oauth.ScopeString = "query";
-        Assert.AreEqual(1, oauth.Scope.Count);
+        Assert.HasCount(1, oauth.Scope);
         var client = oauth.Create<JsonModel>();
     }
 
@@ -79,13 +79,13 @@ public class HttpClientUnitTest
         };
         var s = sse.ToResponseString(true);
         sse = ServerSentEventInfo.Parse(s).ToList();
-        Assert.AreEqual(3, sse.Count);
+        Assert.HasCount(3, sse);
         using var stream = new MemoryStream();
         sse.WriteTo(stream);
         stream.Seek(0, SeekOrigin.Begin);
         sse = ServerSentEventInfo.Parse(stream).ToList();
         stream.Close();
-        Assert.AreEqual(3, sse.Count);
+        Assert.HasCount(3, sse);
         Assert.AreEqual("1", sse[0].Id);
         var json = sse[2].GetJsonData();
         Assert.IsNotNull(json);

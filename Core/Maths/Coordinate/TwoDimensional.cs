@@ -204,7 +204,7 @@ public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<Point2D<TUnit>>, IE
 /// </summary>
 [JsonConverter(typeof(DoublePoint2DConverter))]
 public sealed class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, ISubtractionCapable<DoublePoint2D>, INegationCapable<DoublePoint2D>, IEquatable<System.Drawing.PointF>, IEquatable<Vector2>, IEquatable<Point2D<double>>, IEquatable<Point2D<float>>, IEquatable<Point2D<int>>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<DoublePoint2D, DoublePoint2D, DoublePoint2D>, ISubtractionOperators<DoublePoint2D, DoublePoint2D, DoublePoint2D>, IUnaryNegationOperators<DoublePoint2D, DoublePoint2D>
 #endif
 {
@@ -503,7 +503,7 @@ public sealed class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoin
 /// </summary>
 [JsonConverter(typeof(IntPoint2DConverter))]
 public sealed class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtractionCapable<IntPoint2D>, INegationCapable<IntPoint2D>, IEquatable<System.Drawing.Point>, IEquatable<Point2D<int>>, IEquatable<Point2D<double>>, IJsonObjectHost
-#if NET8_0_OR_GREATER
+#if NETCOREAPP
     , IAdditionOperators<IntPoint2D, IntPoint2D, IntPoint2D>, ISubtractionOperators<IntPoint2D, IntPoint2D, IntPoint2D>, IUnaryNegationOperators<IntPoint2D, IntPoint2D>
 #endif
 {
