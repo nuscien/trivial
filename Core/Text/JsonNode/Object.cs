@@ -808,6 +808,23 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <summary>
+    /// Gets all specific keys.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <returns>All key with all cultures.</returns>
+    public IEnumerable<string> GetKey(string key)
+    {
+        if (string.IsNullOrEmpty(key)) yield break;
+        var keys = store.Keys;
+        if (keys.Contains(key)) yield return key;
+        key += "#";
+        foreach (var k in keys)
+        {
+            if (k.StartsWith(key)) yield return k;
+        }
+    }
+
+    /// <summary>
     /// Gets the raw value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>

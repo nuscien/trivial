@@ -1059,6 +1059,23 @@ public static class JsonValues
     /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="key">The property key required.</param>
+    /// <param name="test">The condition to test the value.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, StringCondition test)
+    {
+        if (col == null || test == null) yield break;
+        foreach (var item in col)
+        {
+            var s = item?.TryGetStringValue(key);
+            if (s != null && test.IsMatched(s)) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
     public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, int value)
@@ -1075,6 +1092,23 @@ public static class JsonValues
     /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="key">The property key required.</param>
+    /// <param name="test">The condition to test the value.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, Int32Condition test)
+    {
+        if (col == null || test == null) yield break;
+        foreach (var item in col)
+        {
+            var i = item?.TryGetInt32Value(key);
+            if (i.HasValue && test.IsMatched(i.Value)) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
     public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, long value)
@@ -1083,6 +1117,23 @@ public static class JsonValues
         foreach (var item in col)
         {
             if (item is not null && item.TryGetInt64Value(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="test">The condition to test the value.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, Int64Condition test)
+    {
+        if (col == null || test == null) yield break;
+        foreach (var item in col)
+        {
+            var i = item?.TryGetInt64Value(key);
+            if (i.HasValue && test.IsMatched(i.Value)) yield return item;
         }
     }
 
@@ -1159,10 +1210,50 @@ public static class JsonValues
     /// </summary>
     /// <param name="array">The input JSON array node.</param>
     /// <param name="key">The property key required.</param>
+    /// <param name="test">The condition to test the value.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, StringCondition test)
+        => WithProperty(array?.SelectObjects(), key, test);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
     public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, int value)
         => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="test">The condition to test the value.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, Int32Condition test)
+        => WithProperty(array?.SelectObjects(), key, test);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, long value)
+        => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="test">The condition to test the value.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, Int64Condition test)
+        => WithProperty(array?.SelectObjects(), key, test);
 
     /// <summary>
     /// Gets the all JSON object items which contains the specific property from the array.

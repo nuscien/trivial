@@ -79,6 +79,7 @@ public static class MatrixCalculation
     /// </summary>
     /// <param name="matrix">The input matrix.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix must be square.</exception>
     public static int[,] Inverse(int[,] matrix)
     {
         var n = matrix.GetLength(0);
@@ -118,6 +119,7 @@ public static class MatrixCalculation
     /// </summary>
     /// <param name="matrix">The input matrix.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix must be square.</exception>
     public static double[,] Inverse(double[,] matrix)
     {
         var n = matrix.GetLength(0);
@@ -157,6 +159,7 @@ public static class MatrixCalculation
     /// </summary>
     /// <param name="matrix">The input matrix.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix must be square.</exception>
     public static float[,] Inverse(float[,] matrix)
     {
         var n = matrix.GetLength(0);
@@ -362,6 +365,7 @@ public static class MatrixCalculation
     /// <param name="a">The input matrix a.</param>
     /// <param name="b">The input matrix b.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix dimensions do not match for multiplication.</exception>
     public static double[,] Multiply(double[,] a, double[,] b)
     {
         var aRows = a.GetLength(0);
@@ -469,6 +473,7 @@ public static class MatrixCalculation
     /// <param name="a">The input matrix a.</param>
     /// <param name="b">The input matrix b.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix dimensions do not match for multiplication.</exception>
     public static float[,] Multiply(float[,] a, float[,] b)
     {
         var aRows = a.GetLength(0);
@@ -498,6 +503,7 @@ public static class MatrixCalculation
     /// <param name="a">The input matrix a.</param>
     /// <param name="b">The input matrix b.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix and vector dimensions do not match for multiplication.</exception>
     public static double[] Multiply(double[,] a, double[] b)
     {
         var aRows = a.GetLength(0);
@@ -522,6 +528,7 @@ public static class MatrixCalculation
     /// <param name="a">The input matrix a.</param>
     /// <param name="b">The input matrix b.</param>
     /// <returns>The output matrix.</returns>
+    /// <exception cref="ArgumentException">Matrix and vector dimensions do not match for multiplication.</exception>
     public static float[] Multiply(float[,] a, float[] b)
     {
         var aRows = a.GetLength(0);

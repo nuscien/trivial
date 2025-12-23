@@ -5,39 +5,36 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  BuildConfiguration: 'Release'
+  buildConfiguration: 'Release'
     
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 10.0'
+  displayName: 'Install .NET SDK 10.0'
   inputs:
     version: 10.0.x
-    includePreviewVersions: true
 
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 8.0'
+  displayName: 'Install .NET SDK 8.0'
   inputs:
     version: 8.0.x
-    includePreviewVersions: true
 
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 6.0'
+  displayName: 'Install .NET SDK 6.0'
   inputs:
     version: 6.0.x
-    includePreviewVersions: true
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build $(BuildConfiguration)'
+  displayName: 'Build $(buildConfiguration)'
   inputs:
     command: build
-    arguments: '--configuration $(BuildConfiguration)'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Unit Test'
   inputs:
     command: test
     projects: 'UnitTest/UnitTest.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/'
     publishTestResults: true
 
 - task: PublishCodeCoverageResults@1

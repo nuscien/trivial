@@ -29,19 +29,19 @@ public enum PropertySettingPolicies
     /// <summary>
     /// Writable property.
     /// </summary>
-    [Description("The properties are writable.")]
+    [Description("Properties are writable.")]
     Allow = 0,
 
     /// <summary>
     /// Read-only property but skip error when set value.
     /// </summary>
-    [Description("The properties are read-only. Any update will be ignored.")]
+    [Description("Properties are read-only. Any update will be ignored.")]
     Skip = 1,
 
     /// <summary>
     /// Read-only property and require to throw an exception when set value.
     /// </summary>
-    [Description("The properties are read-only. Any update will occur an exception thrown.")]
+    [Description("Properties are read-only. Any update will occur an exception thrown.")]
     Forbidden = 2
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -92,11 +93,13 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// <summary>
     /// Gets a collection containing the case-insensitive keys in the mapping.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ICollection<string> Keys => mapping.Keys;
 
     /// <summary>
     /// Gets a collection containing the values in the mapping.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ICollection<T> Values => mapping.Values;
 
     /// <summary>
@@ -107,6 +110,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// <summary>
     /// Gets a value indicating whether the mapping is read-only.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     bool ICollection<KeyValuePair<string, T>>.IsReadOnly => false;
 
     /// <summary>
