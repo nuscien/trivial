@@ -27,8 +27,35 @@ public class JsonUnitTest
         var now = DateTime.Now;
         var json = CreateModel(now);
 
+        Assert.IsFalse(json.IsReadOnly);
+        Assert.IsNotEmpty(json.Keys);
+        Assert.IsNotEmpty(json.Values);
         Assert.AreEqual(9, json.Keys.Count());
+        Assert.IsFalse(json.IsNullOrUndefined("str-a"));
+        Assert.IsTrue(json.IsValueKind("str-a", JsonValueKind.String));
         Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));
+        Assert.AreEqual("\"hijklmn\"", json.GetRawText("str-a"));
+        Assert.AreEqual(JsonValueKind.String, json.GetValueKind("str-a"));
+        Assert.AreEqual(JsonValueKind.String, json.GetValueKind("str-a", true));
+        Assert.AreEqual(JsonValueKind.Undefined, json.GetValueKind("not exists"));
+        Assert.AreEqual("hijklmn", TryGetValue(json, typeof(string), "str-a"));
+        TryGetValue(json, typeof(Uri), "str-a");
+        Assert.IsNull(TryGetValue(json, typeof(int), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(long), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(short), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(uint), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(ulong), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(ushort), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(float), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(double), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(decimal), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(bool), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(Guid), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(DateTime), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(JsonObjectNode), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(JsonArrayNode), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(JsonDocument), "str-a"));
+        Assert.IsNull(TryGetValue(json, typeof(GenericUriParserOptions), "str-a"));
         Assert.IsTrue(json.GetValue("str-a") is JsonStringNode);
         var sn = json.GetValue("str-a") as JsonStringNode;
         Assert.AreEqual("hijklmn", (string)sn);
@@ -183,12 +210,21 @@ public class JsonUnitTest
 
         var jsonArray = json.GetArrayValue("arr");
         Assert.AreEqual(0, jsonArray.Count);
+#if NET10_0_OR_GREATER
+        jsonArray += "*+-\"\'\\";
+        jsonArray += 456;
+#else
         jsonArray.Add("*+-\"\'\\");
         jsonArray.Add(456);
+#endif
         jsonArray.AddRange(jsonArray);
         jsonArray.Remove(2);
         Assert.AreEqual(456, jsonArray.GetInt32Value(1));
+#if NET10_0_OR_GREATER
+        jsonArray += new JsonObjectNode
+#else
         jsonArray.Add(new JsonObjectNode
+#endif
         {
             { "newProp", new JsonObjectNode {
                 { "deep", "newValue" }
@@ -197,7 +233,11 @@ public class JsonUnitTest
             {
                 0
             } }
+#if NET10_0_OR_GREATER
+        };
+#else
         });
+#endif
         Assert.AreEqual("newValue", jsonArray[3, "newProp", "deep"]);
         Assert.IsTrue(jsonArray.Contains(3));
         Assert.IsFalse(jsonArray.Contains(4));
@@ -240,12 +280,22 @@ public class JsonUnitTest
         Assert.AreEqual(9, list[7]);
         jsonArray.AddNull();
         Assert.AreEqual(JsonValues.Null, jsonArray[jsonArray.Count - 1]);
+#if NET10_0_OR_GREATER
+        jsonArray += new JsonArrayNode
+#else
         jsonArray.Add(new JsonArrayNode
+#endif
         {
             8, 9, 0
+#if NET10_0_OR_GREATER
+        };
+        jsonArray += null as string;
+        jsonArray++;
+#else
         });
         jsonArray.Add(null as string);
         jsonArray.AddNull();
+#endif
         jsonArray.RemoveNull();
         Assert.AreEqual(JsonValueKind.Array, jsonArray[jsonArray.Count - 1].ValueKind);
 
@@ -436,6 +486,16 @@ public class JsonUnitTest
             { "h", "ijklmn" },
             { "o", "pq" }
         };
+        Assert.IsFalse(json.ContainsOnlyKey("a"));
+        Assert.IsFalse(json.ContainsOnlyKey("a", out bool? _));
+        Assert.IsFalse(json.ContainsOnlyKey("a", out string _));
+        Assert.IsFalse(json.ContainsOnlyKey("a", out int _));
+        Assert.IsFalse(json.ContainsOnlyKey("a", out long _));
+        Assert.IsTrue(json.ContainsOnlyKeys(new[] { "a", "h", "o" }));
+        Assert.IsFalse(json.ContainsOnlyKeys(new[] { "a", "h" }, out var matched));
+        Assert.HasCount(2, matched);
+        Assert.IsFalse(json.ContainsOnlyKeys(new[] { "a", "h" }, out _, out matched));
+        Assert.HasCount(1, matched);
         json.SetRange(new JsonObjectNode
         {
             { "o", "ooo" },
@@ -500,6 +560,8 @@ public class JsonUnitTest
         json.SetValue("title", "Testing");
         json.SetValue("title#en", "Test");
         json.SetValue("title#zh-Hans", "测试");
+        matched = json.GetKey("title").ToList();
+        Assert.HasCount(3, matched);
         Assert.AreEqual("Testing", json.TryGetStringValue("title"));
         try
         {
@@ -537,6 +599,17 @@ public class JsonUnitTest
         catch (ArgumentException)
         {
         }
+
+        json.SetRange("num-1", 1, "num-2", 2, "num-3", 3, "num-4", 4, "num-5", 5, "num-6", 6);
+        json.SetRange("num-1", "1", "num-2", "2", "num-3", "3", "num-4", "4", "num-5", "5", "num-6", "6");
+        json.RemoveRange(new[] { "num-1", "num-2", "num-3", "num-4", "num-5", "num-6" });
+        Assert.IsTrue(json.IsValueKind("num-2", JsonValueKind.Undefined));
+        Assert.IsFalse(json.ContainsOnlyKey("num-2", out JsonArrayNode _));
+        var defs = new JsonObjectNode();
+        json.SetLocalDefinition("a", defs);
+        Assert.AreEqual(defs, json.GetLocalDefinition("a"));
+        json.LocalDefinitions = null;
+        Assert.IsNull(json.GetLocalDefinition("a"));
     }
 
     /// <summary>
@@ -781,6 +854,40 @@ public class JsonUnitTest
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(1, sc.Count);
         Assert.IsFalse(json.GetValue("arr").Switch().Case<string, int>(TestObject, (s, i) => Assert.Fail()).IsPassed);
+
+        var s = new JsonStringNode(12d, "g");
+        Assert.IsFalse(s.Switch(new Dictionary<string, Action<string>>
+        {
+            { "1", s => { } }
+        }));
+        Assert.IsFalse(s.Switch(new Dictionary<string, Action<string, int>>
+        {
+            { "1", (s, arg) => { } }
+        }, 100));
+        Assert.IsTrue(s.Switch(new Dictionary<string, Action<string>>
+        {
+            { "12", s => { } }
+        }));
+        Assert.IsTrue(s.Switch(new Dictionary<string, Action<string, int>>
+        {
+            { "12", (s, arg) => { } }
+        }, 100));
+        Assert.AreEqual("b", s.Switch(new Dictionary<string, Func<string, string>>
+        {
+            { "1", s => "a" }
+        }, "b"));
+        Assert.AreEqual("b", s.Switch(new Dictionary<string, Func<string, int, string>>
+        {
+            { "1", (s, arg) => "a" }
+        }, 100, "b"));
+        Assert.AreEqual("a", s.Switch(new Dictionary<string, Func<string, string>>
+        {
+            { "12", s => "a" }
+        }, "b"));
+        Assert.AreEqual("a", s.Switch(new Dictionary<string, Func<string, int, string>>
+        {
+            { "12", (s, arg) => "a" }
+        }, 100, "b"));
     }
 
     private static bool TestObject(IJsonValueNode node, out string a, out int b)
@@ -829,6 +936,31 @@ public class JsonUnitTest
         if (parser != null && parser.IsStatic)
         {
             return (T)parser.Invoke(null, new object[] { json, null, default(JsonDocumentOptions) });
+        }
+
+        return null;
+    }
+
+    private static object TryGetValue(JsonObjectNode json, Type type, string key)
+    {
+        try
+        {
+            return json.GetValue(type, key);
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (JsonException)
+        {
         }
 
         return null;

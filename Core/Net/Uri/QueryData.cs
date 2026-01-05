@@ -348,6 +348,15 @@ public class QueryData : StringKeyValuePairs
     /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
+    /// <param name="url">The URL.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <returns>A query string.</returns>
+    public string ToString(IJsonValueNode<string> url, Encoding encoding = null)
+        => ToString(url?.Value, encoding);
+
+    /// <summary>
+    /// Returns a string that represents the current object.
+    /// </summary>
     /// <param name="uri">The URI.</param>
     /// <param name="encoding">The optional encoding.</param>
     /// <returns>A query string.</returns>

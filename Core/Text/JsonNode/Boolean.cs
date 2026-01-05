@@ -393,6 +393,24 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public static explicit operator JsonValue(JsonBooleanNode json)
         => JsonValue.Create(json.Value);
 
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Tests if the value is true.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <returns>true if it presents true; otherwise, false.</returns>
+    public static bool operator true(JsonBooleanNode value)
+        => value is not null && value.Value;
+
+    /// <summary>
+    /// Tests if the value is false.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <returns>true if it presents false; otherwise, true.</returns>
+    public static bool operator false(JsonBooleanNode value)
+        => value is not null && !value.Value;
+#endif
+
     /// <summary>
     /// Compares two instances to indicate if they are same.
     /// leftValue == rightValue

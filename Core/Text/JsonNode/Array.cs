@@ -3179,7 +3179,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     }
 
     /// <summary>
-    /// Add null.
+    /// Adds null.
     /// </summary>
     public void AddNull()
         => AddItem(JsonValues.Null);
@@ -5243,6 +5243,181 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         return arr;
     }
 
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(DBNull value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(string value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(IJsonValueNode<string> value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
+    public void operator +=(SecureString value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(Guid value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(DateTime value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(short value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(uint value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(int value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(long value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(float value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(double value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(decimal value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(bool value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonBooleanNode value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonArrayNode value)
+        => Add(value);
+
+    /// <summary>
+    /// Pluses two array.
+    /// </summary>
+    /// <param name="rightValue">The right value to merge.</param>
+    /// <returns>The array node after merging.</returns>
+    public void operator +=(JsonObjectNode rightValue)
+        => Add(rightValue);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(IJsonObjectHost value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonDocument value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonElement value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonNode value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds null.
+    /// </summary>
+    public void operator ++()
+        => AddNull();
+
+    /// <summary>
+    /// Removes last item.
+    /// </summary>
+    public void operator --()
+    {
+        if (Length < 1) return;
+        try
+        {
+            Remove(Length - 1);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+#endif
+
     /// <summary>
     /// Gets all values of specific kind.
     /// </summary>
@@ -5461,7 +5636,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of JSON array.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonArray(JsonArrayNode json)
+    public static explicit operator JsonArray(JsonArrayNode json)
         => json?.ToJsonArray();
 
     /// <summary>
@@ -5469,7 +5644,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of JSON node.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonNode(JsonArrayNode json)
+    public static explicit operator JsonNode(JsonArrayNode json)
         => json?.ToJsonArray();
 
     /// <summary>

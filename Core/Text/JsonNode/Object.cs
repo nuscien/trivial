@@ -1486,6 +1486,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
+    /// <exception cref="FormatException">The input string was not in a correct format.</exception>
+    /// <exception cref="JsonException">Deserialize failed.</exception>
     public object GetValue(Type type, string key)
     {
         if (type == null) return null;
@@ -1517,8 +1519,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         if (type == typeof(JsonObjectNode)) return GetObjectValue(key);
         if (type == typeof(JsonArrayNode)) return GetArrayValue(key);
         if (type == typeof(JsonDocument)) return (JsonDocument)GetObjectValue(key);
-        if (type == typeof(System.Text.Json.Nodes.JsonObject)) return (System.Text.Json.Nodes.JsonObject)GetObjectValue(key);
-        if (type == typeof(System.Text.Json.Nodes.JsonArray)) return (System.Text.Json.Nodes.JsonArray)GetArrayValue(key);
+        if (type == typeof(JsonObject)) return (JsonObject)GetObjectValue(key);
+        if (type == typeof(JsonArray)) return (JsonArray)GetArrayValue(key);
         if (type == typeof(Type)) return GetValue(key).GetType();
         if (type == typeof(BaseJsonValueNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonValueNode<string>) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonDecimalNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
             return GetValue(key);

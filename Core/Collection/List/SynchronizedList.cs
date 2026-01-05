@@ -1366,6 +1366,22 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     object ICloneable.Clone()
         => Clone();
 
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(T value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator -=(T value)
+        => Remove(value);
+#endif
+
     private void OnPropertyChanged(bool onlyItemUpdate = false)
     {
         RevisionToken = new();

@@ -399,7 +399,17 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
-    /// <param name="value">The value.</param>
+    /// <param name="url">The URL.</param>
+    /// <param name="value">The query data.</param>
+    public JsonStringNode(string url, Net.QueryData value)
+        : this(value is null ? url : value.ToString(url))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The query data.</param>
     public JsonStringNode(Net.HttpUri value)
         : this(value?.ToString())
     {
@@ -1181,6 +1191,89 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <returns>The result.</returns>
     public long TryToInt64(long defaultValue)
         => TryConvert(false, out long result) ? result : defaultValue;
+
+    /// <summary>
+    /// Switches to the case handler registered.
+    /// </summary>
+    /// <param name="route">The case handler route.</param>
+    /// <param name="fallback">The default case handler.</param>
+    /// <returns>true if matches one (not include the fallback); otherwise, false.</returns>
+    public bool Switch(IDictionary<string, Action<string>> route, Action<string> fallback = null)
+    {
+        if (route is null || !route.TryGetValue(Value, out var h))
+        {
+            if (fallback is not null) fallback(Value);
+            return false;
+        }
+
+        h(Value);
+        return true;
+    }
+
+    /// <summary>
+    /// Switches to the case handler registered.
+    /// </summary>
+    /// <param name="route">The case handler route.</param>
+    /// <param name="arg">The additional argument of handler.</param>
+    /// <param name="fallback">The default case handler.</param>
+    /// <returns>true if matches one (not include the fallback); otherwise, false.</returns>
+    public bool Switch<TArg>(IDictionary<string, Action<string, TArg>> route, TArg arg, Action<string, TArg> fallback = null)
+    {
+        if (route is null || !route.TryGetValue(Value, out var h))
+        {
+            if (fallback is not null) fallback(Value, arg);
+            return false;
+        }
+
+        h(Value, arg);
+        return true;
+    }
+
+    /// <summary>
+    /// Switches to the case handler registered.
+    /// </summary>
+    /// <param name="route">The case handler route.</param>
+    /// <param name="fallback">The default case handler.</param>
+    /// <returns>The result.</returns>
+    public T Switch<T>(IDictionary<string, Func<string, T>> route, Func<string, T> fallback = null)
+    {
+        if (route is null || !route.TryGetValue(Value, out var h))
+            return fallback is not null ? fallback(Value) : default;
+        return h(Value);
+    }
+
+    /// <summary>
+    /// Switches to the case handler registered.
+    /// </summary>
+    /// <param name="route">The case handler route.</param>
+    /// <param name="arg">The additional argument of handler.</param>
+    /// <param name="fallback">The default case handler.</param>
+    /// <returns>The result.</returns>
+    public TResult Switch<TArg, TResult>(IDictionary<string, Func<string, TArg, TResult>> route, TArg arg, Func<string, TArg, TResult> fallback = null)
+    {
+        if (route is null || !route.TryGetValue(Value, out var h))
+            return fallback is not null ? fallback(Value, arg) : default;
+        return h(Value, arg);
+    }
+
+    /// <summary>
+    /// Switches to the case handler registered.
+    /// </summary>
+    /// <param name="route">The case handler route.</param>
+    /// <param name="fallback">The default case handler.</param>
+    /// <returns>The result.</returns>
+    public T Switch<T>(IDictionary<string, Func<string, T>> route, T fallback)
+        => Switch(route, s => fallback);
+
+    /// <summary>
+    /// Switches to the case handler registered.
+    /// </summary>
+    /// <param name="route">The case handler route.</param>
+    /// <param name="arg">The additional argument of handler.</param>
+    /// <param name="fallback">The default case handler.</param>
+    /// <returns>The result.</returns>
+    public TResult Switch<TArg, TResult>(IDictionary<string, Func<string, TArg, TResult>> route, TArg arg, TResult fallback)
+        => Switch(route, arg, (s, arg) => fallback);
 
     /// <summary>
     /// Tries to get the value of the element as an integer.
