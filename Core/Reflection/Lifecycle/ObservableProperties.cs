@@ -92,6 +92,11 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     public event ChangeEventHandler<object> PropertyChanged;
 
     /// <summary>
+    /// Adds or removes the event handler raised on property changed.
+    /// </summary>
+    public event ChangeEventHandler<object> PropertyChangeFailed;
+
+    /// <summary>
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
@@ -126,7 +131,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     protected void InitializeProperty<T>(string key, Func<T> initializer)
     {
         if (initializer is null || cache.ContainsKey(key)) return;
-        SetPropertyInternal(key, initializer());
+        SetPropertyInternal(key, initializer(), null, ChangeMethods.Add);
     }
 
     /// <summary>
@@ -195,19 +200,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, [CallerMemberName] string key = null)
-    {
-        if (!AssertPropertyKey(key)) return false;
-        var exist = cache.TryGetValue(key, out var v);
-        if (exist && v == value) return false;
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
-        {
-            if (!SetPropertyInternal(key, value)) return false;
-            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
-            return true;
-        }
-
-        return RejectSet();
-    }
+        => SetPropertyInternal(key, value);
 
     /// <summary>
     /// Sets a property.
@@ -220,70 +213,19 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, Cases keyCase, CultureInfo culture = null, [CallerMemberName] string key = null)
-    {
-        key = StringExtensions.ToSpecificCase(key, keyCase, culture);
-        if (!AssertPropertyKey(key)) return false;
-        var exist = cache.TryGetValue(key, out var v);
-        if (exist && v == value) return false;
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
-        {
-            if (!SetPropertyInternal(key, value)) return false;
-            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
-            return true;
-        }
-
-        return RejectSet();
-    }
+        => SetPropertyInternal(StringExtensions.ToSpecificCase(key, keyCase, culture), value);
 
     /// <summary>
     /// Sets a property.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <param name="notify">The notification function.</param>
+    /// <param name="callback">The callback handler.</param>
     /// <param name="key">The additional key.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
-    protected bool SetCurrentProperty(object value, Action<string, object, bool, object> notify, [CallerMemberName] string key = null)
-    {
-        if (!AssertPropertyKey(key)) return false;
-        var exist = cache.TryGetValue(key, out var v);
-        if (exist && v == value) return false;
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
-        {
-            if (!SetPropertyInternal(key, value)) return false;
-            notify?.Invoke(key, value, exist, v);
-            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
-            return true;
-        }
-
-        return RejectSet();
-    }
-
-    /// <summary>
-    /// Sets a property.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="notify">The notification function.</param>
-    /// <param name="key">The additional key.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">key was null.</exception>
-    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
-    protected bool SetCurrentProperty(object value, Action<object> notify, [CallerMemberName] string key = null)
-    {
-        if (!AssertPropertyKey(key)) return false;
-        var exist = cache.TryGetValue(key, out var v);
-        if (exist && v == value) return false;
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
-        {
-            if (!SetPropertyInternal(key, value)) return false;
-            notify?.Invoke(value);
-            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
-            return true;
-        }
-
-        return RejectSet();
-    }
+    protected bool SetCurrentProperty(object value, Action<ChangeEventArgs<object>> callback, [CallerMemberName] string key = null)
+        => SetPropertyInternal(key, value, callback);
 
     /// <summary>
     /// Gets a property value.
@@ -564,33 +506,45 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <summary>
     /// Sets a property.
     /// </summary>
-    /// <param name="key">The key.</param>
-    /// <param name="value">The value.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value the property.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetProperty(string key, object value)
-    {
-        if (!AssertPropertyKey(key)) return false;
-        var exist = cache.TryGetValue(key, out var v);
-        if (exist && v == value) return false;
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
-        {
-            if (!SetPropertyInternal(key, value)) return false;
-            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
-            return true;
-        }
+        => SetPropertyInternal(key, value);
 
-        return RejectSet();
-    }
+    /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value the property.</param>
+    /// <param name="tag">The additional tag.</param>
+    /// <param name="callback">The callback handler after set.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
+    protected bool SetProperty(string key, object value, object tag, Action<ChangeEventArgs<object>> callback = null)
+        => SetPropertyInternal(key, value, callback, tag);
+
+    /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="kvp">The property key and its value.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
+    protected bool SetProperty<T>(KeyValuePair<string, T> kvp)
+        => SetPropertyInternal(kvp.Key, kvp.Value);
 
     /// <summary>
     /// Tests whether the new property to set is valid.
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property to set.</param>
+    /// <param name="tag">The additional tag.</param>
     /// <returns>true if the property is valid; otherwise, false.</returns>
-    protected virtual bool IsPropertyValid(string key, object value)
+    protected virtual bool IsPropertyValid(string key, object value, object tag)
         => true;
 
     /// <summary>
@@ -606,6 +560,14 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Occurs on property is add, updated or removed.
+    /// </summary>
+    /// <param name="ev">The information of property changed.</param>
+    protected virtual void OnPropertyChanged(ChangeEventArgs<object> ev)
+    {
+    }
+
+    /// <summary>
     /// Removes a property.
     /// </summary>
     /// <param name="key">The key.</param>
@@ -615,35 +577,22 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     protected bool RemoveProperty(string key)
     {
         if (!AssertPropertyKey(key)) return false;
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+        var exist = cache.TryGetValue(key, out var v);
+        if (PropertiesSettingPolicy != PropertySettingPolicies.Allow)
         {
-            if (PropertyChanged is null)
-            {
-                var result = cache.Remove(key);
-                if (result)
-                {
-                    RevisionToken = new();
-                    propertyChanged?.Invoke(this, new(key));
-                }
-
-                return result;
-            }
-            else
-            {
-                var exist = cache.TryGetValue(key, out var v);
-                if (!exist) return false;
-                var result = cache.Remove(key);
-                if (result)
-                {
-                    RevisionToken = new();
-                    RaisePropertyChange(v, null, ChangeMethods.Remove, key);
-                }
-
-                return result;
-            }
+            PropertyChangeFailed?.Invoke(this, new(v, null, ChangeMethods.Forbidden, key));
+            return RejectSet();
         }
 
-        return RejectSet();
+        if (!exist) return false;
+        var result = cache.Remove(key);
+        if (result)
+        {
+            RevisionToken = new();
+            RaisePropertyChange(v, null, ChangeMethods.Remove, key);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -823,46 +772,101 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Sets the property.
+    /// Sets a property.
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property to set.</param>
+    /// <param name="callback">The callback handler after set.</param>
+    /// <param name="tag">The additional tag.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
-    private bool SetPropertyInternal(string key, object value)
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
+    private bool SetPropertyInternal(string key, object value, Action<ChangeEventArgs<object>> callback = null, object tag = null)
     {
+        if (!AssertPropertyKey(key)) return false;
+        var exist = cache.TryGetValue(key, out var v);
+        if (exist && v == value) return false;
+        return SetPropertyInternal(key, value, v, exist ? ChangeMethods.Update : ChangeMethods.Add, callback, tag);
+    }
+
+    /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property to set.</param>
+    /// <param name="old">The old value of the property.</param>
+    /// <param name="method">The change method.</param>
+    /// <param name="callback">The callback handler after set.</param>
+    /// <param name="tag">The additional tag.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
+    private bool SetPropertyInternal(string key, object value, object old, ChangeMethods method, Action<ChangeEventArgs<object>> callback = null, object tag = null)
+    {
+        if (PropertiesSettingPolicy != PropertySettingPolicies.Allow)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Forbidden, key));
+            return RejectSet();
+        }
+
+        bool valid;
         try
         {
-            if (!IsPropertyValid(key, value)) return false;
-            cache[key] = value;
-            RevisionToken = new();
-            return true;
+            valid = IsPropertyValid(key, value, tag);
         }
         catch (ArgumentException)
         {
+            valid = false;
         }
         catch (InvalidOperationException)
         {
+            valid = false;
         }
         catch (NotSupportedException)
         {
+            valid = false;
         }
         catch (UnauthorizedAccessException)
         {
+            valid = false;
         }
         catch (NullReferenceException)
         {
+            valid = false;
         }
         catch (ApplicationException)
         {
+            valid = false;
         }
 
-        return false;
+        if (!valid)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            return false;
+        }
+
+        try
+        {
+            cache[key] = value;
+        }
+        catch (InvalidOperationException)
+        {
+            cache[key] = value;
+        }
+
+        RevisionToken = new();
+        var ev = RaisePropertyChange(old, value, method, key);
+        callback?.Invoke(ev);
+        return true;
     }
 
-    private void RaisePropertyChange(object oldValue, object newValue, ChangeMethods method, string key)
+    private ChangeEventArgs<object> RaisePropertyChange(object oldValue, object newValue, ChangeMethods method, string key)
     {
         propertyChanged?.Invoke(this, new(key));
-        PropertyChanged?.Invoke(this, new(oldValue, newValue, method, key));
+        var ev = new ChangeEventArgs<object>(oldValue, newValue, method, key);
+        PropertyChanged?.Invoke(this, ev);
+        OnPropertyChanged(ev);
+        return ev;
     }
 
     private bool AssertPropertyKey(string key)
@@ -875,8 +879,9 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
 
     private bool RejectSet()
     {
-        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
-        throw new InvalidOperationException("Forbid to set property.", new UnauthorizedAccessException("No permission to set property."));
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+            throw new FailedChangeException(ChangeErrorKinds.Forbidden, "Forbid to set property.", new UnauthorizedAccessException("No permission to set property."));
+        return false;
     }
 }
 

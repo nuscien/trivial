@@ -99,7 +99,19 @@ public enum ChangeMethods : byte
     /// The source is not valid any more.
     /// </summary>
     [Description("The object is no longer valid to access.")]
-    Invalid = 7
+    Invalid = 7,
+
+    /// <summary>
+    /// The source is forbidden to access.
+    /// </summary>
+    [Description("The object is forbidden to access.")]
+    Forbidden = 8,
+
+    /// <summary>
+    /// Unknown or special error occurred during accessing the source.
+    /// </summary>
+    [Description("Unknown or special error occurred during accessing the object.")]
+    OtherError = 15,
 }
 
 /// <summary>
@@ -238,9 +250,9 @@ public class ChangeEventArgs<T> : EventArgs
     /// </summary>
     /// <param name="oldValue">The old value.</param>
     /// <param name="newValue">The new value.</param>
-    /// <param name="triggerType">The type identifier of the trigger.</param>
+    /// <param name="tag">The tag.</param>
     /// <param name="key">The property key of the value changed.</param>
-    public ChangeEventArgs(T oldValue, T newValue, Guid triggerType, string key = null) : this(oldValue, newValue, key) => TriggerType = triggerType;
+    public ChangeEventArgs(T oldValue, T newValue, object tag, string key = null) : this(oldValue, newValue, key) => Tag = tag;
 
     /// <summary>
     /// Initializes a new instance of the ChangeEventArgs class.
@@ -266,9 +278,9 @@ public class ChangeEventArgs<T> : EventArgs
     /// <param name="oldValue">The old value.</param>
     /// <param name="newValue">The new value.</param>
     /// <param name="method">The method to change.</param>
-    /// <param name="triggerType">The type identifier of the trigger.</param>
+    /// <param name="tag">The tag.</param>
     /// <param name="key">The property key of the value changed.</param>
-    public ChangeEventArgs(T oldValue, T newValue, ChangeMethods method, Guid triggerType, string key = null) : this(oldValue, newValue, method, key) => TriggerType = triggerType;
+    public ChangeEventArgs(T oldValue, T newValue, ChangeMethods method, object tag, string key = null) : this(oldValue, newValue, method, key) => Tag = tag;
 
     /// <summary>
     /// The method to change.
@@ -291,9 +303,9 @@ public class ChangeEventArgs<T> : EventArgs
     public string Key { get; }
 
     /// <summary>
-    /// Gets the type identifier of the trigger.
+    /// Gets the additional tag.
     /// </summary>
-    public Guid TriggerType { get; }
+    public object Tag { get; }
 
     /// <summary>
     /// Gets a value indicating whether it is successful.
@@ -487,7 +499,7 @@ public class SourcePropertyEventArgs<TSource, TKey> : EventArgs
 /// <summary>
 /// The exception for changing failure.
 /// </summary>
-public class FailedChangeException : Exception
+public class FailedChangeException : InvalidOperationException
 {
     /// <summary>
     /// Initializes a new instance of the FailedChangeException class.

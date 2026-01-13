@@ -465,12 +465,12 @@ public static class ObjectConvert
     /// <param name="oldValue">The old boxed.</param>
     /// <param name="newValue">The new boxed.</param>
     /// <param name="method">The method to change.</param>
-    /// <param name="triggerType">The type identifier of the trigger.</param>
+    /// <param name="tag">The tag.</param>
     /// <param name="key">The property key of the boxed changed.</param>
-    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, ChangeMethods method, Guid triggerType, string key = null)
+    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, ChangeMethods method, object tag, string key = null)
     {
         if (handler == null) return;
-        var args = new ChangeEventArgs<T>(oldValue, newValue, method, triggerType, key);
+        var args = new ChangeEventArgs<T>(oldValue, newValue, method, tag, key);
         handler(sender, args);
     }
 
@@ -499,12 +499,12 @@ public static class ObjectConvert
     /// <param name="sender">The sender.</param>
     /// <param name="oldValue">The old boxed.</param>
     /// <param name="newValue">The new boxed.</param>
-    /// <param name="triggerType">The type identifier of the trigger.</param>
+    /// <param name="tag">The tag.</param>
     /// <param name="key">The property key of the boxed changed.</param>
-    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, Guid triggerType, string key = null)
+    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, object tag, string key = null)
     {
         if (handler == null) return;
-        var args = new ChangeEventArgs<T>(oldValue, newValue, triggerType, key);
+        var args = new ChangeEventArgs<T>(oldValue, newValue, tag, key);
         handler(sender, args);
     }
 
