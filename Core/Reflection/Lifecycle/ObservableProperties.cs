@@ -144,21 +144,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     protected T GetCurrentProperty<T>(T defaultValue = default, [CallerMemberName] string key = null)
     {
         if (string.IsNullOrWhiteSpace(key)) return defaultValue;
-        try
-        {
-            return TryGetPropertyInternal(key, out var v) ? (T)v : defaultValue;
-        }
-        catch (InvalidCastException)
-        {
-        }
-        catch (NullReferenceException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return defaultValue;
+        return GetProperty(key, defaultValue);
     }
 
     /// <summary>
@@ -174,21 +160,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     {
         key = StringExtensions.ToSpecificCase(key, keyCase, culture);
         if (string.IsNullOrWhiteSpace(key)) return defaultValue;
-        try
-        {
-            return TryGetPropertyInternal(key, out var v) ? (T)v : defaultValue;
-        }
-        catch (InvalidCastException)
-        {
-        }
-        catch (NullReferenceException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return defaultValue;
+        return GetProperty(key, defaultValue);
     }
 
     /// <summary>
@@ -519,12 +491,24 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value the property.</param>
+    /// <param name="callback">The callback handler after set.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null.</exception>
+    /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
+    protected bool SetProperty(string key, object value, Action<ChangeEventArgs<object>> callback)
+        => SetPropertyInternal(key, value, callback, null);
+
+    /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value the property.</param>
     /// <param name="tag">The additional tag.</param>
     /// <param name="callback">The callback handler after set.</param>
     /// <returns>true if set succeeded; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
-    protected bool SetProperty(string key, object value, object tag, Action<ChangeEventArgs<object>> callback = null)
+    protected bool SetProperty(string key, object value, object tag, Action<ChangeEventArgs<object>> callback)
         => SetPropertyInternal(key, value, callback, tag);
 
     /// <summary>
@@ -540,12 +524,10 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <summary>
     /// Tests whether the new property to set is valid.
     /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The value of the property to set.</param>
-    /// <param name="tag">The additional tag.</param>
+    /// <param name="ev">The information of property changed.</param>
     /// <returns>true if the property is valid; otherwise, false.</returns>
-    protected virtual bool IsPropertyValid(string key, object value, object tag)
-        => true;
+    protected virtual PropertySettingPolicies IsPropertyValid(ChangeEventArgs<object> ev)
+        => PropertySettingPolicies.Allow;
 
     /// <summary>
     /// Occurs on request to get a specific value. This can be used to fill a default value.
@@ -809,40 +791,53 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return RejectSet();
         }
 
-        bool valid;
         try
         {
-            valid = IsPropertyValid(key, value, tag);
+            var valid = IsPropertyValid(new ChangeEventArgs<object>(old, value, method, key));
+            if (valid == PropertySettingPolicies.Skip)
+                return false;
+            else if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+                throw new FailedChangeException(ChangeErrorKinds.Validation, "Validation failure.");
         }
-        catch (ArgumentException)
-        {
-            valid = false;
-        }
-        catch (InvalidOperationException)
-        {
-            valid = false;
-        }
-        catch (NotSupportedException)
-        {
-            valid = false;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            valid = false;
-        }
-        catch (NullReferenceException)
-        {
-            valid = false;
-        }
-        catch (ApplicationException)
-        {
-            valid = false;
-        }
-
-        if (!valid)
+        catch (ArgumentException ex)
         {
             PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
-            return false;
+            throw new FailedChangeException(ChangeErrorKinds.Argument, $"Validation failure because of argument {ex.ParamName}.", ex);
+        }
+        catch (FailedChangeException)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw;
+        }
+        catch (InvalidOperationException ex)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw new FailedChangeException(ChangeErrorKinds.Validation, "Validation failure.", ex);
+        }
+        catch (NotSupportedException ex)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw new FailedChangeException(ChangeErrorKinds.Unsupported, "Validation failure because the update is not supported.", ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw new FailedChangeException(ChangeErrorKinds.Unauthorized, "Validation failure because of authorization.", ex);
+        }
+        catch (NullReferenceException ex)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw new FailedChangeException(ChangeErrorKinds.Validation, "Validation failure because of inner error.", ex);
+        }
+        catch (ApplicationException ex)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw new FailedChangeException(ChangeErrorKinds.Validation, "Validation failure.", ex);
+        }
+        catch (Exception)
+        {
+            PropertyChangeFailed?.Invoke(this, new(old, value, ChangeMethods.Invalid, key));
+            throw;
         }
 
         try

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.IO;
 using Trivial.Maths;
@@ -12,12 +13,45 @@ using Trivial.Web;
 
 namespace Trivial.Text;
 
+class A
+{
+    public A()
+    {
+    }
+
+    public A(string name)
+    {
+        Name = name;
+    }
+
+    [JsonPropertyName("name")]
+    [JsonInclude]
+    private string Name { get; set; }
+
+    [JsonPropertyName("$id")]
+    public string Id { get; set; }
+
+    [JsonPropertyName("$type")]
+    public string Kind { get; set; }
+}
+
 /// <summary>
 /// JSON unit test.
 /// </summary>
 [TestClass]
 public class JsonUnitTest
 {
+    [TestMethod]
+    public void TestDemo()
+    {
+        var a = new A("hey")
+        {
+            Id = "123",
+            Kind = "test"
+        };
+        Console.WriteLine(JsonSerializer.Serialize(a));
+    }
+
     /// <summary>
     /// Tests writable JSON DOM.
     /// </summary>

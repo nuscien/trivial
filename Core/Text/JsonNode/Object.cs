@@ -6978,6 +6978,86 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">A JSON object element.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int SetRange(JsonElement json)
+    {
+        if (json.ValueKind != JsonValueKind.Object)
+        {
+            return json.ValueKind switch
+            {
+                JsonValueKind.Null => 0,
+                JsonValueKind.Undefined => 0,
+                _ => throw new JsonException("json is not a JSON object.")
+            };
+        }
+
+        var result = new JsonObjectNode();
+        return result.SetRangeInternal(json);
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">A JSON document.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int SetRange(JsonDocument json)
+        => json is null ? 0 : SetRange(json.RootElement);
+
+    /// <summary>
+    /// Parses JSON object and patches into current object.
+    /// </summary>
+    /// <param name="json">A specific JSON object string to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int PatchParse(string json, JsonDocumentOptions options = default)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return 0;
+        var docs = JsonDocument.Parse(json, options);
+        return SetRange(docs);
+    }
+
+    /// <summary>
+    /// Parses JSON object and patches into current object.
+    /// </summary>
+    /// <param name="utf8Json">The JSON data to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int PatchParse(Stream utf8Json, JsonDocumentOptions options = default)
+    {
+        if (utf8Json is null) return 0;
+        var docs = JsonDocument.Parse(utf8Json, options);
+        return SetRange(docs);
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    private int SetRangeInternal(JsonElement json)
+    {
+        var enumerator = json.EnumerateObject();
+        var i = 0;
+        while (enumerator.MoveNext())
+        {
+            SetValue(enumerator.Current);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
     /// Increases a number property.
     /// </summary>
     /// <param name="key">The key of the property.</param>
@@ -7731,7 +7811,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-    public void Add(string key, System.Text.Json.Nodes.JsonNode value)
+    public void Add(string key, JsonNode value)
         => AddProperty(key, JsonValues.ToJsonValue(value));
 
     /// <summary>
@@ -9480,7 +9560,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonObjectNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonObject(JsonObjectNode json)
+    public static explicit operator JsonObject(JsonObjectNode json)
         => json?.ToJsonObject();
 
     /// <summary>
@@ -9488,7 +9568,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonNode(JsonObjectNode json)
+    public static explicit operator JsonNode(JsonObjectNode json)
         => json?.ToJsonObject();
 
     /// <summary>
@@ -9522,12 +9602,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         }
 
         var result = new JsonObjectNode();
-        var enumerator = json.EnumerateObject();
-        while (enumerator.MoveNext())
-        {
-            result.SetValue(enumerator.Current);
-        }
-
+        result.SetRangeInternal(json);
         return result;
     }
 
@@ -9929,8 +10004,11 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
 
         if (obj is DBNull) return null;
         if (obj is FileInfo file) return TryParse(file);
-        var s = JsonSerializer.Serialize(obj, obj.GetType(), options);
-        return Parse(s);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(obj);
+        var reader = new Utf8JsonReader(bytes);
+        var json = new JsonObjectNode();
+        json.SetRange(ref reader);
+        return json;
     }
 
     /// <summary>
@@ -10094,8 +10172,6 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     private static bool PassTrue(BaseJsonValueNode data, string key, int index)
-    {
-        return true;
-    }
+        => true;
 #pragma warning restore IDE0056, IDE0057
 }

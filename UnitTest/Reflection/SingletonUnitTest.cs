@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -149,7 +150,7 @@ public class SingletonUnitTest
     public void TestObservableProperties()
     {
         var i = 0;
-        var obs = new NameValueObservableModel<string>();
+        var obs = new TestObservableObject();
         (obs as INotifyPropertyChanged).PropertyChanged += (sender, obj) =>
         {
             if (obj.PropertyName == "Value") i++;
@@ -162,6 +163,13 @@ public class SingletonUnitTest
         Assert.AreEqual(1, i);
         obs.Value = "uvwxyz";
         Assert.AreEqual(2, i);
+        obs.SetProperty("NewProperty", 100, ev =>
+        {
+            i++;
+        });
+        Assert.AreEqual(100, obs.GetProperty<int>("NewProperty"));
+        Assert.AreEqual("100", obs.GetProperty<string>("NewProperty"));
+        Assert.AreEqual(3, i);
         var m = JsonSerializer.Deserialize<ConciseModel>("{ \"id\": \"9876543210\", \"keywords\": \"test;another\" }");
         Assert.AreEqual("9876543210", m.Id);
         Assert.IsNull(m.Title);
@@ -205,4 +213,16 @@ public class SingletonUnitTest
 
 internal class TestNestedParameter(object parameter) : BaseNestedParameter(parameter)
 {
+}
+
+internal class TestObservableObject : NameValueObservableModel<string>
+{
+    public new void SetProperty(string key, object value, object tag, Action<ChangeEventArgs<object>> callback)
+        => base.SetProperty(key, value, tag, callback);
+
+    public new void SetProperty(string key, object value, Action<ChangeEventArgs<object>> callback)
+        => base.SetProperty(key, value, callback);
+
+    public new T GetProperty<T>(string key, T defaultValue = default)
+        => base.GetProperty(key, defaultValue);
 }

@@ -96,16 +96,16 @@ public class KeyValueObservableModel<T> : BaseObservableProperties
     {
     }
 
-    private void OnChange(string key, object newValue, bool exist, object oldValue)
+    private void OnChange(ChangeEventArgs<object> ev)
     {
-        if (string.IsNullOrEmpty(key)) return;
-        switch (key)
+        if (string.IsNullOrEmpty(ev.Key)) return;
+        switch (ev.Key)
         {
             case nameof(Key):
-                OnKeyChange(newValue, exist, oldValue);
+                OnKeyChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
             case nameof(Value):
-                OnValueChange(newValue, exist, oldValue);
+                OnValueChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
         }
     }
@@ -192,16 +192,16 @@ public class NameValueObservableModel<T> : BaseObservableProperties
     {
     }
 
-    private void OnChange(string key, object newValue, bool exist, object oldValue)
+    private void OnChange(ChangeEventArgs<object> ev)
     {
-        if (string.IsNullOrEmpty(key)) return;
-        switch (key)
+        if (string.IsNullOrEmpty(ev.Key)) return;
+        switch (ev.Key)
         {
             case nameof(Name):
-                OnNameChange(newValue, exist, oldValue);
+                OnNameChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
             case nameof(Value):
-                OnValueChange(newValue, exist, oldValue);
+                OnValueChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
         }
     }
@@ -359,19 +359,19 @@ public class NameArgsObservableModel : ObservableProperties
     {
     }
 
-    private void OnChange(string key, object newValue, bool exist, object oldValue)
+    private void OnChange(ChangeEventArgs<object> ev)
     {
-        if (string.IsNullOrEmpty(key)) return;
-        switch (key)
+        if (string.IsNullOrEmpty(ev.Key)) return;
+        switch (ev.Key)
         {
             case nameof(Id):
-                OnIdChange(newValue, exist, oldValue);
+                OnIdChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
             case nameof(Name):
-                OnNameChange(newValue, exist, oldValue);
+                OnNameChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
             case nameof(Arguments):
-                OnArgumentsChange(newValue, exist, oldValue);
+                OnArgumentsChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
         }
     }
@@ -576,19 +576,19 @@ public class PackageInfoObservableModel : BaseObservableProperties
     {
     }
 
-    private void OnChange(string key, object newValue, bool exist, object oldValue)
+    private void OnChange(ChangeEventArgs<object> ev)
     {
-        if (string.IsNullOrEmpty(key)) return;
-        switch (key)
+        if (string.IsNullOrEmpty(ev.Key)) return;
+        switch (ev.Key)
         {
             case nameof(Name):
-                OnNameChange(newValue, exist, oldValue);
+                OnNameChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
             case nameof(Version):
-                OnVersionChange(newValue, exist, oldValue);
+                OnVersionChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
             case nameof(Description):
-                OnDescriptionChange(newValue, exist, oldValue);
+                OnDescriptionChange(ev.NewValue, ev.Method != ChangeMethods.Add, ev.OldValue);
                 break;
         }
     }
