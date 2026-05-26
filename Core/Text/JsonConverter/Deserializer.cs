@@ -139,7 +139,7 @@ public class JsonTypedDeserializerSet
     public bool Remove<T>()
         => handlers.Remove(typeof(T));
 
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Removes the value with the specified key from the registry of the set.
     /// </summary>

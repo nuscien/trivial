@@ -244,7 +244,7 @@ public class JsonUnitTest
 
         var jsonArray = json.GetArrayValue("arr");
         Assert.AreEqual(0, jsonArray.Count);
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
         jsonArray += "*+-\"\'\\";
         jsonArray += 456;
 #else
@@ -254,7 +254,7 @@ public class JsonUnitTest
         jsonArray.AddRange(jsonArray);
         jsonArray.Remove(2);
         Assert.AreEqual(456, jsonArray.GetInt32Value(1));
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
         jsonArray += new JsonObjectNode
 #else
         jsonArray.Add(new JsonObjectNode
@@ -267,7 +267,7 @@ public class JsonUnitTest
             {
                 0
             } }
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
         };
 #else
         });
@@ -314,14 +314,14 @@ public class JsonUnitTest
         Assert.AreEqual(9, list[7]);
         jsonArray.AddNull();
         Assert.AreEqual(JsonValues.Null, jsonArray[jsonArray.Count - 1]);
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
         jsonArray += new JsonArrayNode
 #else
         jsonArray.Add(new JsonArrayNode
 #endif
         {
             8, 9, 0
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
         };
         jsonArray += null as string;
         jsonArray++;

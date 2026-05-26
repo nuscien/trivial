@@ -393,7 +393,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     public static explicit operator JsonValue(JsonBooleanNode json)
         => JsonValue.Create(json.Value);
 
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Tests if the value is true.
     /// </summary>

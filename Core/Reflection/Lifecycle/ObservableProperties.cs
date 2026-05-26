@@ -462,6 +462,32 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                         return true;
                     }
                 }
+
+                if (v is DateTime dt)
+                {
+                    if (typeE == typeof(string))
+                    {
+                        result = (T)(object)dt.ToString("g");
+                        return true;
+                    }
+                    else if (typeE == typeof(long))
+                    {
+                        result = (T)(object)WebFormat.ParseDate(dt);
+                        return true;
+                    }
+#if NETCOREAPP
+                    else if (typeE == typeof(DateOnly))
+                    {
+                        result = (T)(object)DateOnly.FromDateTime(dt.Date);
+                        return true;
+                    }
+                    else if (typeE == typeof(TimeOnly))
+                    {
+                        result = (T)(object)TimeOnly.FromDateTime(dt);
+                        return true;
+                    }
+#endif
+                }
             }
             else if (typeO == typeof(Uri))
             {

@@ -729,7 +729,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     object ICloneable.Clone()
         => Clone();
 
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
     /// <summary>
     /// Adds a value.
     /// </summary>

@@ -1326,6 +1326,18 @@ public static class ObjectConvert
                             boxed = (T)(object)i.ToString("g", CultureInfo.InvariantCulture);
                             return true;
                         }
+#if NETCOREAPP
+                        else if (type == typeof(Int128))
+                        {
+                            boxed = (T)(object)(Int128)i;
+                            return true;
+                        }
+                        else if (type == typeof(UInt128))
+                        {
+                            boxed = (T)(object)(UInt128)i;
+                            return true;
+                        }
+#endif
                     }
                     else if (obj is long i2)
                     {
@@ -1359,6 +1371,18 @@ public static class ObjectConvert
                             boxed = (T)(object)i2.ToString("g", CultureInfo.InvariantCulture);
                             return true;
                         }
+#if NETCOREAPP
+                        else if (type == typeof(Int128))
+                        {
+                            boxed = (T)(object)(Int128)i2;
+                            return true;
+                        }
+                        else if (type == typeof(UInt128))
+                        {
+                            boxed = (T)(object)(UInt128)i2;
+                            return true;
+                        }
+#endif
                     }
                     else if (obj is double i5)
                     {
@@ -1387,6 +1411,18 @@ public static class ObjectConvert
                             boxed = (T)(object)i5.ToString("g", CultureInfo.InvariantCulture);
                             return true;
                         }
+#if NETCOREAPP
+                        else if (type == typeof(Half))
+                        {
+                            boxed = (T)(object)(Half)i5;
+                            return true;
+                        }
+                        else if (type == typeof(Int128))
+                        {
+                            boxed = (T)(object)(Int128)i5;
+                            return true;
+                        }
+#endif
                     }
                     else if (obj is float i6)
                     {
@@ -1415,6 +1451,18 @@ public static class ObjectConvert
                             boxed = (T)(object)i6.ToString("g", CultureInfo.InvariantCulture);
                             return true;
                         }
+#if NETCOREAPP
+                        else if (type == typeof(Half))
+                        {
+                            boxed = (T)(object)(Half)i6;
+                            return true;
+                        }
+                        else if (type == typeof(Int128))
+                        {
+                            boxed = (T)(object)(Int128)i6;
+                            return true;
+                        }
+#endif
                     }
                     else if (obj is decimal i7)
                     {
@@ -1462,8 +1510,9 @@ public static class ObjectConvert
                         else if (type == typeof(long))
                         {
                             boxed = (T)(object)WebFormat.ParseDate(dt);
+                            return true;
                         }
-#if NET10_0_OR_GREATER
+#if NETCOREAPP
                         else if (type == typeof(DateOnly))
                         {
                             boxed = (T)(object)DateOnly.FromDateTime(dt.Date);
