@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json;
 using Trivial.Data;
 using Trivial.Text;
+using Trivial.Web;
 
 namespace Trivial.Reflection;
 
@@ -150,6 +151,140 @@ public static class ObjectConvert
         }
 
         return Convert.ChangeType(value, type);
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="input">The input value.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, always true.</returns>
+    public static bool InOut<T>(T input, out T output)
+    {
+        output = input;
+        return true;
+    }
+
+    /// <summary>
+    /// Transfers default value to output directly.
+    /// This is used to TryXXX method in failure case to output the default and return false.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="output">The output value.</param>
+    /// <returns>false, always false.</returns>
+    public static bool InOut<T>(out T output)
+    {
+        output = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="TInput">The type of input value.</typeparam>
+    /// <typeparam name="TOutput">The type of output value.</typeparam>
+    /// <param name="input">The input value.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, always true.</returns>
+    public static bool InOut<TInput, TOutput>(TInput input, out TOutput output)
+    {
+        output = (TOutput)(object)input;
+        return true;
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="TInput">The type of input value.</typeparam>
+    /// <typeparam name="TOutput">The type of output value.</typeparam>
+    /// <param name="test">The type to test if it is the one expected.</param>
+    /// <param name="input">The input value.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, always true.</returns>
+    public static bool InOut<TInput, TOutput>(Type test, TInput input, out TOutput output)
+    {
+        if (test == typeof(TInput))
+        {
+            output = (TOutput)(object)input;
+            return true;
+        }
+
+        output = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="TInput">The type of input value.</typeparam>
+    /// <typeparam name="TOutput">The type of output value.</typeparam>
+    /// <param name="test">The type to test if it is the one expected.</param>
+    /// <param name="input">The input value.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, always true.</returns>
+    public static bool InOut<TInput, TOutput>(Type test, object input, out TOutput output)
+    {
+        if (test == typeof(TInput))
+        {
+            output = (TOutput)(object)(TInput)input;
+            return true;
+        }
+
+        output = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="T">The type of value.</typeparam>
+    /// <param name="result">The result.</param>
+    /// <param name="input">The input value.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, if result is true; otherwise, false.</returns>
+    public static bool InOut<T>(bool result, T input, out T output)
+    {
+        output = result ? input : default;
+        return result;
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="TInput">The type of input value.</typeparam>
+    /// <typeparam name="TOutput">The type of output value.</typeparam>
+    /// <param name="result">The result.</param>
+    /// <param name="input">The input value.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, if result is true; otherwise, false.</returns>
+    public static bool InOut<TInput, TOutput>(bool result, TInput input, out TOutput output)
+    {
+        output = result ? (TOutput)(object)input : default;
+        return result;
+    }
+
+    /// <summary>
+    /// Transfers input to output directly.
+    /// This is used to TryXXX method in happy path to output the result and return true.
+    /// </summary>
+    /// <typeparam name="TInput">The type of input value.</typeparam>
+    /// <typeparam name="TOutput">The type of output value.</typeparam>
+    /// <param name="result">The result.</param>
+    /// <param name="input">The input value.</param>
+    /// <param name="defaultValue">The value used for failure.</param>
+    /// <param name="output">The output value.</param>
+    /// <returns>true, if result is true; otherwise, false.</returns>
+    public static bool InOut<TInput, TOutput>(bool result, TInput input, TOutput defaultValue, out TOutput output)
+    {
+        output = result ? (TOutput)(object)input : defaultValue;
+        return result;
     }
 
     /// <summary>
@@ -1316,6 +1451,30 @@ public static class ObjectConvert
                             boxed = (T)(object)guid.ToString();
                             return true;
                         }
+                    }
+                    else if (obj is DateTime dt)
+                    {
+                        if (type == typeof(string))
+                        {
+                            boxed = (T)(object)dt.ToString("g");
+                            return true;
+                        }
+                        else if (type == typeof(long))
+                        {
+                            boxed = (T)(object)WebFormat.ParseDate(dt);
+                        }
+#if NET10_0_OR_GREATER
+                        else if (type == typeof(DateOnly))
+                        {
+                            boxed = (T)(object)DateOnly.FromDateTime(dt.Date);
+                            return true;
+                        }
+                        else if (type == typeof(TimeOnly))
+                        {
+                            boxed = (T)(object)TimeOnly.FromDateTime(dt);
+                            return true;
+                        }
+#endif
                     }
                 }
             }

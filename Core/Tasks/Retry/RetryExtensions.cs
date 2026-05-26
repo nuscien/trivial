@@ -165,8 +165,12 @@ public static class RetryExtensions
             catch (Exception ex)
             {
                 result.Fail(ex);
-                ex = needThrow(ex);
-                if (ex != null) throw;
+                var ex2 = needThrow(ex);
+                if (ex is not null)
+                {
+                    if (ex == ex2) throw;
+                    throw ex2;
+                }
             }
 
             var span = retry.Next();

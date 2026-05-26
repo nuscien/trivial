@@ -575,7 +575,7 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public Task<T> PostAsync(string requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
+    public Task<T> PostAsync(string requestUri, JsonObjectNode content, CancellationToken cancellationToken = default)
         => SendAsync(HttpClientExtensions.CreateRequestMessage(HttpMethod.Post, requestUri, HttpClientExtensions.CreateJsonContent(content)), cancellationToken);
 
     /// <summary>
@@ -589,7 +589,7 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public Task<T> PostAsync(Uri requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
+    public Task<T> PostAsync(Uri requestUri, JsonObjectNode content, CancellationToken cancellationToken = default)
         => SendAsync(HttpClientExtensions.CreateRequestMessage(HttpMethod.Post, requestUri, HttpClientExtensions.CreateJsonContent(content)), cancellationToken);
 
     /// <summary>
@@ -631,7 +631,7 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public Task<T> PutAsync(string requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
+    public Task<T> PutAsync(string requestUri, JsonObjectNode content, CancellationToken cancellationToken = default)
         => SendAsync(HttpClientExtensions.CreateRequestMessage(HttpMethod.Put, requestUri, HttpClientExtensions.CreateJsonContent(content)), cancellationToken);
 
     /// <summary>
@@ -645,7 +645,7 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public Task<T> PutAsync(Uri requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
+    public Task<T> PutAsync(Uri requestUri, JsonObjectNode content, CancellationToken cancellationToken = default)
         => SendAsync(HttpClientExtensions.CreateRequestMessage(HttpMethod.Put, requestUri, HttpClientExtensions.CreateJsonContent(content)), cancellationToken);
 
     /// <summary>

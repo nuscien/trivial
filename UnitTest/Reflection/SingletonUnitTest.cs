@@ -169,6 +169,12 @@ public class SingletonUnitTest
         });
         Assert.AreEqual(100, obs.GetProperty<int>("NewProperty"));
         Assert.AreEqual("100", obs.GetProperty<string>("NewProperty"));
+        Assert.AreEqual(100d, obs.GetProperty<double>("NewProperty"));
+        Assert.AreEqual(100f, obs.GetProperty<float>("NewProperty"));
+        Assert.AreEqual(100L, obs.GetProperty<long>("NewProperty"));
+        Assert.IsTrue(obs.GetProperty("Value", true));
+        Assert.IsFalse(obs.GetProperty("Value", false));
+        Assert.AreEqual(20000, obs.GetProperty("Value", 20000));
         Assert.AreEqual(3, i);
         var m = JsonSerializer.Deserialize<ConciseModel>("{ \"id\": \"9876543210\", \"keywords\": \"test;another\" }");
         Assert.AreEqual("9876543210", m.Id);

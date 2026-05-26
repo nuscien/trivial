@@ -70,7 +70,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appKey">The app accessing key.</param>
     /// <param name="tokenCached">The token information instance cached.</param>
@@ -80,7 +80,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>
@@ -90,7 +90,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>
@@ -100,7 +100,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>
@@ -110,7 +110,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appKey">The app accessing key.</param>
     /// <param name="tokenResolveUri">The token resolve URI.</param>
@@ -127,7 +127,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>
@@ -145,7 +145,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>
@@ -163,7 +163,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Initializes a new instance of the OAuthHttpClient class.
+    /// Initializes a new instance of the OAuthClient class.
     /// </summary>
     /// <param name="appId">The app id.</param>
     /// <param name="secretKey">The secret key.</param>

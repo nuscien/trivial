@@ -30,7 +30,7 @@ public class JsonTypedDeserializer<T>
     /// </summary>
     public JsonTypedDeserializer(Func<Stream, T> deserializer)
     {
-        impl = new StreamJsonTypedDeserializer<T>(deserializer);
+        var impl = new StreamJsonTypedDeserializer<T>(deserializer);
         IsStreamPriority = true;
     }
 
@@ -39,7 +39,7 @@ public class JsonTypedDeserializer<T>
     /// </summary>
     public JsonTypedDeserializer(Func<string, T> deserializer)
     {
-        impl = new StringJsonTypedDeserializer<T>(deserializer);
+        var impl = new StringJsonTypedDeserializer<T>(deserializer);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class JsonTypedDeserializer<T>
     /// </summary>
     public JsonTypedDeserializer(Func<JsonObjectNode, T> deserializer)
     {
-        impl = new ConvertJsonTypedDeserializer<T>(deserializer);
+        var impl = new ConvertJsonTypedDeserializer<T>(deserializer);
         IsStreamPriority = true;
     }
 
@@ -82,6 +82,82 @@ public class JsonTypedDeserializer<T>
         if (impl == null) return JsonSerializer.Deserialize<T>(s);
         return impl.Deserialize(s);
     }
+}
+
+public class JsonTypedDeserializerSet
+{
+    private Dictionary<Type, object> handlers = new();
+
+    /// <summary>
+    /// Initializes a new instance of the JsonTypedDeserializer class.
+    /// </summary>
+    /// <typeparam name="T">The type of object to deserialize.</typeparam>
+    public void Register<T>(JsonTypedDeserializer<T> deserializer)
+        => handlers[typeof(T)] = deserializer;
+
+    /// <summary>
+    /// Initializes a new instance of the JsonTypedDeserializer class.
+    /// </summary>
+    /// <typeparam name="T">The type of object to deserialize.</typeparam>
+    /// <returns>The deserializer instance.</returns>
+    public JsonTypedDeserializer<T> Register<T>(Func<Stream, T> deserializer)
+    {
+        var d = new JsonTypedDeserializer<T>(deserializer);
+        handlers[typeof(T)] = d;
+        return d;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonTypedDeserializer class.
+    /// </summary>
+    /// <typeparam name="T">The type of object to deserialize.</typeparam>
+    /// <returns>The deserializer instance.</returns>
+    public JsonTypedDeserializer<T> Register<T>(Func<string, T> deserializer)
+    {
+        var d = new JsonTypedDeserializer<T>(deserializer);
+        handlers[typeof(T)] = d;
+        return d;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonTypedDeserializer class.
+    /// </summary>
+    /// <typeparam name="T">The type of object to deserialize.</typeparam>
+    /// <returns>The deserializer instance.</returns>
+    public JsonTypedDeserializer<T> Register<T>(Func<JsonObjectNode, T> deserializer)
+    {
+        var d = new JsonTypedDeserializer<T>(deserializer);
+        handlers[typeof(T)] = d;
+        return d;
+    }
+
+    /// <summary>
+    /// Removes the value with the specified key from the registry of the set.
+    /// </summary>
+    /// <typeparam name="T">The type of object to deserialize.</typeparam>
+    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry of the set</returns>
+    public bool Remove<T>()
+        => handlers.Remove(typeof(T));
+
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Removes the value with the specified key from the registry of the set.
+    /// </summary>
+    /// <typeparam name="T">The type of object to deserialize.</typeparam>
+    /// <param name="value">The removed element.</param>
+    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry of the set</returns>
+    public bool Remove<T>(out JsonTypedDeserializer<T> value)
+    {
+        if (!handlers.Remove(typeof(T), out var obj))
+        {
+            value = default;
+            return false;
+        }
+
+        value = obj as JsonTypedDeserializer<T>;
+        return true;
+    }
+#endif
 }
 
 /// <summary>

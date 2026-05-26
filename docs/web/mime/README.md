@@ -2,7 +2,7 @@
 
 Commonly used MIME content types and its file extension part mapping.
 
-In `Trivial.Web` [namespace](../) of `Trivial.Mime.dll` library.
+In `Trivial.Web` [namespace](../) of `Trivial.Messages.dll` library.
 
 ### Constants
 

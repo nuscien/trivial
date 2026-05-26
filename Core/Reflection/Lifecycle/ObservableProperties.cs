@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
@@ -100,18 +102,27 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
+#if NETCOREAPP
+    [NotMapped]
+#endif
     protected object RevisionToken { get; private set; } = new();
 
     /// <summary>
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
     [JsonIgnore]
+#if NETCOREAPP
+    [NotMapped]
+#endif
     protected IEnumerable<string> Keys => cache.Keys;
 
     /// <summary>
     /// Gets or sets the policy used to set property value.
     /// </summary>
     [JsonIgnore]
+#if NETCOREAPP
+    [NotMapped]
+#endif
     protected PropertySettingPolicies PropertiesSettingPolicy { get; set; } = PropertySettingPolicies.Allow;
 
     /// <summary>
@@ -204,27 +215,66 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <typeparam name="T">The type of the property value.</typeparam>
     /// <param name="key">The key.</param>
-    /// <param name="defaultValue">The default value.</param>
+    /// <param name="result">The value.</param>
+    /// <param name="type">The type of value; or null, if not found or the value is null.</param>
     /// <returns>A property value.</returns>
-    protected T GetProperty<T>(string key, T defaultValue = default)
+    protected bool GetProperty<T>(string key, out T result, out Type type)
     {
-        if (string.IsNullOrWhiteSpace(key)) return defaultValue;
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            result = default;
+            type = null;
+            return false;
+        }
+
         try
         {
-            if (!TryGetPropertyInternal(key, out var v)) return defaultValue;
-            if (v is T result) return result;
+            if (!TryGetPropertyInternal(key, out var v))
+            {
+                result = default;
+                type = null;
+                return false;
+            }
+
+            type = v?.GetType();
+            if (v is T outbox)
+            {
+                result = outbox;
+                return true;
+            }
+
             var typeE = typeof(T);
-            if (typeE.IsInterface || typeE.IsAbstract) return defaultValue;
-            if (v is null) return default;
+            if (typeE.IsInterface || typeE.IsAbstract)
+            {
+                result = default;
+                return false;
+            }
+
+            if (v is null)
+            {
+                result = default;
+                return typeE.IsClass || ObjectConvert.IsNullableValueType(typeE);
+            }
+
             var typeO = v.GetType();
             if (v is string s)
             {
                 if (typeE.IsEnum)
                 {
 #if NETCOREAPP
-                    return Enum.TryParse(typeE, s, out var en) ? (T)en : defaultValue;
+                    if (Enum.TryParse(typeE, s, out var en))
+                    {
+                        result = (T)en;
+                        return true;
+                    }
+                    else
+                    {
+                        result = default;
+                        return false;
+                    }
 #else
-                    return (T)Enum.Parse(typeE, s);
+                    result = (T)Enum.Parse(typeE, s);
+                    return true;
 #endif
                 }
 
@@ -233,75 +283,88 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                     if (typeE == typeof(bool))
                     {
                         var b = JsonBooleanNode.TryParse(s);
-                        return b == null ? defaultValue : (T)(object)b.Value;
+                        if (b == null)
+                        {
+                            result = default;
+                            return false;
+                        }
+                        else
+                        {
+                            result = (T)(object)b.Value;
+                            return true;
+                        }
                     }
 
-                    if (string.IsNullOrEmpty(s)) return defaultValue;
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        result = default;
+                        return false;
+                    }
+
                     if (typeE == typeof(int))
-                        return Maths.Numbers.TryParseToInt32(s, 10, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Maths.Numbers.TryParseToInt32(s, 10, out var i), i, out result);
                     if (typeE == typeof(long))
-                        return Maths.Numbers.TryParseToInt64(s, 10, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Maths.Numbers.TryParseToInt64(s, 10, out var i), i, out result);
                     if (typeE == typeof(short))
-                        return Maths.Numbers.TryParseToInt16(s, 10, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Maths.Numbers.TryParseToInt16(s, 10, out var i), i, out result);
                     if (typeE == typeof(double))
-                        return double.TryParse(s, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(double.TryParse(s, out var i), i, out result);
                     if (typeE == typeof(float))
-                        return float.TryParse(s, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(float.TryParse(s, out var i), i, out result);
                     if (typeE == typeof(decimal))
-                        return decimal.TryParse(s, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(decimal.TryParse(s, out var i), i, out result);
                     if (typeE == typeof(uint))
-                        return Maths.Numbers.TryParseToUInt32(s, 10, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Maths.Numbers.TryParseToUInt32(s, 10, out var i), i, out result);
                     if (typeE == typeof(ushort))
-                        return Maths.Numbers.TryParseToUInt16(s, 10, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Maths.Numbers.TryParseToUInt16(s, 10, out var i), i, out result);
                     if (typeE == typeof(Guid))
-                        return Guid.TryParse(s, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Guid.TryParse(s, out var i), i, out result);
 #if NETCOREAPP
                     if (typeE == typeof(Int128))
-                        return Maths.Numbers.TryParseToInt128(s, 10, out var i) ? (T)(object)i : defaultValue;
+                        return ObjectConvert.InOut(Maths.Numbers.TryParseToInt128(s, 10, out var i), i, out result);
 #endif
                 }
                 else if (typeE == typeof(StringBuilder))
                 {
-                    return (T)(object)new StringBuilder(s);
+                    result = (T)(object)new StringBuilder(s);
+                    return true;
                 }
                 else if (typeE == typeof(Uri))
                 {
                     var uri = StringExtensions.TryCreateUri(s);
-                    return uri == null ? defaultValue : (T)(object)uri;
+                    return ObjectConvert.InOut(uri != null, uri, out result);
                 }
                 else if (typeE == typeof(JsonEncodedText))
                 {
-                    return (T)(object)JsonEncodedText.Encode(s);
+                    result = (T)(object)JsonEncodedText.Encode(s);
+                    return true;
                 }
                 else if (typeE == typeof(JsonStringNode) || typeE == typeof(IJsonValueNode<string>))
                 {
-                    return (T)(object)new JsonStringNode(s);
+                    result = (T)(object)new JsonStringNode(s);
+                    return true;
                 }
             }
             else if (typeO.IsEnum)
             {
                 if (typeE == typeof(string))
                 {
-                    return (T)(object)v.ToString();
+                    result = (T)(object)v.ToString();
+                    return true;
                 }
+
                 if (typeE.IsValueType)
                 {
-                    if (typeE == typeof(int))
-                        return (T)(object)(int)v;
-                    if (typeE == typeof(long))
-                        return (T)(object)(long)v;
-                    if (typeE == typeof(short))
-                        return (T)(object)(short)v;
-                    if (typeE == typeof(double))
-                        return (T)(object)(double)v;
-                    if (typeE == typeof(float))
-                        return (T)(object)(float)v;
-                    if (typeE == typeof(decimal))
-                        return (T)(object)(decimal)v;
-                    if (typeE == typeof(uint))
-                        return (T)(object)(uint)v;
-                    if (typeE == typeof(ushort))
-                        return (T)(object)(ushort)v;
+                    return ObjectConvert.InOut<int, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<long, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<short, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<double, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<float, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<decimal, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<uint, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<ushort, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<byte, T>(typeE, v, out result)
+                        || ObjectConvert.InOut<sbyte, T>(typeE, v, out result);
                 }
             }
             else if (typeO.IsValueType)
@@ -315,109 +378,143 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
 #endif
                     || typeO == typeof(bool) || typeO == typeof(Guid) || typeO == typeof(BigInteger) || typeO == typeof(DateTime) || typeO == typeof(DateTimeOffset))
                 {
-                    return (T)(object)v.ToString();
+                    result = (T)(object)v.ToString();
+                    return true;
                 }
                 else if (typeE == typeof(int))
                 {
-                    if (v is long i2) return (T)(object)(int)i2;
-                    if (v is short i3) return (T)(object)(int)i3;
-                    if (v is double i6) return (T)(object)(int)i6;
-                    if (v is float i7) return (T)(object)(int)i7;
-                    if (v is decimal i8) return (T)(object)(int)i8;
-                    if (v is bool b) return (T)(object)(b ? 1 : 0);
-                    if (v is string s2) return Maths.Numbers.TryParseToInt32(s2, 10, out var i0) ? (T)(object)i0 : defaultValue;
+                    if (v is long i2) return ObjectConvert.InOut((int)i2, out result);
+                    if (v is short i3) return ObjectConvert.InOut((int)i3, out result);
+                    if (v is double i6) return ObjectConvert.InOut((int)i6, out result);
+                    if (v is float i7) return ObjectConvert.InOut((int)i7, out result);
+                    if (v is decimal i8) return ObjectConvert.InOut((int)i8, out result);
+                    if (v is bool b) return ObjectConvert.InOut(b ? 1 : 0, out result);
+                    if (v is string s2 && Maths.Numbers.TryParseToInt32(s2, 10, out var i0))
+                    {
+                        result = (T)(object)i0;
+                        return true;
+                    }
                 }
                 else if (typeE == typeof(long))
                 {
-                    if (v is int i1) return (T)(object)(long)i1;
-                    if (v is short i3) return (T)(object)(long)i3;
-                    if (v is double i6) return (T)(object)(long)i6;
-                    if (v is float i7) return (T)(object)(long)i7;
-                    if (v is decimal i8) return (T)(object)(long)i8;
-                    if (v is string s2) return Maths.Numbers.TryParseToInt64(s2, 10, out var i0) ? (T)(object)i0 : defaultValue;
+                    if (v is int i1) return ObjectConvert.InOut((long)i1, out result);
+                    if (v is short i3) return ObjectConvert.InOut((long)i3, out result);
+                    if (v is double i6) return ObjectConvert.InOut((long)i6, out result);
+                    if (v is float i7) return ObjectConvert.InOut((long)i7, out result);
+                    if (v is decimal i8) return ObjectConvert.InOut((long)i8, out result);
+                    if (v is string s2 && Maths.Numbers.TryParseToInt64(s2, 10, out var i0))
+                    {
+                        result = (T)(object)i0;
+                        return true;
+                    }
                 }
                 else if (typeE == typeof(double))
                 {
-                    if (v is float i7) return (T)(object)(double)i7;
-                    if (v is decimal i8) return (T)(object)(double)i8;
-                    if (v is int i1) return (T)(object)(double)i1;
-                    if (v is long i2) return (T)(object)(double)i2;
+                    if (v is float i7) return ObjectConvert.InOut((double)i7, out result);
+                    if (v is decimal i8) return ObjectConvert.InOut((double)i8, out result);
+                    if (v is int i1) return ObjectConvert.InOut((double)i1, out result);
+                    if (v is long i2) return ObjectConvert.InOut((double)i2, out result);
                 }
                 else if (typeE == typeof(float))
                 {
-                    if (v is double i6) return (T)(object)(float)i6;
-                    if (v is decimal i8) return (T)(object)(float)i8;
-                    if (v is int i1) return (T)(object)(float)i1;
-                    if (v is long i2) return (T)(object)(float)i2;
+                    if (v is double i6) return ObjectConvert.InOut((float)i6, out result);
+                    if (v is decimal i8) return ObjectConvert.InOut((float)i8, out result);
+                    if (v is int i1) return ObjectConvert.InOut((float)i1, out result);
+                    if (v is long i2) return ObjectConvert.InOut((float)i2, out result);
                 }
                 else if (typeE == typeof(decimal))
                 {
-                    if (v is float i7) return (T)(object)(decimal)i7;
-                    if (v is double i6) return (T)(object)(decimal)i6;
-                    if (v is int i1) return (T)(object)(decimal)i1;
-                    if (v is long i2) return (T)(object)(decimal)i2;
+                    if (v is float i7) return ObjectConvert.InOut((decimal)i7, out result);
+                    if (v is double i6) return ObjectConvert.InOut((decimal)i6, out result);
+                    if (v is int i1) return ObjectConvert.InOut((decimal)i1, out result);
+                    if (v is long i2) return ObjectConvert.InOut((decimal)i2, out result);
                 }
                 else if (typeE == typeof(bool))
                 {
                     if (v is int i1)
                     {
-                        if (i1 == 1 || i1 == 200) return (T)(object)true;
-                        if (i1 == 0 || i1 == -1) return (T)(object)false;
-                        return defaultValue;
+                        if (i1 == 1 || i1 == 200) return ObjectConvert.InOut(true, out result);
+                        if (i1 == 0 || i1 == -1) return ObjectConvert.InOut(false, out result);
+                        result = default;
+                        return false;
                     }
 
-                    if (v is string s2) return JsonBooleanNode.TryParse(s2, out var b) ? (T)(object)b.Value : defaultValue;
+                    if (v is string s2) return ObjectConvert.InOut(JsonBooleanNode.TryParse(s2, out var b), b.Value, out result);
                 }
                 else if (typeE == typeof(DateTime))
                 {
                     if (v is string s2)
                     {
                         var dt = WebFormat.ParseDate(s2);
-                        if (dt.HasValue) return (T)(object)dt.Value;
-                        return defaultValue;
+                        if (dt.HasValue)
+                        {
+                            result = (T)(object)dt.Value;
+                            return true;
+                        }
+
+                        result = default;
+                        return false;
                     }
 
-                    if (v is DateTimeOffset dto) return (T)(object)dto.UtcDateTime;
+                    if (v is DateTimeOffset dto)
+                    {
+                        result = (T)(object)dto.UtcDateTime;
+                        return true;
+                    }
                 }
             }
             else if (typeO == typeof(Uri))
             {
                 if (typeE == typeof(string))
-                    return (T)(object)((Uri)v).OriginalString;
+                {
+                    result = (T)(object)((Uri)v).OriginalString;
+                    return true;
+                }
             }
             else if (v is JsonObjectNode json)
             {
                 if (typeE == typeof(string))
-                    return (T)(object)json.ToString();
+                {
+                    result = (T)(object)json.ToString();
+                }
                 else if (typeE == typeof(JsonObject))
-                    return (T)(object)(JsonObject)json;
+                {
+                    result = (T)(object)(JsonObject)json;
+                }
                 else if (typeE == typeof(JsonNode))
-                    return (T)(object)(JsonNode)json;
+                {
+                    result = (T)(object)(JsonNode)json;
+                }
+                else
+                {
+                    result = default;
+                    return false;
+                }
+
+                return true;
             }
             else if (v is IJsonObjectHost joh)
             {
                 if (typeE == typeof(JsonObjectNode))
-                    return (T)(object)joh.ToJson();
+                    return ObjectConvert.InOut(joh.ToJson(), out result);
                 else if (typeE == typeof(string))
-                    return (T)(object)joh.ToJson().ToString();
+                    return ObjectConvert.InOut(joh.ToJson().ToString(), out result);
             }
             else if (v is SecureString secure)
             {
                 if (typeE == typeof(string))
-                    return (T)(object)Security.SecureStringExtensions.ToUnsecureString(secure);
+                    return ObjectConvert.InOut(Security.SecureStringExtensions.ToUnsecureString(secure), out result);
                 else if (typeE == typeof(StringBuilder))
-                    return (T)(object)new StringBuilder(Security.SecureStringExtensions.ToUnsecureString(secure));
+                    return ObjectConvert.InOut(new StringBuilder(Security.SecureStringExtensions.ToUnsecureString(secure)), out result);
             }
             else if (v is BaseNestedParameter n)
             {
-                if (n.ParameterIs(out T nr)) return nr;
+                if (n.ParameterIs(out result)) return true;
             }
             else if (v is TypedNestedParameter tn)
             {
-                if (tn.TryGet(out T nr)) return nr;
+                if (tn.TryGet(out result)) return true;
             }
-
-            return defaultValue;
         }
         catch (InvalidOperationException)
         {
@@ -438,7 +535,37 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         {
         }
 
-        return defaultValue;
+        try
+        {
+            if (cache.TryGetValue(key, out var v) && v is not null)
+            {
+                type = v.GetType();
+                if (v is T outbox)
+                {
+                    result = outbox;
+                    return true;
+                }
+
+                result = default;
+                return false;
+            }
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        result = default;
+        type = null;
+        return false;
     }
 
     /// <summary>
@@ -446,34 +573,20 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <typeparam name="T">The type of the property value.</typeparam>
     /// <param name="key">The key.</param>
-    /// <param name="result">The property value.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <param name="result">The value.</param>
+    /// <returns>A property value.</returns>
     protected bool GetProperty<T>(string key, out T result)
-    {
-        try
-        {
-            if (!string.IsNullOrWhiteSpace(key) && TryGetPropertyInternal(key, out var v) && v is T t)
-            {
-                result = t;
-                return true;
-            }
-        }
-        catch (InvalidOperationException)
-        {
-        }
-        catch (InvalidCastException)
-        {
-        }
-        catch (NullReferenceException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
+        => GetProperty(key, out result, out _);
 
-        result = default;
-        return false;
-    }
+    /// <summary>
+    /// Gets a property value.
+    /// </summary>
+    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>A property value.</returns>
+    protected T GetProperty<T>(string key, T defaultValue = default)
+        => GetProperty(key, out T result, out _) ? result : defaultValue;
 
     /// <summary>
     /// Sets a property.
@@ -878,6 +991,14 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             throw new FailedChangeException(ChangeErrorKinds.Forbidden, "Forbid to set property.", new UnauthorizedAccessException("No permission to set property."));
         return false;
     }
+
+    /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <param name="value">The JSON value.</param>
+    /// <returns>A JSON object.</returns>
+    public static explicit operator JsonObjectNode(BaseObservableProperties value)
+        => value is IJsonObjectHost obj ? obj.ToJson() : JsonObjectNode.ConvertFrom(value);
 }
 
 /// <summary>
@@ -889,6 +1010,9 @@ public class ObservableProperties : BaseObservableProperties
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
+#if NETCOREAPP
+    [NotMapped]
+#endif
     public new object RevisionToken => base.RevisionToken;
 
     /// <summary>
@@ -896,6 +1020,9 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#if NETCOREAPP
+    [NotMapped]
+#endif
     public new IEnumerable<string> Keys => base.Keys;
 
     /// <summary>
@@ -903,6 +1030,9 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#if NETCOREAPP
+    [NotMapped]
+#endif
     public new PropertySettingPolicies PropertiesSettingPolicy
     {
         get => base.PropertiesSettingPolicy;

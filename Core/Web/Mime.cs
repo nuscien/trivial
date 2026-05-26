@@ -405,6 +405,8 @@ public static partial class WebFormat
             "bz3" or "tbz3" => "application/x-bzip3-compressed-tar",
             "bz4" or "tbz4" => "application/x-bzip4-compressed-tar",
             "z" => "application/x-compress",
+            "xar" or "pkgx" => "application/x-xar",
+            "cpio" => "application/x-cpio",
 
             // Others
             "pdf" => "application/pdf",
@@ -416,7 +418,7 @@ public static partial class WebFormat
             "jar" => "application/java-archive",
             "dll" or "exe" => "application/vnd.microsoft.portable-executable",
             "pdb" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
-            "app" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" => StreamMIME,
+            "app" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" => StreamMIME,
             "obj" => "model/obj",
             "appx" => "application/appx",
             "appxbundle" => "application/appxbundle",
