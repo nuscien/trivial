@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -72,12 +73,38 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <summary>
     /// Data Collection.
     /// </summary>
-    private readonly Dictionary<string, object> cache = new();
+    private readonly Dictionary<string, object> cache;
 
     /// <summary>
     /// The property changed event handler field..
     /// </summary>
     private event PropertyChangedEventHandler propertyChanged;
+
+    /// <summary>
+    /// Initializes a new instance of the BaseObservableProperties class.
+    /// </summary>
+    protected BaseObservableProperties()
+    {
+        cache = new();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseObservableProperties class.
+    /// </summary>
+    /// <param name="copy">The properties copied to the new container.</param>
+    protected BaseObservableProperties(IDictionary<string, object> copy)
+    {
+        cache = new(copy);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseObservableProperties class.
+    /// </summary>
+    /// <param name="copy">The properties copied to the new container.</param>
+    protected BaseObservableProperties(BaseObservableProperties copy)
+        : this(copy.cache)
+    {
+    }
 
     /// <summary>
     /// Adds or removes the event handler raised on property changed.
@@ -445,10 +472,10 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                 {
                     if (v is string s2)
                     {
-                        var dt = WebFormat.ParseDate(s2);
-                        if (dt.HasValue)
+                        var dt2 = WebFormat.ParseDate(s2);
+                        if (dt2.HasValue)
                         {
-                            result = (T)(object)dt.Value;
+                            result = (T)(object)dt2.Value;
                             return true;
                         }
 
@@ -855,6 +882,34 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Enumerates all properties.
+    /// </summary>
+    /// <param name="callback">The callback handler in for-each loop.</param>
+    protected void ForEach(Action<string, object> callback)
+    {
+        if (callback is null) return;
+        var dict = new Dictionary<string, object>(cache);
+        foreach (var prop in dict)
+        {
+            callback(prop.Key, prop.Value);
+        }
+    }
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form by incorporating the property key.
+    /// </summary>
+    /// <param name="selector">A transform function to apply to each property.</param>
+    protected IEnumerable<T> Select<T>(Func<string, object, T> selector)
+    {
+        if (selector is null) yield break;
+        var dict = new Dictionary<string, object>(cache);
+        foreach (var prop in dict)
+        {
+            yield return selector(prop.Key, prop.Value);
+        }
+    }
+
+    /// <summary>
     /// Copies data from another instance.
     /// </summary>
     /// <param name="props">The properties to copy.</param>
@@ -1033,6 +1088,32 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
 public class ObservableProperties : BaseObservableProperties
 {
     /// <summary>
+    /// Initializes a new instance of the ObservableProperties class.
+    /// </summary>
+    public ObservableProperties()
+        : base()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ObservableProperties class.
+    /// </summary>
+    /// <param name="copy">The properties copied to the new container.</param>
+    public ObservableProperties(IDictionary<string, object> copy)
+        : base(copy)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ObservableProperties class.
+    /// </summary>
+    /// <param name="copy">The properties copied to the new container.</param>
+    public ObservableProperties(BaseObservableProperties copy)
+        : base(copy)
+    {
+    }
+
+    /// <summary>
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
@@ -1131,4 +1212,16 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
     public new void WriteTo(Utf8JsonWriter writer) => base.WriteTo(writer);
+
+    /// <summary>
+    /// Enumerates all properties.
+    /// </summary>
+    /// <param name="callback">The callback handler in for-each loop.</param>
+    public new void ForEach(Action<string, object> callback) => base.ForEach(callback);
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form by incorporating the property key.
+    /// </summary>
+    /// <param name="selector">A transform function to apply to each property.</param>
+    public new IEnumerable<T> Select<T>(Func<string, object, T> selector) => base.Select(selector);
 }
