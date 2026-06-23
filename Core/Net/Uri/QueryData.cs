@@ -305,10 +305,10 @@ public class QueryData : StringKeyValuePairs
         => ToString(DefaultEncoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="encoding">The encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(Encoding encoding)
     {
         if (encoding == null) encoding = DefaultEncoding ?? Encoding.UTF8;
@@ -322,11 +322,11 @@ public class QueryData : StringKeyValuePairs
     }
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="url">The URL.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(string url, Encoding encoding = null)
     {
         if (url == null) return null;
@@ -346,29 +346,29 @@ public class QueryData : StringKeyValuePairs
     }
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="url">The URL.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(IJsonValueNode<string> url, Encoding encoding = null)
         => ToString(url?.Value, encoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="uri">The URI.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(Uri uri, Encoding encoding = null)
         => ToString(uri?.OriginalString, encoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="url">The URL.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(StringBuilder url, Encoding encoding = null)
         => ToString(url?.ToString(), encoding);
 

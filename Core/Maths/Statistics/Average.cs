@@ -233,7 +233,7 @@ public static partial class StatisticalMethod
         return Math.Sqrt(r);
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Computes variance of a sequence of number.
     /// </summary>

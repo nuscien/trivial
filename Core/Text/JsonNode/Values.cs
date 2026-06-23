@@ -1652,7 +1652,7 @@ public static class JsonValues
     /// </summary>
     /// <returns>The media type header value of JSON.</returns>
     public static MediaTypeHeaderValue GetJsonMediaTypeHeaderValue()
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         => new(JsonMIME, "utf-8");
 #else
         => new(JsonMIME);
@@ -1663,7 +1663,7 @@ public static class JsonValues
     /// </summary>
     /// <returns>The media type header value of JSON lines.</returns>
     public static MediaTypeHeaderValue GetJsonlMediaTypeHeaderValue()
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         => new(JsonlMIME, "utf-8");
 #else
         => new(JsonlMIME);
@@ -1924,7 +1924,7 @@ public static class JsonValues
                 return;
             }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
             if (obj is Half ha)
             {
                 writer.WriteNumberValue((float)ha);
@@ -2215,7 +2215,7 @@ public static class JsonValues
                 return new JsonIntegerNode(i16u);
             }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
             if (obj is Half ha)
             {
                 return new JsonDoubleNode((float)ha);
@@ -2545,7 +2545,7 @@ public static class JsonValues
                     Tag = guid,
                 }, breadcrumb);
             }
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
             else if (type == typeof(Half))
             {
                 return handler.Convert(type, new JsonNumberSchemaDescription

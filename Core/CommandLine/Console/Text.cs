@@ -545,7 +545,7 @@ public class ConsoleText
     public void AppendFormat(string format, params object[] args)
         => Content.AppendFormat(format, args);
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Appends the string returned by processing a composite format string, which contains zero or more format items, to this instance. Each format item is replaced by the string representation of a corresponding argument in a parameter array.
     /// </summary>

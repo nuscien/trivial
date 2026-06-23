@@ -129,7 +129,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     [NotMapped]
 #endif
     protected object RevisionToken { get; private set; } = new();
@@ -138,7 +138,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
     [JsonIgnore]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     [NotMapped]
 #endif
     protected IEnumerable<string> Keys => cache.Keys;
@@ -147,7 +147,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Gets or sets the policy used to set property value.
     /// </summary>
     [JsonIgnore]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     [NotMapped]
 #endif
     protected PropertySettingPolicies PropertiesSettingPolicy { get; set; } = PropertySettingPolicies.Allow;
@@ -288,7 +288,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             {
                 if (typeE.IsEnum)
                 {
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
                     if (Enum.TryParse(typeE, s, out var en))
                     {
                         result = (T)en;
@@ -346,7 +346,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                         return ObjectConvert.InOut(Maths.Numbers.TryParseToUInt16(s, 10, out var i), i, out result);
                     if (typeE == typeof(Guid))
                         return ObjectConvert.InOut(Guid.TryParse(s, out var i), i, out result);
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
                     if (typeE == typeof(Int128))
                         return ObjectConvert.InOut(Maths.Numbers.TryParseToInt128(s, 10, out var i), i, out result);
 #endif
@@ -400,7 +400,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                     && (typeO == typeof(char) || typeO == typeof(float) || typeO == typeof(double) || typeO == typeof(decimal)
                     || typeO == typeof(int) || typeO == typeof(long) || typeO == typeof(short) || typeO == typeof(byte)
                     || typeO == typeof(uint) || typeO == typeof(ulong)) || typeO == typeof(ushort) || typeO == typeof(sbyte)
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
                     || typeO == typeof(Int128) || typeO == typeof(UInt128) || typeO == typeof(Half) || typeO == typeof(DateOnly) || typeO == typeof(TimeOnly)
 #endif
                     || typeO == typeof(bool) || typeO == typeof(Guid) || typeO == typeof(BigInteger) || typeO == typeof(DateTime) || typeO == typeof(DateTimeOffset))
@@ -502,7 +502,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
                         result = (T)(object)WebFormat.ParseDate(dt);
                         return true;
                     }
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
                     else if (typeE == typeof(DateOnly))
                     {
                         result = (T)(object)DateOnly.FromDateTime(dt.Date);
@@ -858,7 +858,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             if (v is JsonElement jEle) return jEle.ToString();
             if (v is uint ui) return ui.ToString("g");
             if (v is ulong ul) return ul.ToString("g");
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
             if (v is Int128 i3) return i3.ToString("g");
             if (v is Half d3) return d3.ToString("g");
             if (v is DateOnly dt2) return dt2.ToString("g");
@@ -1117,7 +1117,7 @@ public class ObservableProperties : BaseObservableProperties
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     [NotMapped]
 #endif
     public new object RevisionToken => base.RevisionToken;
@@ -1127,7 +1127,7 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     [NotMapped]
 #endif
     public new IEnumerable<string> Keys => base.Keys;
@@ -1137,7 +1137,7 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     [NotMapped]
 #endif
     public new PropertySettingPolicies PropertiesSettingPolicy

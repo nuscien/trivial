@@ -194,7 +194,7 @@ public sealed partial class StyleConsole
         OnAppend();
     }
 
-#if NETCOREAPP_0_OR_GREATER
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Writes the specified string value to the standard output stream.
     /// Note it may not flush immediately.
@@ -811,7 +811,7 @@ public sealed partial class StyleConsole
         OnAppend();
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Writes the specified number to the standard output stream.
     /// Note it may not flush immediately.
@@ -1673,8 +1673,7 @@ public sealed partial class StyleConsole
         Flush();
     }
 
-#if NETCOREAPP_0_OR_GREATER
-
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Writes the specified string value to the standard output stream.
     /// It will flush immediately.
@@ -2287,7 +2286,7 @@ public sealed partial class StyleConsole
         Flush();
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Writes the specified number to the standard output stream.
     /// It will flush immediately.
@@ -3150,7 +3149,7 @@ public sealed partial class StyleConsole
         Flush();
     }
 
-#if NETCOREAPP_0_OR_GREATER
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
     /// </summary>
@@ -3799,7 +3798,7 @@ public sealed partial class StyleConsole
         Flush();
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Writes the specified number, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.

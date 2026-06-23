@@ -1366,7 +1366,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     object ICloneable.Clone()
         => Clone();
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Adds a value.
     /// </summary>

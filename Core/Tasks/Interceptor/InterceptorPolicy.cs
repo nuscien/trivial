@@ -293,7 +293,7 @@ public sealed class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy
     public static InterceptorPolicy DoubleClick()
     {
         var timeout = fallbackDoubleClickSpeed;
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         if (OperatingSystem.IsWindows())
 #endif
         {

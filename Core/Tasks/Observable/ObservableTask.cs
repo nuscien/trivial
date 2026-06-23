@@ -148,7 +148,7 @@ public abstract class ObservableTask<T>
     /// The locker.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     private readonly Lock locker = new();
 #else
     private readonly object locker = new();

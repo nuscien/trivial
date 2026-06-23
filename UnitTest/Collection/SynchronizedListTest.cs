@@ -34,7 +34,7 @@ namespace Trivial.Collection
             list.RemoveAll(ele => ele.Length == 3 && ele.StartsWith("4"));
             Assert.AreEqual(300, list.Count);
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         var list2 = ListExtensions.ToSynchronizedList(list, new Lock());
 #else
             var list2 = ListExtensions.ToSynchronizedList(list, new object());

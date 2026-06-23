@@ -21,7 +21,7 @@ namespace Trivial.Maths;
 /// </summary>
 /// <typeparam name="T">The type of elements.</typeparam>
 public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<BaseMultipleElements<T>>, IEquatable<IEnumerable<T>>, ICloneable
-#if NET471_OR_GREATER || NETCOREAPP
+#if NET471_OR_GREATER || NET10_0_OR_GREATER
     , ITuple
 #endif
 {
@@ -30,7 +30,7 @@ public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<Bas
     /// </summary>
     public virtual int Count => ToList().Count;
 
-#if NET471_OR_GREATER || NETCOREAPP
+#if NET471_OR_GREATER || NET10_0_OR_GREATER
     /// <summary>
     /// Gets the number of elements in the collection.
     /// </summary>

@@ -29,7 +29,7 @@ public class ArithmeticTest
         Assert.IsFalse(Arithmetic.IsPrime(21474836477));
         Assert.IsFalse(await Arithmetic.IsPrimeAsync(21474836477));
         Assert.IsTrue(await Arithmetic.IsPrimeAsync(2147483647L));
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         Assert.IsTrue(await Arithmetic.IsPrimeAsync((Int128)2147483647));
 #endif
         Assert.AreEqual(17, await Arithmetic.PreviousPrimeAsync(19));
@@ -71,7 +71,7 @@ public class ArithmeticTest
         Assert.AreEqual(17_000_000L, Numbers.ParseToInt64("17百w", 10));
         Assert.AreEqual(17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
         Assert.AreEqual(-200_000_000_000_000, Numbers.ParseToInt64("-200T", 10));
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         Assert.AreEqual((Int128)17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
         Assert.AreEqual((Int128)(-200_000_000_000_000), Numbers.ParseToInt64("-200T", 10));
 #endif

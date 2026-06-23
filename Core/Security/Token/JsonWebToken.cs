@@ -1127,7 +1127,7 @@ public class JsonWebTokenPayload
         return comparer is null ? Audience.Contains(value) : Audience.Contains(value, comparer);
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Sets the birth date of the user.
     /// </summary>

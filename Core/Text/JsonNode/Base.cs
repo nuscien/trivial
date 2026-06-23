@@ -592,7 +592,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
                         return Enum.ToObject(type, enumInt);
                     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
                     if (Enum.TryParse(type, enumStr, out object enumObj))
                     {
                         exception = null;

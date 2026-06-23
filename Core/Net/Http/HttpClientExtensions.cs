@@ -189,7 +189,7 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         if (destination == null) throw ObjectConvert.ArgumentNull(nameof(destination));
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var downloadingStream = await httpContent.ReadAsStreamAsync();
@@ -262,7 +262,7 @@ public static class HttpClientExtensions
         {
             Timeout = TimeSpan.FromDays(2)
         };
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         using var content = await httpClient.GetStreamAsync(uri, cancellationToken);
 #else
         using var content = await httpClient.GetStreamAsync(uri);
@@ -398,7 +398,7 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var type = typeof(T);
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync(cancellationToken);
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
@@ -469,7 +469,7 @@ public static class HttpClientExtensions
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var stream = await httpContent.ReadAsStreamAsync();
@@ -579,7 +579,7 @@ public static class HttpClientExtensions
         return JsonSerializer.DeserializeAsync<T>(stream, options);
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Deserializes the HTTP JSON content into an object as the specific type.
     /// </summary>
@@ -755,7 +755,7 @@ public static class HttpClientExtensions
     public static async Task<StreamingCollectionResult<T>> DeserializeCollectionResultAsync<T>(this HttpContent httpContent, Action<StreamingCollectionResult<T>, ServerSentEventInfo> callback, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var stream = await httpContent.ReadAsStreamAsync();
@@ -1095,7 +1095,7 @@ public static class HttpClientExtensions
         {
         }
 
-#if NET48_OR_GREATER || NETCOREAPP
+#if NET48_OR_GREATER || NET10_0_OR_GREATER
         try
         {
             var bitness = Environment.Is64BitProcess ? "64" : "32";
@@ -1126,6 +1126,34 @@ public static class HttpClientExtensions
 #endif
 
         return name;
+    }
+
+    /// <summary>
+    /// Converts the query data info into the URL.
+    /// </summary>
+    /// <param name="query">The query generator.</param>
+    /// <param name="url">The URL used to append the query.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <returns>A URL with query.</returns>
+    public static string ToQueryUrlString(this IQueryDataGenerator query, string url, Encoding encoding = null)
+    {
+        var q = query?.ToQueryData();
+        if (q is null) return null;
+        return q.ToString(url, encoding);
+    }
+
+    /// <summary>
+    /// Converts the query data info into the URL.
+    /// </summary>
+    /// <param name="query">The query generator.</param>
+    /// <param name="uri">The URI used to append the query.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <returns>A URL with query.</returns>
+    public static string ToQueryUrlString(this IQueryDataGenerator query, Uri uri, Encoding encoding = null)
+    {
+        var q = query?.ToQueryData();
+        if (q is null) return null;
+        return q.ToString(uri, encoding);
     }
 
     internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri requestUri)

@@ -28,7 +28,7 @@ namespace Trivial.Security;
 /// The access token resolver request.
 /// </summary>
 [DataContract]
-public class TokenRequest
+public class TokenRequest : IQueryDataGenerator
 {
     /// <summary>
     /// Initializes a new instance of the TokenRequest class.
@@ -508,7 +508,7 @@ public class AppAccessingKey
 /// </summary>
 /// <param name="grantType">The grant type.</param>
 [DataContract]
-public abstract class TokenRequestBody(string grantType)
+public abstract class TokenRequestBody(string grantType) : IQueryDataGenerator
 {
     /// <summary>
     /// The grant type property name.

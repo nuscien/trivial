@@ -283,7 +283,7 @@ public class TokenRequestRoute<T>
         string input;
         using (var reader = new StreamReader(stream, encoding ?? Encoding.UTF8))
         {
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
             input = await reader.ReadToEndAsync(cancellationToken);
 #else
             input = await reader.ReadToEndAsync();

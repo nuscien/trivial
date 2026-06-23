@@ -163,7 +163,7 @@ public static partial class StatisticalMethod
         return samples;
     }
 
-#if NETCOREAPP
+#if NET10_0_OR_GREATER
     /// <summary>
     /// Generates sample by Metropolis-Hastings algorithm.
     /// </summary>
