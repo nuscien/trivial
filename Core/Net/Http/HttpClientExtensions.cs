@@ -1138,7 +1138,7 @@ public static class HttpClientExtensions
     public static string ToQueryUrlString(this IQueryDataGenerator query, string url, Encoding encoding = null)
     {
         var q = query?.ToQueryData();
-        if (q is null) return null;
+        if (q is null) return url;
         return q.ToString(url, encoding);
     }
 
@@ -1152,9 +1152,53 @@ public static class HttpClientExtensions
     public static string ToQueryUrlString(this IQueryDataGenerator query, Uri uri, Encoding encoding = null)
     {
         var q = query?.ToQueryData();
-        if (q is null) return null;
+        if (q is null) return uri?.OriginalString;
         return q.ToString(uri, encoding);
     }
+
+    /// <summary>
+    /// Creates the URI with given query.
+    /// </summary>
+    /// <param name="query">The query data.</param>
+    /// <param name="url">The URL.</param>
+    /// <returns>A new URI with query.</returns>
+    public static Uri CreateUri(this QueryData query, string url)
+    {
+        if (query is null) return StringExtensions.TryCreateUri(url);
+        url = query.ToString(url);
+        return StringExtensions.TryCreateUri(url);
+    }
+
+    /// <summary>
+    /// Creates the URI with given query.
+    /// </summary>
+    /// <param name="query">The query data.</param>
+    /// <param name="uri">The URI.</param>
+    /// <returns>A new URI with query.</returns>
+    public static Uri CreateUri(this QueryData query, Uri uri)
+    {
+        if (query is null) return uri;
+        var url = query.ToString(uri);
+        return string.IsNullOrWhiteSpace(url) ? null : new(url, uri.IsAbsoluteUri ? UriKind.Absolute : UriKind.RelativeOrAbsolute);
+    }
+
+    /// <summary>
+    /// Creates the URI with given query.
+    /// </summary>
+    /// <param name="query">The query data.</param>
+    /// <param name="uri">The URI.</param>
+    /// <returns>A new URI with query.</returns>
+    public static Uri CreateUri(this IQueryDataGenerator query, Uri uri)
+        => CreateUri(query?.ToQueryData(), uri);
+
+    /// <summary>
+    /// Creates the URI with given query.
+    /// </summary>
+    /// <param name="query">The query data.</param>
+    /// <param name="url">The URL.</param>
+    /// <returns>A new URI with query.</returns>
+    public static Uri CreateUri(this IQueryDataGenerator query, string url)
+        => CreateUri(query?.ToQueryData(), url);
 
     internal static HttpRequestMessage CreateRequestMessage(HttpMethod method, Uri requestUri)
     {

@@ -442,6 +442,15 @@ public class QueryData : StringKeyValuePairs
         q.ParseSet(query, false, encoding);
         return q;
     }
+
+    /// <summary>
+    /// Pluses a URI and a query data.
+    /// </summary>
+    /// <param name="uri">The URI.</param>
+    /// <param name="query">The query data.</param>
+    /// <returns>The new URI with the given URI and the query.</returns>
+    public static Uri operator +(Uri uri, QueryData query)
+        => HttpClientExtensions.CreateUri(query, uri);
 #pragma warning restore IDE0056, IDE0057, CA1834
 }
 
