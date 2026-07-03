@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Trivial.Reflection;
+using Trivial.Text;
 
 namespace Trivial.CommandLine;
 
@@ -214,6 +215,11 @@ public abstract class BaseCommandVerb
     protected CommandConversationContext Context { get; private set; }
 
     /// <summary>
+    /// Gets the console instance from context.
+    /// </summary>
+    protected StyleConsole CurrentConsole => Context?.Console ?? StyleConsole.Default;
+
+    /// <summary>
     /// Tests if the arguments are valid.
     /// </summary>
     /// <returns>true if it is valid; otherwise, false.</returns>
@@ -232,13 +238,6 @@ public abstract class BaseCommandVerb
     protected virtual void OnGetHelp()
     {
     }
-
-    /// <summary>
-    /// Gets the console instance from context.
-    /// </summary>
-    /// <returns>The console instance.</returns>
-    protected StyleConsole GetConsole()
-        => Context?.Console ?? StyleConsole.Default;
 
     /// <summary>
     /// Tests if the exception on processing need be thrown.
@@ -352,7 +351,7 @@ public class CommandVerbHandler<T> : ICommandHandler
     public CommandVerbHandler(Func<T> factory, string description = null)
     {
         this.factory = factory ?? Activator.CreateInstance<T>;
-        Description = description = description?.Trim();
+        Description = description = description?.Trim() ?? StringExtensions.GetDescription(typeof(T));
         if (!string.IsNullOrEmpty(description)) return;
         try
         {
@@ -366,7 +365,7 @@ public class CommandVerbHandler<T> : ICommandHandler
             }
 
             if (!desc.CanRead) return;
-            description = (string)desc.GetValue(null);
+            Description = (string)desc.GetValue(null);
         }
         catch (AmbiguousMatchException)
         {

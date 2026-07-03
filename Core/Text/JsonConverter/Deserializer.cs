@@ -30,7 +30,7 @@ public class JsonTypedDeserializer<T>
     /// </summary>
     public JsonTypedDeserializer(Func<Stream, T> deserializer)
     {
-        var impl = new StreamJsonTypedDeserializer<T>(deserializer);
+        impl = new StreamJsonTypedDeserializer<T>(deserializer);
         IsStreamPriority = true;
     }
 
@@ -39,7 +39,7 @@ public class JsonTypedDeserializer<T>
     /// </summary>
     public JsonTypedDeserializer(Func<string, T> deserializer)
     {
-        var impl = new StringJsonTypedDeserializer<T>(deserializer);
+        impl = new StringJsonTypedDeserializer<T>(deserializer);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class JsonTypedDeserializer<T>
     /// </summary>
     public JsonTypedDeserializer(Func<JsonObjectNode, T> deserializer)
     {
-        var impl = new ConvertJsonTypedDeserializer<T>(deserializer);
+        impl = new ConvertJsonTypedDeserializer<T>(deserializer);
         IsStreamPriority = true;
     }
 

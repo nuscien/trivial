@@ -15,11 +15,11 @@ namespace Trivial.Reflection;
 /// // Define the exception handler for specific exceptions.
 /// var eh = new ExceptionHandler();
 /// eh.Add&lt;ArgumentNullException&gt;(ex => {
-///   Console.WriteLine($"ArgumentNullException caught: {ex.Message}");
+///   CurrentConsole.WriteLine($"ArgumentNullException caught: {ex.Message}");
 ///   return null; // Ignore this exception.
 /// });
 /// eh.Add&lt;InvalidOperationException&gt;(ex => {
-///   Console.WriteLine($"InvalidOperationException caught: {ex.Message}");
+///   CurrentConsole.WriteLine($"InvalidOperationException caught: {ex.Message}");
 ///   return ex.InnerException; // Re-throw the inner exception.
 /// });
 /// 

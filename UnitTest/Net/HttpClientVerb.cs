@@ -54,7 +54,7 @@ class HttpClientVerb : BaseCommandVerb
 
     protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
     {
-        var console = GetConsole();
+        var console = CurrentConsole;
 
         // HTTP URI.
         var url = "http://www.kingcean.net:8080/test/path?a=123&b=hello#nothing/all";

@@ -16,7 +16,7 @@ namespace Trivial.Text;
 /// var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
 /// foreach (var item in csv)
 /// {
-///     Console.WriteLine("{0}\t{1}\t{2}", item[0], item[1], item[2]);
+///     CurrentConsole.WriteLine("{0}\t{1}\t{2}", item[0], item[1], item[2]);
 /// }
 /// </code>
 /// <para>It also support the map a CSV format string to a collection of specific model.</para>
@@ -30,7 +30,7 @@ namespace Trivial.Text;
 /// var csv = new CsvParser("abcdefg,123\n\"hijk,lmn\", 456");
 /// foreach (var model in csv.ConvertTo&lt;Model&gt;(new[] { "FieldText", "FieldNumber" }))
 /// {
-///     Console.WriteLine("{0}\t{1}", model.FieldText, model.FieldNumber);
+///     CurrentConsole.WriteLine("{0}\t{1}", model.FieldText, model.FieldNumber);
 /// }
 /// </code>
 /// </example>

@@ -25,7 +25,7 @@ namespace Trivial.Reflection;
 /// await init.EnsureInitAsync();
 /// await task;
 /// await init.EnsureInitAsync();
-/// Console.WriteLine(count); // Output: 1
+/// CurrentConsole.WriteLine(count); // Output: 1
 /// </code>
 /// </example>
 [Guid("EF30759E-EF34-4C68-9994-5769A147BE4E")]

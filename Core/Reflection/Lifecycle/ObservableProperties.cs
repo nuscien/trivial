@@ -64,7 +64,7 @@ public enum PropertySettingPolicies
 /// </code>
 /// <code>
 /// var m = new TestModel();
-/// m.PropertyChanged += (sender, e) => Console.WriteLine($"Property {e.PropertyName} changed.");
+/// m.PropertyChanged += (sender, e) => CurrentConsole.WriteLine($"Property {e.PropertyName} changed.");
 /// m.Name = "Programming";
 /// </code>
 /// </example>
