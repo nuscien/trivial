@@ -33,8 +33,8 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the response responseTypes, e.g. code, token, id_token.
     /// </summary>
-    [DataMember(Name = CodeTokenRequestBody.ResponseType, EmitDefaultValue = false)]
-    [JsonPropertyName(CodeTokenRequestBody.ResponseType)]
+    [DataMember(Name = TokenRequestProperties.ResponseType, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenRequestProperties.ResponseType)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The response types, e.g. code, token, id_token.")]
     public List<string> ResponseTypes { get; set; }
@@ -42,7 +42,7 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the redirect URI where authentication responses can be sent and received by client.
     /// </summary>
-    [DataMember(Name = CodeTokenRequestBody.RedirectUriProperty, EmitDefaultValue = false)]
+    [DataMember(Name = TokenRequestProperties.RedirectUri, EmitDefaultValue = false)]
     [JsonPropertyName("redirect_uri")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The redirect URI where authentication responses can be sent and received by client.")]
@@ -78,8 +78,8 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the value included in the request that is also returned in the token response. It can be a string of any content.
     /// </summary>
-    [DataMember(Name = CodeTokenRequestBody.StateProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(CodeTokenRequestBody.StateProperty)]
+    [DataMember(Name = TokenRequestProperties.State, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenRequestProperties.State)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The value included in the request that is also returned in the token response.")]
     public string State { get; set; }
@@ -152,7 +152,7 @@ public class AuthorizationEndpointRequest
     /// Adds the item of response type: code.
     /// </summary>
     public void AddResponseTypeCode()
-        => AddResponseType(CodeTokenRequestBody.CodeProperty);
+        => AddResponseType(TokenRequestProperties.Code);
 
     /// <summary>
     /// Adds the item of scope.
@@ -227,12 +227,12 @@ public class AuthorizationEndpointRequest
     {
         var q = new QueryData();
         q.SetIfNotEmpty("client_id", ClientId);
-        q.SetIfNotEmpty(CodeTokenRequestBody.ResponseType, StringExtensions.Join(' ', ResponseTypes));
-        q.SetIfNotEmpty(CodeTokenRequestBody.RedirectUriProperty, RedirectUri?.OriginalString);
+        q.SetIfNotEmpty(TokenRequestProperties.ResponseType, StringExtensions.Join(' ', ResponseTypes));
+        q.SetIfNotEmpty(TokenRequestProperties.RedirectUri, RedirectUri?.OriginalString);
         q.SetIfNotEmpty(TokenInfo.ScopeProperty, StringExtensions.Join(' ', Scopes));
         q.SetIfNotEmpty("nonce", Nonce);
         q.SetIfNotEmpty("response_mode", ResponseMode);
-        q.SetIfNotEmpty(CodeTokenRequestBody.StateProperty, State);
+        q.SetIfNotEmpty(TokenRequestProperties.State, State);
         q.SetIfNotEmpty("prompt", Prompt);
         q.SetIfNotEmpty("login_hint", UserName);
         q.SetIfNotEmpty("domain_hint", DomainHint);
@@ -302,8 +302,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the authorization code.
     /// </summary>
-    [DataMember(Name = CodeTokenRequestBody.CodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(CodeTokenRequestBody.CodeProperty)]
+    [DataMember(Name = TokenRequestProperties.Code, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenRequestProperties.Code)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The authorization code.")]
     public string Code { get; set; }
@@ -385,8 +385,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the value which is from the request of authorization. It can be a string of any content.
     /// </summary>
-    [DataMember(Name = CodeTokenRequestBody.StateProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(CodeTokenRequestBody.StateProperty)]
+    [DataMember(Name = TokenRequestProperties.State, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenRequestProperties.State)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The value which is from the request of authorization.")]
     public string State { get; set; }
@@ -583,14 +583,14 @@ public class AuthorizationRedirectRequest
     protected virtual QueryData ToQueryData()
     {
         var q = new QueryData();
-        q.SetIfNotEmpty(CodeTokenRequestBody.CodeProperty, Code);
+        q.SetIfNotEmpty(TokenRequestProperties.Code, Code);
         q.SetIfNotEmpty(TokenInfo.AccessTokenProperty, AccessToken);
         q.SetIfNotEmpty(TokenInfo.RefreshTokenProperty, RefreshToken);
         q.SetIfNotEmpty(TokenInfo.TokenTypeProperty, TokenType);
         if (ExpiredInSecond.HasValue) q.Add(TokenInfo.ExpiresInProperty, ExpiredInSecond.Value);
         q.SetIfNotEmpty(TokenInfo.ScopeProperty, StringExtensions.Join(' ', Scopes));
         q.SetIfNotEmpty(TokenInfo.IdTokenProperty, IdToken);
-        q.SetIfNotEmpty(CodeTokenRequestBody.StateProperty, State);
+        q.SetIfNotEmpty(TokenRequestProperties.State, State);
         q.SetIfNotEmpty("nonce", Nonce);
         return q;
     }

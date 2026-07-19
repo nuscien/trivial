@@ -971,8 +971,8 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// <summary>
     /// Gets or sets the client identifier.
     /// </summary>
-    [DataMember(Name = TokenRequestBody.ClientIdProperty, EmitDefaultValue = true)]
-    [JsonPropertyName(TokenRequestBody.ClientIdProperty)]
+    [DataMember(Name = TokenRequestProperties.ClientId, EmitDefaultValue = true)]
+    [JsonPropertyName(TokenRequestProperties.ClientId)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ClientId { get; set; }
 

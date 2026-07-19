@@ -93,56 +93,56 @@ public class TokenRequestRoute<T>
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<PasswordTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
-        => Register(PasswordTokenRequestBody.PasswordGrantType, PasswordTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.Password, PasswordTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<ClientTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
-        => Register(ClientTokenRequestBody.ClientCredentialsGrantType, ClientTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.ClientCredentials, ClientTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<CodeTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
-        => Register(CodeTokenRequestBody.AuthorizationCodeGrantType, CodeTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.AuthorizationCode, CodeTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<RefreshTokenRequestBody>, CancellationToken, Task<SelectionRelationship<T, TokenInfo>>> h)
-        => Register(RefreshTokenRequestBody.RefreshTokenGrantType, RefreshTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.RefreshToken, RefreshTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<PasswordTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
-        => Register(PasswordTokenRequestBody.PasswordGrantType, PasswordTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.Password, PasswordTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<ClientTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
-        => Register(ClientTokenRequestBody.ClientCredentialsGrantType, ClientTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.ClientCredentials, ClientTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<CodeTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
-        => Register(CodeTokenRequestBody.AuthorizationCodeGrantType, CodeTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.AuthorizationCode, CodeTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a token request handler into a route.
     /// </summary>
     /// <param name="h">A token request handler.</param>
     public void Register(Func<TokenRequest<RefreshTokenRequestBody>, CancellationToken, Task<BaseAccountTokenInfo<T>>> h)
-        => Register(RefreshTokenRequestBody.RefreshTokenGrantType, RefreshTokenRequestBody.Create, h);
+        => Register(TokenRequestProperties.RefreshToken, RefreshTokenRequestBody.Create, h);
 
     /// <summary>
     /// Registers a handler.
@@ -253,14 +253,14 @@ public class TokenRequestRoute<T>
     public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(QueryData q, CancellationToken cancellationToken = default)
     {
         if (q == null) return null;
-        var grantType = q[TokenRequestBody.GrantTypeProperty];
+        var grantType = q[TokenRequestProperties.GrantType];
         if (string.IsNullOrWhiteSpace(grantType)) return null;
         var info = handlers.TryGetValue(grantType, out var h) ? await h(q, cancellationToken) : grantType.ToLowerInvariant() switch
         {
-            ClientTokenRequestBody.ClientCredentialsGrantType => await TokenInfoExtensions.ProcessAsync(q, ClientTokenRequestBody.Create, SignInAsync, cancellationToken),
-            CodeTokenRequestBody.AuthorizationCodeGrantType => await TokenInfoExtensions.ProcessAsync(q, CodeTokenRequestBody.Create, SignInAsync, cancellationToken),
-            RefreshTokenRequestBody.RefreshTokenGrantType => await TokenInfoExtensions.ProcessAsync(q, RefreshTokenRequestBody.Create, SignInAsync, cancellationToken),
-            PasswordTokenRequestBody.PasswordGrantType => await TokenInfoExtensions.ProcessAsync(q, PasswordTokenRequestBody.Create, SignInAsync, cancellationToken),
+            TokenRequestProperties.ClientCredentials => await TokenInfoExtensions.ProcessAsync(q, ClientTokenRequestBody.Create, SignInAsync, cancellationToken),
+            TokenRequestProperties.AuthorizationCode => await TokenInfoExtensions.ProcessAsync(q, CodeTokenRequestBody.Create, SignInAsync, cancellationToken),
+            TokenRequestProperties.RefreshToken => await TokenInfoExtensions.ProcessAsync(q, RefreshTokenRequestBody.Create, SignInAsync, cancellationToken),
+            TokenRequestProperties.Password => await TokenInfoExtensions.ProcessAsync(q, PasswordTokenRequestBody.Create, SignInAsync, cancellationToken),
             _ => null
         };
         if (info is not null) SignedIn?.Invoke(this, new DataEventArgs<SelectionRelationship<T, TokenInfo>>(info));
@@ -390,11 +390,11 @@ public static class TokenInfoExtensions
         if (request?.Body is null) return null;
         var data = new QueryData
         {
-            { CodeTokenRequestBody.ResponseType, responseType },
-            { TokenRequestBody.ClientIdProperty, request.ClientId },
-            { CodeTokenRequestBody.RedirectUriProperty, request.Body.RedirectUri?.OriginalString },
+            { TokenRequestProperties.ResponseType, responseType },
+            { TokenRequestProperties.ClientId, request.ClientId },
+            { TokenRequestProperties.RedirectUri, request.Body.RedirectUri?.OriginalString },
             { TokenInfo.ScopeProperty, request.ScopeString },
-            { CodeTokenRequestBody.StateProperty, state }
+            { TokenRequestProperties.State, state }
         };
         return new Uri(data.ToString(uri.OriginalString));
     }
