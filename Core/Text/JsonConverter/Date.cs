@@ -19,54 +19,6 @@ namespace Trivial.Text;
 public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJsonNodeSchemaCreationHandler<Type>
 {
     /// <summary>
-    /// Nullable Javascript ticks JSON number converter.
-    /// </summary>
-    public sealed class NullableConverter : JsonConverter<DateTime?>, IJsonNodeSchemaCreationHandler<Type>
-    {
-        /// <inheritdoc />
-        public override bool CanConvert(Type typeToConvert)
-            => base.CanConvert(typeToConvert) || typeToConvert == typeof(DateTime);
-
-        /// <inheritdoc />
-        public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => WebFormat.ParseDate(ref reader);
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-        {
-            var num = WebFormat.ParseDate(value);
-            if (num.HasValue) writer.WriteNumberValue(num.Value);
-            else writer.WriteNullValue();
-        }
-
-        JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-            => result is JsonIntegerSchemaDescription desc ? desc : new JsonIntegerSchemaDescription();
-    }
-
-    /// <summary>
-    /// Nullable date time JSON converter with Javascript ticks fallback.
-    /// </summary>
-    public sealed class FallbackNullableConverter : JsonConverter<DateTime?>, IJsonNodeSchemaCreationHandler<Type>
-    {
-        /// <inheritdoc />
-        public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => WebFormat.ParseDate(ref reader);
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-        {
-            if (value.HasValue) writer.WriteStringValue(JsonStringNode.ToJson(value.Value, true));
-            else writer.WriteNullValue();
-        }
-
-        JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-            => result is JsonStringSchemaDescription desc ? desc : new JsonStringSchemaDescription
-            {
-                Format = "date-time"
-            };
-    }
-
-    /// <summary>
     /// Date time JSON converter with Javascript ticks fallback.
     /// </summary>
     public sealed class FallbackConverter : JsonConverter<DateTime>, IJsonNodeSchemaCreationHandler<Type>
@@ -84,6 +36,36 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
             {
                 Format = "date-time"
             };
+    }
+
+    /// <summary>
+    /// The JSON converter of Javascript ticks in string.
+    /// </summary>
+    public class StringConverter : JsonConverter<DateTime>
+    {
+        /// <inheritdoc />
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.String:
+                    return long.TryParse(reader.GetString(), out var i) ? WebFormat.ParseDate(i) : throw new JsonException();
+                case JsonTokenType.Number:
+                    return WebFormat.ParseDate(reader.GetInt64());
+                case JsonTokenType.StartObject:
+                    var json = new JsonObjectNode(ref reader);
+                    return JsonValues.TryGetDateTime(json) ?? throw new JsonException();
+                default:
+                    throw new JsonException();
+            }
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        {
+            var s = WebFormat.ParseDate(value).ToString("G");
+            writer.WriteStringValue(s);
+        }
     }
 
     /// <inheritdoc />

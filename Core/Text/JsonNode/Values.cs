@@ -2867,6 +2867,7 @@ public static class JsonValues
     {
         if (node is IJsonValueNode<string> s) return WebFormat.ParseDate(s.Value);
         if (node is IJsonValueNode<long> i) return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(i.Value) : WebFormat.ParseDate(i.Value);
+        //if (node is IJsonValueNode<double> i2) return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(i.Value) : WebFormat.ParseDate(i.Value);
         if (node is JsonObjectNode json) return TryGetDateTime(json, useUnixTimestampsFallback);
         return null;
     }
