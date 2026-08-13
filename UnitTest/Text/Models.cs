@@ -76,7 +76,7 @@ class JsonAttributeTestModel
     [JsonConverter(typeof(JsonJavaScriptTicksConverter.FallbackConverter))]
     public DateTime C { get; set; }
 
-    [JsonConverter(typeof(JsonJavaScriptTicksConverter.FallbackNullableConverter))]
+    [JsonConverter(typeof(JsonJavaScriptTicksConverter.FallbackConverter))]
     public DateTime? D { get; set; }
 
     [JsonConverter(typeof(JsonUnixTimestampConverter))]
