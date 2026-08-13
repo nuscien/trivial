@@ -490,7 +490,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     }
 
     /// <summary>
-    /// Tests if the value kind of the property is the specific one.
+    /// Tests if the value kind of the element is the specific one.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="kind">The value kind expected.</param>
@@ -508,6 +508,34 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         }
 
         return kind == JsonValueKind.Undefined;
+    }
+
+    /// <summary>
+    /// Tests if the value kinds of all elements are the same.
+    /// </summary>
+    /// <param name="kind">The value kind expected.</param>
+    /// <param name="ignoreNull">true if the null element; otherwise, false.</param>
+    /// <returns>true if the value kind is the specific one; otherwise, false.</returns>
+    public bool IsValueKindOfAll(JsonValueKind kind, bool ignoreNull = false)
+    {
+        foreach (var value in store)
+        {
+            if (value is null)
+            {
+                if (ignoreNull) continue;
+                return false;
+            }
+
+            if (value.ValueKind == kind) continue;
+            if (value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined)
+            {
+                if (ignoreNull) continue;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

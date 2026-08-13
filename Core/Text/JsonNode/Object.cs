@@ -1650,9 +1650,21 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             return id;
         }
 
+        if (TryGetStringTrimmedValue("Id", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "Id";
+            return id;
+        }
+
         if (TryGetStringTrimmedValue("_id", out id, out kind) && !string.IsNullOrEmpty(id))
         {
             key = "_id";
+            return id;
+        }
+
+        if (TryGetStringTrimmedValue("uuid", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "uuid";
             return id;
         }
 
@@ -5022,6 +5034,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         {
             { "$ref", JsonValues.SELF_REF}
         }: value) ?? JsonValues.Null);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="valueObj">The JSON object with the property of value to set.</param>
+    /// <param name="valueKey">The JSON object key of the property value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonObjectNode valueObj, string valueKey)
+    {
+        AssertKey(key);
+        var prop = valueObj?.GetValue(valueKey, true);
+        if (prop is null) return;
+        SetValue(key, prop);
     }
 
     /// <summary>

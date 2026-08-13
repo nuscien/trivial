@@ -340,7 +340,11 @@ public static partial class WebFormat
             case JsonTokenType.Number:
                 return ParseDate(reader.GetInt64());
             case JsonTokenType.String:
-                return ParseDate(reader.GetString());
+                var s = reader.GetString();
+                if (string.IsNullOrEmpty(s)) return null;
+                var date = ParseDate(s);
+                if (date is not null) return date;
+                return long.TryParse(s, out var l) ? ParseDate(l) : null;
             case JsonTokenType.StartObject:
                 var json = new JsonObjectNode(ref reader);
                 return JsonValues.TryGetDateTime(json);
@@ -406,7 +410,11 @@ public static partial class WebFormat
             case JsonTokenType.Number:
                 return ParseUnixTimestamp(reader.GetInt64());
             case JsonTokenType.String:
-                return ParseDate(reader.GetString());
+                var s = reader.GetString();
+                if (string.IsNullOrEmpty(s)) return null;
+                var date = ParseDate(s);
+                if (date is not null) return date;
+                return long.TryParse(s, out var l) ? ParseUnixTimestamp(l) : null;
             case JsonTokenType.StartObject:
                 var json = new JsonObjectNode(ref reader);
                 return JsonValues.TryGetDateTime(json, true);

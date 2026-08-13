@@ -378,311 +378,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
     /// <summary>
     /// Json number converter with number string fallback.
     /// </summary>
-    sealed class Int16NullableConverter : JsonConverter<short?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override short? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.TryGetInt16(out var integer) ? integer : (short)reader.GetDouble(),
-                JsonTokenType.String => ParseNullableNumber<short>(ref reader, Numbers.TryParseToInt16),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, short? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue(); 
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class Int32NullableConverter : JsonConverter<int?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override int? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => GetInt32(ref reader),
-                JsonTokenType.String => ParseNullableNumber<int>(ref reader, Numbers.TryParseToInt32),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, int? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class Int64NullableConverter : JsonConverter<long?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override long? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.TryGetInt64(out var integer) ? integer : (long)reader.GetDouble(),
-                JsonTokenType.String => ParseNullableNumber<long>(ref reader, Numbers.TryParseToInt64),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, long? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class UInt16NullableConverter : JsonConverter<ushort?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override ushort? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.TryGetUInt16(out var integer) ? integer : (ushort)reader.GetDouble(),
-                JsonTokenType.String => ParseNullableNumber<ushort>(ref reader, Numbers.TryParseToUInt16),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, ushort? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class UInt32NullableConverter : JsonConverter<uint?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override uint? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.TryGetUInt32(out var integer) ? integer : (uint)reader.GetDouble(),
-                JsonTokenType.String => ParseNullableNumber<uint>(ref reader, Numbers.TryParseToUInt32),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, uint? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class UInt64NullableConverter : JsonConverter<ulong?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override ulong? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.TryGetUInt64(out var integer) ? integer : (ulong)reader.GetDouble(),
-                JsonTokenType.String => ParseNullableNumber<ulong>(ref reader, UInt64Converter.TryParseToUInt64),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, ulong? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class DecimalNullableConverter : JsonConverter<decimal?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override decimal? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.GetDecimal(),
-                JsonTokenType.String => ParseNullableNumber(ref reader, decimal.Parse),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, decimal? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class SingleNullableConverter : JsonConverter<float?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override float? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.GetSingle(),
-                JsonTokenType.String => ParseNullableNumber(ref reader, float.Parse),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, float? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
-    sealed class DoubleNullableConverter : JsonConverter<double?>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override double? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            JsonValues.SkipComments(ref reader);
-            return reader.TokenType switch
-            {
-                JsonTokenType.Null => null,
-                JsonTokenType.Number => reader.GetDouble(),
-                JsonTokenType.String => ParseNullableNumber(ref reader, double.Parse),
-                JsonTokenType.False => 0,
-                JsonTokenType.True => 1,
-                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
-            };
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, double? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            else if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("g", CultureInfo.InvariantCulture));
-            else writer.WriteNumberValue(value.Value);
-        }
-    }
-
-    /// <summary>
-    /// Json number converter with number string fallback.
-    /// </summary>
     sealed class StringConverter : JsonConverter<string>
     {
         /// <summary>
@@ -920,29 +615,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
     }
 
     /// <summary>
-    /// Json hex color string value converter.
-    /// </summary>
-    sealed class NullableHexColorConverter : JsonConverter<System.Drawing.Color?>
-    {
-        /// <inheritdoc />
-        public override System.Drawing.Color? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => reader.TokenType switch
-            {
-                JsonTokenType.Null or JsonTokenType.False => null,
-                _ => Drawing.ColorCalculator.ParseValue(ref reader)
-            };
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, System.Drawing.Color? value, JsonSerializerOptions options)
-        {
-            if (value.HasValue)
-                writer.WriteStringValue(Drawing.ColorCalculator.ToHexString(value.Value));
-            else
-                writer.WriteNullValue();
-        }
-    }
-
-    /// <summary>
     /// Json RGBA color string value converter.
     /// </summary>
     sealed class RgbaColorConverter : JsonConverter<System.Drawing.Color>
@@ -955,29 +627,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         public override void Write(Utf8JsonWriter writer, System.Drawing.Color value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(Drawing.ColorCalculator.ToRgbaString(value));
-        }
-    }
-
-    /// <summary>
-    /// Json RGBA color string value converter.
-    /// </summary>
-    sealed class NullableRgbaColorConverter : JsonConverter<System.Drawing.Color?>
-    {
-        /// <inheritdoc />
-        public override System.Drawing.Color? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => reader.TokenType switch
-            {
-                JsonTokenType.Null or JsonTokenType.False => null,
-                _ => Drawing.ColorCalculator.ParseValue(ref reader)
-            };
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, System.Drawing.Color? value, JsonSerializerOptions options)
-        {
-            if (value.HasValue)
-                writer.WriteStringValue(Drawing.ColorCalculator.ToRgbaString(value.Value));
-            else
-                writer.WriteNullValue();
         }
     }
 
@@ -1313,17 +962,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(ushort)) return new UInt16Converter { NeedWriteAsString = true };
             if (typeToConvert == typeof(DateTime)) return new JsonJavaScriptTicksConverter.FallbackConverter();
             if (typeToConvert == typeof(TimeSpan)) return new JsonTimeSpanSecondConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(int?)) return new Int32NullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(long?)) return new Int64NullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(double?)) return new DoubleNullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(ulong?)) return new UInt64NullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(uint?)) return new UInt32NullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(float?)) return new SingleNullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(decimal?)) return new SingleNullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(short?)) return new Int16NullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter { NeedWriteAsString = true };
-            if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.FallbackNullableConverter();
-            if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(JsonDecimalNode)) return new JsonDecimalConverter { NeedWriteAsString = true };
@@ -1336,7 +974,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(StructValueSimpleInterval<double>)) return new DoubleIntervalConverter();
             if (typeToConvert == typeof(VersionSimpleInterval)) return new VersionIntervalConverter();
             if (typeToConvert == typeof(System.Drawing.Color)) return new RgbaColorConverter();
-            if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableRgbaColorConverter();
             throw new JsonException(string.Concat(typeToConvert.Name, " is not expected."));
         }
 
@@ -1364,17 +1001,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(ushort)) return new UInt16Converter { NeedThrowForNull = true };
             if (typeToConvert == typeof(DateTime)) return new JsonJavaScriptTicksConverter();
             if (typeToConvert == typeof(TimeSpan)) return new JsonTimeSpanSecondConverter { NeedThrowForNull = true };
-            if (typeToConvert == typeof(int?)) return new Int32NullableConverter();
-            if (typeToConvert == typeof(long?)) return new Int64NullableConverter();
-            if (typeToConvert == typeof(double?)) return new DoubleNullableConverter();
-            if (typeToConvert == typeof(ulong?)) return new UInt64NullableConverter();
-            if (typeToConvert == typeof(uint?)) return new UInt32NullableConverter();
-            if (typeToConvert == typeof(float?)) return new SingleNullableConverter();
-            if (typeToConvert == typeof(decimal?)) return new SingleNullableConverter();
-            if (typeToConvert == typeof(short?)) return new Int16NullableConverter();
-            if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter();
-            if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.NullableConverter();
-            if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
             if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter();
             if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter();
             if (typeToConvert == typeof(JsonDecimalNode)) return new JsonDecimalConverter();
@@ -1387,7 +1013,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(StructValueSimpleInterval<double>)) return new DoubleIntervalConverter();
             if (typeToConvert == typeof(VersionSimpleInterval)) return new VersionIntervalConverter();
             if (typeToConvert == typeof(System.Drawing.Color)) return new HexColorConverter();
-            if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableHexColorConverter();
             throw new JsonException(string.Concat(typeToConvert.Name, " is not expected."));
         }
 
@@ -1410,17 +1035,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         if (typeToConvert == typeof(ushort)) return new UInt16Converter();
         if (typeToConvert == typeof(DateTime)) return new JsonJavaScriptTicksConverter();
         if (typeToConvert == typeof(TimeSpan)) return new JsonTimeSpanSecondConverter();
-        if (typeToConvert == typeof(int?)) return new Int32NullableConverter();
-        if (typeToConvert == typeof(long?)) return new Int64NullableConverter();
-        if (typeToConvert == typeof(double?)) return new DoubleNullableConverter();
-        if (typeToConvert == typeof(ulong?)) return new UInt64NullableConverter();
-        if (typeToConvert == typeof(uint?)) return new UInt32NullableConverter();
-        if (typeToConvert == typeof(float?)) return new SingleNullableConverter();
-        if (typeToConvert == typeof(decimal?)) return new SingleNullableConverter();
-        if (typeToConvert == typeof(short?)) return new Int16NullableConverter();
-        if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter();
-        if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.NullableConverter();
-        if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
         if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter();
         if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter();
         if (typeToConvert == typeof(JsonDecimalNode)) return new JsonDecimalConverter();
@@ -1433,7 +1047,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         if (typeToConvert == typeof(StructValueSimpleInterval<double>)) return new DoubleIntervalConverter();
         if (typeToConvert == typeof(VersionSimpleInterval)) return new VersionIntervalConverter();
         if (typeToConvert == typeof(System.Drawing.Color)) return new HexColorConverter();
-        if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableHexColorConverter();
         throw new JsonException(string.Concat(typeToConvert.Name, " is not expected."));
     }
 
@@ -1462,17 +1075,6 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             || typeToConvert == typeof(ushort)
             || typeToConvert == typeof(DateTime)
             || typeToConvert == typeof(TimeSpan)
-            || typeToConvert == typeof(int?)
-            || typeToConvert == typeof(long?)
-            || typeToConvert == typeof(double?)
-            || typeToConvert == typeof(uint?)
-            || typeToConvert == typeof(ulong?)
-            || typeToConvert == typeof(float?)
-            || typeToConvert == typeof(decimal?)
-            || typeToConvert == typeof(short?)
-            || typeToConvert == typeof(ushort?)
-            || typeToConvert == typeof(DateTime?)
-            || typeToConvert == typeof(TimeSpan?)
             || typeToConvert == typeof(JsonIntegerNode)
             || typeToConvert == typeof(JsonDoubleNode)
             || typeToConvert == typeof(JsonDecimalNode)
@@ -1486,9 +1088,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             || typeToConvert == typeof(VersionSimpleInterval)
             || typeToConvert == typeof(Angle)
             || typeToConvert == typeof(Angle.Model)
-            || typeToConvert == typeof(Angle?)
-            || typeToConvert == typeof(System.Drawing.Color)
-            || typeToConvert == typeof(System.Drawing.Color?);
+            || typeToConvert == typeof(System.Drawing.Color);
     }
 
     internal static T ParseNumber<T>(ref Utf8JsonReader reader, Func<string, T> parser) where T : struct

@@ -45,20 +45,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
     {
         /// <inheritdoc />
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            switch (reader.TokenType)
-            {
-                case JsonTokenType.String:
-                    return long.TryParse(reader.GetString(), out var i) ? WebFormat.ParseDate(i) : throw new JsonException();
-                case JsonTokenType.Number:
-                    return WebFormat.ParseDate(reader.GetInt64());
-                case JsonTokenType.StartObject:
-                    var json = new JsonObjectNode(ref reader);
-                    return JsonValues.TryGetDateTime(json) ?? throw new JsonException();
-                default:
-                    throw new JsonException();
-            }
-        }
+            => WebFormat.ParseDate(ref reader) ?? throw new JsonException("Expects a JavaScript time ticks value.", new FormatException("The value should be a Unix timestamp."));
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -70,7 +57,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
 
     /// <inheritdoc />
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => WebFormat.ParseDate(ref reader) ?? throw new JsonException("Expects a Unix timestamp value.", new FormatException("The value should be a Unix timestamp."));
+        => WebFormat.ParseDate(ref reader) ?? throw new JsonException("Expects a JavaScript time ticks value.", new FormatException("The value should be a Unix timestamp."));
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -88,50 +75,6 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
 /// </summary>
 public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonNodeSchemaCreationHandler<Type>
 {
-    /// <summary>
-    /// Nullable Unix timestamp JSON number converter.
-    /// </summary>
-    public sealed class NullableConverter : JsonConverter<DateTime?>, IJsonNodeSchemaCreationHandler<Type>
-    {
-        /// <inheritdoc />
-        public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => WebFormat.ParseUnixTimestamp(ref reader);
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-        {
-            var num = WebFormat.ParseUnixTimestamp(value);
-            if (num.HasValue) writer.WriteNumberValue(num.Value);
-            else writer.WriteNullValue();
-        }
-
-        JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-            => result is JsonIntegerSchemaDescription desc ? desc : new JsonIntegerSchemaDescription();
-    }
-
-    /// <summary>
-    /// Nullable date time JSON converter with Unix timestamp fallback.
-    /// </summary>
-    public sealed class FallbackNullableConverter : JsonConverter<DateTime?>, IJsonNodeSchemaCreationHandler<Type>
-    {
-        /// <inheritdoc />
-        public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => WebFormat.ParseUnixTimestamp(ref reader);
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-        {
-            if (value.HasValue) writer.WriteStringValue(JsonStringNode.ToJson(value.Value, true));
-            else writer.WriteNullValue();
-        }
-
-        JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-            => result is JsonStringSchemaDescription desc ? desc : new JsonStringSchemaDescription
-            {
-                Format = "date-time"
-            };
-    }
-
     /// <summary>
     /// Date time JSON converter with Unix timestamp fallback.
     /// </summary>
@@ -152,9 +95,26 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonN
             };
     }
 
+    /// <summary>
+    /// The JSON converter of Javascript ticks in string.
+    /// </summary>
+    public class StringConverter : JsonConverter<DateTime>
+    {
+        /// <inheritdoc />
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => WebFormat.ParseUnixTimestamp(ref reader) ?? throw new JsonException("Expects a Unix timestamp value.", new FormatException("The value should be a Unix timestamp."));
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        {
+            var s = WebFormat.ParseUnixTimestamp(value).ToString("G");
+            writer.WriteStringValue(s);
+        }
+    }
+
     /// <inheritdoc />
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => WebFormat.ParseUnixTimestamp(ref reader) ?? throw new JsonException("Expects a Unix timestamp value.", new FormatException("The value should be a Unix timestamp."));
+        => WebFormat.ParseUnixTimestamp(ref reader) ?? throw new JsonException("Expects a Unix timestamp value.", new FormatException("The value should be a Unix timestamp."));
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -168,38 +128,10 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonN
 }
 
 /// <summary>
-/// Nullable Unix timestamp JSON number converter.
+/// JSON time span converter.
 /// </summary>
 internal sealed class JsonTimeSpanSecondConverter : JsonConverter<TimeSpan>, IJsonNodeSchemaCreationHandler<Type>
 {
-    /// <summary>
-    /// Nullable Unix timestamp JSON number converter.
-    /// </summary>
-    internal sealed class NullableConverter : JsonConverter<TimeSpan?>, IJsonNodeSchemaCreationHandler<Type>
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether need also write to a string.
-        /// </summary>
-        public bool NeedWriteAsString { get; set; }
-
-        /// <inheritdoc />
-        public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => ReadValue(ref reader);
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)
-        {
-            if (!value.HasValue) writer.WriteNullValue();
-            if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("c"));
-            else writer.WriteNumberValue((long)value.Value.TotalSeconds);
-        }
-
-        JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-            => NeedWriteAsString
-                ? result is JsonStringSchemaDescription desc1 ? desc1 : new JsonStringSchemaDescription()
-                : result is JsonIntegerSchemaDescription desc2 ? desc2 : new JsonIntegerSchemaDescription();
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether need throw exception for null value.
     /// </summary>

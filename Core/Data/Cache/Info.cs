@@ -114,6 +114,13 @@ public class DataCacheItemInfo<T>
         => UpdateDate + (Expiration ?? expiration);
 
     /// <summary>
+    /// Gets the type of value.
+    /// </summary>
+    /// <returns>The type of value.</returns>
+    public Type GetValueType()
+        => Value is null ? typeof(T) : Value.GetType();
+
+    /// <summary>
     /// Tests if the item is expired.
     /// </summary>
     /// <param name="expiration">The expiration time span.</param>
