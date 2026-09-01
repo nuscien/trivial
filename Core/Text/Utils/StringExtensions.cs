@@ -1422,12 +1422,30 @@ public static class StringExtensions
     /// Converts to string.
     /// </summary>
     /// <param name="stream">The input stream.</param>
-    /// <param name="encoding">The encoding.</param>
+    /// <param name="encoding">The optional encoding; or null, to use UTF-8.</param>
     /// <returns>A string converted from the stream.</returns>
     public static string ToString(Stream stream, Encoding encoding = null)
     {
         using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
         return reader.ReadToEnd();
+    }
+
+    /// <summary>
+    /// Converts a string to a memory stream.
+    /// </summary>
+    /// <param name="value">The input string.</param>
+    /// <param name="encoding">The optional encoding; or null, to use UTF-8.</param>
+    /// <returns>A memory stream with the string content.</returns>
+    public static MemoryStream ToStream(string value, Encoding encoding = null)
+    {
+        if (value is null) return null;
+        var stream = new MemoryStream();
+        if (value.Length < 1) return stream;
+        var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
+        writer.Write(value);
+        writer.Flush();
+        stream.Seek(0, SeekOrigin.Begin);
+        return stream;
     }
 
     internal static string ToString(char[] value, int start = 0, int? count = null)

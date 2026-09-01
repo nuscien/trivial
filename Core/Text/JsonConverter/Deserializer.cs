@@ -84,6 +84,9 @@ public class JsonTypedDeserializer<T>
     }
 }
 
+/// <summary>
+/// The JSON typed deserializer set.
+/// </summary>
 public class JsonTypedDeserializerSet
 {
     private Dictionary<Type, object> handlers = new();
