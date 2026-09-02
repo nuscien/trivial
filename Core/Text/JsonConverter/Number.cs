@@ -1061,7 +1061,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
     /// Tests if the specific type can convert.
     /// </summary>
     /// <param name="typeToConvert">The type to convert.</param>
-    /// <returns>true if can; otherwise, false.</returns>
+    /// <returns><c>true</c> if can; otherwise, <c>false</c>.</returns>
     private static bool CanConvertType(Type typeToConvert)
     {
         return typeToConvert == typeof(int)

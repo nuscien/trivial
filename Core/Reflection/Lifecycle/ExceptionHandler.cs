@@ -93,7 +93,7 @@ public class ExceptionHandler
         /// Tests if the given item equals the current one.
         /// </summary>
         /// <param name="other">The given item.</param>
-        /// <returns>true if the given item equals the current one; otherwise, false.</returns>
+        /// <returns><c>true</c> if the given item equals the current one; otherwise, <c>false</c>.</returns>
         public bool Equals(Item<T> other)
             => other is not null && other.Handler == Handler;
 
@@ -101,7 +101,7 @@ public class ExceptionHandler
         /// Tests if the given item equals the current one.
         /// </summary>
         /// <param name="other">The given item.</param>
-        /// <returns>true if the given item equals the current one; otherwise, false.</returns>
+        /// <returns><c>true</c> if the given item equals the current one; otherwise, <c>false</c>.</returns>
         public bool Equals(Item other)
         {
             if (other is null) return false;
@@ -113,7 +113,7 @@ public class ExceptionHandler
         /// Tests if the given item equals the current one.
         /// </summary>
         /// <param name="other">The given item.</param>
-        /// <returns>true if the given item equals the current one; otherwise, false.</returns>
+        /// <returns><c>true</c> if the given item equals the current one; otherwise, <c>false</c>.</returns>
         public override bool Equals(object other)
         {
             if (other is null) return false;
@@ -179,7 +179,7 @@ public class ExceptionHandler
     /// </summary>
     /// <typeparam name="T">The type of exception to try to catch.</typeparam>
     /// <param name="catchHandler">The handler to return if need throw an exception.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool Contains<T>(Func<T, Exception> catchHandler = null) where T : Exception
     {
         foreach (var item in list)

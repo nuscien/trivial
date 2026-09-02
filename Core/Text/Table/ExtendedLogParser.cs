@@ -122,7 +122,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     /// </summary>
     /// <param name="key">The directive key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains the directive; otherise, false.</returns>
+    /// <returns><c>true</c> if contains the directive; otherise, false.</returns>
     public bool TryGetDirectiveValue(string key, out string result)
     {
         return directives.TryGetValue(key, out result);
@@ -133,7 +133,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     /// </summary>
     /// <param name="key">The directive key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains the directive with a date time value; otherise, false.</returns>
+    /// <returns><c>true</c> if contains the directive with a date time value; otherise, false.</returns>
     public bool TryGetDirectiveValue(string key, out DateTime result)
     {
         if (directives.TryGetValue(key, out var value))
@@ -155,7 +155,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     /// </summary>
     /// <param name="key">The directive key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains the directive with an integer value; otherise, false.</returns>
+    /// <returns><c>true</c> if contains the directive with an integer value; otherise, false.</returns>
     public bool TryGetDirectiveValue(string key, out int result)
     {
         if (directives.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) && int.TryParse(value, out result))
@@ -169,7 +169,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     /// </summary>
     /// <param name="key">The directive key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains the directive with an integer value; otherise, false.</returns>
+    /// <returns><c>true</c> if contains the directive with an integer value; otherise, false.</returns>
     public bool TryGetDirectiveValue(string key, out long result)
     {
         if (directives.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) && long.TryParse(value, out result))
@@ -183,7 +183,7 @@ public class ExtendedLogParser : BaseLinesStringTableParser
     /// </summary>
     /// <param name="key">The directive key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains the directive with an integer value; otherise, false.</returns>
+    /// <returns><c>true</c> if contains the directive with an integer value; otherise, false.</returns>
     public bool TryGetDirectiveValue(string key, out double result)
     {
         if (directives.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) && double.TryParse(value, out result))

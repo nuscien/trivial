@@ -297,7 +297,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Fraction leftValue, Fraction rightValue)
     {
         return leftValue.LongNumerator == rightValue.LongNumerator
@@ -312,7 +312,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Fraction leftValue, Fraction rightValue)
     {
         return leftValue.LongNumerator != rightValue.LongNumerator
@@ -327,7 +327,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Fraction leftValue, double rightValue)
         => (double)leftValue == rightValue;
 
@@ -337,7 +337,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Fraction leftValue, double rightValue)
         => (double)leftValue != rightValue;
 
@@ -347,7 +347,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Fraction leftValue, int rightValue)
         => (double)leftValue == rightValue;
 
@@ -357,7 +357,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Fraction leftValue, int rightValue)
         => (double)leftValue != rightValue;
 
@@ -367,7 +367,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Fraction leftValue, long rightValue)
         => (double)leftValue == rightValue;
 
@@ -377,7 +377,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Fraction leftValue, long rightValue)
         => (double)leftValue != rightValue;
 
@@ -386,7 +386,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(Fraction leftValue, Fraction rightValue)
         => (double)leftValue < (double)rightValue;
 
@@ -395,7 +395,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(Fraction leftValue, Fraction rightValue)
         => (double)leftValue > (double)rightValue;
 
@@ -404,7 +404,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(Fraction leftValue, double rightValue)
         => (double)leftValue < rightValue;
 
@@ -413,7 +413,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(Fraction leftValue, double rightValue)
         => (double)leftValue > rightValue;
 
@@ -422,7 +422,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(Fraction leftValue, int rightValue)
         => (double)leftValue < rightValue;
 
@@ -431,7 +431,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(Fraction leftValue, int rightValue)
         => (double)leftValue > rightValue;
 
@@ -440,7 +440,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(Fraction leftValue, long rightValue)
         => (double)leftValue < rightValue;
 
@@ -449,7 +449,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(Fraction leftValue, long rightValue)
         => (double)leftValue > rightValue;
 
@@ -458,7 +458,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(Fraction leftValue, Fraction rightValue)
     {
         if (leftValue.LongNumerator == rightValue.LongNumerator
@@ -474,7 +474,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(Fraction leftValue, Fraction rightValue)
     {
         if (leftValue.LongNumerator == rightValue.LongNumerator
@@ -490,7 +490,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(Fraction leftValue, double rightValue)
         => (double)leftValue <= rightValue;
 
@@ -499,7 +499,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(Fraction leftValue, double rightValue)
         => (double)leftValue >= rightValue;
 
@@ -508,7 +508,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(Fraction leftValue, int rightValue)
         => (double)leftValue <= rightValue;
 
@@ -517,7 +517,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(Fraction leftValue, int rightValue)
         => (double)leftValue >= rightValue;
 
@@ -526,7 +526,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(Fraction leftValue, long rightValue)
         => (double)leftValue <= rightValue;
 
@@ -535,7 +535,7 @@ public struct Fraction : IEquatable<Fraction>, IEquatable<double>, IComparable<F
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(Fraction leftValue, long rightValue)
         => (double)leftValue >= rightValue;
 

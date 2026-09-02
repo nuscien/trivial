@@ -318,7 +318,7 @@ public abstract class ClassSimpleCondition<T> : ISimpleCondition, IClassSimpleCo
     /// </summary>
     /// <param name="value">The condition object.</param>
     /// <param name="handler">A checker handler.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     internal static bool IsValid(ClassSimpleCondition<T> value, Func<DbCompareOperator, bool> handler)
     {
         if (value == null) return false;
@@ -414,7 +414,7 @@ public abstract class StructSimpleCondition<T> : ISimpleCondition, IStructSimple
     /// </summary>
     /// <param name="value">The condition object.</param>
     /// <param name="handler">A checker handler.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     internal static bool IsValid(StructSimpleCondition<T> value, Func<DbCompareOperator, bool> handler)
     {
         if (value == null) return false;
@@ -500,7 +500,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// Checks if a string condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(StringCondition value)
         => IsValid(value, SimpleCondition.GetLiteralValidOperators().Contains);
 
@@ -513,7 +513,7 @@ public class StringCondition : ClassSimpleCondition<string>
     /// Tests if the given string is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(string source)
     {
         switch (Operator)
@@ -639,7 +639,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// Checks if a integer condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(Int32Condition value)
         => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
@@ -652,7 +652,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(int source)
         => Operator switch
         {
@@ -669,7 +669,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(long source)
         => Operator switch
         {
@@ -803,7 +803,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// Checks if a integer condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(Int64Condition value)
         => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
@@ -816,7 +816,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(long source)
         => Operator switch
         {
@@ -833,7 +833,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(int source)
         => Operator switch
         {
@@ -967,7 +967,7 @@ public class SingleCondition : StructSimpleCondition<float>
     /// Checks if a single float value condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(SingleCondition value)
         => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
@@ -980,7 +980,7 @@ public class SingleCondition : StructSimpleCondition<float>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(float source)
         => Operator switch
         {
@@ -1114,7 +1114,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// Checks if a double float value condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(DoubleCondition value)
         => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
@@ -1127,7 +1127,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(double source)
         => Operator switch
         {
@@ -1261,7 +1261,7 @@ public class DecimalCondition : StructSimpleCondition<decimal>
     /// Checks if a decimal float value condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(DecimalCondition value)
         => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
@@ -1274,7 +1274,7 @@ public class DecimalCondition : StructSimpleCondition<decimal>
     /// Tests if the given number is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(decimal source)
         => Operator switch
         {
@@ -1398,7 +1398,7 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// Checks if a date time condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(DateTimeCondition value)
         => IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
 
@@ -1411,7 +1411,7 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// Tests if the given date time is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(DateTime source)
         => Operator switch
         {
@@ -1452,7 +1452,7 @@ public class BooleanCondition : StructSimpleCondition<bool>
     /// Checks if a boolean value condition is valid.
     /// </summary>
     /// <param name="value">The condition object.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValid(BooleanCondition value)
         => IsValid(value, SimpleCondition.GetBasicValidOperators().Contains);
 
@@ -1465,7 +1465,7 @@ public class BooleanCondition : StructSimpleCondition<bool>
     /// Tests if the given boolean is macthed.
     /// </summary>
     /// <param name="source">The source to test the condition.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(bool source)
         => Operator switch
         {

@@ -57,7 +57,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// Tests if the number value is macthed by the specific condition.
     /// </summary>
     /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(Data.BooleanCondition condition)
         => condition == null || condition.IsMatched(Value);
 
@@ -89,7 +89,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (ReferenceEquals(this, other)) return true;
@@ -105,7 +105,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
         => base.Equals(other);
 
@@ -122,7 +122,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="destination">The span in which to write this instance's value formatted as a span of characters.</param>
     /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<char> destination, out int charsWritten)
         => Value.TryFormat(destination, out charsWritten);
 #endif
@@ -132,7 +132,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
         result = Value;
@@ -144,7 +144,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out decimal result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -157,7 +157,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out float result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -170,7 +170,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out double result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -183,7 +183,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out short result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -196,7 +196,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out uint result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -209,7 +209,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out int result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -222,7 +222,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out long result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -235,7 +235,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out ulong result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -248,7 +248,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out string result)
     {
         if (strict)
@@ -398,7 +398,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// Tests if the value is true.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if it presents true; otherwise, false.</returns>
+    /// <returns><c>true</c> if it presents true; otherwise, <c>false</c>.</returns>
     public static bool operator true(JsonBooleanNode value)
         => value is not null && value.Value;
 
@@ -406,7 +406,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// Tests if the value is false.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if it presents false; otherwise, true.</returns>
+    /// <returns><c>true</c> if it presents false; otherwise, true.</returns>
     public static bool operator false(JsonBooleanNode value)
         => value is not null && !value.Value;
 #endif
@@ -417,7 +417,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonBooleanNode leftValue, bool rightValue)
         => leftValue is not null && leftValue.Value == rightValue;
 
@@ -427,7 +427,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonBooleanNode leftValue, bool rightValue)
         => leftValue is null || leftValue.Value != rightValue;
 
@@ -436,7 +436,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="leftValue">The left value.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if they are all true; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are all true; otherwise, <c>false</c>.</returns>
     public static bool operator &(JsonBooleanNode leftValue, bool rightValue)
         => leftValue?.Value == true && rightValue;
 
@@ -445,7 +445,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="leftValue">The left value.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if they are all true; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are all true; otherwise, <c>false</c>.</returns>
     public static bool operator &(JsonBooleanNode leftValue, JsonBooleanNode rightValue)
         => leftValue?.Value == true && rightValue?.Value == true;
 
@@ -454,7 +454,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="leftValue">The left value.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if any is true; otherwise, false.</returns>
+    /// <returns><c>true</c> if any is true; otherwise, <c>false</c>.</returns>
     public static bool operator |(JsonBooleanNode leftValue, bool rightValue)
         => leftValue?.Value == true || rightValue;
 
@@ -463,7 +463,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="leftValue">The left value.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if any is true; otherwise, false.</returns>
+    /// <returns><c>true</c> if any is true; otherwise, <c>false</c>.</returns>
     public static bool operator |(JsonBooleanNode leftValue, JsonBooleanNode rightValue)
         => leftValue?.Value == true || rightValue?.Value == true;
 
@@ -670,7 +670,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="s">The specific string to parse.</param>
     /// <param name="result">The JSON value node parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, false..</returns>
     public static bool TryParse(string s, out JsonBooleanNode result)
     {
         result = TryParse(s);
@@ -693,7 +693,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// <param name="s">The input string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
     /// <param name="result">The JSON value node parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, false..</returns>
     static bool IParsable<JsonBooleanNode>.TryParse([NotNullWhen(true)] string s, IFormatProvider provider, [MaybeNullWhen(false)] out JsonBooleanNode result)
         => TryParse(s, out result);
 #endif

@@ -17,7 +17,7 @@ public interface IJsonPropertyResolver<T>
     /// </summary>
     /// <param name="source">The source (parent) node.</param>
     /// <param name="result">The value of the property.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     bool TryGetValue(JsonObjectNode source, out T result);
 }
 
@@ -33,6 +33,6 @@ public interface IJsonPropertyRoutePolicy
     /// <param name="key">The property key.</param>
     /// <param name="value">THe JSON object value of the property.</param>
     /// <param name="exactKey">The exact key to resolve the property.</param>
-    /// <returns>true if gets succeeded; otherwise, false, includes the scenarios that it does NOT exist or its type is not expected.</returns>
+    /// <returns><c>true</c> if gets succeeded; otherwise, false, includes the scenarios that it does NOT exist or its type is not expected.</returns>
     bool TryGetObjectValue(JsonObjectNode source, string key, out JsonObjectNode value, out string exactKey);
 }

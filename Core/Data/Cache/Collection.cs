@@ -185,7 +185,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// </summary>
     /// <param name="id">The identifier.</param>
     /// <param name="result">The output result.</param>
-    /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the info and it is not expired; otherwise, <c>false</c>.</returns>
     public bool TryGetInfo(string id, out DataCacheItemInfo<T> result)
     {
         result = GetInfo(id);
@@ -197,7 +197,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// </summary>
     /// <param name="id">The identifier in the resource group.</param>
     /// <param name="data">The output data.</param>
-    /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the info and it is not expired; otherwise, <c>false</c>.</returns>
     public bool TryGet(string id, out T data)
     {
         var result = GetInfo(id);
@@ -217,7 +217,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// <param name="id">The identifier in the resource group.</param>
     /// <param name="defaultValue">The default data to return if non-exists.</param>
     /// <param name="setIfNonExist">true if set the default data back if non-exists; otherwise, false.</param>
-    /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the info and it is not expired; otherwise, <c>false</c>.</returns>
     public T TryGet(string id, T defaultValue, bool setIfNonExist = false)
     {
         if (string.IsNullOrEmpty(id)) return defaultValue;
@@ -266,7 +266,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Determines whether an element is in the collection.
     /// </summary>
     /// <param name="item">The object to locate in the collection.</param>
-    /// <returns>true if item is found in the collection; otherwise, false.</returns>
+    /// <returns><c>true</c> if item is found in the collection; otherwise, <c>false</c>.</returns>
     public bool Contains(DataCacheItemInfo<T> item)
     {
         if (string.IsNullOrEmpty(item.Id)) return false;
@@ -277,7 +277,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Determines whether an element is in the collection.
     /// </summary>
     /// <param name="item">The object to locate in the collection.</param>
-    /// <returns>true if item is found in the collection; otherwise, false.</returns>
+    /// <returns><c>true</c> if item is found in the collection; otherwise, <c>false</c>.</returns>
     public bool ContainsValue(T item)
     {
         if (item is null)
@@ -302,7 +302,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Determines whether an element is in the collection.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <returns>true if item is found in the collection; otherwise, false.</returns>
+    /// <returns><c>true</c> if item is found in the collection; otherwise, <c>false</c>.</returns>
     public bool Contains(string id)
     {
         if (string.IsNullOrEmpty(id)) return false;
@@ -358,7 +358,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Removes the occurrence of a specific object from the collection.
     /// </summary>
     /// <param name="item">The object to remove from the collection.</param>
-    /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+    /// <returns><c>true</c> if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
     public bool Remove(DataCacheItemInfo<T> item)
     {
         if (item?.Id == null) return false;
@@ -369,7 +369,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Removes the occurrence of a specific value from the collection.
     /// </summary>
     /// <param name="predicate">A function to test each element for a condition.</param>
-    /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+    /// <returns><c>true</c> if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
     public int RemoveAll(Predicate<DataCacheItemInfo<T>> predicate)
     {
         if (predicate == null) return 0;
@@ -387,7 +387,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Removes the occurrence of a specific value from the collection.
     /// </summary>
     /// <param name="item">The object to remove from the collection.</param>
-    /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+    /// <returns><c>true</c> if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
     public bool RemoveValue(T item)
     {
         if (item == null) return false;
@@ -400,7 +400,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Removes the occurrence with the specific identifier from the collection.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+    /// <returns><c>true</c> if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
     public bool Remove(string id)
         => Remove(id, out _);
 
@@ -409,7 +409,7 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// </summary>
     /// <param name="id">The identifier.</param>
     /// <param name="result">The result deleted.</param>
-    /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+    /// <returns><c>true</c> if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
     public bool Remove(string id, out DataCacheItemInfo<T> result)
     {
         if (id == null)
@@ -519,14 +519,14 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     /// Tests if the item is expired.
     /// </summary>
     /// <param name="item">The item to test.</param>
-    /// <returns>true if expired; otherwise, false.</returns>
+    /// <returns><c>true</c> if expired; otherwise, <c>false</c>.</returns>
     public bool IsExpired(DataCacheItemInfo<T> item)
         => item == null || item.IsExpired(Expiration);
 
     /// <summary>
     /// Tests if there is any item.
     /// </summary>
-    /// <returns>true if contains one or more items; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains one or more items; otherwise, <c>false</c>.</returns>
     public bool Any()
         => AsEnumerable().Any();
 

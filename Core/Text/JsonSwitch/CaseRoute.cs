@@ -118,7 +118,7 @@ public class JsonSwitchCaseContext
     /// </summary>
     /// <typeparam name="T">The type of the args.</typeparam>
     /// <param name="value">The argument value.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     public bool TrySetArgs<T>(T value)
     {
         if (Switch is not IJsonSwitchContextInfo<T> context) return false;
@@ -142,7 +142,7 @@ public class JsonSwitchCaseContext
     /// Gets the model from the context.
     /// </summary>
     /// <param name="value">The model.</param>
-    /// <returns>true if exists; otherwise, false.</returns>
+    /// <returns><c>true</c> if exists; otherwise, <c>false</c>.</returns>
     internal bool GetModel<T>(out T value)
     {
         if (model is not T m)
@@ -159,7 +159,7 @@ public class JsonSwitchCaseContext
     /// Gets the model from the context.
     /// </summary>
     /// <param name="value">The model to set.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     internal bool SetModel<T>(T value)
     {
         if (modelType != typeof(T)) return false;
@@ -250,7 +250,7 @@ public abstract class JsonSwitchCaseContextHandler<TCase> where TCase : JsonSwit
     /// <summary>
     /// Tests if the JSON node is matched.
     /// </summary>
-    /// <returns>true if passes; otherwise, false.</returns>
+    /// <returns><c>true</c> if passes; otherwise, <c>false</c>.</returns>
     /// <param name="context">The route context of JSON switch-case.</param>
     protected abstract bool Test(TCase context);
 
@@ -453,7 +453,7 @@ public abstract class ModelJsonSwitchCase<TModel> : JsonSwitchCaseContextHandler
     /// </summary>
     /// <param name="context">The current JSON switch-case route context.</param>
     /// <param name="value">The model.</param>
-    /// <returns>true if exists; otherwise, false.</returns>
+    /// <returns><c>true</c> if exists; otherwise, <c>false</c>.</returns>
     protected bool GetModel(JsonSwitchCaseContext context, out TModel value)
     {
         if (context is null)
@@ -470,7 +470,7 @@ public abstract class ModelJsonSwitchCase<TModel> : JsonSwitchCaseContextHandler
     /// </summary>
     /// <param name="context">The current JSON switch-case route context.</param>
     /// <param name="model">The model to set.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     protected bool SetModel(JsonSwitchCaseContext context, TModel model)
         => context?.SetModel(model) ?? false;
 
@@ -509,7 +509,7 @@ public abstract class ModelJsonSwitchCase<TArgs, TModel> : JsonSwitchCaseContext
     /// </summary>
     /// <param name="context">The current JSON switch-case route context.</param>
     /// <param name="value">The model.</param>
-    /// <returns>true if exists; otherwise, false.</returns>
+    /// <returns><c>true</c> if exists; otherwise, <c>false</c>.</returns>
     protected bool GetModel(JsonSwitchCaseContext<TArgs> context, out TModel value)
     {
         if (context is null)
@@ -526,7 +526,7 @@ public abstract class ModelJsonSwitchCase<TArgs, TModel> : JsonSwitchCaseContext
     /// </summary>
     /// <param name="context">The current JSON switch-case route context.</param>
     /// <param name="model">The model to set.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     protected bool SetModel(JsonSwitchCaseContext<TArgs> context, TModel model)
         => context?.SetModel(model) ?? false;
 

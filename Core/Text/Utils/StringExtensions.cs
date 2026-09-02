@@ -547,7 +547,7 @@ public static class StringExtensions
     /// <param name="str">The input string.</param>
     /// <param name="value">The string to compare.</param>
     /// <param name="rest">The rest string after the value.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartWith(string str, string value, out string rest)
     {
@@ -569,7 +569,7 @@ public static class StringExtensions
     /// <param name="value">The string to compare.</param>
     /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
     /// <param name="rest">The rest string after the value.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">comparisonType is not a System.StringComparison value.</exception>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartWith(string str, string value, StringComparison comparisonType, out string rest)
@@ -987,7 +987,7 @@ public static class StringExtensions
     /// Indicates whether the specified string is null or an empty string ("").
     /// </summary>
     /// <param name="obj">The source object.</param>
-    /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
+    /// <returns><c>true</c> if the source value is null or an empty string (""); otherwise, <c>false</c>.</returns>
     public static bool IsNullOrEmpty(this IObjectRef<string> obj)
         => string.IsNullOrEmpty(obj?.Value);
 
@@ -995,7 +995,7 @@ public static class StringExtensions
     /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
     /// </summary>
     /// <param name="obj">The source object.</param>
-    /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
+    /// <returns><c>true</c> if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, <c>false</c>.</returns>
     public static bool IsNullOrWhiteSpace(this IObjectRef<string> obj)
         => string.IsNullOrWhiteSpace(obj?.Value);
 
@@ -1004,7 +1004,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public static bool IsMatched(this IObjectRef<string> obj, Data.StringCondition condition)
         => condition == null || condition.IsMatched(obj?.Value);
 
@@ -1145,7 +1145,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="value">The string to seek.</param>
-    /// <returns>true if the value parameter occurs within this string, or if value is the empty string (""); otherwise, false.</returns>
+    /// <returns><c>true</c> if the value parameter occurs within this string, or if value is the empty string (""); otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool Contains(this IObjectRef<string> obj, string value)
         => obj?.Value?.Contains(value) ?? false;
@@ -1155,7 +1155,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="value">The character to seek.</param>
-    /// <returns>true if the value parameter occurs within this string, or if value is the empty string (""); otherwise, false.</returns>
+    /// <returns><c>true</c> if the value parameter occurs within this string, or if value is the empty string (""); otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool Contains(this IObjectRef<string> obj, char value)
         => obj?.Value?.Contains(value) ?? false;
@@ -1165,7 +1165,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="value">The string to compare.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartsWith(this IObjectRef<string> obj, string value)
         => obj?.Value?.StartsWith(value) ?? false;
@@ -1176,7 +1176,7 @@ public static class StringExtensions
     /// <param name="obj">The source object.</param>
     /// <param name="value">The string to compare.</param>
     /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartsWith(this IObjectRef<string> obj, string value, StringComparison comparisonType)
         => obj?.Value?.StartsWith(value, comparisonType) ?? false;
@@ -1186,7 +1186,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="value">The character to compare.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool StartsWith(this IObjectRef<string> obj, char value)
         => obj?.Value?.StartsWith(value) ?? false;
@@ -1196,7 +1196,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="value">The string to compare to the substring at the end of this instance.</param>
-    /// <returns>true if value matches the end of this instance; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the end of this instance; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool EndsWith(this IObjectRef<string> obj, string value)
         => obj?.Value?.EndsWith(value) ?? false;
@@ -1207,7 +1207,7 @@ public static class StringExtensions
     /// <param name="obj">The source object.</param>
     /// <param name="value">The string to compare to the substring at the end of this instance.</param>
     /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
-    /// <returns>true if value matches the end of this instance; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the end of this instance; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool EndsWith(this IObjectRef<string> obj, string value, StringComparison comparisonType)
         => obj?.Value?.EndsWith(value, comparisonType) ?? false;
@@ -1217,7 +1217,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="obj">The source object.</param>
     /// <param name="value">The character to compare.</param>
-    /// <returns>true if value matches the end of this instance; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the end of this instance; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public static bool EndsWith(this IObjectRef<string> obj, char value)
         => obj?.Value?.EndsWith(value) ?? false;
@@ -1503,6 +1503,15 @@ public static class StringExtensions
         return s.Substring(start, reverseEnd ? (s.Length - end - start) : (end - start));
 #else
         return reverseEnd ? s[start..^end] : s[start..end];
+#endif
+    }
+
+    internal static string SubRangeString(this string s, int start)
+    {
+#if NETFRAMEWORK
+        return s.Substring(start);
+#else
+        return s[start..];
 #endif
     }
 

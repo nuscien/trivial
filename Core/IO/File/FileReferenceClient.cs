@@ -18,7 +18,7 @@ public interface IFileReferenceClient
     /// Tests if supports the directory reference.
     /// </summary>
     /// <param name="directory">The directory to load sub-directories or files.</param>
-    /// <returns>true if supports; otherwise, false.</returns>
+    /// <returns><c>true</c> if supports; otherwise, <c>false</c>.</returns>
     bool Test(IFileContainerReferenceInfo directory);
 
     /// <summary>
@@ -52,7 +52,7 @@ public abstract class BaseFileReferenceClient<T> : IFileReferenceClient where T 
     /// Tests if supports the directory reference.
     /// </summary>
     /// <param name="directory">The directory to load sub-directories or files.</param>
-    /// <returns>true if supports; otherwise, false.</returns>
+    /// <returns><c>true</c> if supports; otherwise, <c>false</c>.</returns>
     public abstract bool Test(T directory);
 
     /// <summary>
@@ -80,7 +80,7 @@ public abstract class BaseFileReferenceClient<T> : IFileReferenceClient where T 
     /// Tests if supports the directory reference.
     /// </summary>
     /// <param name="directory">The directory to load sub-directories or files.</param>
-    /// <returns>true if supports; otherwise, false.</returns>
+    /// <returns><c>true</c> if supports; otherwise, <c>false</c>.</returns>
     bool IFileReferenceClient.Test(IFileContainerReferenceInfo directory)
     {
         if (directory is not T info) return false;
@@ -187,7 +187,7 @@ public class FileReferenceClientFactory : IFileReferenceClient
     /// Tests if supports the directory reference.
     /// </summary>
     /// <param name="directory">The directory to load sub-directories or files.</param>
-    /// <returns>true if supports; otherwise, false.</returns>
+    /// <returns><c>true</c> if supports; otherwise, <c>false</c>.</returns>
     public bool Test(IFileContainerReferenceInfo directory)
     {
         if (directory == null) return false;

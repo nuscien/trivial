@@ -27,7 +27,7 @@ public static partial class ListExtensions
     /// <param name="dict">The source dictionary.</param>
     /// <param name="key">The key.</param>
     /// <param name="value">The value output.</param>
-    /// <returns>true if exist and not empty; otherwise, false.</returns>
+    /// <returns><c>true</c> if exist and not empty; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">dict or key was null.</exception>
     public static bool TryGetNotEmptyValue(this IDictionary<string, string> dict, string key, out string value)
     {
@@ -361,7 +361,7 @@ public static partial class ListExtensions
     /// <param name="key">The key.</param>
     /// <param name="index">The index of the value.</param>
     /// <param name="value">The value output.</param>
-    /// <returns>true if has; otherwise, false.</returns>
+    /// <returns><c>true</c> if has; otherwise, <c>false</c>.</returns>
     public static bool TryGetValue<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> list, TKey key, int index, out TValue value)
     {
         if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
@@ -406,7 +406,7 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="list">The key value pairs.</param>
     /// <param name="key">The key to locate in the instance.</param>
-    /// <returns>true if the instance contains an element with the specified key; otherwise, false.</returns>
+    /// <returns><c>true</c> if the instance contains an element with the specified key; otherwise, <c>false</c>.</returns>
     public static bool ContainsKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
         if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
@@ -895,7 +895,7 @@ public static partial class ListExtensions
     /// <param name="col">The source collection.</param>
     /// <param name="keys">The property keys to test.</param>
     /// <param name="matched">The keys matched.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">col is null.</exception>
     public static bool ContainsOnly(this IEnumerable<string> col, IEnumerable<string> keys, out List<string> matched)
     {
@@ -919,7 +919,7 @@ public static partial class ListExtensions
     /// <param name="keys">The property keys to test.</param>
     /// <param name="matched">The keys matched.</param>
     /// <param name="rest">The rest property keys.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">col is null.</exception>
     public static bool ContainsOnly(this IEnumerable<string> col, IEnumerable<string> keys, out List<string> matched, out List<string> rest)
     {
@@ -954,7 +954,7 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="a">Collection a.</param>
     /// <param name="b">Collection b.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool Equals<T>(T[] a, T[] b)
     {
         if (a.Length != b.Length) return false;
@@ -979,7 +979,7 @@ public static partial class ListExtensions
     /// <param name="a">Collection a.</param>
     /// <param name="b">Collection b.</param>
     /// <param name="compare">The equaling handler.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool Equals<T>(T[] a, T[] b, Func<T, T, bool> compare)
     {
         if (a.Length != b.Length) return false;
@@ -997,7 +997,7 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="a">Collection a.</param>
     /// <param name="b">Collection b.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool Equals<T>(IList<T> a, IList<T> b)
     {
         if (a.Count != b.Count) return false;
@@ -1022,7 +1022,7 @@ public static partial class ListExtensions
     /// <param name="a">Collection a.</param>
     /// <param name="b">Collection b.</param>
     /// <param name="compare">The equaling handler.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool Equals<T>(IList<T> a, IList<T> b, Func<T, T, bool> compare)
     {
         if (a.Count != b.Count) return false;

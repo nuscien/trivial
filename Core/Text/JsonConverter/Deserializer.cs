@@ -138,7 +138,7 @@ public class JsonTypedDeserializerSet
     /// Removes the value with the specified key from the registry of the set.
     /// </summary>
     /// <typeparam name="T">The type of object to deserialize.</typeparam>
-    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry of the set</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry of the set</returns>
     public bool Remove<T>()
         => handlers.Remove(typeof(T));
 
@@ -148,7 +148,7 @@ public class JsonTypedDeserializerSet
     /// </summary>
     /// <typeparam name="T">The type of object to deserialize.</typeparam>
     /// <param name="value">The removed element.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry of the set</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry of the set</returns>
     public bool Remove<T>(out JsonTypedDeserializer<T> value)
     {
         if (!handlers.Remove(typeof(T), out var obj))

@@ -143,7 +143,7 @@ public sealed class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public bool Equals(SphericalPoint other)
     {
         if (other is null) return false;
@@ -154,7 +154,7 @@ public sealed class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -168,7 +168,7 @@ public sealed class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(SphericalPoint leftValue, SphericalPoint rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -182,7 +182,7 @@ public sealed class SphericalPoint : IEquatable<SphericalPoint>, ICloneable
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(SphericalPoint leftValue, SphericalPoint rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;

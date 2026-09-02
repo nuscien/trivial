@@ -347,7 +347,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
     /// Determines whether there is a parameter which is matched the specific key.
     /// </summary>
     /// <param name="key">The parameter key.</param>
-    /// <returns>true if has such parameter; otherwise, false.</returns>
+    /// <returns><c>true</c> if has such parameter; otherwise, <c>false</c>.</returns>
     public bool Has(params string[] key)
     {
         foreach (var k in key)
@@ -367,7 +367,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
     /// Determines whether a word is in the arguments.
     /// </summary>
     /// <param name="key"></param>
-    /// <returns>true if exists; otherwise, false.</returns>
+    /// <returns><c>true</c> if exists; otherwise, <c>false</c>.</returns>
     public bool Contains(string key)
     {
         return args.Contains(key);
@@ -402,7 +402,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(CommandArguments other)
     {
         if (other == null) return false;
@@ -413,7 +413,7 @@ public class CommandArguments : IEquatable<CommandArguments>, IEquatable<string>
     /// Determines whether this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(string other)
     {
         return ToString() == other;

@@ -390,7 +390,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return false;
@@ -403,7 +403,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return true;
@@ -415,7 +415,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return true;
@@ -427,7 +427,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return false;
@@ -439,7 +439,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return true;
@@ -451,7 +451,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return false;

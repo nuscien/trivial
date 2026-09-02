@@ -114,7 +114,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="max">The maximum value to update.</param>
     /// <param name="millisecondsDelay">The milliseconds to delay per checking.</param>
     /// <param name="millisecondsIncrease">The increase milliseconds for each delay.</param>
-    /// <returns>true if the task is completed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is completed; otherwise, <c>false</c>.</returns>
     public async Task<bool> IncreaseAsync(Task task, double delta, double max, int millisecondsDelay, int millisecondsIncrease = 0)
     {
         if (max > 1) max = 1;
@@ -181,7 +181,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="max">The maximum value to update.</param>
     /// <param name="millisecondsDelay">The milliseconds to delay per checking.</param>
     /// <param name="millisecondsIncrease">The increase milliseconds for each delay.</param>
-    /// <returns>true if the task is completed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is completed; otherwise, <c>false</c>.</returns>
     public async Task<bool> IncreaseAsync<T>(Task<T> task, Func<T, bool> validation, double delta, double max, int millisecondsDelay, int millisecondsIncrease = 0)
     {
         if (max > 1) max = 1;
@@ -249,7 +249,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="delta">The delta value to update.</param>
     /// <param name="max">The maximum value to update.</param>
     /// <param name="delay">The time span to delay per checking.</param>
-    /// <returns>true if the task is completed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is completed; otherwise, <c>false</c>.</returns>
     public async Task<bool> IncreaseAsync(Task task, double delta, double max, TimeSpan delay)
     {
         if (max > 1) max = 1;
@@ -295,7 +295,7 @@ public class OneProgress : IProgress<double>, INotifyPropertyChanged
     /// <param name="delta">The delta value to update.</param>
     /// <param name="max">The maximum value to update.</param>
     /// <param name="delay">The time span to delay per checking.</param>
-    /// <returns>true if the task is completed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is completed; otherwise, <c>false</c>.</returns>
     public async Task<bool> IncreaseAsync<T>(Task<T> task, Func<T, bool> validation, double delta, double max, TimeSpan delay)
     {
         if (max > 1) max = 1;

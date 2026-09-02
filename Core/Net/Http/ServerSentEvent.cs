@@ -181,7 +181,7 @@ public class ServerSentEventInfo
     /// Tests if the specific value is the event name.
     /// </summary>
     /// <param name="value">The event name to test.</param>
-    /// <returns>true if they are the same event name; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are the same event name; otherwise, <c>false</c>.</returns>
     public bool IsEventName(string value)
     {
         if (string.IsNullOrWhiteSpace(value)) value = "message";
@@ -194,7 +194,7 @@ public class ServerSentEventInfo
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if contains such property; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains such property; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(string key, out string value)
     {
         if (string.IsNullOrWhiteSpace(key))

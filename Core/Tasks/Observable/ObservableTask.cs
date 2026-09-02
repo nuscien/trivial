@@ -86,56 +86,56 @@ public static class TaskStatesChecker
     /// Gets a value indicating whether the task is pending to process.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is pending to process; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is pending to process; otherwise, <c>false</c>.</returns>
     public static bool IsPending(TaskStates state) => state == TaskStates.Pending;
 
     /// <summary>
     /// Gets a value indicating whether the task is processing.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is processing; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is processing; otherwise, <c>false</c>.</returns>
     public static bool IsWorking(TaskStates state) => state == TaskStates.Working || state == TaskStates.WaitingToRetry || state == TaskStates.Retrying;
 
     /// <summary>
     /// Gets a value indicating whether the task is not finished.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is not finished; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is not finished; otherwise, <c>false</c>.</returns>
     public static bool IsPendingOrWorking(TaskStates state) => !IsEnd(state);
 
     /// <summary>
     /// Gets a value indicating whether the task is pending to process.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is pending to process; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is pending to process; otherwise, <c>false</c>.</returns>
     public static bool IsWaiting(TaskStates state) => state == TaskStates.Pending || state == TaskStates.Initializing || state == TaskStates.WaitingToRetry || state == TaskStates.Pausing || state == TaskStates.Paused || state == TaskStates.Resuming;
 
     /// <summary>
     /// Gets a value indicating whether the task is cancelled.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is cancelled; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is cancelled; otherwise, <c>false</c>.</returns>
     public static bool IsCanceled(TaskStates state) => state == TaskStates.Canceled;
 
     /// <summary>
     /// Gets a value indicating whether the task is done.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is done; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is done; otherwise, <c>false</c>.</returns>
     public static bool IsDone(TaskStates state) => state == TaskStates.Done;
 
     /// <summary>
     /// Gets a value indicating whether the task is failed.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is failed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is failed; otherwise, <c>false</c>.</returns>
     public static bool IsFailed(TaskStates state) => state == TaskStates.Faulted;
 
     /// <summary>
     /// Gets a value indicating whether the task is end.
     /// </summary>
     /// <param name="state">The task state.</param>
-    /// <returns>true if the task is end; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is end; otherwise, <c>false</c>.</returns>
     public static bool IsEnd(TaskStates state) => state == TaskStates.Done || state == TaskStates.Canceled || state == TaskStates.RolledBack || state == TaskStates.Faulted;
 }
 

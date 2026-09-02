@@ -156,7 +156,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Determines whether this instance contains an element that has the specified key.
     /// </summary>
     /// <param name="key">The key to locate.</param>
-    /// <returns>true if this instance contains an element that has the specified key; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance contains an element that has the specified key; otherwise, <c>false</c>.</returns>
     protected bool ContainsKey(string key)
         => cache.ContainsKey(key);
 
@@ -206,7 +206,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="key">The additional key.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, [CallerMemberName] string key = null)
@@ -219,7 +219,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="keyCase">A casing rules of the specified culture.</param>
     /// <param name="culture">An object that supplies culture-specific casing rules.</param>
     /// <param name="key">The additional key.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, Cases keyCase, CultureInfo culture = null, [CallerMemberName] string key = null)
@@ -231,7 +231,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="value">The value.</param>
     /// <param name="callback">The callback handler.</param>
     /// <param name="key">The additional key.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetCurrentProperty(object value, Action<ChangeEventArgs<object>> callback, [CallerMemberName] string key = null)
@@ -646,7 +646,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value the property.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetProperty(string key, object value)
@@ -658,7 +658,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="key">The property key.</param>
     /// <param name="value">The value the property.</param>
     /// <param name="callback">The callback handler after set.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetProperty(string key, object value, Action<ChangeEventArgs<object>> callback)
@@ -671,7 +671,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="value">The value the property.</param>
     /// <param name="tag">The additional tag.</param>
     /// <param name="callback">The callback handler after set.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetProperty(string key, object value, object tag, Action<ChangeEventArgs<object>> callback)
@@ -681,7 +681,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Sets a property.
     /// </summary>
     /// <param name="kvp">The property key and its value.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool SetProperty<T>(KeyValuePair<string, T> kvp)
@@ -691,7 +691,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Tests whether the new property to set is valid.
     /// </summary>
     /// <param name="ev">The information of property changed.</param>
-    /// <returns>true if the property is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the property is valid; otherwise, <c>false</c>.</returns>
     protected virtual PropertySettingPolicies IsPropertyValid(ChangeEventArgs<object> ev)
         => PropertySettingPolicies.Allow;
 
@@ -700,7 +700,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-    /// <returns>true if need to set a default value; otherwise, false.</returns>
+    /// <returns><c>true</c> if need to set a default value; otherwise, <c>false</c>.</returns>
     protected virtual bool FillNonExistProperty(string key, out object value)
     {
         value = default;
@@ -719,7 +719,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Removes a property.
     /// </summary>
     /// <param name="key">The key.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     protected bool RemoveProperty(string key)
@@ -936,7 +936,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-    /// <returns>true if the Collection contains an element with the specified key; otherwise, false.</returns>
+    /// <returns><c>true</c> if the Collection contains an element with the specified key; otherwise, <c>false</c>.</returns>
     private bool TryGetPropertyInternal(string key, out object value)
     {
         if (cache.TryGetValue(key, out value)) return true;
@@ -954,7 +954,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="value">The value of the property to set.</param>
     /// <param name="callback">The callback handler after set.</param>
     /// <param name="tag">The additional tag.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     private bool SetPropertyInternal(string key, object value, Action<ChangeEventArgs<object>> callback = null, object tag = null)
@@ -974,7 +974,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <param name="method">The change method.</param>
     /// <param name="callback">The callback handler after set.</param>
     /// <param name="tag">The additional tag.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">key was null.</exception>
     /// <exception cref="ArgumentException">key was empty or consists only of white-space characters; or s was not in correct format to parse.</exception>
     private bool SetPropertyInternal(string key, object value, object old, ChangeMethods method, Action<ChangeEventArgs<object>> callback = null, object tag = null)
@@ -1150,7 +1150,7 @@ public class ObservableProperties : BaseObservableProperties
     /// Determines whether this instance contains an element that has the specified key.
     /// </summary>
     /// <param name="key">The key to locate.</param>
-    /// <returns>true if this instance contains an element that has the specified key; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance contains an element that has the specified key; otherwise, <c>false</c>.</returns>
     public new bool ContainsKey(string key) => base.ContainsKey(key);
 
     /// <summary>
@@ -1176,7 +1176,7 @@ public class ObservableProperties : BaseObservableProperties
     /// <typeparam name="T">The type of the property value.</typeparam>
     /// <param name="key">The key.</param>
     /// <param name="result">The property value.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public new bool GetProperty<T>(string key, out T result) => base.GetProperty(key, out result);
 
     /// <summary>
@@ -1184,14 +1184,14 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     /// <param name="key">The key.</param>
     /// <param name="value">The value.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     public new bool SetProperty(string key, object value) => base.SetProperty(key, value);
 
     /// <summary>
     /// Removes a property.
     /// </summary>
     /// <param name="key">The key.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public new bool RemoveProperty(string key) => base.RemoveProperty(key);
 
     /// <summary>

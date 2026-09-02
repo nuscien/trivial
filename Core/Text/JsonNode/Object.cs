@@ -574,7 +574,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines the property value of the specific key is null.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if there is no such key or the property value is null; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
@@ -589,7 +589,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines the property value of the specific key is null, undefined or nonexisted.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if there is no such key or the property value is null; otherwise, <c>false</c>.</returns>
     public bool IsNullOrUndefined(string key)
     {
         if (!store.TryGetValue(key, out var value)) return true;
@@ -601,7 +601,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="kind">The value kind expected.</param>
-    /// <returns>true if the value kind is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value kind is the specific one; otherwise, <c>false</c>.</returns>
     public bool IsValueKind(string key, JsonValueKind kind)
     {
         if (!store.TryGetValue(key, out var value) || value is null) return kind == JsonValueKind.Undefined;
@@ -612,7 +612,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether it contains a property with the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if it contains the property key; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsKey(string key)
@@ -625,7 +625,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether it contains a property with the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if it contains the property key; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsKey(ReadOnlySpan<char> key)
@@ -635,7 +635,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether it contains the property only with the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key)
@@ -649,7 +649,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out string value)
@@ -664,7 +664,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out int value)
@@ -679,7 +679,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out long value)
@@ -694,7 +694,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out bool? value)
@@ -709,7 +709,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out JsonObjectNode value)
@@ -724,7 +724,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool ContainsOnlyKey(string key, out JsonArrayNode value)
@@ -738,7 +738,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether it contains the property only with the specific key.
     /// </summary>
     /// <param name="keys">The property keys to test.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     public bool ContainsOnlyKeys(IEnumerable<string> keys)
     {
         if (keys == null) return Count == 0;
@@ -756,7 +756,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keys">The property keys to test.</param>
     /// <param name="matched">The keys matched.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     public bool ContainsOnlyKeys(IEnumerable<string> keys, out List<string> matched)
     {
         matched = new();
@@ -778,7 +778,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keys">The property keys to test.</param>
     /// <param name="matched">The keys matched.</param>
     /// <param name="rest">The rest property keys.</param>
-    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <returns><c>true</c> if it contains the property key only; otherwise, <c>false</c>.</returns>
     public bool ContainsOnlyKeys(IEnumerable<string> keys, out List<string> matched, out List<string> rest)
     {
         matched = new();
@@ -1697,7 +1697,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <param name="kind">The value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(string key, out string value, out JsonValueKind kind)
     {
         if (!store.TryGetValue(key, out var data))
@@ -1738,7 +1738,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(string key, bool strictMode, out string result)
     {
         if (!store.TryGetValue(key, out var data))
@@ -1775,7 +1775,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(string key, out string result)
         => TryGetStringValue(key, false, out result);
 
@@ -1815,7 +1815,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(string key, IJsonPropertyResolver<string> converter, out string result)
     {
         if (!store.TryGetValue(key, out var data))
@@ -1869,7 +1869,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(IEnumerable<string> keyPath, out string result)
     {
         var value = TryGetValue(keyPath);
@@ -1914,7 +1914,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result trimmed.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringTrimmedValue(string key, out string result)
         => TryGetStringTrimmedValue(key, out result, out _);
 
@@ -1924,7 +1924,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result trimmed.</param>
     /// <param name="kind">The JSON value kind of the property.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringTrimmedValue(string key, out string result, out JsonValueKind kind)
     {
         if (!TryGetStringValue(key, out var r, out kind))
@@ -1944,7 +1944,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="mapping">The mapping of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue<T>(string key, IDictionary<string, T> mapping, out T result)
     {
         var s = TryGetStringTrimmedValue(key, true);
@@ -1964,7 +1964,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="resolver">The resolver of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue<T>(string key, ISingletonResolver resolver, out T result)
     {
         var s = TryGetStringTrimmedValue(key, true);
@@ -1984,7 +1984,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="resolver">The resolver of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue<T>(string key, DataCacheCollection<T> resolver, out T result)
     {
         var s = TryGetStringTrimmedValue(key, true);
@@ -2003,7 +2003,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="mapping">The mapping of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue(string key, Collection.StringKeyValuePairs mapping, out string result)
     {
         var s = TryGetStringTrimmedValue(key, true);
@@ -2065,7 +2065,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="trueString">The string value of true.</param>
     /// <param name="falseString">The string value of false.</param>
     /// <param name="ignoreIfNotBoolean">true if return null if the kind of property is not boolean; otherwise, false, that means it will return the string value if it is a string or a number.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public string TryGetBooleanStringValue(string key, string trueString, string falseString, bool ignoreIfNotBoolean = false)
     {
         if (TryGetBooleanValue(key, true, out var b)) return b ? trueString : falseString;
@@ -2080,7 +2080,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="trueString">The string value of true.</param>
     /// <param name="falseString">The string value of false.</param>
     /// <param name="isBoolean">true if the kind is boolean; otherwise, false.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public string TryGetBooleanStringValue(string key, string trueString, string falseString, out bool isBoolean)
     {
         if (TryGetBooleanValue(key, true, out var b))
@@ -2147,7 +2147,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUriValue(string key, out Uri result)
     {
         if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str))
@@ -2180,7 +2180,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetGuidValue(string key, out Guid result)
     {
         if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out result))
@@ -2205,7 +2205,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt16Value(string key, out ushort result)
         => TryGetUInt16Value(key, out result, out _);
 
@@ -2215,7 +2215,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt16Value(string key, out ushort result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2232,7 +2232,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt32Value(string key, out uint result)
         => TryGetUInt32Value(key, out result, out _);
 
@@ -2242,7 +2242,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt32Value(string key, out uint result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2259,7 +2259,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt16Value(string key, out short result)
         => TryGetInt16Value(key, out result, out _);
 
@@ -2269,7 +2269,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt16Value(string key, out short result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2286,7 +2286,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32Value(string key, out int result)
         => TryGetInt32Value(key, out result, out _);
 
@@ -2296,7 +2296,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32Value(string key, out int result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2315,7 +2315,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32Value(string key, IJsonPropertyResolver<int> converter, out int result)
     {
         if (TryGetInt32Value(key, out var v, out _))
@@ -2350,7 +2350,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32Value(IEnumerable<string> keyPath, out int result)
     {
         var value = TryGetValue(keyPath);
@@ -2376,7 +2376,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64Value(string key, out long result)
         => TryGetInt64Value(key, out result, out _);
 
@@ -2386,7 +2386,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64Value(string key, out long result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2405,7 +2405,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64Value(string key, IJsonPropertyResolver<long> converter, out long result)
     {
         if (TryGetInt64Value(key, out var v, out _))
@@ -2440,7 +2440,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64Value(IEnumerable<string> keyPath, out long result)
     {
         var value = TryGetValue(keyPath);
@@ -2484,7 +2484,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetSingleValue(string key, out float result)
         => TryGetSingleValue(key, out result, out _);
 
@@ -2494,7 +2494,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetSingleValue(string key, out float result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2504,7 +2504,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetSingleValue(string key, IJsonPropertyResolver<float> converter, out float result)
     {
         if (TryGetSingleValue(key, out var v, out _))
@@ -2572,7 +2572,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetSingleValue(IEnumerable<string> keyPath, out float result)
     {
         var value = TryGetValue(keyPath);
@@ -2627,7 +2627,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDoubleValue(string key, out double result)
         => TryGetDoubleValue(key, out result, out _);
 
@@ -2637,7 +2637,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDoubleValue(string key, out double result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2647,7 +2647,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDoubleValue(string key, IJsonPropertyResolver<double> converter, out double result)
     {
         if (TryGetDoubleValue(key, out var v, out _))
@@ -2726,7 +2726,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDoubleValue(IEnumerable<string> keyPath, out double result)
     {
         var value = TryGetValue(keyPath);
@@ -2752,7 +2752,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDecimalValue(string key, out decimal result)
         => TryGetDecimalValue(key, out result, out _);
 
@@ -2762,7 +2762,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDecimalValue(string key, out decimal result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2783,7 +2783,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDecimalValue(IEnumerable<string> keyPath, out decimal result)
     {
         var value = TryGetValue(keyPath);
@@ -2809,7 +2809,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(string key, out bool result)
         => TryGetBooleanValue(key, out result, out _);
 
@@ -2819,7 +2819,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="exactly">true if only boolean value kind; otherwise, false.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(string key, bool exactly, out bool result)
     {
         if (TryGetJsonValue<JsonBooleanNode>(key, out var p))
@@ -2857,7 +2857,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(string key, out bool result, out JsonValueKind kind)
         => TryGetJsonValue(key, out result, out kind);
 
@@ -2867,7 +2867,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(string key, IJsonPropertyResolver<bool> converter, out bool result)
     {
         if (TryGetBooleanValue(key, out var v, out _))
@@ -2911,7 +2911,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(IEnumerable<string> keyPath, out bool result)
     {
         var value = TryGetValue(keyPath);
@@ -2967,7 +2967,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="policy">The property resolving policy.</param>
     /// <param name="value">THe JSON object value of the property.</param>
     /// <param name="exactKey">The exact key to resolve the property.</param>
-    /// <returns>true if gets succeeded; otherwise, false, includes the scenarios that it does NOT exist or its type is not expected.</returns>
+    /// <returns><c>true</c> if gets succeeded; otherwise, false, includes the scenarios that it does NOT exist or its type is not expected.</returns>
     public bool TryGetObjectValue(string key, IJsonPropertyRoutePolicy policy, out JsonObjectNode value, out string exactKey)
     {
         if (policy is not null) return policy.TryGetObjectValue(this, key, out value, out exactKey);
@@ -3059,7 +3059,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetObjectValue(string key, out JsonObjectNode result)
     {
         var v = TryGetObjectValue(key);
@@ -3072,7 +3072,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The property key path.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetObjectValue(IEnumerable<string> keyPath, out JsonObjectNode result)
     {
         var json = this;
@@ -3153,7 +3153,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetArrayValue(string key, out JsonArrayNode result)
     {
         var v = TryGetArrayValue(key);
@@ -3174,7 +3174,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetArrayValue(IEnumerable<string> keyPath, out JsonArrayNode result)
     {
         var value = TryGetValue(keyPath);
@@ -3223,7 +3223,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDateTimeValue(string key, out DateTime result, out JsonValueKind kind)
     {
         var node = TryGetJsonValue(key);
@@ -3238,7 +3238,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDateTimeValue(string key, out DateTime result)
         => TryGetDateTimeValue(key, out result, out _);
 
@@ -3249,7 +3249,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="bytes">The result.</param>
     /// <param name="bytesWritten">The count of bytes written.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBytesFromBase64(string key, Span<byte> bytes, out int bytesWritten)
     {
         var str = TryGetStringValue(key);
@@ -3317,7 +3317,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue<T>(string key, out T result) where T : struct, Enum
     {
         var r = TryGetEnumValue<T>(key);
@@ -3347,7 +3347,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue<T>(string key, bool ignoreCase, out T result) where T : struct, Enum
     {
         var r = TryGetEnumValue<T>(key, ignoreCase);
@@ -3378,7 +3378,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="type">An enumeration type.</param>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue(Type type, string key, out object result)
     {
         try
@@ -3424,7 +3424,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue(Type type, string key, bool ignoreCase, out object result)
     {
         try
@@ -3541,7 +3541,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(string key, out BaseJsonValueNode result)
     {
         try
@@ -3568,7 +3568,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(ReadOnlySpan<char> key, out BaseJsonValueNode result)
         => TryGetValue(key.ToString(), out result);
 
@@ -3593,7 +3593,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="keyPath">The property key path.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(IEnumerable<string> keyPath, out BaseJsonValueNode result)
     {
         if (keyPath == null)
@@ -3672,7 +3672,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     bool IDictionary<string, IJsonValueNode>.TryGetValue(string key, out IJsonValueNode result)
     {
         var v = TryGetValueOrNull(key);
@@ -3685,7 +3685,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     bool IReadOnlyDictionary<string, IJsonValueNode>.TryGetValue(string key, out IJsonValueNode result)
     {
         var v = TryGetValueOrNull(key);
@@ -3699,7 +3699,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <typeparam name="T">The type of property value.</typeparam>
     /// <param name="resolver">The property resolver.</param>
     /// <param name="result">The result of the property.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue<T>(IJsonPropertyResolver<T> resolver, out T result)
     {
         if (resolver is null)
@@ -3744,7 +3744,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <typeparam name="T">The type of value. Should be one of BaseJsonValueNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
     /// <param name="keyPath">The additional property key path.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result)
         => TryGetValue(keyPath, out result, out _);
 
@@ -3755,7 +3755,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="keyPath">The additional property key path.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result, out JsonValueKind kind)
     {
         if (!TryGetValue(keyPath, out var r))
@@ -4041,7 +4041,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if deserialize succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if deserialize succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the property key was empty or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
@@ -4097,7 +4097,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Removes property of the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
+    /// <returns><c>true</c> if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool Remove(string key)
@@ -4110,7 +4110,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Removes property of the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
+    /// <returns><c>true</c> if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool Remove(ReadOnlySpan<char> key)
@@ -7306,7 +7306,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="force">true if set a new one if the current is not JSON object; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object is ready, that means no value there before; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureObjectValue(string key, bool force, out JsonValueKind oldValueKind)
@@ -7323,7 +7323,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object is ready, that means no value there before; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureObjectValue(string key, out JsonValueKind oldValueKind)
@@ -7335,7 +7335,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="force">true if set a new one if the current is not JSON array; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object is ready, that means no value there before; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureArrayValue(string key, bool force, out JsonValueKind oldValueKind)
@@ -7352,7 +7352,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object is ready, that means no value there before; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureArrayValue(string key, out JsonValueKind oldValueKind)
@@ -7365,7 +7365,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="defaultValue">The default value.</param>
     /// <param name="force">true if set a new one if the current is not JSON array; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object is ready, that means no value there before; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureValue(string key, BaseJsonValueNode defaultValue, bool force, out JsonValueKind oldValueKind)
@@ -7383,7 +7383,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The key of the property.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object is ready, that means no value there before; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public bool EnsureValue(string key, BaseJsonValueNode defaultValue, out JsonValueKind oldValueKind)
@@ -8227,7 +8227,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether the JSON object contains a specific property.
     /// </summary>
     /// <param name="item">The property to locate in the JSON object.</param>
-    /// <returns>true if property is found in the JSON object; otherwise, false.</returns>
+    /// <returns><c>true</c> if property is found in the JSON object; otherwise, <c>false</c>.</returns>
     public bool Contains(KeyValuePair<string, BaseJsonValueNode> item)
     {
         foreach (var ele in store)
@@ -8242,7 +8242,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether the JSON object contains a specific property.
     /// </summary>
     /// <param name="item">The property to locate in the JSON object.</param>
-    /// <returns>true if property is found in the JSON object; otherwise, false.</returns>
+    /// <returns><c>true</c> if property is found in the JSON object; otherwise, <c>false</c>.</returns>
     public bool Contains(KeyValuePair<string, IJsonValueNode> item)
     {
         foreach (var ele in store)
@@ -8258,7 +8258,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of property.</param>
-    /// <returns>true if property is found in the JSON object; otherwise, false.</returns>
+    /// <returns><c>true</c> if property is found in the JSON object; otherwise, <c>false</c>.</returns>
     public bool Contains(string key, BaseJsonValueNode value)
     {
         if (string.IsNullOrEmpty(key)) return false;
@@ -8274,7 +8274,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Determines whether the JSON object contains the specific properties.
     /// </summary>
     /// <param name="test">The value to compare.</param>
-    /// <returns>true if all properties are found and same; otherwise, false.</returns>
+    /// <returns><c>true</c> if all properties are found and same; otherwise, <c>false</c>.</returns>
     public bool Contains(JsonObjectNode test)
     {
         if (test is null) return false;
@@ -8388,7 +8388,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Removes the first occurrence of a specific property from the JSON object.
     /// </summary>
     /// <param name="item">The property to remove from the JSON object.</param>
-    /// <returns>true if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
+    /// <returns><c>true</c> if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
     public bool Remove(KeyValuePair<string, BaseJsonValueNode> item)
     {
         KeyValuePair<string, BaseJsonValueNode>? kvp = null;
@@ -8407,7 +8407,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Removes the first occurrence of a specific property from the JSON object.
     /// </summary>
     /// <param name="item">The property to remove from the JSON object.</param>
-    /// <returns>true if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
+    /// <returns><c>true</c> if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
     public bool Remove(KeyValuePair<string, IJsonValueNode> item)
     {
         KeyValuePair<string, BaseJsonValueNode>? kvp = null;
@@ -8450,7 +8450,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Determines whether a sequence contains any elements.
     /// </summary>
-    /// <returns>true if the source sequence contains any elements; otherwise, false.</returns>
+    /// <returns><c>true</c> if the source sequence contains any elements; otherwise, <c>false</c>.</returns>
     public bool Any()
         => store.Any();
 
@@ -8458,7 +8458,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(JsonObjectNode other)
     {
         if (other is null) return false;
@@ -8479,7 +8479,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (other is null) return false;
@@ -8491,7 +8491,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
         => base.Equals(other);
 
@@ -8707,7 +8707,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
     /// <param name="style">The indent style.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     public bool TryWriteTo(string path, IndentStyles style = IndentStyles.Minified)
     {
         try
@@ -8754,7 +8754,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="file">The file to save.</param>
     /// <param name="style">The indent style.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     public bool TryWriteTo(FileInfo file, IndentStyles style = IndentStyles.Minified)
     {
         try
@@ -8802,59 +8802,8 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>A JSON format string.</returns>
     public override string ToString()
     {
-        var str = new StringBuilder("{");
-        foreach (var prop in store)
-        {
-            if (!prop.Key.StartsWith('$')) continue;
-            str.Append(JsonStringNode.ToJson(prop.Key));
-            str.Append(':');
-            if (prop.Value is null)
-            {
-                str.Append("null,");
-                continue;
-            }
-
-            switch (prop.Value.ValueKind)
-            {
-                case JsonValueKind.Undefined:
-                case JsonValueKind.Null:
-                    str.Append("null");
-                    break;
-                default:
-                    str.Append(prop.Value.ToString());
-                    break;
-            }
-
-            str.Append(',');
-        }
-
-        foreach (var prop in store)
-        {
-            if (prop.Key.StartsWith('$')) continue;
-            str.Append(JsonStringNode.ToJson(prop.Key));
-            str.Append(':');
-            if (prop.Value is null)
-            {
-                str.Append("null,");
-                continue;
-            }
-
-            switch (prop.Value.ValueKind)
-            {
-                case JsonValueKind.Undefined:
-                case JsonValueKind.Null:
-                    str.Append("null");
-                    break;
-                default:
-                    str.Append(prop.Value.ToString());
-                    break;
-            }
-
-            str.Append(',');
-        }
-
-        if (str.Length > 1) str.Remove(str.Length - 1, 1);
-        str.Append('}');
+        var str = new StringBuilder();
+        ConvertToString(str);
         return str.ToString();
     }
 
@@ -8937,6 +8886,67 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         str.Append(indentStr2);
         str.Append('}');
         return str.ToString();
+    }
+
+    /// <summary>
+    /// Gets the JSON format string of the value.
+    /// </summary>
+    /// <param name="str">The string builder.</param>
+    private void ConvertToString(StringBuilder str)
+    {
+        str.Append('{');
+        foreach (var prop in store)
+        {
+            if (!prop.Key.StartsWith('$')) continue;
+            str.Append(JsonStringNode.ToJson(prop.Key));
+            str.Append(':');
+            if (prop.Value is null)
+            {
+                str.Append("null,");
+                continue;
+            }
+
+            switch (prop.Value.ValueKind)
+            {
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Null:
+                    str.Append("null");
+                    break;
+                default:
+                    str.Append(prop.Value.ToString());
+                    break;
+            }
+
+            str.Append(',');
+        }
+
+        foreach (var prop in store)
+        {
+            if (prop.Key.StartsWith('$')) continue;
+            str.Append(JsonStringNode.ToJson(prop.Key));
+            str.Append(':');
+            if (prop.Value is null)
+            {
+                str.Append("null,");
+                continue;
+            }
+
+            switch (prop.Value.ValueKind)
+            {
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Null:
+                    str.Append("null");
+                    break;
+                default:
+                    str.Append(prop.Value.ToString());
+                    break;
+            }
+
+            str.Append(',');
+        }
+
+        if (str.Length > 1) str.Remove(str.Length - 1, 1);
+        str.Append('}');
     }
 
     /// <summary>
@@ -9039,6 +9049,20 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         }
 
         return str.ToString();
+    }
+
+    /// <summary>
+    /// Converts to a Markdown code block string.
+    /// </summary>
+    /// <returns>A string with the Markdown code block.</returns>
+    public string ToMarkdownBlockString()
+    {
+        var sb = new StringBuilder("```json");
+        sb.AppendLine();
+        ConvertToString(sb);
+        sb.AppendLine();
+        sb.AppendLine("```");
+        return sb.ToString();
     }
 
     /// <summary>
@@ -10045,7 +10069,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonObjectNode leftValue, IJsonValueNode rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -10059,7 +10083,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonObjectNode leftValue, IJsonValueNode rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;

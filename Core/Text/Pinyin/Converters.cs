@@ -313,7 +313,7 @@ public static partial class PinyinMarks
     /// </summary>
     /// <param name="s">The input string to parse.</param>
     /// <param name="result">A Pinyin initial parsed</param>
-    /// <returns>true parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseInitial(string s, out PinyinInitials result)
     {
         var r = TryParseInitial(s);
@@ -471,7 +471,7 @@ public static partial class PinyinMarks
     /// </summary>
     /// <param name="s">The input string to parse.</param>
     /// <param name="result">A Pinyin final parsed</param>
-    /// <returns>true parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseFinal(string s, out PinyinFinals result)
     {
         var r = TryParseFinal(s);
@@ -1046,7 +1046,7 @@ public static partial class PinyinMarks
     /// <param name="initial">The Pinyin initial.</param>
     /// <param name="final">The Pinyin final.</param>
     /// <param name="tone">The tone.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool Unzip(short value, out PinyinInitials initial, out PinyinFinals final, out int tone)
     {
         int a = value;

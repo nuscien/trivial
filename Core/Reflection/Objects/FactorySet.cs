@@ -132,7 +132,7 @@ public sealed class FactorySet
     /// Tests if there is a factory of the specific type.
     /// </summary>
     /// <typeparam name="T">The type of the instance.</typeparam>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool Has<T>() => !(GetFactory<T>() is null);
 
     /// <summary>
@@ -375,7 +375,7 @@ public class RoutedFactory<T>
     /// Tests if there is a factory of the specific type.
     /// </summary>
     /// <param name="key">The key.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool Has(string key) => !(GetFactory(key, true) is null);
 
     /// <summary>

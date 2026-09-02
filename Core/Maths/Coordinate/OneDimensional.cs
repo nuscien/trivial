@@ -63,7 +63,7 @@ public class Point1D<TUnit> : SingleElement<TUnit>, IEquatable<Point1D<TUnit>>, 
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public bool Equals(SingleElement<TUnit> other)
         => other != null && X.Equals(other.ItemA);
 
@@ -71,7 +71,7 @@ public class Point1D<TUnit> : SingleElement<TUnit>, IEquatable<Point1D<TUnit>>, 
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public bool Equals(Point1D<TUnit> other)
         => other != null && X.Equals(other.X);
 
@@ -79,7 +79,7 @@ public class Point1D<TUnit> : SingleElement<TUnit>, IEquatable<Point1D<TUnit>>, 
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public bool Equals(TUnit other)
         => X.Equals(other);
 
@@ -87,7 +87,7 @@ public class Point1D<TUnit> : SingleElement<TUnit>, IEquatable<Point1D<TUnit>>, 
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -358,7 +358,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(int other)
         => X == other;
 
@@ -366,7 +366,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(float other)
         => X == other;
 
@@ -374,7 +374,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(Point1D<int> other)
         => other is not null && X == other.X;
 
@@ -382,7 +382,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(Point1D<float> other)
         => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy);
 
@@ -390,7 +390,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -449,7 +449,7 @@ public sealed class DoublePoint1D : Point1D<double>, IAdvancedAdditionCapable<Do
     /// <param name="s">The input string to parse.</param>
     /// <param name="provider">An object that provides culture-specific formatting information about s.</param>
     /// <param name="result">When this method returns, contains the result of successfully parsing; or a default value on failure.</param>
-    /// <returns>true if parse successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse successfully; otherwise, <c>false</c>.</returns>
     public static bool TryParse(string s, IFormatProvider provider, out DoublePoint1D result)
     {
         if (string.IsNullOrWhiteSpace(s))
@@ -738,7 +738,7 @@ public sealed class IntPoint1D : Point1D<int>, IAdvancedAdditionCapable<IntPoint
     /// <param name="s">The input string to parse.</param>
     /// <param name="provider">An object that provides culture-specific formatting information about s.</param>
     /// <param name="result">When this method returns, contains the result of successfully parsing; or a default value on failure.</param>
-    /// <returns>true if parse successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse successfully; otherwise, <c>false</c>.</returns>
     public static bool TryParse(string s, IFormatProvider provider, out IntPoint1D result)
     {
         result = TryParse(s);

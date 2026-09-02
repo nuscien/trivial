@@ -399,14 +399,14 @@ public abstract class BaseListDataReader<T> : DbDataReader
     /// Gets a value that indicates whether the column contains nonexistent or missing values.
     /// </summary>
     /// <param name="ordinal">The zero-based column ordinal.</param>
-    /// <returns>true if the specified column is equivalent to System.DBNull; otherwise false.</returns>
+    /// <returns><c>true</c> if the specified column is equivalent to System.DBNull; otherwise false.</returns>
     public override bool IsDBNull(int ordinal)
         => this[ordinal] == null;
 
     /// <summary>
     /// Advances the reader to the next result when reading the results of a batch of statements.
     /// </summary>
-    /// <returns>true if there are more result sets; otherwise false.</returns>
+    /// <returns><c>true</c> if there are more result sets; otherwise false.</returns>
     public override bool NextResult()
         => false;
 
@@ -437,7 +437,7 @@ public abstract class BaseListDataReader<T> : DbDataReader
     /// <summary>
     /// Advances the reader to the next record in a result set.
     /// </summary>
-    /// <returns>true if there are more rows; otherwise false.</returns>
+    /// <returns><c>true</c> if there are more rows; otherwise false.</returns>
     public override bool Read()
     {
         if (enumerator == null) return false;

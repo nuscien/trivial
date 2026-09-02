@@ -195,7 +195,7 @@ public class ClientTokenRequestBody : TokenRequestBody
     /// Fills the data into the current request body.
     /// </summary>
     /// <param name="q">The query data.</param>
-    /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if fill succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
@@ -316,7 +316,7 @@ public class CodeTokenRequestBody : TokenRequestBody
     /// Fills the data into the current request body.
     /// </summary>
     /// <param name="q">The query data.</param>
-    /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if fill succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
@@ -421,7 +421,7 @@ public class RefreshTokenRequestBody : TokenRequestBody
     /// Fills the data into the current request body.
     /// </summary>
     /// <param name="q">The query data.</param>
-    /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if fill succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {
@@ -648,7 +648,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// Fills the data into the current request body.
     /// </summary>
     /// <param name="q">The query data.</param>
-    /// <returns>true if fill succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if fill succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The grant type is not expected.</exception>
     private void Fill(QueryData q)
     {

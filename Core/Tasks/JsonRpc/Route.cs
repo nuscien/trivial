@@ -125,7 +125,7 @@ public class JsonRpcRequestRoute
     /// Tests if contain the specific method.
     /// </summary>
     /// <param name="method">The name of the method.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool Contains(string method)
         => method != null && handlers.ContainsKey(method);
 
@@ -133,7 +133,7 @@ public class JsonRpcRequestRoute
     /// Removes a handler.
     /// </summary>
     /// <param name="method">The name of the method to be invoked.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(string method)
         => method != null && handlers.Remove(method);
 
@@ -159,7 +159,7 @@ public class JsonRpcRequestRoute
     /// </summary>
     /// <param name="method">The name of the method to be invoked.</param>
     /// <param name="handler">The handler removed; or null, if not found.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(string method, out JsonRpcRequestHandler handler)
     {
         if (method == null)

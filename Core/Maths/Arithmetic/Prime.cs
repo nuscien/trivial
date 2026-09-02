@@ -25,7 +25,7 @@ public static partial class Arithmetic
     /// Gets a value indicating whether a number is a prime number.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     public static bool IsPrime(uint value)
     {
         if (value < 2 || value % 2 == 0 || value % 3 == 0 || value % 5 == 0 || value % 7 == 0 || value % 11 == 0 || value % 13 == 0 || value % 17 == 0 || value % 19 == 0) return false;
@@ -46,7 +46,7 @@ public static partial class Arithmetic
     /// Gets a value indicating whether a number is a prime number.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     /// <example>
     /// <code>
     /// var isPrime1 = Arithemtic.IsPrime(256); // => false
@@ -60,7 +60,7 @@ public static partial class Arithmetic
     /// Gets a value indicating whether a number is a prime number.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     public static bool IsPrime(ulong value)
     {
         if (value < 2 || value % 2 == 0 || value % 3 == 0 || value % 5 == 0 || value % 7 == 0 || value % 11 == 0 || value % 13 == 0 || value % 17 == 0 || value % 19 == 0) return false;
@@ -82,7 +82,7 @@ public static partial class Arithmetic
     /// </summary>
     /// <param name="value">The value to test.</param>
     /// <param name="cancellationToken">The additional cancellation token.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     /// <example>
     /// <code>
     /// var isPrimeLong = await Arithemtic.IsPrimeAsync(2305843009213693951); // => true
@@ -120,7 +120,7 @@ public static partial class Arithmetic
     /// Gets a value indicating whether a number is a prime number.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     public static bool IsPrime(long value)
         => IsPrime((ulong)Math.Abs(value));
 
@@ -129,7 +129,7 @@ public static partial class Arithmetic
     /// </summary>
     /// <param name="value">The value to test.</param>
     /// <param name="cancellationToken">The additional cancellation token.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     public static Task<bool> IsPrimeAsync(long value, CancellationToken cancellationToken = default)
         => IsPrimeAsync((ulong)Math.Abs(value), cancellationToken);
 
@@ -139,7 +139,7 @@ public static partial class Arithmetic
     /// </summary>
     /// <param name="value">The value to test.</param>
     /// <param name="cancellationToken">The additional cancellation token.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     public static async Task<bool> IsPrimeAsync(UInt128 value, CancellationToken cancellationToken = default)
     {
         var sq = ulong.MaxValue;
@@ -174,7 +174,7 @@ public static partial class Arithmetic
     /// </summary>
     /// <param name="value">The value to test.</param>
     /// <param name="cancellationToken">The additional cancellation token.</param>
-    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is a prime number; otherwise, <c>false</c>.</returns>
     public static Task<bool> IsPrimeAsync(Int128 value, CancellationToken cancellationToken = default)
         => IsPrimeAsync((UInt128)Int128.Abs(value), cancellationToken);
 #endif

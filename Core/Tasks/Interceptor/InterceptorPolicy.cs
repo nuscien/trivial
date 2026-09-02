@@ -129,7 +129,7 @@ public sealed class InterceptorPolicy : ICloneable, IEquatable<InterceptorPolicy
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(InterceptorPolicy other)
     {
         if (other is null) return false;

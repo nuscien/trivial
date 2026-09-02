@@ -108,7 +108,7 @@ public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<Point3D<TUnit>>, 
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public bool Equals(ThreeElements<TUnit> other)
         => other is not null && X.Equals(other.ItemA) && Y.Equals(other.ItemB) && Z.Equals(other.ItemC);
 
@@ -116,7 +116,7 @@ public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<Point3D<TUnit>>, 
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public virtual bool Equals(Point3D<TUnit> other)
         => other is not null && X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
 
@@ -124,7 +124,7 @@ public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<Point3D<TUnit>>, 
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -308,7 +308,7 @@ public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoin
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(Vector3 other)
         => X == other.X && Y == other.Y && Z == other.Z;
 
@@ -316,7 +316,7 @@ public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoin
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(Point3D<float> other)
         => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy) && (Math.Abs(Z - other.Z) < Arithmetic.DoubleAccuracy);
 
@@ -324,7 +324,7 @@ public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoin
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(Point3D<double> other)
         => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy) && (Math.Abs(Z - other.Z) < Arithmetic.DoubleAccuracy);
 
@@ -332,7 +332,7 @@ public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoin
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(Point3D<int> other)
         => other is not null && X == other.X && Y == other.Y && Z == other.Z;
 
@@ -340,7 +340,7 @@ public sealed class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoin
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -512,7 +512,7 @@ public sealed class IntPoint3D : Point3D<int>, IAdditionCapable<IntPoint3D>, ISu
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;

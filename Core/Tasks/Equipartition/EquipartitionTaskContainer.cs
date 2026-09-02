@@ -250,7 +250,7 @@ public class EquipartitionTaskContainer
     /// </summary>
     /// <param name="group">The group identifier.</param>
     /// <param name="fragmentId">The task fragment identifier.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> GetFragment(string group, string fragmentId)
     {
         if (!cache.TryGetValue(group, out var list)) return new();
@@ -271,7 +271,7 @@ public class EquipartitionTaskContainer
     /// <param name="fragmentId">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <param name="tag">The new tag.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates? state, string tag)
     {
         var info = GetFragment(group, fragmentId);
@@ -285,7 +285,7 @@ public class EquipartitionTaskContainer
     /// <param name="group">The group identifier.</param>
     /// <param name="fragmentId">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates state)
     {
         var info = GetFragment(group, fragmentId);

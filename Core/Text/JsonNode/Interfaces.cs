@@ -156,14 +156,14 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out bool result);
 
     /// <summary>
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(out DateTime result);
 
     /// <summary>
@@ -171,7 +171,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out decimal result);
 
     /// <summary>
@@ -179,7 +179,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out float result);
 
     /// <summary>
@@ -187,7 +187,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out double result);
 
     /// <summary>
@@ -195,7 +195,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out short result);
 
     /// <summary>
@@ -203,7 +203,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out uint result);
 
     /// <summary>
@@ -211,7 +211,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out int result);
 
     /// <summary>
@@ -219,7 +219,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out ulong result);
 
     /// <summary>
@@ -227,7 +227,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out long result);
 
     /// <summary>
@@ -235,14 +235,14 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(bool strict, out string result);
 
     /// <summary>
     /// Tries to get the value of the element as a GUID.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryConvert(out Guid result);
 
     /// <summary>
@@ -270,7 +270,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryGetValue(string key, out IJsonValueNode result);
 
     /// <summary>
@@ -278,7 +278,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryGetValue(ReadOnlySpan<char> key, out IJsonValueNode result);
 
     /// <summary>
@@ -295,7 +295,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryGetValue(int index, out IJsonValueNode result);
 
 #if !NETFRAMEWORK
@@ -313,7 +313,7 @@ public interface IJsonValueNode
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool TryGetValue(Index index, out IJsonValueNode result);
 #endif
 

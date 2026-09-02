@@ -113,7 +113,7 @@ public class AppAccessingKey
     /// </summary>
     /// <param name="id">The key of environment variable of app identifier or app access key.</param>
     /// <param name="secret">The key of environment variable of app secret key.</param>
-    /// <returns>true if gets all these information; otherwise, false.</returns>
+    /// <returns><c>true</c> if gets all these information; otherwise, <c>false</c>.</returns>
     public bool LoadFromEnvironment(string id, string secret)
         => LoadFromEnvironment(id, secret, false);
 
@@ -123,7 +123,7 @@ public class AppAccessingKey
     /// <param name="id">The key of environment variable of app identifier or app access key.</param>
     /// <param name="secret">The key of environment variable of app secret key.</param>
     /// <param name="skipIfFails">true if skip to set if fails to load; otherwise, false.</param>
-    /// <returns>true if gets all these information; otherwise, false.</returns>
+    /// <returns><c>true</c> if gets all these information; otherwise, <c>false</c>.</returns>
     public bool LoadFromEnvironment(string id, string secret, bool skipIfFails)
     {
         id = GetFromEnvironment(id);
@@ -142,7 +142,7 @@ public class AppAccessingKey
     /// <param name="secret">The key of environment variable of app secret key.</param>
     /// <param name="target">The target used of environment variable.</param>
     /// <param name="skipIfFails">true if skip to set if fails to load; otherwise, false.</param>
-    /// <returns>true if gets all these information; otherwise, false.</returns>
+    /// <returns><c>true</c> if gets all these information; otherwise, <c>false</c>.</returns>
     public bool LoadFromEnvironment(string id, string secret, EnvironmentVariableTarget target, bool skipIfFails = false)
         => LoadFromEnvironment(id, target, secret, target, skipIfFails);
 
@@ -154,7 +154,7 @@ public class AppAccessingKey
     /// <param name="secret">The key of environment variable of app secret key.</param>
     /// <param name="secretTarget">The target used of environment variable of app secret key.</param>
     /// <param name="skipIfFails">true if skip to set if fails to load; otherwise, false.</param>
-    /// <returns>true if gets all these information; otherwise, false.</returns>
+    /// <returns><c>true</c> if gets all these information; otherwise, <c>false</c>.</returns>
     public bool LoadFromEnvironment(string id, EnvironmentVariableTarget idTarget, string secret, EnvironmentVariableTarget secretTarget, bool skipIfFails = false)
     {
         id = GetFromEnvironment(id, idTarget);
@@ -177,7 +177,7 @@ public class AppAccessingKey
     /// Tests if the app accessing key is null or empty.
     /// </summary>
     /// <param name="appKey">The app accessing key instance.</param>
-    /// <returns>true if it is null or empty; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is null or empty; otherwise, <c>false</c>.</returns>
     public static bool IsNullOrEmpty(AppAccessingKey appKey)
     {
         try

@@ -206,7 +206,7 @@ public static class SecureStringExtensions
     /// <param name="newValue">The new string to set.</param>
     /// <param name="old">The optional old string to validate.</param>
     /// <param name="confirm">The confirm string for the new one.</param>
-    /// <returns>true if set succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if set succeeded; otherwise, <c>false</c>.</returns>
     public static bool Set(this SecureString value, string newValue, string old = null, string confirm = null)
     {
         if (value == null) return false;

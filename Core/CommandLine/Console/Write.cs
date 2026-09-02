@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 using Trivial.Data;
 using Trivial.Text;
-using static Trivial.Reflection.ExceptionHandler;
 
 namespace Trivial.CommandLine;
 

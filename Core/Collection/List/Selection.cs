@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Trivial.Security;
+using Trivial.Text;
 
 namespace Trivial.Collection;
 
@@ -32,14 +35,19 @@ public enum SelectionResultTypes : byte
     /// <summary>
     /// The selection is not supported.
     /// </summary>
-    NotSupported = 3
+    NotSupported = 3,
+
+    /// <summary>
+    /// The selection is empty.
+    /// </summary>
+    Empty = 4,
 }
 
 /// <summary>
 /// The model of the selection item.
 /// </summary>
 /// <typeparam name="T">The type of data.</typeparam>
-public class SelectionItem<T>
+public class SelectionItem<T> : IEquatable<string>, IEquatable<JsonStringNode>, IEquatable<char>, IEquatable<SelectionItem<T>>
 {
     /// <summary>
     /// Initialzies a new instance of the SelectionItem class.
@@ -85,11 +93,105 @@ public class SelectionItem<T>
     public T Data { get; }
 
     /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.</returns>
+    public bool Equals(char other)
+    {
+        if (Hotkey.HasValue) return Hotkey.Value == other;
+        return false;
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.</returns>
+    public bool Equals(string other)
+    {
+        var isEmpty = string.IsNullOrEmpty(Title);
+        if (string.IsNullOrEmpty(other)) return isEmpty;
+        if (isEmpty) return false;
+        other = other.Trim();
+        var s = Title.Trim();
+        var pos = s.IndexOf('\t');
+        if (other.Contains('\t') || pos < 0) return s.Equals(other);
+        s = s.SubRangeString(0, pos).TrimEnd();
+        return s.Trim().Equals(other);
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.</returns>
+    public bool Equals(JsonStringNode other)
+        => Equals(other?.Value);
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.</returns>
+    public bool Equals(SelectionItem<T> other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (Title != other.Title)
+        {
+            var isEmpty = string.IsNullOrEmpty(Title);
+            if (string.IsNullOrEmpty(other.Title)) return isEmpty;
+            if (isEmpty) return false;
+            return Title.Trim().Equals(other.Title.Trim());
+        }
+
+        if (Data is null) return other.Data is null;
+        return Data.Equals(other.Data);
+    }
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current object.</param>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
+    public override bool Equals(object obj)
+    {
+        if (obj is null || obj is DBNull) return false;
+        if (obj is string s) return Equals(s);
+        if (obj is SelectionItem<T> item) return Equals(item);
+        if (obj is char c) return Equals(c);
+        if (obj is T t)
+        {
+            if (Data is null) return t is null;
+            return Data.Equals(t);
+        }
+
+        if (obj is StringBuilder sb) return Equals(sb.ToString());
+        if (obj is BaseJsonValueNode<string> js) return Equals(js.Value);
+        if (obj is SecureString ss) return Equals(ss.ToUnsecureString());
+        if (obj is int i) return Equals(i.ToString());
+        return false;
+    }
+
+    /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-        => Title ?? string.Empty;
+    {
+        if (!string.IsNullOrWhiteSpace(Title)) return Title;
+        if (Data is string s && !string.IsNullOrWhiteSpace(s)) return s;
+        if (Hotkey.HasValue) return Hotkey.Value.ToString();
+        return Title ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Serves as the default hash function.
+    /// </summary>
+    /// <returns>A hash code for the current object.</returns>
+    public override int GetHashCode()
+        => (Title, Data).GetHashCode();
 }
 
 /// <summary>
@@ -176,7 +278,7 @@ public class SelectionData<T> : IList<SelectionItem<T>>
     /// Tests if the specified element is contained in the selection data.
     /// </summary>
     /// <param name="item">The item to test if contains.</param>
-    /// <returns>true if the specified element is in the selection data; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified element is in the selection data; otherwise, <c>false</c>.</returns>
     public bool Contains(SelectionItem<T> item)
         => list.Contains(item);
 
@@ -245,7 +347,7 @@ public class SelectionData<T> : IList<SelectionItem<T>>
     /// Removes the first occurrence of a specific object from the list.
     /// </summary>
     /// <param name="item">The item to remove.</param>
-    /// <returns>true if the item was removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the item was removed; otherwise, <c>false</c>.</returns>
     public bool Remove(SelectionItem<T> item)
         => list.Remove(item);
 
@@ -366,7 +468,8 @@ public class SelectionResult<T>
     public override string ToString()
     {
         var text = Title ?? Value;
-        if (string.IsNullOrWhiteSpace(text)) text = InputType.ToString();
-        return text;
+        if (!string.IsNullOrWhiteSpace(text)) return text;
+        if (Data is string s && !string.IsNullOrWhiteSpace(s)) return s;
+        return InputType.ToString();
     }
 }

@@ -137,7 +137,7 @@ public sealed class JsonWebToken<T>
         /// </summary>
         /// <param name="algorithm">The signature algorithm instance.</param>
         /// <param name="checkName">true if check whether the algorithm name are same before verfiy; otherwise, false.</param>
-        /// <returns>true if valid; otherwise, false.</returns>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
         public bool Verify(ISignatureProvider algorithm, bool checkName = false)
         {
             if (checkName && !IsSameSignatureAlgorithmName(algorithm)) return false;
@@ -152,7 +152,7 @@ public sealed class JsonWebToken<T>
         /// </summary>
         /// <param name="algorithm">The signature algorithm instance.</param>
         /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
-        /// <returns>true if valid; otherwise, false.</returns>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
         public bool IsSameSignatureAlgorithmName(ISignatureProvider algorithm, bool caseSensitive = false)
             => IsSameSignatureAlgorithmName(algorithm?.Name, caseSensitive);
 
@@ -161,7 +161,7 @@ public sealed class JsonWebToken<T>
         /// </summary>
         /// <param name="algorithm">The signature algorithm name.</param>
         /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
-        /// <returns>true if valid; otherwise, false.</returns>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
         public bool IsSameSignatureAlgorithmName(string algorithm, bool caseSensitive = false)
         {
             var name = GetAlgorithmName();
@@ -234,7 +234,7 @@ public sealed class JsonWebToken<T>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public bool Equals(string other)
         {
             var str = ToString();
@@ -246,7 +246,7 @@ public sealed class JsonWebToken<T>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public bool Equals(Parser other)
         {
             if (other is null) return false;
@@ -257,7 +257,7 @@ public sealed class JsonWebToken<T>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public override bool Equals(object other)
         {
             if (other is null) return false;
@@ -1086,7 +1086,7 @@ public class JsonWebTokenPayload
     /// <summary>
     /// Tests if the token is actived to use by checking the expiration.
     /// </summary>
-    /// <returns>true if the token is actived; otherwise, false.</returns>
+    /// <returns><c>true</c> if the token is actived; otherwise, <c>false</c>.</returns>
     public bool IsActived()
         => IsActived(DateTime.Now);
 
@@ -1094,7 +1094,7 @@ public class JsonWebTokenPayload
     /// Tests if the token is actived to use by checking the expiration.
     /// </summary>
     /// <param name="date">A specific date time to test when the token is actived.</param>
-    /// <returns>true if the token is actived; otherwise, false.</returns>
+    /// <returns><c>true</c> if the token is actived; otherwise, <c>false</c>.</returns>
     public bool IsActived(DateTime date)
     {
         var d = Expiration;
@@ -1109,7 +1109,7 @@ public class JsonWebTokenPayload
     /// </summary>
     /// <param name="value">The audience value to test.</param>
     /// <param name="comparer">An equality comparer to compare values.</param>
-    /// <returns>true if the audience value is in the list, or the list is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if the audience value is in the list, or the list is null; otherwise, <c>false</c>.</returns>
     public bool IsAudience(string value, StringComparer comparer = null)
         => IsAudience(value, false, comparer);
 
@@ -1119,7 +1119,7 @@ public class JsonWebTokenPayload
     /// <param name="value">The audience value to test.</param>
     /// <param name="testExpiration">true if also test if the token is actived; otherwise, false.</param>
     /// <param name="comparer">An equality comparer to compare values.</param>
-    /// <returns>true if the audience value is in the list, or the list is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if the audience value is in the list, or the list is null; otherwise, <c>false</c>.</returns>
     public bool IsAudience(string value, bool testExpiration, StringComparer comparer = null)
     {
         if (testExpiration && !IsActived()) return false;

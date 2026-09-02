@@ -83,7 +83,7 @@ public static class EquipartitionTaskExtensions
     /// </summary>
     /// <param name="col">The equipartition task collection.</param>
     /// <param name="fragmentId">The task fragment identifier.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public static SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> GetFragment(this IEnumerable<EquipartitionTask> col, string fragmentId)
     {
         if (col == null) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
@@ -104,7 +104,7 @@ public static class EquipartitionTaskExtensions
     /// <param name="fragmentId">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <param name="tag">The new tag.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public static SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(this IEnumerable<EquipartitionTask> col, string fragmentId, EquipartitionTask.FragmentStates? state, string tag)
     {
         var info = GetFragment(col, fragmentId);
@@ -118,7 +118,7 @@ public static class EquipartitionTaskExtensions
     /// <param name="col">The equipartition task collection.</param>
     /// <param name="fragmentId">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public static SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(this IEnumerable<EquipartitionTask> col, string fragmentId, EquipartitionTask.FragmentStates state)
     {
         var info = GetFragment(col, fragmentId);

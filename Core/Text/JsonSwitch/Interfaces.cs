@@ -14,7 +14,7 @@ namespace Trivial.Text;
 /// <typeparam name="T">The type of result.</typeparam>
 /// <param name="node">The JSON node to test and convert.</param>
 /// <param name="result">The result converted.</param>
-/// <returns>true if tests passed and converts succeeded; otherwise, false.</returns>
+/// <returns><c>true</c> if tests passed and converts succeeded; otherwise, <c>false</c>.</returns>
 public delegate bool JsonSwitchPredicate<T>(IJsonValueNode node, out T result);
 
 /// <summary>
@@ -25,7 +25,7 @@ public delegate bool JsonSwitchPredicate<T>(IJsonValueNode node, out T result);
 /// <param name="node">The JSON node to test and convert.</param>
 /// <param name="result">The result converted.</param>
 /// <param name="info">The additional info to return.</param>
-/// <returns>true if tests passed and converts succeeded; otherwise, false.</returns>
+/// <returns><c>true</c> if tests passed and converts succeeded; otherwise, <c>false</c>.</returns>
 public delegate bool JsonSwitchPredicate<TResult, TInfo>(IJsonValueNode node, out TResult result, out TInfo info);
 
 /// <summary>
@@ -36,7 +36,7 @@ public delegate bool JsonSwitchPredicate<TResult, TInfo>(IJsonValueNode node, ou
 /// <param name="node">The JSON node to test and convert.</param>
 /// <param name="args">The args.</param>
 /// <param name="result">The result converted.</param>
-/// <returns>true if tests passed and converts succeeded; otherwise, false.</returns>
+/// <returns><c>true</c> if tests passed and converts succeeded; otherwise, <c>false</c>.</returns>
 public delegate bool JsonSwitchArgsPredicate<TArgs, TResult>(IJsonValueNode node, TArgs args, out TResult result);
 
 /// <summary>
@@ -49,7 +49,7 @@ public delegate bool JsonSwitchArgsPredicate<TArgs, TResult>(IJsonValueNode node
 /// <param name="args">The args.</param>
 /// <param name="result">The result converted.</param>
 /// <param name="info">The additional info to return.</param>
-/// <returns>true if tests passed and converts succeeded; otherwise, false.</returns>
+/// <returns><c>true</c> if tests passed and converts succeeded; otherwise, <c>false</c>.</returns>
 public delegate bool JsonSwitchArgsPredicate<TArgs, TResult, TInfo>(IJsonValueNode node, TArgs args, out TResult result, out TInfo info);
 
 /// <summary>

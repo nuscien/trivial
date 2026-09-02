@@ -171,7 +171,7 @@ public abstract class BaseInterceptor<T>
     /// Invokes. But executes only when matches the policy.
     /// </summary>
     /// <param name="arg">The optional argument.</param>
-    /// <returns>true if executes at current time; otherwise, false.</returns>
+    /// <returns><c>true</c> if executes at current time; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T arg)
     {
         var task = InvokeInternalAsync(arg);
@@ -234,14 +234,14 @@ public abstract class BaseInterceptor<T>
     /// Tests if the argument is valid.
     /// </summary>
     /// <param name="arg">The argument to test.</param>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     protected virtual bool ValidateArgument(T arg) => true;
 
     /// <summary>
     /// Invokes. But executes only when matches the policy.
     /// </summary>
     /// <param name="arg">The optional argument.</param>
-    /// <returns>true if executes at current time; otherwise, false.</returns>
+    /// <returns><c>true</c> if executes at current time; otherwise, <c>false</c>.</returns>
     private async Task<bool> InvokeInternalAsync(T arg)
     {
         if (IsIgnoring || !ValidateArgument(arg)) return false;

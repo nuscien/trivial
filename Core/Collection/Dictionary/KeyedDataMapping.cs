@@ -159,7 +159,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// Determines whether the mapping contains the specified key.
     /// </summary>
     /// <param name="item">The item to test.</param>
-    /// <returns>true if the mapping contains the specific element; otherwise, false.</returns>
+    /// <returns><c>true</c> if the mapping contains the specific element; otherwise, <c>false</c>.</returns>
     public bool Contains(KeyValuePair<string, T> item)
     {
         if (item.Key == null) return false;
@@ -172,7 +172,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// Determines whether the mapping contains the specified key.
     /// </summary>
     /// <param name="key">The case-insensitive key to locate in the mapping.</param>
-    /// <returns>true if the mapping contains an element with the specified key; otherwise, false.</returns>
+    /// <returns><c>true</c> if the mapping contains an element with the specified key; otherwise, <c>false</c>.</returns>
     public bool ContainsKey(string key)
     {
         key = key?.Trim()?.ToLowerInvariant();
@@ -184,7 +184,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// Determines whether the mapping contains the specified value.
     /// </summary>
     /// <param name="value">The value to locate in the mapping.</param>
-    /// <returns>true if the mapping contains an element with the specified value; otherwise, false.</returns>
+    /// <returns><c>true</c> if the mapping contains an element with the specified value; otherwise, <c>false</c>.</returns>
     public bool ContainsValue(T value)
     {
         return mapping.ContainsValue(value);
@@ -225,7 +225,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// Removes the value with the specified key from the mapping.
     /// </summary>
     /// <param name="key">The case-insensitive key of the element to remove.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(string key)
     {
         if (key == null) return false;
@@ -249,7 +249,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// </summary>
     /// <param name="key">The case-insensitive key of the element to remove.</param>
     /// <param name="value">The removed element.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(string key, out T value)
     {
         if (key == null)
@@ -266,7 +266,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// Removes the value with the specified key from the mapping.
     /// </summary>
     /// <param name="item">The key value pair to remove.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(KeyValuePair<string, T> item)
     {
         if (item.Key == null) return false;
@@ -372,7 +372,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     /// </summary>
     /// <param name="key">The case-insensitive key whose value to get.</param>
     /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-    /// <returns>true if the object that implements mapping contains an element with the specified key; otherwise, false.</returns>
+    /// <returns><c>true</c> if the object that implements mapping contains an element with the specified key; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(string key, out T value)
     {
         key = key?.Trim()?.ToLowerInvariant();

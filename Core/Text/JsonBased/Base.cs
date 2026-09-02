@@ -63,7 +63,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     protected bool TryGetValue<T>(string key, out T result) where T : class
         => TryGetValue(key, false, default, out result);
 
@@ -74,7 +74,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// <param name="key">The property key.</param>
     /// <param name="reload">true if reload the value of the property; otherwise, false.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     protected bool TryGetValue<T>(string key, bool reload, out T result) where T : class
         => TryGetValue(key, reload, default, out result);
 
@@ -86,7 +86,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// <param name="reload">true if reload the value of the property; otherwise, false.</param>
     /// <param name="defaultValue">The default value for null.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     protected bool TryGetValue<T>(string key, bool reload, T defaultValue, out T result) where T : class
     {
         try
@@ -171,7 +171,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// <param name="key">The property key.</param>
     /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     protected bool TryGetStringValue(string key, bool strictMode, out string result)
         => Source.TryGetStringValue(key, strictMode, out result);
 
@@ -180,7 +180,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     protected bool TryGetStringValue(string key, out string result)
         => Source.TryGetStringValue(key, false, out result);
 
@@ -209,7 +209,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result trimmed.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     protected bool TryGetStringTrimmedValue(string key, out string result)
         => Source.TryGetStringTrimmedValue(key, out result);
 
@@ -692,7 +692,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// </summary>
     /// <param name="file">A file with JSON object string content to parse.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
-    /// <returns>true if load succeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if load succeded; otherwise, <c>false</c>.</returns>
     protected bool TryLoadFile(FileInfo file, JsonDocumentOptions options = default)
     {
         var json = JsonObjectNode.TryParse(file, options);
@@ -706,7 +706,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// </summary>
     /// <param name="path">The file path with JSON object string content to parse.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
-    /// <returns>true if load succeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if load succeded; otherwise, <c>false</c>.</returns>
     protected bool TryLoadFile(string path, JsonDocumentOptions options = default)
     {
         var file = FileSystemInfoUtility.TryGetFileInfo(path);
@@ -751,7 +751,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// </summary>
     /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
     /// <param name="style">The indent style.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     protected bool TryWriteTo(string path, IndentStyles style = IndentStyles.Minified)
     {
         try
@@ -799,7 +799,7 @@ public class BaseJsonObjectHostService : IJsonObjectHost
     /// </summary>
     /// <param name="file">The file to save.</param>
     /// <param name="style">The indent style.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     protected bool TryWriteTo(FileInfo file, IndentStyles style = IndentStyles.Minified)
     {
         try

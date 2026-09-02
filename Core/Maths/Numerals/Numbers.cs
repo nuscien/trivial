@@ -478,7 +478,7 @@ public static class Numbers
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToInt16(string s, int radix, out short result)
     {
         if (TryParseToInt32(s, radix, out var i) && i >= short.MinValue && i <= short.MaxValue)
@@ -506,7 +506,7 @@ public static class Numbers
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToInt32(string s, int radix, out int result)
     {
         if (string.IsNullOrEmpty(s))
@@ -618,7 +618,7 @@ public static class Numbers
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToInt64(string s, int radix, out long result)
     {
         if (string.IsNullOrEmpty(s))
@@ -730,7 +730,7 @@ public static class Numbers
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToUInt16(string s, int radix, out ushort result)
     {
         if (TryParseToInt32(s, radix, out var i) && i >= 0 && i <= ushort.MaxValue)
@@ -749,7 +749,7 @@ public static class Numbers
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToUInt32(string s, int radix, out uint result)
     {
         if (TryParseToInt64(s, radix, out var i) && i >= 0 && i <= uint.MaxValue)
@@ -775,7 +775,7 @@ public static class Numbers
     /// </summary>
     /// <param name="c">A character</param>
     /// <param name="result">An integer parsed.</param>
-    /// <returns>true if parses succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parses succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToInt32(char c, out int result)
     {
         var i = TryParseToInt32(c);
@@ -869,7 +869,7 @@ public static class Numbers
     /// <param name="s">The input string.</param>
     /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseToInt128(string s, int radix, out Int128 result)
     {
         if (string.IsNullOrEmpty(s))

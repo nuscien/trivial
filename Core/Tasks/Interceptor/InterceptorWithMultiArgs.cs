@@ -88,7 +88,7 @@ public class Interceptor<T1, T2> : BaseInterceptor<Tuple<T1, T2>>
     /// </summary>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2)
         => InvokeAsync(new Tuple<T1, T2>(arg1, arg2));
 
@@ -402,7 +402,7 @@ public class Interceptor<T1, T2, T3> : BaseInterceptor<Tuple<T1, T2, T3>>
     /// <param name="arg1">The argument 1.</param>
     /// <param name="arg2">The argument 2.</param>
     /// <param name="arg3">The argument 3.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2, T3 arg3)
         => InvokeAsync(new Tuple<T1, T2, T3>(arg1, arg2, arg3));
 
@@ -697,7 +697,7 @@ public class Interceptor<T1, T2, T3, T4> : BaseInterceptor<Tuple<T1, T2, T3, T4>
     /// <param name="arg2">The argument 2.</param>
     /// <param name="arg3">The argument 3.</param>
     /// <param name="arg4">The argument 4.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         => InvokeAsync(new Tuple<T1, T2, T3, T4>(arg1, arg2, arg3, arg4));
 
@@ -997,7 +997,7 @@ public class Interceptor<T1, T2, T3, T4, T5> : BaseInterceptor<Tuple<T1, T2, T3,
     /// <param name="arg3">The argument 3.</param>
     /// <param name="arg4">The argument 4.</param>
     /// <param name="arg5">The argument 5.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         => InvokeAsync(new Tuple<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5));
 
@@ -1158,7 +1158,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6> : BaseInterceptor<Tuple<T1, T2,
     /// <param name="arg4">The argument 4.</param>
     /// <param name="arg5">The argument 5.</param>
     /// <param name="arg6">The argument 6.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         => InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6));
 
@@ -1324,7 +1324,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7> : BaseInterceptor<Tuple<T1,
     /// <param name="arg5">The argument 5.</param>
     /// <param name="arg6">The argument 6.</param>
     /// <param name="arg7">The argument 7.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         => InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
@@ -1495,7 +1495,7 @@ public class Interceptor<T1, T2, T3, T4, T5, T6, T7, T8> : BaseInterceptor<Tuple
     /// <param name="arg6">The argument 6.</param>
     /// <param name="arg7">The argument 7.</param>
     /// <param name="arg8">The argument 8.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         => InvokeAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 

@@ -747,7 +747,7 @@ public class TokenContainer
     /// </summary>
     /// <param name="headers">The headers to fill.</param>
     /// <param name="forceToSet">true if force to set even if it has one; otherwise, false.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     public bool WriteAuthenticationHeaderValue(HttpRequestHeaders headers, bool forceToSet = false)
     {
         if (headers == null || Token == null || (headers.Authorization != null && !forceToSet)) return false;

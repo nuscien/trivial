@@ -200,7 +200,7 @@ public static class BooleanOperations
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Calculate(bool leftValue, BinaryBooleanOperator op, bool rightValue)
     {
@@ -216,7 +216,7 @@ public static class BooleanOperations
     /// <param name="middleValue">The right value.</param>
     /// <param name="op2">The second operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Calculate(bool leftValue, BinaryBooleanOperator op1, bool middleValue, BinaryBooleanOperator op2, bool rightValue)
         => Calculate(Calculate(leftValue, op1, middleValue), op2, rightValue);
@@ -227,7 +227,7 @@ public static class BooleanOperations
     /// <param name="op">The operation.</param>
     /// <param name="leftValue">The left value.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Calculate(BinaryBooleanOperator op, bool leftValue, bool rightValue)
     {
@@ -282,7 +282,7 @@ public static class BooleanOperations
     /// </summary>
     /// <param name="op">The operation.</param>
     /// <param name="value">The value to calculate in the unary boolean operation.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Calculate(UnaryBooleanOperator op, bool value)
         => op switch

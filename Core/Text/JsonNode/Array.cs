@@ -462,7 +462,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Determines the item value of the specific index is null.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>true if the item value is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if the item value is null; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
     public bool IsNull(int index)
     {
@@ -474,7 +474,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Determines the item value of the specific index is null, undefined or nonexisted.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>true if there is no such index or the item value is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if there is no such index or the item value is null; otherwise, <c>false</c>.</returns>
     public bool IsNullOrUndefined(int index)
     {
         if (index < 0 && index >= store.Count) return true;
@@ -494,7 +494,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="kind">The value kind expected.</param>
-    /// <returns>true if the value kind is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value kind is the specific one; otherwise, <c>false</c>.</returns>
     public bool IsValueKind(int index, JsonValueKind kind)
     {
         if (index < 0 && index >= store.Count) return kind == JsonValueKind.Undefined;
@@ -515,7 +515,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="kind">The value kind expected.</param>
     /// <param name="ignoreNull">true if the null element; otherwise, false.</param>
-    /// <returns>true if the value kind is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value kind is the specific one; otherwise, <c>false</c>.</returns>
     public bool IsValueKindOfAll(JsonValueKind kind, bool ignoreNull = false)
     {
         foreach (var value in store)
@@ -542,7 +542,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Determines whether it contains an item value with the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>true if there is no such index; otherwise, false.</returns>
+    /// <returns><c>true</c> if there is no such index; otherwise, <c>false</c>.</returns>
     public bool Contains(int index)
         => index >= 0 && index < store.Count;
 
@@ -1182,7 +1182,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(int index, out string result)
         => TryGetStringValue(index, null, out result, out _);
 
@@ -1192,7 +1192,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The original value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(int index, out string result, out JsonValueKind kind)
         => TryGetStringValue(index, null, out result, out kind);
 
@@ -1245,7 +1245,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(int index, IJsonPropertyResolver<string> converter, out string result)
         => TryGetStringValue(index, converter, out result, out _);
 
@@ -1256,7 +1256,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The original value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringValue(int index, IJsonPropertyResolver<string> converter, out string result, out JsonValueKind kind)
     {
         if (index < 0 || index >= store.Count)
@@ -1327,7 +1327,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result trimmed.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringTrimmedValue(int index, out string result)
     {
         if (!TryGetStringValue(index, out var r))
@@ -1347,7 +1347,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="mapping">The mapping of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue<T>(int index, IDictionary<string, T> mapping, out T result)
     {
         var s = TryGetStringTrimmedValue(index, true);
@@ -1367,7 +1367,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="resolver">The resolver of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue<T>(int index, ISingletonResolver resolver, out T result)
     {
         var s = TryGetStringTrimmedValue(index, true);
@@ -1387,7 +1387,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="resolver">The resolver of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue<T>(int index, DataCacheCollection<T> resolver, out T result)
     {
         var s = TryGetStringTrimmedValue(index, true);
@@ -1406,7 +1406,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="mapping">The mapping of value.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetStringMappedValue(int index, StringKeyValuePairs mapping, out string result)
     {
         var s = TryGetStringTrimmedValue(index, true);
@@ -1448,7 +1448,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUriValue(int index, out Uri result)
     {
         if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str))
@@ -1481,7 +1481,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetGuidValue(int index, out Guid result)
     {
         if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out result))
@@ -1506,7 +1506,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt16Value(int index, out ushort result)
         => TryGetUInt16Value(index, out result, out _);
 
@@ -1516,7 +1516,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt16Value(int index, out ushort result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1533,7 +1533,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt32Value(int index, out uint result)
         => TryGetUInt32Value(index, out result, out _);
 
@@ -1543,7 +1543,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt32Value(int index, out uint result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1560,7 +1560,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt16Value(int index, out short result)
         => TryGetInt16Value(index, out result, out _);
 
@@ -1570,7 +1570,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt16Value(int index, out short result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1587,7 +1587,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32Value(int index, out int result)
         => TryGetInt32Value(index, out result, out _);
 
@@ -1597,7 +1597,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32Value(int index, out int result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1614,7 +1614,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64Value(int index, out long result)
         => TryGetInt64Value(index, out result, out _);
 
@@ -1624,7 +1624,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64Value(int index, out long result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1650,7 +1650,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetSingleValue(int index, out float result)
         => TryGetSingleValue(index, out result, out _);
 
@@ -1660,7 +1660,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetSingleValue(int index, out float result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1704,7 +1704,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDoubleValue(int index, out double result)
         => TryGetDoubleValue(index, out result, out _);
 
@@ -1714,7 +1714,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDoubleValue(int index, out double result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1732,7 +1732,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDecimalValue(int index, out decimal result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1741,7 +1741,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDecimalValue(int index, out decimal result)
         => TryGetDecimalValue(index, out result, out _);
 
@@ -1758,7 +1758,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(int index, out bool result)
         => TryGetBooleanValue(index, out result, out _);
 
@@ -1768,7 +1768,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBooleanValue(int index, out bool result, out JsonValueKind kind)
         => TryGetJsonValue(index, out result, out kind);
 
@@ -1785,7 +1785,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetObjectValue(int index, out JsonObjectNode result)
     {
         var v = TryGetObjectValue(index);
@@ -1806,7 +1806,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="id">The identifier of the object.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the object; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the object; otherwise, <c>false</c>.</returns>
     public bool TryGetObjectValueById(string id, out JsonObjectNode result)
     {
         id = id?.Trim();
@@ -1864,7 +1864,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetArrayValue(int index, out JsonArrayNode result)
     {
         var v = TryGetArrayValue(index);
@@ -1913,7 +1913,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The JSON value kind.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDateTimeValue(int index, out DateTime result, out JsonValueKind kind)
     {
         var node = TryGetJsonValue(index);
@@ -1928,7 +1928,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetDateTimeValue(int index, out DateTime result)
         => TryGetDateTimeValue(index, out result, out _);
 
@@ -1939,7 +1939,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="bytes">The result.</param>
     /// <param name="bytesWritten">The count of bytes written.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetBytesFromBase64(int index, Span<byte> bytes, out int bytesWritten)
     {
         var str = GetStringValue(index);
@@ -1981,7 +1981,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue<T>(int index, out T result) where T : struct, Enum
     {
         if (TryGetInt32Value(index, out var v))
@@ -2022,7 +2022,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue<T>(int index, bool ignoreCase, out T result) where T : struct, Enum
     {
         if (TryGetInt32Value(index, out var v))
@@ -2064,7 +2064,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="type">An enumeration type.</param>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue(Type type, int index, out object result)
     {
         try
@@ -2110,7 +2110,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetEnumValue(Type type, int index, bool ignoreCase, out object result)
     {
         try
@@ -2184,7 +2184,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(int index, out BaseJsonValueNode result)
     {
         var v = TryGetValueOrNull(index);
@@ -2340,7 +2340,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="removedItem">The item removed.</param>
-    /// <returns>true if remove succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if remove succeeded; otherwise, <c>false</c>.</returns>
     public bool TryRemove(int index, out BaseJsonValueNode removedItem)
     {
         if (index < 0 || index >= Count)
@@ -2435,7 +2435,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if has the index and the type is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(Index index, out BaseJsonValueNode result)
     {
         try
@@ -2484,7 +2484,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Removes the first occurrence of a specific value from the array.
     /// </summary>
     /// <param name="item">The item matched.</param>
-    /// <returns>true if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
+    /// <returns><c>true</c> if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
     public bool Remove(IJsonValueNode item)
     {
         if (item is not BaseJsonValueNode ele) return false;
@@ -4785,7 +4785,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(JsonArrayNode other)
     {
         if (other is null) return false;
@@ -4807,7 +4807,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (other is null) return false;
@@ -4826,7 +4826,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
         => base.Equals(other);
 
@@ -5106,7 +5106,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(string key, out BaseJsonValueNode result)
     {
         if (key != null)
@@ -5145,7 +5145,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(ReadOnlySpan<char> key, out BaseJsonValueNode result)
         => TryGetValue(key.ToString(), out result);
 
@@ -5192,7 +5192,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonArrayNode leftValue, IJsonValueNode rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -5206,7 +5206,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonArrayNode leftValue, IJsonValueNode rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;

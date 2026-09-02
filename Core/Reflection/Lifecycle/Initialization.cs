@@ -161,7 +161,7 @@ public class Initialization
     /// Waits for initialization.
     /// </summary>
     /// <param name="timeout">A System.TimeSpan that represents the number of milliseconds to wait.</param>
-    /// <returns>true if initialization completes; otherwise, false..</returns>
+    /// <returns><c>true</c> if initialization completes; otherwise, false..</returns>
     protected async Task<bool> WaitInitAsync(TimeSpan timeout)
     {
         var result = true;

@@ -59,42 +59,42 @@ public interface ISimpleInterval<T>
     /// Checks if the value is less than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MinValue; otherwise, <c>false</c>.</returns>
     bool IsLessThanMinValue(T value);
 
     /// <summary>
     /// Checks if the value is greater than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     bool IsGreaterThanMinValue(T value);
 
     /// <summary>
     /// Checks if the value equals MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     bool EqualsMinValue(T value);
 
     /// <summary>
     /// Checks if the value is less than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MaxValue; otherwise, <c>false</c>.</returns>
     bool IsLessThanMaxValue(T value);
 
     /// <summary>
     /// Checks if the value is greater than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     bool IsGreaterThanMaxValue(T value);
 
     /// <summary>
     /// Checks if the value equals MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     bool EqualsMaxValue(T value);
 
     /// <summary>
@@ -365,49 +365,49 @@ public abstract class SimpleInterval<T> : ISimpleInterval<T>
     /// Checks if the value is less than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MinValue; otherwise, <c>false</c>.</returns>
     public abstract bool IsLessThanMinValue(T value);
 
     /// <summary>
     /// Checks if the value is greater than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public abstract bool IsGreaterThanMinValue(T value);
 
     /// <summary>
     /// Checks if the value equals MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public abstract bool EqualsMinValue(T value);
 
     /// <summary>
     /// Checks if the value is less than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public abstract bool IsLessThanMaxValue(T value);
 
     /// <summary>
     /// Checks if the value is greater than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public abstract bool IsGreaterThanMaxValue(T value);
 
     /// <summary>
     /// Checks if the value equals MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public abstract bool EqualsMaxValue(T value);
 
     /// <summary>
     /// Tests a value if is in the interval.
     /// </summary>
     /// <param name="value">The value to test.</param>
-    /// <returns>true if the test value is in the interval; otherwise, false.</returns>
+    /// <returns><c>true</c> if the test value is in the interval; otherwise, <c>false</c>.</returns>
     public bool Contains(T value)
     {
         var compareLeft = LeftOpen ? IsGreaterThanMinValue(value) : IntervalUtility.IsGreaterThanOrEqualMinValue(this, value);
@@ -548,7 +548,7 @@ public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, ICom
     /// Checks if the value is less than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool IsLessThanMinValue(T value)
     {
         if (MinValue == null) return false;
@@ -560,7 +560,7 @@ public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, ICom
     /// Checks if the value is greater than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool IsGreaterThanMinValue(T value)
     {
         if (value == null) return false;
@@ -572,7 +572,7 @@ public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, ICom
     /// Checks if the value equals MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool EqualsMinValue(T value)
     {
         if (MinValue == null && value == null) return true;
@@ -584,7 +584,7 @@ public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, ICom
     /// Checks if the value is less than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public override bool IsLessThanMaxValue(T value)
     {
         if (value == null) return false;
@@ -596,7 +596,7 @@ public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, ICom
     /// Checks if the value is greater than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public override bool IsGreaterThanMaxValue(T value)
     {
         if (MaxValue == null) return false;
@@ -608,7 +608,7 @@ public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, ICom
     /// Checks if the value equals MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value equals MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value equals MaxValue; otherwise, <c>false</c>.</returns>
     public override bool EqualsMaxValue(T value)
     {
         if (MaxValue == null && value == null) return true;
@@ -716,7 +716,7 @@ public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, 
     /// Checks if the value is less than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool IsLessThanMinValue(T value)
     {
         return 0 < (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
@@ -726,7 +726,7 @@ public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, 
     /// Checks if the value is greater than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool IsGreaterThanMinValue(T value)
     {
         return 0 > (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
@@ -736,7 +736,7 @@ public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, 
     /// Checks if the value equals MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value equals MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value equals MinValue; otherwise, <c>false</c>.</returns>
     public override bool EqualsMinValue(T value)
     {
         return 0 == (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
@@ -746,7 +746,7 @@ public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, 
     /// Checks if the value is less than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public override bool IsLessThanMaxValue(T value)
     {
         return 0 < (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
@@ -756,7 +756,7 @@ public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, 
     /// Checks if the value is greater than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public override bool IsGreaterThanMaxValue(T value)
     {
         return 0 > (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
@@ -766,7 +766,7 @@ public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, 
     /// Checks if the value equals MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value equals MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value equals MaxValue; otherwise, <c>false</c>.</returns>
     public override bool EqualsMaxValue(T value)
     {
         return 0 == (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
@@ -875,7 +875,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
     /// Checks if the value is less than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool IsLessThanMinValue(T? value)
     {
         if (MinValue == null) return false;
@@ -887,7 +887,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
     /// Checks if the value is greater than MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool IsGreaterThanMinValue(T? value)
     {
         if (value == null) return false;
@@ -899,7 +899,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
     /// Checks if the value equals MinValue.
     /// </summary>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public override bool EqualsMinValue(T? value)
     {
         if (MinValue == null && value == null) return true;
@@ -911,7 +911,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
     /// Checks if the value is less than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public override bool IsLessThanMaxValue(T? value)
     {
         if (value == null) return false;
@@ -923,7 +923,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
     /// Checks if the value is greater than MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public override bool IsGreaterThanMaxValue(T? value)
     {
         if (MaxValue == null) return false;
@@ -935,7 +935,7 @@ public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struc
     /// Checks if the value equals MaxValue.
     /// </summary>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value equals MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value equals MinValue; otherwise, <c>false</c>.</returns>
     public override bool EqualsMaxValue(T? value)
     {
         if (MaxValue == null && value == null) return true;
@@ -1046,7 +1046,7 @@ public class VersionSimpleInterval : RefValueSimpleInterval<string>
     /// Checks if a value is in the interval.
     /// </summary>
     /// <param name="value">A value to check.</param>
-    /// <returns>true if the value is in the interval; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value is in the interval; otherwise, <c>false</c>.</returns>
     public bool IsInInterval(Version value) => value != null && Contains(value.ToString());
 
     /// <summary>

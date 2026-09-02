@@ -54,7 +54,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public virtual bool Equals(T other)
         => Value is null ? other is null : Value.Equals(other);
 
@@ -62,7 +62,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public virtual bool Equals(IJsonValueNode<T> other)
         => Value is null ? other is null : Value.Equals(other.Value);
 
@@ -84,7 +84,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as a boolean.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetBoolean(out bool value)
         => TryConvert(false, out value);
 
@@ -99,7 +99,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetDateTime(out DateTime value)
         => TryConvert(out value);
 
@@ -114,7 +114,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetInt16(out short value)
         => TryConvert(false, out value);
 
@@ -129,7 +129,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetInt32(out int value)
         => TryConvert(false, out value);
 
@@ -144,7 +144,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt32(out uint value)
         => TryConvert(false, out value);
 
@@ -159,7 +159,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetInt64(out long value)
         => TryConvert(false, out value);
 
@@ -174,7 +174,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetUInt64(out ulong value)
         => TryConvert(false, out value);
 
@@ -197,7 +197,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as a floating number.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetSingle(out float value)
         => TryConvert(false, out value);
 
@@ -220,7 +220,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as a floating number.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetDouble(out double value)
         => TryConvert(false, out value);
 
@@ -235,7 +235,7 @@ public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T
     /// Tries to get the value of the element as a floating number.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGetDeciaml(out decimal value)
         => TryConvert(false, out value);
 
@@ -321,7 +321,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(JsonNullNode other)
         => true;
 
@@ -329,7 +329,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
         => other is null || ValueKind switch
         {
@@ -343,7 +343,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return true;
@@ -371,7 +371,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -384,7 +384,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out decimal result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -397,7 +397,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out float result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -410,7 +410,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out double result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -423,7 +423,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out short result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -436,7 +436,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out uint result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -449,7 +449,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out int result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -462,7 +462,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out long result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -475,7 +475,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out ulong result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -488,7 +488,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out string result)
     {
         result = null;
@@ -508,7 +508,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonNullNode leftValue, JsonNullNode rightValue)
         => true;
 
@@ -518,7 +518,7 @@ internal sealed class JsonNullNode : BaseJsonValueNode
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonNullNode leftValue, JsonNullNode rightValue)
         => false;
 }

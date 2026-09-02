@@ -124,7 +124,7 @@ public class DataCacheItemInfo<T>
     /// Tests if the item is expired.
     /// </summary>
     /// <param name="expiration">The expiration time span.</param>
-    /// <returns>true if expired; otherwise, false.</returns>
+    /// <returns><c>true</c> if expired; otherwise, <c>false</c>.</returns>
     public bool IsExpired(TimeSpan? expiration)
     {
         if (!expiration.HasValue && !Expiration.HasValue) return false;

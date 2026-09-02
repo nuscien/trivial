@@ -297,7 +297,7 @@ public abstract class RetryInstance
     /// <summary>
     /// Tests whether need retry.
     /// </summary>
-    /// <returns>true if need retry; otherwise, false.</returns>
+    /// <returns><c>true</c> if need retry; otherwise, <c>false</c>.</returns>
     /// <remarks>Strongly suggest call Next() member method directly and test if the value returned has value.</remarks>
     public bool Need()
     {

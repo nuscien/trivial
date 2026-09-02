@@ -529,7 +529,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, string plainText, string hash, Encoding encoding = null)
         => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, plainText, encoding), hash) :
@@ -542,7 +542,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, SecureString secureString, string hash, Encoding encoding = null)
         => Verify(alg, secureString.ToUnsecureString(), hash, encoding);
 
@@ -553,7 +553,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash byte array for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, string plainText, byte[] hash, Encoding encoding = null)
         => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHash(alg, plainText, encoding), hash) :
@@ -566,7 +566,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash byte array for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, SecureString secureString, byte[] hash, Encoding encoding = null)
         => Verify(alg, secureString.ToUnsecureString(), hash, encoding);
 
@@ -576,7 +576,7 @@ public static class HashUtility
     /// <param name="alg">The hash algorithm instance.</param>
     /// <param name="input">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, byte[] input, string hash)
         => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, input), hash) :
@@ -588,7 +588,7 @@ public static class HashUtility
     /// <param name="alg">The hash algorithm instance.</param>
     /// <param name="input">The original input value to test.</param>
     /// <param name="hash">A hash bytes for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, byte[] input, byte[] hash)
         => alg != null ?
             Collection.ListExtensions.Equals(alg.ComputeHash(input), hash) :
@@ -600,7 +600,7 @@ public static class HashUtility
     /// <param name="alg">The hash algorithm instance.</param>
     /// <param name="input">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, FileInfo input, string hash)
         => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, input), hash) :
@@ -612,7 +612,7 @@ public static class HashUtility
     /// <param name="alg">The hash algorithm instance.</param>
     /// <param name="input">The original input value to test.</param>
     /// <param name="hash">A hash bytes for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(this HashAlgorithm alg, FileInfo input, byte[] hash)
         => alg != null ?
             Collection.ListExtensions.Equals(alg.ComputeHash(input), hash) :
@@ -625,7 +625,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify<T>(Func<T> h, string plainText, string hash, Encoding encoding = null) where T : HashAlgorithm
         => h != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(h, plainText, encoding), hash) :
@@ -637,7 +637,7 @@ public static class HashUtility
     /// <param name="alg">One of algorithms about hash.</param>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(Func<string, string> alg, string plainText, string hash)
         => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(alg(plainText), hash) :
@@ -651,7 +651,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(HashAlgorithmName name, string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(name, plainText, encoding), hash);
 
@@ -662,7 +662,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool Verify(HashAlgorithmName name, SecureString secureString, string hash, Encoding encoding = null)
         => Verify(name, secureString.ToUnsecureString(), hash, encoding);
 #endif
@@ -673,7 +673,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     [Obsolete("SHA-1 is no longer considered secure.")]
     public static bool VerifySHA1(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA1String(plainText, encoding), hash);
@@ -684,7 +684,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA256(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA256String(plainText, encoding), hash);
 
@@ -694,7 +694,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA256(SecureString secureString, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA256String(secureString, encoding), hash);
 
@@ -703,7 +703,7 @@ public static class HashUtility
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA256(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA256String(plainText), hash);
 
@@ -713,7 +713,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA384(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA384String(plainText, encoding), hash);
 
@@ -723,7 +723,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA384(SecureString secureString, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA384String(secureString, encoding), hash);
 
@@ -732,7 +732,7 @@ public static class HashUtility
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA384(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA384String(plainText), hash);
 
@@ -742,7 +742,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA512(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText, encoding), hash);
 
@@ -752,7 +752,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA512(SecureString secureString, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(secureString, encoding), hash);
 
@@ -761,7 +761,7 @@ public static class HashUtility
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA512(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText), hash);
 
@@ -771,7 +771,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3256(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText, encoding), hash);
 
@@ -781,7 +781,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3256(SecureString secureString, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3256String(secureString, encoding), hash);
 
@@ -790,7 +790,7 @@ public static class HashUtility
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3256(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3256String(plainText), hash);
 
@@ -800,7 +800,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3384(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3384String(plainText, encoding), hash);
 
@@ -810,7 +810,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3384(SecureString secureString, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3384String(secureString, encoding), hash);
 
@@ -819,7 +819,7 @@ public static class HashUtility
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3384(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3384String(plainText), hash);
 
@@ -829,7 +829,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3512(string plainText, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText, encoding), hash);
 
@@ -839,7 +839,7 @@ public static class HashUtility
     /// <param name="secureString">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
     /// <param name="encoding">The text encoding.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3512(SecureString secureString, string hash, Encoding encoding = null)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(secureString, encoding), hash);
 
@@ -848,7 +848,7 @@ public static class HashUtility
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
     /// <param name="hash">A hash string for comparing.</param>
-    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    /// <returns><c>true</c> if hash is a hash value of input; otherwise, <c>false</c>.</returns>
     public static bool VerifySHA3512(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText), hash);
 
@@ -859,7 +859,7 @@ public static class HashUtility
     /// <param name="alg">The signature provider.</param>
     /// <param name="plainText">The data to sign.</param>
     /// <param name="hash">The signature data in hex format string to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public static bool VerifyFromHex(this ISignatureProvider alg, byte[] plainText, string hash)
         => alg is not null && !string.IsNullOrEmpty(hash) && alg.Verify(plainText, ObjectConvert.FromHexString(hash));
 
@@ -871,7 +871,7 @@ public static class HashUtility
     /// <param name="plainText">The plain text to sign.</param>
     /// <param name="encoding">The encoding of the plain text.</param>
     /// <param name="hash">The signature data in hex format string to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public static bool VerifyFromHex(this ISignatureProvider alg, string plainText, Encoding encoding, string hash)
         => VerifyFromHex(alg, (encoding ?? Encoding.UTF8).GetBytes(plainText), hash);
 
@@ -882,7 +882,7 @@ public static class HashUtility
     /// <param name="alg">The signature provider.</param>
     /// <param name="plainText">The data to sign.</param>
     /// <param name="hash">The signature data in hex format string to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public static bool VerifyFromHex(this ISignatureProvider alg, string plainText, string hash)
         => VerifyFromHex(alg, plainText, null, hash);
 
@@ -893,7 +893,7 @@ public static class HashUtility
     /// <param name="alg">The signature provider.</param>
     /// <param name="plainText">The data to sign.</param>
     /// <param name="hash">The signature data in Base64Url format string to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public static bool VerifyFromBase64Url(this ISignatureProvider alg, byte[] plainText, string hash)
         => alg is not null && !string.IsNullOrEmpty(hash) && alg.Verify(plainText, WebFormat.Base64UrlDecode(hash));
 
@@ -905,7 +905,7 @@ public static class HashUtility
     /// <param name="plainText">The plain text to sign.</param>
     /// <param name="encoding">The encoding of the plain text.</param>
     /// <param name="hash">The signature data in Base64Url format string to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public static bool VerifyFromBase64Url(this ISignatureProvider alg, string plainText, Encoding encoding, string hash)
         => VerifyFromBase64Url(alg, (encoding ?? Encoding.UTF8).GetBytes(plainText), hash);
 
@@ -916,7 +916,7 @@ public static class HashUtility
     /// <param name="alg">The signature provider.</param>
     /// <param name="plainText">The data to sign.</param>
     /// <param name="hash">The signature data in Base64Url format string to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public static bool VerifyFromBase64Url(this ISignatureProvider alg, string plainText, string hash)
         => VerifyFromBase64Url(alg, plainText, null, hash);
 }

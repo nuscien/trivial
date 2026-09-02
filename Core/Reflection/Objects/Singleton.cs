@@ -18,7 +18,7 @@ namespace Trivial.Reflection;
 /// <typeparam name="T">The type of the instance.</typeparam>
 /// <param name="key">The key.</param>
 /// <param name="value">The value output.</param>
-/// <returns>true if resolve succeeded; otherwise, false.</returns>
+/// <returns><c>true</c> if resolve succeeded; otherwise, <c>false</c>.</returns>
 public delegate bool KeyedInstanceResolver<T>(string key, out T value);
 
 /// <summary>
@@ -42,7 +42,7 @@ public interface ISingletonResolver
     /// <typeparam name="T">The type of instance.</typeparam>
     /// <param name="key">The key.</param>
     /// <param name="result">An instance resolved.</param>
-    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if resolve succeeded; otherwise, <c>false</c>.</returns>
     bool TryResolve<T>(string key, out T result);
 }
 
@@ -72,7 +72,7 @@ public abstract class BaseSingletonResolver : ISingletonResolver
     /// <typeparam name="T">The type of instance.</typeparam>
     /// <param name="key">The key.</param>
     /// <param name="result">An instance resolved.</param>
-    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if resolve succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
     /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
     public bool TryResolve<T>(string key, out T result)
@@ -520,7 +520,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// Gets a value indicating whether the type is registered.
     /// </summary>
     /// <typeparam name="T">The type of the instance.</typeparam>
-    /// <returns>true if found; otherwise, false.</returns>
+    /// <returns><c>true</c> if found; otherwise, <c>false</c>.</returns>
     public bool Contains<T>()
         => cache.ContainsKey(typeof(T));
 
@@ -528,7 +528,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// Gets a value indicating whether the type is registered.
     /// </summary>
     /// <param name="type">The type of the instance.</param>
-    /// <returns>true if found; otherwise, false.</returns>
+    /// <returns><c>true</c> if found; otherwise, <c>false</c>.</returns>
     public bool Contains(Type type)
         => cache.ContainsKey(type);
 
@@ -537,7 +537,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// </summary>
     /// <typeparam name="T">The type of the instance.</typeparam>
     /// <param name="key">The key.</param>
-    /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the instance is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove<T>(string key = null)
         => Remove(typeof(T), key);
 
@@ -546,7 +546,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// </summary>
     /// <param name="type">The type of the instance.</param>
     /// <param name="key">The key.</param>
-    /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the instance is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(Type type, string key = null)
     {
         var set = GetInstances(type);
@@ -557,7 +557,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// Removes all instance registered of a specific type.
     /// </summary>
     /// <param name="type">The type of the instance to remove.</param>
-    /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the instance is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool RemoveAll(Type type)
     {
         lock (locker)
@@ -570,7 +570,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// Removes all instance registered of a specific type.
     /// </summary>
     /// <param name="types">The types of the instance to remove.</param>
-    /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the instance is successfully found and removed; otherwise, <c>false</c>.</returns>
     public int RemoveAll(IEnumerable<Type> types)
     {
         var i = 0;
@@ -588,7 +588,7 @@ public class SingletonResolver : BaseSingletonResolver
     /// <summary>
     /// Removes all instance registered.
     /// </summary>
-    /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the instance is successfully found and removed; otherwise, <c>false</c>.</returns>
     public void Clear()
     {
         lock (locker)
@@ -714,7 +714,7 @@ public class SingletonResolverItem<T> : IObjectResolver<T>
     /// Resolves a singleton instance.
     /// </summary>
     /// <param name="result">An instance resolved.</param>
-    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if resolve succeeded; otherwise, <c>false</c>.</returns>
     public bool TryResolve(out T result)
     {
         return Key == null ? instance.TryResolve(out result) : instance.TryResolve(Key, out result);
@@ -1025,7 +1025,7 @@ public class SingletonKeeper<T>
     /// <summary>
     /// Tests if the Collection is valid.
     /// </summary>
-    /// <returns>true if valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
     protected virtual Task<bool> NeedRenewAsync()
         => Task.FromResult(!HasCache);
 
@@ -1349,7 +1349,7 @@ public class SingletonRenewTimer<T>
     /// </summary>
     /// <param name="dueTime">The amount of time to delay before the callback parameter invokes its methods.</param>
     /// <param name="period">The time interval between invocations of the methods referenced by callback.</param>
-    /// <returns>true if the timer was successfully updated; otherwise, false.</returns>
+    /// <returns><c>true</c> if the timer was successfully updated; otherwise, <c>false</c>.</returns>
     /// <exception cref="ObjectDisposedException">The instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The dueTime or period parameter, in milliseconds, is less than -1.</exception>
     /// <exception cref="NotSupportedException">The dueTime or period parameter, in milliseconds, is greater than 4294967294.</exception>

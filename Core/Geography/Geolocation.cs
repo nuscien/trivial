@@ -176,7 +176,7 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
         public static bool operator ==(Model leftValue, Latitude rightValue)
             => leftValue is not null && leftValue.Equals(rightValue);
 
@@ -186,7 +186,7 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
         public static bool operator ==(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -199,7 +199,7 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
         public static bool operator !=(Model leftValue, Latitude rightValue)
             => leftValue is null || !leftValue.Equals(rightValue);
 
@@ -209,7 +209,7 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
         public static bool operator !=(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -391,7 +391,7 @@ public struct Latitude : IEquatable<Latitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Latitude leftValue, Latitude rightValue)
         => leftValue.Value.Degrees == rightValue.Value.Degrees;
 
@@ -401,7 +401,7 @@ public struct Latitude : IEquatable<Latitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Latitude leftValue, Model rightValue)
         => rightValue is not null && leftValue.Value.Degrees == rightValue.Degrees;
 
@@ -411,7 +411,7 @@ public struct Latitude : IEquatable<Latitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Latitude leftValue, Latitude rightValue)
         => leftValue.Value.Degrees != rightValue.Value.Degrees;
 
@@ -421,7 +421,7 @@ public struct Latitude : IEquatable<Latitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Latitude leftValue, Model rightValue)
         => rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
 
@@ -657,7 +657,7 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
         public static bool operator ==(Model leftValue, Longitude rightValue)
             => leftValue is not null && leftValue.Equals(rightValue);
 
@@ -667,7 +667,7 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
         public static bool operator ==(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -680,7 +680,7 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
         public static bool operator !=(Model leftValue, Longitude rightValue)
             => leftValue is null || !leftValue.Equals(rightValue);
 
@@ -690,7 +690,7 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
         public static bool operator !=(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -928,7 +928,7 @@ public struct Longitude : IEquatable<Longitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Longitude leftValue, Longitude rightValue)
         => leftValue.Value.Degrees == rightValue.Value.Degrees;
 
@@ -938,7 +938,7 @@ public struct Longitude : IEquatable<Longitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Longitude leftValue, Model rightValue)
         => rightValue is not null && leftValue.Value.Degrees == rightValue.Degrees;
 
@@ -948,7 +948,7 @@ public struct Longitude : IEquatable<Longitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Longitude leftValue, Longitude rightValue)
         => leftValue.Value.Degrees != rightValue.Value.Degrees;
 
@@ -958,7 +958,7 @@ public struct Longitude : IEquatable<Longitude>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Longitude leftValue, Model rightValue)
         => rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
 
@@ -1151,7 +1151,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// Tests if the given altitude is in the deviation of this instance.
         /// </summary>
         /// <param name="value">The altitude to test.</param>
-        /// <returns>true if they are in the same altitude; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are in the same altitude; otherwise, <c>false</c>.</returns>
         public bool IsAltitude(double value)
         {
             if (!Altitude.HasValue) return true;
@@ -1219,7 +1219,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
         public static bool operator ==(Model leftValue, Geolocation rightValue)
             => leftValue is not null && leftValue.Equals(rightValue);
 
@@ -1229,7 +1229,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
         public static bool operator ==(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1242,7 +1242,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
         public static bool operator !=(Model leftValue, Geolocation rightValue)
             => leftValue is null || !leftValue.Equals(rightValue);
 
@@ -1252,7 +1252,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
         public static bool operator !=(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -1342,7 +1342,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// Tests if the given altitude is in the deviation of this instance.
     /// </summary>
     /// <param name="value">The altitude to test.</param>
-    /// <returns>true if they are in the same altitude; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are in the same altitude; otherwise, <c>false</c>.</returns>
     public bool IsAltitude(double value)
     {
         if (!Altitude.HasValue) return true;
@@ -1410,7 +1410,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Geolocation leftValue, Geolocation rightValue)
         => leftValue.Equals(rightValue);
 
@@ -1420,7 +1420,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(Geolocation leftValue, Model rightValue)
         => leftValue.Equals(rightValue);
 
@@ -1430,7 +1430,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Geolocation leftValue, Geolocation rightValue)
         => !leftValue.Equals(rightValue);
 
@@ -1440,7 +1440,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(Geolocation leftValue, Model rightValue)
         => !leftValue.Equals(rightValue);
 }

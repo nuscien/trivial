@@ -287,7 +287,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="json">The JSON element.</param>
     /// <param name="value">When this method returns, contains the date and time value equivalent to the current JSON string.</param>
-    /// <returns>true if the string can be represented as a System.DateTime; otherwise, false.</returns>
+    /// <returns><c>true</c> if the string can be represented as a System.DateTime; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">This value kind is not string or number.</exception>
     /// <exception cref="ObjectDisposedException">The parent System.Text.Json.JsonDocument has been disposed.</exception>
     public static bool TryGetJavaScriptDateTicks(this JsonElement json, out DateTime value)
@@ -315,7 +315,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="json">The JSON element.</param>
     /// <param name="value">When this method returns, contains the date and time value equivalent to the current JSON string.</param>
-    /// <returns>true if the string can be represented as a System.DateTime; otherwise, false.</returns>
+    /// <returns><c>true</c> if the string can be represented as a System.DateTime; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">This value kind is not string or number.</exception>
     /// <exception cref="ObjectDisposedException">The parent System.Text.Json.JsonDocument has been disposed.</exception>
     public static bool TryGetUnixTimestamps(this JsonElement json, out DateTime value)
@@ -343,7 +343,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="json">The JSON element.</param>
     /// <param name="value">When this method returns, contains the date and time value equivalent to the current JSON string.</param>
-    /// <returns>true if the string can be represented as a System.DateTime; otherwise, false.</returns>
+    /// <returns><c>true</c> if the string can be represented as a System.DateTime; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">This value kind is not string or number.</exception>
     /// <exception cref="ObjectDisposedException">The parent System.Text.Json.JsonDocument has been disposed.</exception>
     public static bool TryGetWindowsFileTimeUtc(this JsonElement json, out DateTime value)
@@ -371,7 +371,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetString(IJsonValueNode node, out string result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -392,7 +392,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetInt16(IJsonValueNode node, out short result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -413,7 +413,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetUInt32(IJsonValueNode node, out uint result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -434,7 +434,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetInt32(IJsonValueNode node, out int result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -455,7 +455,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetUInt64(IJsonValueNode node, out ulong result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -476,7 +476,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetInt64(IJsonValueNode node, out long result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -497,7 +497,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetSingle(IJsonValueNode node, out float result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -518,7 +518,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetDouble(IJsonValueNode node, out double result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -539,7 +539,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetDecimal(IJsonValueNode node, out decimal result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -560,7 +560,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetBoolean(IJsonValueNode node, out bool result)
     {
         if (node != null) return node.TryConvert(false, out result);
@@ -581,7 +581,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetDateTime(IJsonValueNode node, out DateTime result)
     {
         if (node != null) return node.TryConvert(out result);
@@ -602,7 +602,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="node">The JSON value node.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetGuid(IJsonValueNode node, out Guid result)
     {
         if (node != null) return node.TryConvert(out result);
@@ -837,7 +837,7 @@ public static class JsonValues
     /// <param name="kind">The JSON value kind to test.</param>
     /// <param name="callback">The optional callback handler.</param>
     /// <param name="fallback">The optional fallback handler.</param>
-    /// <returns>true the value kind is the same; otherwise, false.</returns>
+    /// <returns><c>true</c> the value kind is the same; otherwise, <c>false</c>.</returns>
     public static bool Is(IJsonValueNode value, JsonValueKind kind, Action<IJsonValueNode> callback = null, Action<IJsonValueNode> fallback = null)
     {
         value ??= Null;
@@ -860,7 +860,7 @@ public static class JsonValues
     /// <param name="kind">The JSON value kind to test.</param>
     /// <param name="callback">The optional callback handler.</param>
     /// <param name="fallback">The optional fallback handler.</param>
-    /// <returns>true the value kind is the same; otherwise, false.</returns>
+    /// <returns><c>true</c> the value kind is the same; otherwise, <c>false</c>.</returns>
     public static bool Is<T>(IJsonValueNode value, JsonValueKind kind, T args, Action<IJsonValueNode, T> callback, Action<IJsonValueNode, T> fallback = null)
     {
         value ??= Null;
@@ -2878,7 +2878,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     internal static bool Equals(IJsonValueNode leftValue, IJsonValueNode rightValue)
     {
         if (leftValue is null || leftValue.ValueKind == JsonValueKind.Null || leftValue.ValueKind == JsonValueKind.Undefined)

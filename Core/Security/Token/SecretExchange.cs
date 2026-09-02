@@ -181,7 +181,7 @@ public class RSASecretExchange : ICloneable
         /// </summary>
         /// <param name="rsa">The RSA token exchange instance from the other side.</param>
         /// <param name="encryptKeyResolver">A handler to resolve encrypt key.</param>
-        /// <returns>true if read succeeded; otherwise, false.</returns>
+        /// <returns><c>true</c> if read succeeded; otherwise, <c>false</c>.</returns>
         public bool Read(RSASecretExchange rsa, Func<string, RSAParameters?> encryptKeyResolver = null)
         {
             var isEncrypted = IsEncrypted;
@@ -549,7 +549,7 @@ public class RSASecretExchange : ICloneable
     /// Tests if the given identifier is as same as the identifier of this instance.
     /// </summary>
     /// <param name="id">The identifier to test.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public bool IsSameId(string id)
         => id == Id || (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(Id));
 
@@ -557,7 +557,7 @@ public class RSASecretExchange : ICloneable
     /// Tests if the given identifier is as same as the related entity identifier of this instance.
     /// </summary>
     /// <param name="entity">The entity identifier to test.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public bool IsSameEntityId(string entity)
         => entity == EntityId || (string.IsNullOrWhiteSpace(entity) && string.IsNullOrWhiteSpace(EntityId));
 

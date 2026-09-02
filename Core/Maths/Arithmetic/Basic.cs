@@ -939,7 +939,7 @@ public static partial class Arithmetic
     /// <param name="start">The start offset.</param>
     /// <param name="length">The length.</param>
     /// <param name="value">The result parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseSubstring(string s, int start, int length, out int value)
     {
         try
@@ -959,7 +959,7 @@ public static partial class Arithmetic
     /// <param name="s">The source string to parse.</param>
     /// <param name="start">The start offset.</param>
     /// <param name="value">The result parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParseSubstring(string s, int start, out int value)
     {
         try

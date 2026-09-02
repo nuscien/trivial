@@ -69,7 +69,7 @@ public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<Bas
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(BaseMultipleElements<T> other)
     {
         if (other is null) return false;
@@ -89,7 +89,7 @@ public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<Bas
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public bool Equals(IEnumerable<T> other)
     {
         if (other == null) return false;
@@ -109,7 +109,7 @@ public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<Bas
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -125,7 +125,7 @@ public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<Bas
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -139,7 +139,7 @@ public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<Bas
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;

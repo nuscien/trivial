@@ -48,7 +48,7 @@ public interface ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     bool Verify(byte[] data, byte[] signature);
 
     /// <summary>
@@ -57,7 +57,7 @@ public interface ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     bool Verify(Stream data, byte[] signature);
 }
 
@@ -414,7 +414,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(byte[] data, byte[] signature)
         => ListExtensions.Equals(Sign(data), signature);
 
@@ -424,7 +424,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(Stream data, byte[] signature)
         => ListExtensions.Equals(Sign(data), signature);
 }
@@ -810,7 +810,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(byte[] data, byte[] signature)
         => rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
 
@@ -820,7 +820,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(Stream data, byte[] signature)
         => rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
 }
@@ -1063,7 +1063,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(byte[] data, byte[] signature)
         => ecdsa.VerifyData(data, signature, hashName);
 
@@ -1073,7 +1073,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(Stream data, byte[] signature)
         => ecdsa.VerifyData(data, signature, hashName);
 }
@@ -1226,7 +1226,7 @@ public class KeyedSignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(byte[] data, byte[] signature)
         => verify != null
             ? verify(data, signature, secretBytes)
@@ -1238,7 +1238,7 @@ public class KeyedSignatureProvider : ISignatureProvider
     /// </summary>
     /// <param name="data">The data to sign.</param>
     /// <param name="signature">The signature data to be verified.</param>
-    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(Stream data, byte[] signature)
     {
         if (data == null || !data.CanRead) return false;

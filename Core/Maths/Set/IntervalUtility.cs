@@ -143,7 +143,7 @@ public static class IntervalUtility
     /// </summary>
     /// <param name="interval">The interval to compare.</param>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MinValue; otherwise, <c>false</c>.</returns>
     public static bool IsLessThanOrEqualMinValue<T>(this ISimpleInterval<T> interval, T value)
     {
         return interval.IsLessThanMinValue(value) || interval.EqualsMinValue(value);
@@ -154,7 +154,7 @@ public static class IntervalUtility
     /// </summary>
     /// <param name="interval">The interval to compare.</param>
     /// <param name="value">A value to compare with MinValue.</param>
-    /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MinValue; otherwise, <c>false</c>.</returns>
     public static bool IsGreaterThanOrEqualMinValue<T>(this ISimpleInterval<T> interval, T value)
     {
         return interval.IsGreaterThanMinValue(value) || interval.EqualsMinValue(value);
@@ -165,7 +165,7 @@ public static class IntervalUtility
     /// </summary>
     /// <param name="interval">The interval to compare.</param>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is less than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public static bool IsLessThanOrEqualMaxValue<T>(this ISimpleInterval<T> interval, T value)
     {
         return interval.IsLessThanMaxValue(value) || interval.EqualsMaxValue(value);
@@ -176,7 +176,7 @@ public static class IntervalUtility
     /// </summary>
     /// <param name="interval">The interval to compare.</param>
     /// <param name="value">A value to compare with MaxValue.</param>
-    /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specific value is greater than or equal MaxValue; otherwise, <c>false</c>.</returns>
     public static bool IsGreaterThanOrEqualMaxValue<T>(this ISimpleInterval<T> interval, T value)
     {
         return interval.IsGreaterThanMaxValue(value) || interval.EqualsMaxValue(value);

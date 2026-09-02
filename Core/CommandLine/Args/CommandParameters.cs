@@ -123,7 +123,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// </summary>
     /// <param name="index">The index of the word.</param>
     /// <param name="result">A word in the value output.</param>
-    /// <returns>true if exists; otherwise, false.</returns>
+    /// <returns><c>true</c> if exists; otherwise, <c>false</c>.</returns>
     public bool TryGet(int index, out string result)
     {
         if (index < 0 || index >= Values.Count)
@@ -156,7 +156,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its boolean equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out bool result)
     {
         if (!string.IsNullOrWhiteSpace(Value)) return bool.TryParse(Value, out result);
@@ -168,7 +168,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its 32-bit signed integer equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out int result)
         => Maths.Numbers.TryParseToInt32(Value, 10, out result);
 
@@ -176,7 +176,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its 64-bit signed integer equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out long result)
         => Maths.Numbers.TryParseToInt64(Value, 10, out result);
 
@@ -184,7 +184,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its single-precision floating-point number equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out float result)
         => float.TryParse(Value, out result);
 
@@ -192,7 +192,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its double-precision floating-point number equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out double result)
         => double.TryParse(Value, out result);
 
@@ -200,7 +200,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its GUID equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out Guid result)
         => Guid.TryParse(Value, out result);
 
@@ -208,7 +208,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its date and time equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out DateTime result)
         => DateTime.TryParse(Value, out result);
 
@@ -216,7 +216,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its date and time with offset relative to UTC equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out DateTimeOffset result)
         => DateTimeOffset.TryParse(Value, out result);
 
@@ -224,7 +224,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Converts the value to its time span equivalent.
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryParse(out TimeSpan result)
         => TimeSpan.TryParse(Value, out result);
 
@@ -358,7 +358,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(CommandParameter other)
     {
         if (other == null) return false;
@@ -369,7 +369,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(CommandParameters other)
     {
         if (other == null) return false;
@@ -380,7 +380,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(string other)
     {
         return ToString() == other;
@@ -390,7 +390,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -665,7 +665,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out bool result, CommandParameterModes mode = CommandParameterModes.First)
     {
         var str = Value(mode);
@@ -679,7 +679,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out int result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return Maths.Numbers.TryParseToInt32(Value(mode), 10, out result);
@@ -690,7 +690,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out long result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return Maths.Numbers.TryParseToInt64(Value(mode), 10, out result);
@@ -701,7 +701,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out float result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return float.TryParse(Value(mode), out result);
@@ -712,7 +712,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out double result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return double.TryParse(Value(mode), out result);
@@ -723,7 +723,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out Guid result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return Guid.TryParse(Value(mode), out result);
@@ -734,7 +734,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out DateTime result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return DateTime.TryParse(Value(mode), out result);
@@ -745,7 +745,7 @@ public class CommandParameters
     /// </summary>
     /// <param name="result">The result value converted when this method returns.</param>
     /// <param name="mode">The parameter resolving mode.</param>
-    /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the value was converted successfully; otherwise, <c>false</c>.</returns>
     public bool TryToParse(out DateTimeOffset result, CommandParameterModes mode = CommandParameterModes.First)
     {
         return DateTimeOffset.TryParse(Value(mode), out result);
@@ -923,7 +923,7 @@ public class CommandParameters
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(CommandParameters other)
     {
         if (other == null) return false;
@@ -934,7 +934,7 @@ public class CommandParameters
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(CommandParameter other)
     {
         if (other == null) return false;
@@ -945,7 +945,7 @@ public class CommandParameters
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public bool Equals(string other)
     {
         return ToString() == other;
@@ -955,7 +955,7 @@ public class CommandParameters
     /// Determines whether the value of this instance and the specified one have the same value.
     /// </summary>
     /// <param name="other">The object to compare.</param>
-    /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if this instance is the value of the same as the specific one; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;

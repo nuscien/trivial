@@ -84,7 +84,7 @@ public class Point4D<TUnit> : FourElements<TUnit>, IEquatable<Point4D<TUnit>>, I
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public bool Equals(FourElements<TUnit> other)
         => other is not null && X.Equals(other.ItemA) && Y.Equals(other.ItemB) && Z.Equals(other.ItemC) && T.Equals(other.ItemD);
 
@@ -92,7 +92,7 @@ public class Point4D<TUnit> : FourElements<TUnit>, IEquatable<Point4D<TUnit>>, I
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+    /// <returns> true if the current object is equal to the other parameter; otherwise, <c>false</c>.</returns>
     public virtual bool Equals(Point4D<TUnit> other)
         => other is not null && X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && T.Equals(other.T);
 
@@ -100,7 +100,7 @@ public class Point4D<TUnit> : FourElements<TUnit>, IEquatable<Point4D<TUnit>>, I
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;
@@ -210,7 +210,7 @@ public class Point4D<TSpaceUnit, TTimeUnit> : Point3D<TSpaceUnit>
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
-    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
     public virtual bool Equals(Point4D<TSpaceUnit, TTimeUnit> other)
         => other != null && X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && T.Equals(other.T);
 }

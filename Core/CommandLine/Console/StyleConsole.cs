@@ -573,7 +573,7 @@ public sealed partial class StyleConsole
     /// Tests if the output of the instance always contain a line terminator.
     /// </summary>
     /// <param name="instance">The instance of the console handler wrapper.</param>
-    /// <returns>true if it will always include a line terminator on output; otherwise, false.</returns>
+    /// <returns><c>true</c> if it will always include a line terminator on output; otherwise, <c>false</c>.</returns>
     public static bool IsBlockOutputOnly(IConsoleTextCreator instance)
         => instance?.ContainsTerminator ?? false;
 

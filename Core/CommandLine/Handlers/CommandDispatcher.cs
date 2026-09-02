@@ -117,7 +117,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
         /// Indicates whether the key matches the one registered.
         /// </summary>
         /// <param name="key">The verb.</param>
-        /// <returns>true if matches; otherwise, false.</returns>
+        /// <returns><c>true</c> if matches; otherwise, <c>false</c>.</returns>
         public bool IsMatch(string key)
         {
             if (keys.Any(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)))
@@ -129,7 +129,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
         /// Removes the first occurrence of a specific object from this dispatcher. 
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>true if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
+        /// <returns><c>true</c> if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
         internal bool RemoveKey(string key)
         {
             return keys.RemoveAll(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)) > 0;
@@ -139,7 +139,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
         /// Tests if the test handler is the same handler registered.
         /// </summary>
         /// <param name="test">The test handler to compare.</param>
-        /// <returns>true if they are the same one; otherwise, false.</returns>
+        /// <returns><c>true</c> if they are the same one; otherwise, <c>false</c>.</returns>
         internal bool EqualsTestHandler(Func<string, bool> test) => test == match;
     }
 
@@ -362,7 +362,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Removes the specific command handler from this dispatcher. 
     /// </summary>
     /// <param name="handler"></param>
-    /// <returns>true if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
+    /// <returns><c>true</c> if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
     public bool Remove(Route handler)
     {
         if (!list.Remove(handler)) return false;
@@ -374,7 +374,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Removes a route by key from this dispatcher. 
     /// </summary>
     /// <param name="key">The key to register.</param>
-    /// <returns>true if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
+    /// <returns><c>true</c> if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
     public bool Remove(string key)
     {
         key = key?.Trim();
@@ -400,7 +400,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Removes a route by key from this dispatcher. 
     /// </summary>
     /// <param name="keys">The keys to register.</param>
-    /// <returns>true if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
+    /// <returns><c>true</c> if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
     public bool Remove(IEnumerable<string> keys)
     {
         if (keys == null) return false;
@@ -423,7 +423,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Removes a route by key from this dispatcher. 
     /// </summary>
     /// <param name="test">The key test handler.</param>
-    /// <returns>true if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
+    /// <returns><c>true</c> if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
     public bool Remove(Func<string, bool> test)
     {
         if (test is null) return false;
@@ -459,25 +459,43 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CancellationToken cancellationToken = default)
     {
-        CommandArguments a = null;
-        try
+        var a = GetCommandArguments();
+        return ProcessAsync(a, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<bool> defaultHandler, CancellationToken cancellationToken = default)
+    {
+        var a = GetCommandArguments();
+        if (!a.HasVerb && defaultHandler is not null)
         {
-            var args = Environment.GetCommandLineArgs();
-            if (args == null || args.Length == 0)
-                return ProcessAsync(new CommandArguments(args), null, cancellationToken);
-            var cmd = Environment.CommandLine;
-            a = cmd != null && cmd.StartsWith(args[0] ?? string.Empty)
-                ? new CommandArguments(cmd.Substring(args[0]?.Length ?? 0).Trim())
-                : new CommandArguments(args.Skip(1));
-        }
-        catch (InvalidOperationException)
-        {
-        }
-        catch (NotSupportedException)
-        {
+            var result = defaultHandler();
+            if (result) return Task.CompletedTask;
         }
 
-        if (a == null) a = new(null as string);
+        return ProcessAsync(a, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<CommandDispatcher, CommandArguments, bool> defaultHandler, CancellationToken cancellationToken = default)
+    {
+        var a = GetCommandArguments();
+        if (!a.HasVerb && defaultHandler is not null)
+        {
+            var result = defaultHandler(this, a);
+            if (result) return Task.CompletedTask;
+        }
+
         return ProcessAsync(a, null, cancellationToken);
     }
 
@@ -511,10 +529,47 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// <summary>
     /// Processes.
     /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="args">The command arguments.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<bool> defaultHandler, CommandArguments args, CancellationToken cancellationToken = default)
+    {
+        if (defaultHandler is not null && (args is null || !args.HasVerb))
+        {
+            var result = defaultHandler();
+            if (result) return Task.CompletedTask;
+        }
+
+        return ProcessAsync(args, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="args">The command arguments.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<CommandDispatcher, CommandArguments, bool> defaultHandler, CommandArguments args, CancellationToken cancellationToken = default)
+    {
+        args ??= new(null as string);
+        if (defaultHandler is not null && !args.HasVerb)
+        {
+            var result = defaultHandler(this, args);
+            if (result) return Task.CompletedTask;
+        }
+
+        return ProcessAsync(args, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="conversationMode">The conversation mode.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public async Task ProcessAsync(CommandArguments args, CommandConversationModes? conversationMode, CancellationToken cancellationToken = default)
     {
         var verb = args?.Verb?.ToString()?.Trim();
@@ -604,7 +659,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Test if a verb is the exit key.
     /// </summary>
     /// <param name="verb">The verb.</param>
-    /// <returns>true if it can be used to exit; otherwise, false.</returns>
+    /// <returns><c>true</c> if it can be used to exit; otherwise, <c>false</c>.</returns>
     public bool IsExitKey(string verb)
         => !string.IsNullOrEmpty(verb) && ExitKeys.Any(k => verb.Equals(k, StringComparison.OrdinalIgnoreCase));
 
@@ -831,4 +886,26 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
 
     private Route GetVerb(string verb)
         => string.IsNullOrEmpty(verb) ? null : list.FindLast(ele => ele.IsMatch(verb));
+
+    private CommandArguments GetCommandArguments()
+    {
+        try
+        {
+            var args = Environment.GetCommandLineArgs();
+            if (args == null || args.Length == 0)
+                return new CommandArguments(args);
+            var cmd = Environment.CommandLine;
+            return cmd != null && cmd.StartsWith(args[0] ?? string.Empty)
+                ? new CommandArguments(cmd.Substring(args[0]?.Length ?? 0).Trim())
+                : new CommandArguments(args.Skip(1));
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+
+        return new(null as string);
+    }
 }

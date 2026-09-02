@@ -171,7 +171,7 @@ public abstract class BaseBinaryOperationFormula<TValue, TOperator> : BinaryOper
     /// Tries to get result.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
     protected abstract bool TryGetResult(out TValue result);
 }
 

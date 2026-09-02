@@ -289,7 +289,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria, IJsonObject
     /// Gets if given criteria is for all.
     /// </summary>
     /// <param name="criteria">The criteria for testing.</param>
-    /// <returns>true if for getting all; otherwise, false.</returns>
+    /// <returns><c>true</c> if for getting all; otherwise, <c>false</c>.</returns>
     public static bool IsForAll(ICriteria criteria)
     {
         if (criteria == null || criteria.CriteriaType == CriteriaType.All) return true;

@@ -279,7 +279,7 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
     /// <param name="index">The index.</param>
     /// <param name="startFromOffset">true if the index is based on offset; otherwise, false.</param>
     /// <param name="result">The item to get.</param>
-    /// <returns>true if has; otherwise, false.</returns>
+    /// <returns><c>true</c> if has; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(int index, bool startFromOffset, out T result)
     {
         if (startFromOffset)
@@ -324,7 +324,7 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
     /// </summary>
     /// <param name="index">The index.</param>
     /// <param name="result">The item to get.</param>
-    /// <returns>true if has; otherwise, false.</returns>
+    /// <returns><c>true</c> if has; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(int index, out T result)
         => TryGetValue(index, false, out result);
 
@@ -1241,7 +1241,7 @@ public class CollectionResultBuilder<T>
     /// <summary>
     /// Checks if the streaming is end.
     /// </summary>
-    /// <returns>true if it is end; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is end; otherwise, <c>false</c>.</returns>
     /// <exception cref="InvalidOperationException">The streaming is end and the options to throw exception for this case is on.</exception>
     private bool CheckEnd()
     {

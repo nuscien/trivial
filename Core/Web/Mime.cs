@@ -389,6 +389,7 @@ public static partial class WebFormat
             "sh" => "application/x-sh",
             "htc" => "text/x-component",
             "manifest" => "application/x-ms-manifest",
+            "slnx" => XmlMIME,
 
             // Compress
             "zip" => "application/zip",
@@ -418,7 +419,7 @@ public static partial class WebFormat
             "jar" => "application/java-archive",
             "dll" or "exe" => "application/vnd.microsoft.portable-executable",
             "pdb" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
-            "app" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" => StreamMIME,
+            "app" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" or "mix" => StreamMIME,
             "obj" => "model/obj",
             "appx" => "application/appx",
             "appxbundle" => "application/appxbundle",

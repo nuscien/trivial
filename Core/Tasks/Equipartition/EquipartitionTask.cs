@@ -168,7 +168,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// Tests if it contains such fragment identifier.
     /// </summary>
     /// <param name="fragmentId">The task fragment identifier.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool ContainsId(string fragmentId) => fragments.FirstOrDefault(ele => ele.Id == fragmentId) != null;
 
     /// <summary>
@@ -183,7 +183,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// </summary>
     /// <param name="fragmentId">The task fragment identifier.</param>
     /// <param name="value">The fragment instance.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool TryGetByFragmentId(string fragmentId, out Fragment value)
     {
         value = TryGetByFragmentId(fragmentId);
@@ -285,7 +285,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="id">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <param name="tag">The new tag.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public bool UpdateFragment(string id, FragmentStates? state, string tag) => UpdateFragment(id, state, f =>
     {
         f.Tag = tag;
@@ -296,7 +296,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// </summary>
     /// <param name="id">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public bool UpdateFragment(string id, FragmentStates state)
         => UpdateFragment(id, state, null as Action<Fragment>);
 
@@ -306,7 +306,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="fragment">The task fragment instance.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <param name="tag">The new tag.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public bool UpdateFragment(Fragment fragment, FragmentStates? state, string tag) => UpdateFragment(fragment?.Id, state, f =>
     {
         f.Tag = tag;
@@ -321,7 +321,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// </summary>
     /// <param name="fragment">The task fragment instance.</param>
     /// <param name="state">The new state; or null if no change.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     public bool UpdateFragment(Fragment fragment, FragmentStates state) => UpdateFragment(fragment?.Id, state, f =>
     {
         if (fragment == f) return;
@@ -471,7 +471,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="id">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <param name="callback">The success callback.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     private bool UpdateFragment(string id, FragmentStates? state, Action<Fragment> callback)
     {
         if (string.IsNullOrWhiteSpace(id)) return false;

@@ -138,7 +138,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The instance to compare.</param>
-    /// <returns>true if they are equal; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are equal; otherwise, <c>false</c>.</returns>
     public bool Equals(HttpUri other)
     {
         return other != null && other.ToString() == ToString();
@@ -148,7 +148,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The instance to compare.</param>
-    /// <returns>true if they are equal; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are equal; otherwise, <c>false</c>.</returns>
     public bool Equals(AppDeepLinkUri other)
         => other != null && other.ToString() == ToString();
 
@@ -156,7 +156,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The instance to compare.</param>
-    /// <returns>true if they are equal; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are equal; otherwise, <c>false</c>.</returns>
     public bool Equals(Uri other)
         => other != null && other.ToString() == ToString();
 
@@ -164,7 +164,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The instance to compare.</param>
-    /// <returns>true if they are equal; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are equal; otherwise, <c>false</c>.</returns>
     public bool Equals(string other)
         => other != null && other == ToString();
 
@@ -172,7 +172,7 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// Determines whether the specified object is equal to the current object.
     /// </summary>
     /// <param name="other">The instance to compare.</param>
-    /// <returns>true if they are equal; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are equal; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return false;

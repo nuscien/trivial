@@ -232,7 +232,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// </summary>
     /// <param name="index">The zero-based starting index of the range to reverse.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool TryGet(int index, out T result)
     {
         if (index >= 0)

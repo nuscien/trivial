@@ -628,7 +628,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryToEnum<T>(out T result) where T : struct, Enum
     {
         if (Value != null && Enum.TryParse(Value, out result))
@@ -644,7 +644,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <typeparam name="T">The enum type to parse.</typeparam>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public bool TryToEnum<T>(bool ignoreCase, out T result) where T : struct, Enum
     {
         if (Value != null && Enum.TryParse(Value, ignoreCase, out result))
@@ -705,7 +705,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (ReferenceEquals(this, other)) return true;
@@ -735,7 +735,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(IJsonValueNode other, StringComparison comparisonType)
     {
         if (ReferenceEquals(this, other)) return true;
@@ -765,7 +765,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(string other, StringComparison comparisonType)
     {
         if (Value is null) return other is null;
@@ -776,7 +776,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(StringBuilder other)
     {
         if (Value is null) return other is null;
@@ -788,7 +788,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(StringBuilder other, StringComparison comparisonType)
     {
         if (Value is null) return other is null;
@@ -799,7 +799,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(ReadOnlySpan<char> other)
     {
         if (Value is null) return false;
@@ -810,7 +810,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(char other)
     {
         if (Value is null || Value.Length != 1) return false;
@@ -821,7 +821,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
         => base.Equals(other);
 
@@ -919,7 +919,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
         switch (ValueType)
@@ -950,7 +950,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(out DateTime result)
     {
         var date = TryGetDateTimeOrNull();
@@ -1003,7 +1003,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out decimal result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1038,7 +1038,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out float result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1073,7 +1073,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out double result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1111,7 +1111,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out short result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1139,7 +1139,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out uint result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1167,7 +1167,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out int result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1195,7 +1195,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="route">The case handler route.</param>
     /// <param name="fallback">The default case handler.</param>
-    /// <returns>true if matches one (not include the fallback); otherwise, false.</returns>
+    /// <returns><c>true</c> if matches one (not include the fallback); otherwise, <c>false</c>.</returns>
     public bool Switch(IDictionary<string, Action<string>> route, Action<string> fallback = null)
     {
         if (route is null || !route.TryGetValue(Value, out var h))
@@ -1214,7 +1214,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="route">The case handler route.</param>
     /// <param name="arg">The additional argument of handler.</param>
     /// <param name="fallback">The default case handler.</param>
-    /// <returns>true if matches one (not include the fallback); otherwise, false.</returns>
+    /// <returns><c>true</c> if matches one (not include the fallback); otherwise, <c>false</c>.</returns>
     public bool Switch<TArg>(IDictionary<string, Action<string, TArg>> route, TArg arg, Action<string, TArg> fallback = null)
     {
         if (route is null || !route.TryGetValue(Value, out var h))
@@ -1278,7 +1278,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out long result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1306,7 +1306,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out ulong result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -1320,7 +1320,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out string result)
     {
         result = Value;
@@ -1331,7 +1331,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Tries to get the value of the element as a GUID.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(out Guid result)
         => ((IJsonValueNode)this).TryConvert(out result);
 
@@ -1339,7 +1339,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Tries to get the value of the element as a URI.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(out Uri result)
         => TryConvert(UriKind.RelativeOrAbsolute, out result);
 
@@ -1348,7 +1348,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="kind">The type of the URI.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(UriKind kind, out Uri result)
     {
         if (string.IsNullOrEmpty(Value))
@@ -1364,7 +1364,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override BaseJsonValueNode TryGetValueOrNull(string key)
     {
         if (key == null) return null;
@@ -1415,7 +1415,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The value of property.</param>
-    /// <returns>true if get succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, false..</returns>
     public bool TryGetValue(string key, out BaseJsonValueNode result)
     {
         result = TryGetValueOrNull(key);
@@ -1426,7 +1426,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override BaseJsonValueNode TryGetValueOrNull(int index)
     {
         if (index < 0) return null;
@@ -1482,7 +1482,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The value of property.</param>
-    /// <returns>true if get succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, false..</returns>
     public bool TryGetValue(int index, out BaseJsonValueNode result)
     {
         result = TryGetValueOrNull(index);
@@ -1494,7 +1494,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public BaseJsonValueNode TryGetValue(Index index)
     {
         if (!string.IsNullOrWhiteSpace(Value) && Value.StartsWith("[") && Value.EndsWith("]"))
@@ -1543,7 +1543,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The value of property.</param>
-    /// <returns>true if get succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, false..</returns>
     public bool TryGetValue(Index index, out BaseJsonValueNode result)
     {
         result = TryGetValue(index);
@@ -1683,7 +1683,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether the specified string is null or an empty string ("").
     /// </summary>
     /// <param name="value">A string JSON value to test</param>
-    /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
+    /// <returns><c>true</c> if the source value is null or an empty string (""); otherwise, <c>false</c>.</returns>
     public static bool IsNullOrEmpty(IJsonValueNode<string> value)
         => string.IsNullOrEmpty(value?.Value);
 
@@ -1691,7 +1691,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
     /// </summary>
     /// <param name="value">A string JSON value to test</param>
-    /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
+    /// <returns><c>true</c> if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, <c>false</c>.</returns>
     public static bool IsNullOrWhiteSpace(IJsonValueNode<string> value)
         => string.IsNullOrWhiteSpace(value?.Value);
 
@@ -1738,7 +1738,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonStringNode leftValue, IJsonValueNode<string> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1752,7 +1752,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonStringNode leftValue, IJsonValueNode<string> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -1766,7 +1766,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonStringNode leftValue, string rightValue)
         => leftValue is not null && leftValue.Value == rightValue;
 
@@ -1776,7 +1776,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonStringNode leftValue, string rightValue)
         => leftValue is null || leftValue.Value != rightValue;
 

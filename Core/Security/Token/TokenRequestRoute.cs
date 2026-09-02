@@ -188,7 +188,7 @@ public class TokenRequestRoute<T>
     /// Removes a handler.
     /// </summary>
     /// <param name="method">The name of the method to be invoked.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, <c>false</c>.</returns>
     public bool Remove(string method)
         => method != null && handlers.Remove(method);
 

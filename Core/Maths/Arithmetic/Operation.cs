@@ -72,7 +72,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(short leftValue, BasicCompareOperator op, short rightValue)
         => op switch
@@ -92,7 +92,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(int leftValue, BasicCompareOperator op, int rightValue)
         => op switch
@@ -112,7 +112,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(long leftValue, BasicCompareOperator op, long rightValue)
         => op switch
@@ -132,7 +132,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(float leftValue, BasicCompareOperator op, float rightValue)
         => op switch
@@ -152,7 +152,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(double leftValue, BasicCompareOperator op, double rightValue)
         => op switch
@@ -172,7 +172,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(decimal leftValue, BasicCompareOperator op, decimal rightValue)
         => op switch
@@ -192,7 +192,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(DateTime leftValue, BasicCompareOperator op, DateTime rightValue)
         => op switch
@@ -212,7 +212,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(TimeSpan leftValue, BasicCompareOperator op, TimeSpan rightValue)
         => op switch
@@ -232,7 +232,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(Angle leftValue, BasicCompareOperator op, IAngle rightValue)
         => op switch
@@ -252,7 +252,7 @@ public static partial class Arithmetic
     /// <param name="leftValue">The left value.</param>
     /// <param name="op">The operation.</param>
     /// <param name="rightValue">The right value.</param>
-    /// <returns>true if the condition is tenable; otherwise, false.</returns>
+    /// <returns><c>true</c> if the condition is tenable; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool Compare(Angle.Model leftValue, BasicCompareOperator op, IAngle rightValue)
         => op switch

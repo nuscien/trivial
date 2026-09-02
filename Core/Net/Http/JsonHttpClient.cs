@@ -652,7 +652,7 @@ public class JsonHttpClient<T>
     /// Gets the exception need throw.
     /// </summary>
     /// <param name="exception">The exception thrown to test.</param>
-    /// <returns>true if need retry; otherwise, false.</returns>
+    /// <returns><c>true</c> if need retry; otherwise, <c>false</c>.</returns>
     protected virtual Exception GetException(Exception exception)
         => exception;
 
@@ -677,7 +677,7 @@ public class JsonHttpClient<T>
     /// Tests if need retry for the exception catched.
     /// </summary>
     /// <param name="exception">The exception thrown to test.</param>
-    /// <returns>true if need retry; otherwise, false.</returns>
+    /// <returns><c>true</c> if need retry; otherwise, <c>false</c>.</returns>
     private Exception GetExceptionInternal(Exception exception)
         => GetExceptionHandler?.Invoke(exception) ?? GetException(exception);
 

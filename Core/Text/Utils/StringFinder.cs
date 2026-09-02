@@ -265,7 +265,7 @@ public class StringFinder
     /// <param name="q">The search string.</param>
     /// <param name="skip">true if skip the search string then; otherwise, false.</param>
     /// <param name="value">The sub-string.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     public bool BeforeIfContains(string q, bool skip, out string value)
     {
         if (string.IsNullOrEmpty(q))
@@ -297,7 +297,7 @@ public class StringFinder
     /// <param name="rule">The matching rule.</param>
     /// <param name="skip">true if skip the search string then; otherwise, false.</param>
     /// <param name="value">The sub-string.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">rule is not supported.</exception>
     public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule, bool skip, out string value)
     {
@@ -343,7 +343,7 @@ public class StringFinder
     /// </summary>
     /// <param name="q">The search string.</param>
     /// <param name="value">The sub-string.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     public bool BeforeIfContains(string q, out string value)
         => BeforeIfContains(q, false, out value);
 
@@ -353,7 +353,7 @@ public class StringFinder
     /// <param name="q">The search string.</param>
     /// <param name="rule">The matching rule.</param>
     /// <param name="value">The sub-string.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">rule is not supported.</exception>
     public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule, out string value)
         => BeforeIfContains(q, rule, false, out value);
@@ -363,7 +363,7 @@ public class StringFinder
     /// </summary>
     /// <param name="q">The search string.</param>
     /// <param name="skip">true if skip the search string then; otherwise, false.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     public bool BeforeIfContains(string q, bool skip = false)
         => BeforeIfContains(q, skip, out _);
 
@@ -373,7 +373,7 @@ public class StringFinder
     /// <param name="q">The search string collection.</param>
     /// <param name="rule">The matching rule.</param>
     /// <param name="skip">true if skip the search string then; otherwise, false.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     /// <exception cref="NotSupportedException">rule is not supported.</exception>
     public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule = StringsMatchingRules.Sequence, bool skip = false)
         => BeforeIfContains(q, rule, skip, out _);
@@ -444,7 +444,7 @@ public class StringFinder
     /// </summary>
     /// <param name="q">The search string.</param>
     /// <param name="value">The sub-string.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     public bool UntilIfContains(string q, out string value)
     {
         var s = Rest;
@@ -466,7 +466,7 @@ public class StringFinder
     /// Moves offsets until a specific search string appeared. The search string is in the rest string.
     /// </summary>
     /// <param name="q">The search string.</param>
-    /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
+    /// <returns><c>true</c> if the rest string contains the search string; otherwise, <c>false</c>.</returns>
     public bool UntilIfContains(string q)
         => UntilIfContains(q, out _);
 
@@ -483,7 +483,7 @@ public class StringFinder
     /// Tests a value indicating whether a specific string occurs within the rest string.
     /// </summary>
     /// <param name="q">The search string.</param>
-    /// <returns>true if contains the search string in the rest string; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains the search string in the rest string; otherwise, <c>false</c>.</returns>
     public bool Contains(string q)
         => Rest.Contains(q);
 
@@ -491,7 +491,7 @@ public class StringFinder
     /// Tests a value indicating whether a specific string occurs within the rest string.
     /// </summary>
     /// <param name="q">The search string.</param>
-    /// <returns>true if contains the search string in the rest string; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains the search string in the rest string; otherwise, <c>false</c>.</returns>
     public bool Contains(char q)
         => Rest.Contains(q);
 
@@ -528,7 +528,7 @@ public class StringFinder
     /// Determines whether the beginning of this string instance matches the specified string.
     /// </summary>
     /// <param name="q">The string to compare.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public bool StartsWith(string q)
         => Rest.StartsWith(q);
@@ -537,7 +537,7 @@ public class StringFinder
     /// Determines whether the beginning of this string instance matches the specified character.
     /// </summary>
     /// <param name="q">The character to compare.</param>
-    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <returns><c>true</c> if value matches the beginning of this string; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentNullException">value is null.</exception>
     public bool StartsWith(char q)
         => Rest.StartsWith(q);

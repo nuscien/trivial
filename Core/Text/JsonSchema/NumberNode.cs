@@ -156,7 +156,7 @@ public class JsonNumberSchemaDescription : JsonNodeSchemaDescription
     /// Tests if a value is in the scope.
     /// </summary>
     /// <param name="number">The number to test.</param>
-    /// <returns>true if test succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if test succeeded; otherwise, <c>false</c>.</returns>
     public bool Test(double number)
     {
         if (double.IsNaN(number)) return false;

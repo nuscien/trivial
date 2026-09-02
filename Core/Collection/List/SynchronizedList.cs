@@ -380,7 +380,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// </summary>
     /// <param name="index">The zero-based starting index of the range to reverse.</param>
     /// <param name="result">The result output.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool TryGet(int index, out T result)
     {
         if (index >= 0)
@@ -871,7 +871,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// </summary>
     /// <param name="oldItem">The old item to remove.</param>
     /// <param name="newItem">The new item to update.</param>
-    /// <returns>true if replace succeeded; otherwise, false, e.g. the old item does not exist.</returns>
+    /// <returns><c>true</c> if replace succeeded; otherwise, false, e.g. the old item does not exist.</returns>
     public bool ReplaceFirst(T oldItem, T newItem)
     {
         if (ReferenceEquals(oldItem, newItem)) return true;

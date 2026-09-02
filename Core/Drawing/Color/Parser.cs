@@ -27,7 +27,7 @@ public static partial class ColorCalculator
     /// </summary>
     /// <param name="s">The input string to parse.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if parse succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryParse(string s, out Color result)
     {
         s = s?.Trim();

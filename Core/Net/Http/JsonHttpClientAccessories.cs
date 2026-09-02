@@ -44,7 +44,7 @@ public interface IJsonHttpClientCache<T>
     /// <param name="uri">The request URI.</param>
     /// <param name="authorization">The authentication header value.</param>
     /// <param name="cache">The Collection.</param>
-    /// <returns>true if contains Collection; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains Collection; otherwise, <c>false</c>.</returns>
     public bool TryGet(Uri uri, AuthenticationHeaderValue authorization, out T cache);
 
     /// <summary>
@@ -273,7 +273,7 @@ public class JsonHttpClientCache<T> : IJsonHttpClientCache<T>
     /// <param name="uri">The request URI.</param>
     /// <param name="authorization">The authentication header value.</param>
     /// <param name="cache">The Collection.</param>
-    /// <returns>true if contains Collection; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains Collection; otherwise, <c>false</c>.</returns>
     public bool TryGet(Uri uri, AuthenticationHeaderValue authorization, out T cache)
     {
         if (string.IsNullOrWhiteSpace(uri?.OriginalString))
@@ -321,7 +321,7 @@ public class JsonHttpClientCache<T> : IJsonHttpClientCache<T>
     /// <param name="uri">The request URI.</param>
     /// <param name="authorization">The authentication header value.</param>
     /// <param name="headers">The response headers.</param>
-    /// <returns>true if Collection; otherwise, false.</returns>
+    /// <returns><c>true</c> if Collection; otherwise, <c>false</c>.</returns>
     protected virtual bool NeedCache(Uri uri, AuthenticationHeaderValue authorization, HttpResponseHeaders headers)
         => true;
 

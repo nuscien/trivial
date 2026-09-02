@@ -82,7 +82,7 @@ public static class FileSystemInfoUtility
     /// <param name="source">The source directory.</param>
     /// <param name="destPath">The destinate directory path.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>true if copy succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if copy succeeded; otherwise, <c>false</c>.</returns>
     private static bool TryCopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken)
     {
         try
@@ -134,7 +134,7 @@ public static class FileSystemInfoUtility
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="destPath">The destinate directory path.</param>
-    /// <returns>true if copy succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if copy succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryCopyTo(this DirectoryInfo source, string destPath)
         => TryCopyTo(source, destPath, CancellationToken.None);
 
@@ -144,7 +144,7 @@ public static class FileSystemInfoUtility
     /// <param name="source">The source directory.</param>
     /// <param name="destPath">The destinate directory path.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
-    /// <returns>true if copy succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if copy succeeded; otherwise, <c>false</c>.</returns>
     public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
         => Task.Run(() =>
         {
@@ -157,7 +157,7 @@ public static class FileSystemInfoUtility
     /// <param name="path">The path of file to write.</param>
     /// <param name="content">The content to write.</param>
     /// <param name="encoding">The encoding to use.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryWriteAllTextAsync(string path, string content, Encoding encoding = null)
     {
         try
@@ -202,7 +202,7 @@ public static class FileSystemInfoUtility
     /// <param name="content">The content to write.</param>
     /// <param name="encoding">The encoding to use.</param>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
-    /// <returns>true if write succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if write succeeded; otherwise, <c>false</c>.</returns>
     public static async Task<bool> TryWriteAllTextAsync(string path, string content, Encoding encoding = null, CancellationToken cancellationToken = default)
     {
         try

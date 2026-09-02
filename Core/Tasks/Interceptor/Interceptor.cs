@@ -89,7 +89,7 @@ public class Interceptor : BaseInterceptor<object>
     /// <summary>
     /// Invokes. But executes only when matches the policy.
     /// </summary>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public Task<bool> InvokeAsync()
         => InvokeAsync(null);
 

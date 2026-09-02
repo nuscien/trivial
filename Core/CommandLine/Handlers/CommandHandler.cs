@@ -33,7 +33,7 @@ public interface ICommandHandler
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     Task ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -93,7 +93,7 @@ public abstract class BaseCommandHandler : ICommandHandler
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
         if (IsDisabled) return;
@@ -173,7 +173,7 @@ public abstract class AsyncCommandHandler : ICommandHandler
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
         if (IsDisabled) return;
@@ -222,7 +222,7 @@ public abstract class BaseCommandVerb
     /// <summary>
     /// Tests if the arguments are valid.
     /// </summary>
-    /// <returns>true if it is valid; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is valid; otherwise, <c>false</c>.</returns>
     protected virtual bool IsValid() => true;
 
     /// <summary>
@@ -243,7 +243,7 @@ public abstract class BaseCommandVerb
     /// Tests if the exception on processing need be thrown.
     /// </summary>
     /// <param name="ex">The exception.</param>
-    /// <returns>true if need; otherwise, false.</returns>
+    /// <returns><c>true</c> if need; otherwise, <c>false</c>.</returns>
     protected virtual bool NeedThrowException(Exception ex)
         => true;
 
@@ -289,7 +289,7 @@ public abstract class BaseCommandVerb
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     internal async Task ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default)
     {
         Arguments = args;
@@ -399,7 +399,7 @@ public class CommandVerbHandler<T> : ICommandHandler
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
     /// <param name="cancellationToken">An optional cancellation token.</param>
-    /// <returns>true if process succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
         var instance = factory();

@@ -68,7 +68,7 @@ public abstract class BaseJsonSwitchThen<TNode, TArgs, TResult> where TNode : IJ
     /// Tries to get the result.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>True if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGet(out TResult result)
     {
         result = Result;
@@ -247,7 +247,7 @@ public class JsonSwitchThen<TNode, TArgs, TResult, TInfo> : BaseJsonSwitchThen<T
     /// </summary>
     /// <param name="result">The result.</param>
     /// <param name="info">The additional info to return.</param>
-    /// <returns>True if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public bool TryGet(out TResult result, out TInfo info)
     {
         result = Result;

@@ -85,7 +85,7 @@ public sealed partial class StyleConsole
     /// Tests if the given console text is in the output Collection..
     /// </summary>
     /// <param name="item">The item to test.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool OutputCacheContains(ConsoleText item)
     {
         var has = false;

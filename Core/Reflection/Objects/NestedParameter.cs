@@ -26,7 +26,7 @@ public abstract class BaseNestedParameter(object parameter)
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="value">The value converted.</param>
-    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the type is the specific one; otherwise, <c>false</c>.</returns>
     public bool ParameterIs<T>(out T value)
         => ParameterIs(10, out value);
 
@@ -36,7 +36,7 @@ public abstract class BaseNestedParameter(object parameter)
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="maxRecurrence">The maximum recurrence count.</param>
     /// <param name="value">The value converted.</param>
-    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the type is the specific one; otherwise, <c>false</c>.</returns>
     public bool ParameterIs<T>(int maxRecurrence, out T value)
     {
         if (ObjectConvert.TryGetForSimple(Parameter, out value)) return true;
@@ -116,7 +116,7 @@ public class TypedNestedParameter
     /// Removes the specific type.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
-    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
     public bool Remove<T>()
         => store.Remove(typeof(T));
 
@@ -124,7 +124,7 @@ public class TypedNestedParameter
     /// Removes the specific type.
     /// </summary>
     /// <param name="type">The type of value.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the registry.</returns>
     public bool Remove(Type type)
         => type != null && store.Remove(type);
 
@@ -149,7 +149,7 @@ public class TypedNestedParameter
     /// Tests whether the value of a specific type is registered.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool Contains<T>()
         => store.ContainsKey(typeof(T));
 
@@ -157,7 +157,7 @@ public class TypedNestedParameter
     /// Tests whether the value of a specific type is registered.
     /// </summary>
     /// <param name="type">The type of value.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool Contains(Type type)
         => type != null && store.ContainsKey(type);
 
@@ -238,7 +238,7 @@ public class TypedNestedParameter
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="value">The value resolved.</param>
-    /// <returns>true if has; otherwise, false.</returns>
+    /// <returns><c>true</c> if has; otherwise, <c>false</c>.</returns>
     public bool TryGet<T>(out T value)
     {
         if (store.TryGetValue(typeof(T), out var v))
@@ -277,7 +277,7 @@ public class ObjectParameter
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="value">The value converted.</param>
-    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the type is the specific one; otherwise, <c>false</c>.</returns>
     public bool Is<T>(out T value)
         => Is(10, out value);
 
@@ -287,7 +287,7 @@ public class ObjectParameter
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="maxRecurrence">The maximum recurrence count.</param>
     /// <param name="value">The value converted.</param>
-    /// <returns>true if the type is the specific one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the type is the specific one; otherwise, <c>false</c>.</returns>
     public bool Is<T>(int maxRecurrence, out T value)
     {
         if (ObjectConvert.TryGetForSimple(Value, out value)) return true;

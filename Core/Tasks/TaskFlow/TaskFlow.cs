@@ -152,7 +152,7 @@ public class TaskFlow<T>
     /// Waits the result.
     /// </summary>
     /// <param name="ignoreException">true if do not throw exception even if the task is failed; otherwise, false.</param>
-    /// <returns>true if the task is completed successfully; otherwise, false.</returns>
+    /// <returns><c>true</c> if the task is completed successfully; otherwise, <c>false</c>.</returns>
     public async Task<bool> WaitAsync(bool ignoreException = false)
     {
         await t;
@@ -172,7 +172,7 @@ public class TaskFlow<T>
     /// Appends a subsequent handler on success.
     /// </summary>
     /// <param name="handler">The handler to register.</param>
-    /// <returns>true if the state matches the condition; otherwise, false.</returns>
+    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
     public async Task<bool> ResultToAsync(Action<T> handler)
     {
         await t;
@@ -185,7 +185,7 @@ public class TaskFlow<T>
     /// Appends a subsequent handler on success.
     /// </summary>
     /// <param name="handler">The handler to register.</param>
-    /// <returns>true if the state matches the condition; otherwise, false.</returns>
+    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
     public async Task<bool> ResultToAsync(Func<T, Task> handler)
     {
         await t;
@@ -200,7 +200,7 @@ public class TaskFlow<T>
     /// <typeparam name="TException">The type of the exception.</typeparam>
     /// <param name="errorHandling">The error handling to register.</param>
     /// <param name="exactType">true if the exception type is the one expected exactly; otherwise, false.</param>
-    /// <returns>true if the state matches the condition; otherwise, false.</returns>
+    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
     public async Task<bool> CatchAsync<TException>(Action<TException> errorHandling, bool exactType = false) where TException : Exception
     {
         await t;
@@ -216,7 +216,7 @@ public class TaskFlow<T>
     /// <typeparam name="TException">The type of the exception.</typeparam>
     /// <param name="errorHandling">The error handling to register.</param>
     /// <param name="exactType">true if the exception type is the one expected exactly; otherwise, false.</param>
-    /// <returns>true if the state matches the condition; otherwise, false.</returns>
+    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
     public async Task<bool> CatchAsync<TException>(Func<TException, Task> errorHandling, bool exactType = false) where TException : Exception
     {
         await t;

@@ -160,7 +160,7 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="input">The input value.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, always true.</returns>
+    /// <returns><c>true</c>, always true.</returns>
     public static bool InOut<T>(T input, out T output)
     {
         output = input;
@@ -188,7 +188,7 @@ public static class ObjectConvert
     /// <typeparam name="TOutput">The type of output value.</typeparam>
     /// <param name="input">The input value.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, always true.</returns>
+    /// <returns><c>true</c>, always true.</returns>
     public static bool InOut<TInput, TOutput>(TInput input, out TOutput output)
     {
         output = (TOutput)(object)input;
@@ -204,7 +204,7 @@ public static class ObjectConvert
     /// <param name="test">The type to test if it is the one expected.</param>
     /// <param name="input">The input value.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, always true.</returns>
+    /// <returns><c>true</c>, always true.</returns>
     public static bool InOut<TInput, TOutput>(Type test, TInput input, out TOutput output)
     {
         if (test == typeof(TInput))
@@ -226,7 +226,7 @@ public static class ObjectConvert
     /// <param name="test">The type to test if it is the one expected.</param>
     /// <param name="input">The input value.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, always true.</returns>
+    /// <returns><c>true</c>, always true.</returns>
     public static bool InOut<TInput, TOutput>(Type test, object input, out TOutput output)
     {
         if (test == typeof(TInput))
@@ -247,7 +247,7 @@ public static class ObjectConvert
     /// <param name="result">The result.</param>
     /// <param name="input">The input value.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, if result is true; otherwise, false.</returns>
+    /// <returns><c>true</c>, if result is true; otherwise, <c>false</c>.</returns>
     public static bool InOut<T>(bool result, T input, out T output)
     {
         output = result ? input : default;
@@ -263,7 +263,7 @@ public static class ObjectConvert
     /// <param name="result">The result.</param>
     /// <param name="input">The input value.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, if result is true; otherwise, false.</returns>
+    /// <returns><c>true</c>, if result is true; otherwise, <c>false</c>.</returns>
     public static bool InOut<TInput, TOutput>(bool result, TInput input, out TOutput output)
     {
         output = result ? (TOutput)(object)input : default;
@@ -280,7 +280,7 @@ public static class ObjectConvert
     /// <param name="input">The input value.</param>
     /// <param name="defaultValue">The value used for failure.</param>
     /// <param name="output">The output value.</param>
-    /// <returns>true, if result is true; otherwise, false.</returns>
+    /// <returns><c>true</c>, if result is true; otherwise, <c>false</c>.</returns>
     public static bool InOut<TInput, TOutput>(bool result, TInput input, TOutput defaultValue, out TOutput output)
     {
         output = result ? (TOutput)(object)input : defaultValue;
@@ -376,7 +376,7 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of the boxed type instance to return.</typeparam>
     /// <param name="value">The boxed to convert.</param>
     /// <param name="output">The result output.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryInvokeForStruct<T>(object value, out T output) where T : struct
     {
         if (value == null && IsNullableValueType(typeof(T)))
@@ -402,7 +402,7 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of the boxed type instance to return.</typeparam>
     /// <param name="value">The boxed to convert.</param>
     /// <param name="output">The result output.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryInvokeForClass<T>(object value, out T output) where T : class
     {
         try
@@ -679,7 +679,7 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of instance.</typeparam>
     /// <param name="resolver">The singleton resolver.</param>
     /// <param name="result">An instance resolved.</param>
-    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if resolve succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryResolve<T>(this ISingletonResolver resolver, out T result)
     {
         if (resolver != null) return resolver.TryResolve(null, out result);
@@ -692,7 +692,7 @@ public static class ObjectConvert
     /// </summary>
     /// <param name="type">The type to test.</param>
     /// <param name="genericType">The generic type.</param>
-    /// <returns>true if the type is from a generic enumerable interface.</returns>
+    /// <returns><c>true</c> if the type is from a generic enumerable interface.</returns>
     public static bool IsGenericEnumerable(Type type, out Type genericType)
     {
         try
@@ -724,7 +724,7 @@ public static class ObjectConvert
     /// Tests if the given type is from a generic enumerable interface.
     /// </summary>
     /// <param name="type">The type to test.</param>
-    /// <returns>true if the type is from a generic enumerable interface.</returns>
+    /// <returns><c>true</c> if the type is from a generic enumerable interface.</returns>
     public static bool IsGenericEnumerable(Type type)
         => IsGenericEnumerable(type, out _);
 
@@ -732,7 +732,7 @@ public static class ObjectConvert
     /// Tests if the given type is a nullable boxed type.
     /// </summary>
     /// <param name="type">The type to test.</param>
-    /// <returns>true if the type is a nullable boxed type.</returns>
+    /// <returns><c>true</c> if the type is a nullable boxed type.</returns>
     public static bool IsNullableValueType(Type type)
         => type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
@@ -741,7 +741,7 @@ public static class ObjectConvert
     /// </summary>
     /// <param name="type">The type to test.</param>
     /// <param name="value">The type of the boxed type.</param>
-    /// <returns>true if the type is a nullable boxed type.</returns>
+    /// <returns><c>true</c> if the type is a nullable boxed type.</returns>
     public static bool IsNullableValueType(Type type, out Type value)
     {
         if (!IsNullableValueType(type))
@@ -768,7 +768,7 @@ public static class ObjectConvert
     /// </summary>
     /// <typeparam name="T">The type to create.</typeparam>
     /// <param name="result">The instance result.</param>
-    /// <returns>true if create succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if create succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryCreateInstance<T>(out T result)
     {
         try
@@ -808,7 +808,7 @@ public static class ObjectConvert
     /// <typeparam name="T">The type to create.</typeparam>
     /// <param name="baseType">The base type.</param>
     /// <param name="result">The instance result.</param>
-    /// <returns>true if create succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if create succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryCreateInstance<T>(Type baseType, out T result)
     {
         try
@@ -852,7 +852,7 @@ public static class ObjectConvert
     /// <param name="obj">The target object.</param>
     /// <param name="propertyName">The property name.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetProperty<T>(object obj, string propertyName, out T result)
     {
         try
@@ -906,7 +906,7 @@ public static class ObjectConvert
     /// <param name="obj">The target object.</param>
     /// <param name="prop">The property info.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if get succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if get succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryGetProperty<T>(object obj, PropertyInfo prop, out T result)
     {
         try
@@ -969,7 +969,7 @@ public static class ObjectConvert
     /// <typeparam name="T">The type of value.</typeparam>
     /// <param name="obj">The object to resolve typed instance.</param>
     /// <param name="value">The value resolved.</param>
-    /// <returns>true if has; otherwise, false.</returns>
+    /// <returns><c>true</c> if has; otherwise, <c>false</c>.</returns>
     public static bool TryGet<T>(object obj, out T value)
     {
         if (TryGetForSimple(obj, out value)) return true;
@@ -1141,7 +1141,7 @@ public static class ObjectConvert
     /// </summary>
     /// <param name="hex">The input hex string.</param>
     /// <param name="bytes">A byte collection output.</param>
-    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if convert succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryFromHexString(string hex, out byte[] bytes)
     {
         if (hex == null)

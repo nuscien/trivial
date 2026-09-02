@@ -169,7 +169,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tests if the number value is macthed by the specific condition.
     /// </summary>
     /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(Int64Condition condition)
         => condition == null || condition.IsMatched(Value);
 
@@ -177,7 +177,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tests if the number value is macthed by the specific condition.
     /// </summary>
     /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(Int32Condition condition)
         => condition == null || condition.IsMatched(Value);
 
@@ -218,7 +218,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode<long> other)
     {
         if (other is null) return false;
@@ -229,7 +229,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(IJsonNumberNode other)
     {
         if (other is null || !other.IsInteger) return false;
@@ -241,7 +241,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (ReferenceEquals(this, other)) return true;
@@ -270,7 +270,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(double other)
         => Value.Equals(other);
 
@@ -278,7 +278,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(float other)
         => Value.Equals(other);
 
@@ -286,7 +286,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(long other)
         => Value.Equals(other);
 
@@ -294,7 +294,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(uint other)
         => Value.Equals(other);
 
@@ -302,7 +302,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(int other)
         => Value.Equals(other);
 
@@ -448,7 +448,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
     /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for destination.</param>
     /// <param name="provider">An optional object that supplies culture-specific formatting information for destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<char> destination, out int charsWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
         => Value.TryFormat(destination, out charsWritten, format, provider);
 
@@ -459,7 +459,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// <param name="bytesWritten">When this method returns, contains the number of bytes that were written in utf8Destination.</param>
     /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for utf8Destination.</param>
     /// <param name="provider">An optional object that supplies culture-specific formatting information for utf8Destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
         => Value.TryFormat(utf8Destination, out bytesWritten, format, provider);
 #endif
@@ -469,7 +469,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -496,7 +496,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(out DateTime result)
     {
         result = WebFormat.ParseDate(Value);
@@ -508,7 +508,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out decimal result)
     {
         try
@@ -532,7 +532,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out float result)
     {
         try
@@ -556,7 +556,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out double result)
     {
         try
@@ -594,7 +594,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(out ushort result)
     {
         try
@@ -632,7 +632,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(out short result)
         => TryConvert(false, out result);
 
@@ -641,7 +641,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out short result)
     {
         try
@@ -679,7 +679,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(out uint result)
         => TryConvert(false, out result);
 
@@ -688,7 +688,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out uint result)
     {
         if (Value < 0)
@@ -732,7 +732,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryConvert(out int result)
         => TryConvert(false, out result);
 
@@ -741,7 +741,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out int result)
     {
         try
@@ -765,7 +765,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out long result)
     {
         result = Value;
@@ -777,7 +777,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out ulong result)
     {
         if (Value < 0)
@@ -799,7 +799,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out string result)
     {
         result = ToString();
@@ -874,7 +874,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="s">The input string.</param>
     /// <param name="result">The JSON value node parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, false..</returns>
     public static bool TryParse(string s, out JsonIntegerNode result)
     {
         if (Numbers.TryParseToInt64(s, 10, out var i))
@@ -903,7 +903,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// <param name="s">The input string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
     /// <param name="result">The JSON value node parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, false..</returns>
     static bool IParsable<JsonIntegerNode>.TryParse([NotNullWhen(true)] string s, IFormatProvider provider, [MaybeNullWhen(false)] out JsonIntegerNode result)
         => TryParse(s, out result);
 #endif
@@ -1024,7 +1024,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -1037,7 +1037,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -1050,7 +1050,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1063,7 +1063,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1076,7 +1076,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -1089,7 +1089,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -1102,7 +1102,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1115,7 +1115,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1129,7 +1129,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonIntegerNode leftValue, long rightValue)
         => leftValue.Value == rightValue;
 
@@ -1139,7 +1139,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonIntegerNode leftValue, long rightValue)
         => leftValue.Value != rightValue;
 
@@ -1148,7 +1148,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, long rightValue)
         => leftValue.Value < rightValue;
 
@@ -1157,7 +1157,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, long rightValue)
         => leftValue.Value > rightValue;
 
@@ -1166,7 +1166,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, long rightValue)
         => leftValue.Value <= rightValue;
 
@@ -1175,7 +1175,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, long rightValue)
         => leftValue.Value >= rightValue;
 
@@ -1185,7 +1185,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonIntegerNode leftValue, int rightValue)
         => leftValue.Value == rightValue;
 
@@ -1195,7 +1195,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonIntegerNode leftValue, int rightValue)
         => leftValue.Value != rightValue;
 
@@ -1204,7 +1204,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, int rightValue)
         => leftValue.Value < rightValue;
 
@@ -1213,7 +1213,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, int rightValue)
         => leftValue.Value > rightValue;
 
@@ -1222,7 +1222,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, int rightValue)
         => leftValue.Value <= rightValue;
 
@@ -1231,7 +1231,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, int rightValue)
         => leftValue.Value >= rightValue;
 
@@ -1241,7 +1241,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonIntegerNode leftValue, uint rightValue)
         => leftValue.Value == rightValue;
 
@@ -1251,7 +1251,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonIntegerNode leftValue, uint rightValue)
         => leftValue.Value != rightValue;
 
@@ -1260,7 +1260,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, uint rightValue)
         => leftValue.Value < rightValue;
 
@@ -1269,7 +1269,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, uint rightValue)
         => leftValue.Value > rightValue;
 
@@ -1278,7 +1278,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, uint rightValue)
         => leftValue.Value <= rightValue;
 
@@ -1287,7 +1287,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, uint rightValue)
         => leftValue.Value >= rightValue;
 
@@ -1297,7 +1297,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonIntegerNode leftValue, double rightValue)
         => leftValue.Value == rightValue;
 
@@ -1307,7 +1307,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonIntegerNode leftValue, double rightValue)
         => leftValue.Value != rightValue;
 
@@ -1316,7 +1316,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, double rightValue)
         => leftValue.Value < rightValue;
 
@@ -1325,7 +1325,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, double rightValue)
         => leftValue.Value > rightValue;
 
@@ -1334,7 +1334,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, double rightValue)
         => leftValue.Value <= rightValue;
 
@@ -1343,7 +1343,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, double rightValue)
         => leftValue.Value >= rightValue;
 
@@ -1353,7 +1353,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value == rightValue;
 
@@ -1363,7 +1363,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value != rightValue;
 
@@ -1372,7 +1372,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value < rightValue;
 
@@ -1381,7 +1381,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value > rightValue;
 
@@ -1390,7 +1390,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value <= rightValue;
 
@@ -1399,7 +1399,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value >= rightValue;
 
@@ -1682,7 +1682,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Tests if the number value is macthed by the specific condition.
     /// </summary>
     /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(DoubleCondition condition)
         => condition == null || condition.IsMatched(Value);
 
@@ -1722,7 +1722,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode<double> other)
     {
         if (other is null) return false;
@@ -1733,7 +1733,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(IJsonNumberNode other)
     {
         if (other is null) return false;
@@ -1745,7 +1745,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (ReferenceEquals(this, other)) return true;
@@ -1774,7 +1774,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(double other)
         => Value.Equals(other);
 
@@ -1782,7 +1782,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(float other)
         => Value.Equals(other);
 
@@ -1790,7 +1790,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(decimal other)
         => Value.Equals(other);
 
@@ -1798,7 +1798,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(long other)
         => Value.Equals(other);
 
@@ -1806,7 +1806,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(uint other)
         => Value.Equals(other);
 
@@ -1814,7 +1814,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(int other)
         => Value.Equals(other);
 
@@ -1997,7 +1997,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
     /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for destination.</param>
     /// <param name="provider">An optional object that supplies culture-specific formatting information for destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<char> destination, out int charsWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
         => Value.TryFormat(destination, out charsWritten, format, provider);
 
@@ -2008,7 +2008,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// <param name="bytesWritten">When this method returns, contains the number of bytes that were written in utf8Destination.</param>
     /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for utf8Destination.</param>
     /// <param name="provider">An optional object that supplies culture-specific formatting information for utf8Destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
         => Value.TryFormat(utf8Destination, out bytesWritten, format, provider);
 #endif
@@ -2030,7 +2030,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -2063,7 +2063,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(out DateTime result)
     {
         if (Value > long.MaxValue || Value < long.MinValue) return base.TryConvert(out result);
@@ -2104,7 +2104,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out decimal result)
     {
         try
@@ -2144,7 +2144,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out float result)
     {
         try
@@ -2180,7 +2180,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out double result)
     {
         result = Value;
@@ -2208,7 +2208,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out short result)
     {
         try
@@ -2248,7 +2248,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out uint result)
     {
         try
@@ -2288,7 +2288,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out int result)
     {
         try
@@ -2328,7 +2328,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out long result)
     {
         try
@@ -2368,7 +2368,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out ulong result)
     {
         try
@@ -2392,7 +2392,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out string result)
     {
         result = ToString();
@@ -2474,7 +2474,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// <param name="s">The input string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
     /// <param name="result">The JSON value node parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, false..</returns>
     public static bool TryParse(string s, IFormatProvider provider, out JsonDoubleNode result)
     {
         if (provider is null ? double.TryParse(s, out var i) : double.TryParse(s, NumberStyles.Number, provider, out i))
@@ -2582,7 +2582,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -2596,7 +2596,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -2609,7 +2609,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -2622,7 +2622,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -2635,7 +2635,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -2648,7 +2648,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -2662,7 +2662,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -2676,7 +2676,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -2689,7 +2689,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -2702,7 +2702,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -2715,7 +2715,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -2728,7 +2728,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -2742,7 +2742,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, double rightValue)
         => leftValue.Value == rightValue;
 
@@ -2752,7 +2752,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, double rightValue)
         => leftValue.Value != rightValue;
 
@@ -2761,7 +2761,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, double rightValue)
         => leftValue.Value < rightValue;
 
@@ -2770,7 +2770,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, double rightValue)
         => leftValue.Value > rightValue;
 
@@ -2779,7 +2779,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, double rightValue)
         => leftValue.Value <= rightValue;
 
@@ -2788,7 +2788,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, double rightValue)
         => leftValue.Value >= rightValue;
 
@@ -2798,7 +2798,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, float rightValue)
         => leftValue.Value == rightValue;
 
@@ -2808,7 +2808,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, float rightValue)
         => leftValue.Value != rightValue;
 
@@ -2817,7 +2817,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, float rightValue)
         => leftValue.Value < rightValue;
 
@@ -2826,7 +2826,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, float rightValue)
         => leftValue.Value > rightValue;
 
@@ -2835,7 +2835,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, float rightValue)
         => leftValue.Value <= rightValue;
 
@@ -2844,7 +2844,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, float rightValue)
         => leftValue.Value >= rightValue;
 
@@ -2854,7 +2854,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, long rightValue)
         => leftValue.Value == rightValue;
 
@@ -2864,7 +2864,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, long rightValue)
         => leftValue.Value != rightValue;
 
@@ -2873,7 +2873,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, long rightValue)
         => leftValue.Value < rightValue;
 
@@ -2882,7 +2882,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, long rightValue)
         => leftValue.Value > rightValue;
 
@@ -2891,7 +2891,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, long rightValue)
         => leftValue.Value <= rightValue;
 
@@ -2900,7 +2900,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, long rightValue)
         => leftValue.Value >= rightValue;
 
@@ -2910,7 +2910,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, int rightValue)
         => leftValue.Value == rightValue;
 
@@ -2920,7 +2920,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, int rightValue)
         => leftValue.Value != rightValue;
 
@@ -2929,7 +2929,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, int rightValue)
         => leftValue.Value < rightValue;
 
@@ -2938,7 +2938,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, int rightValue)
         => leftValue.Value > rightValue;
 
@@ -2947,7 +2947,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, int rightValue)
         => leftValue.Value <= rightValue;
 
@@ -2956,7 +2956,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, int rightValue)
         => leftValue.Value >= rightValue;
 
@@ -2966,7 +2966,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value == rightValue;
 
@@ -2976,7 +2976,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value != rightValue;
 
@@ -2985,7 +2985,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value < rightValue;
 
@@ -2994,7 +2994,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value > rightValue;
 
@@ -3003,7 +3003,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value <= rightValue;
 
@@ -3012,7 +3012,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value >= rightValue;
 
@@ -3255,7 +3255,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Tests if the number value is macthed by the specific condition.
     /// </summary>
     /// <param name="condition">The condition to test the number value.</param>
-    /// <returns>true if it is matched; otherwise, false.</returns>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
     public bool IsMatched(DecimalCondition condition)
         => condition == null || condition.IsMatched(Value);
 
@@ -3295,7 +3295,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode<decimal> other)
     {
         if (other is null) return false;
@@ -3306,7 +3306,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(IJsonNumberNode other)
     {
         if (other is null) return false;
@@ -3318,7 +3318,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(IJsonValueNode other)
     {
         if (ReferenceEquals(this, other)) return true;
@@ -3347,7 +3347,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(double other)
         => Value.Equals(other);
 
@@ -3355,7 +3355,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(float other)
         => Value.Equals(other);
 
@@ -3363,7 +3363,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(decimal other)
         => Value.Equals(other);
 
@@ -3371,7 +3371,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(long other)
         => Value.Equals(other);
 
@@ -3379,7 +3379,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(uint other)
         => Value.Equals(other);
 
@@ -3387,7 +3387,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public bool Equals(int other)
         => Value.Equals(other);
 
@@ -3569,7 +3569,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// <param name="charsWritten">When this method returns, contains the number of characters that were written in destination.</param>
     /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for destination.</param>
     /// <param name="provider">An optional object that supplies culture-specific formatting information for destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<char> destination, out int charsWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
         => Value.TryFormat(destination, out charsWritten, format, provider);
 
@@ -3580,7 +3580,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// <param name="bytesWritten">When this method returns, contains the number of bytes that were written in utf8Destination.</param>
     /// <param name="format">A span containing the characters that represent a standard or custom format string that defines the acceptable format for utf8Destination.</param>
     /// <param name="provider">An optional object that supplies culture-specific formatting information for utf8Destination.</param>
-    /// <returns>true if the formatting was successful; otherwise, false.</returns>
+    /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
     public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, [StringSyntax("NumericFormat")] ReadOnlySpan<char> format = default, IFormatProvider provider = null)
         => Value.TryFormat(utf8Destination, out bytesWritten, format, provider);
 #endif
@@ -3602,7 +3602,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out bool result)
     {
         if (strict) return base.TryConvert(strict, out result);
@@ -3635,7 +3635,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(out DateTime result)
     {
         if (Value > long.MaxValue || Value < long.MinValue) return base.TryConvert(out result);
@@ -3676,7 +3676,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out decimal result)
     {
         try
@@ -3716,7 +3716,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out float result)
     {
         try
@@ -3752,7 +3752,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out double result)
     {
         result = (double)Value;
@@ -3780,7 +3780,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out short result)
     {
         try
@@ -3820,7 +3820,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out uint result)
     {
         try
@@ -3860,7 +3860,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out int result)
     {
         try
@@ -3900,7 +3900,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out long result)
     {
         try
@@ -3940,7 +3940,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out ulong result)
     {
         try
@@ -3975,7 +3975,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected override bool TryConvert(bool strict, out string result)
     {
         result = ToString();
@@ -4045,7 +4045,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// <param name="s">The input string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
     /// <param name="result">The JSON value node parsed.</param>
-    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    /// <returns><c>true</c> if parse succeeded; otherwise, false..</returns>
     public static bool TryParse(string s, IFormatProvider provider, out JsonDecimalNode result)
     {
         if (provider is null ? decimal.TryParse(s, out var i) : decimal.TryParse(s, NumberStyles.Number, provider, out i))
@@ -4145,7 +4145,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4159,7 +4159,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4172,7 +4172,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4185,7 +4185,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4198,7 +4198,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4211,7 +4211,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4225,7 +4225,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4239,7 +4239,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4252,7 +4252,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4265,7 +4265,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4278,7 +4278,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4291,7 +4291,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4305,7 +4305,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4319,7 +4319,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4332,7 +4332,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4345,7 +4345,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -4358,7 +4358,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4371,7 +4371,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -4385,7 +4385,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, double rightValue)
         => (double)leftValue.Value == rightValue;
 
@@ -4395,7 +4395,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, double rightValue)
         => (double)leftValue.Value != rightValue;
 
@@ -4404,7 +4404,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, double rightValue)
         => (double)leftValue.Value < rightValue;
 
@@ -4413,7 +4413,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, double rightValue)
         => (double)leftValue.Value > rightValue;
 
@@ -4422,7 +4422,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, double rightValue)
         => (double)leftValue.Value <= rightValue;
 
@@ -4431,7 +4431,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, double rightValue)
         => (double)leftValue.Value >= rightValue;
 
@@ -4441,7 +4441,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, float rightValue)
         => (float)leftValue.Value == rightValue;
 
@@ -4451,7 +4451,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, float rightValue)
         => (float)leftValue.Value != rightValue;
 
@@ -4460,7 +4460,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, float rightValue)
         => (float)leftValue.Value < rightValue;
 
@@ -4469,7 +4469,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, float rightValue)
         => (float)leftValue.Value > rightValue;
 
@@ -4478,7 +4478,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, float rightValue)
         => (float)leftValue.Value <= rightValue;
 
@@ -4487,7 +4487,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, float rightValue)
         => (float)leftValue.Value >= rightValue;
 
@@ -4497,7 +4497,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, decimal rightValue)
         => leftValue.Value == rightValue;
 
@@ -4507,7 +4507,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, decimal rightValue)
         => leftValue.Value != rightValue;
 
@@ -4516,7 +4516,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, decimal rightValue)
         => leftValue.Value < rightValue;
 
@@ -4525,7 +4525,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, decimal rightValue)
         => leftValue.Value > rightValue;
 
@@ -4534,7 +4534,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, decimal rightValue)
         => leftValue.Value <= rightValue;
 
@@ -4543,7 +4543,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, decimal rightValue)
         => leftValue.Value >= rightValue;
 
@@ -4553,7 +4553,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, long rightValue)
         => leftValue.Value == rightValue;
 
@@ -4563,7 +4563,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, long rightValue)
         => leftValue.Value != rightValue;
 
@@ -4572,7 +4572,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, long rightValue)
         => leftValue.Value < rightValue;
 
@@ -4581,7 +4581,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, long rightValue)
         => leftValue.Value > rightValue;
 
@@ -4590,7 +4590,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, long rightValue)
         => leftValue.Value <= rightValue;
 
@@ -4599,7 +4599,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, long rightValue)
         => leftValue.Value >= rightValue;
 
@@ -4609,7 +4609,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, int rightValue)
         => leftValue.Value == rightValue;
 
@@ -4619,7 +4619,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, int rightValue)
         => leftValue.Value != rightValue;
 
@@ -4628,7 +4628,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, int rightValue)
         => leftValue.Value < rightValue;
 
@@ -4637,7 +4637,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, int rightValue)
         => leftValue.Value > rightValue;
 
@@ -4646,7 +4646,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, int rightValue)
         => leftValue.Value <= rightValue;
 
@@ -4655,7 +4655,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, int rightValue)
         => leftValue.Value >= rightValue;
 
@@ -4665,7 +4665,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value == rightValue;
 
@@ -4675,7 +4675,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value != rightValue;
 
@@ -4684,7 +4684,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value < rightValue;
 
@@ -4693,7 +4693,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value > rightValue;
 
@@ -4702,7 +4702,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is smaller than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator <=(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value <= rightValue;
 
@@ -4711,7 +4711,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    /// <returns><c>true</c> if the left one is greater than or equals to the right one; otherwise, <c>false</c>.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value >= rightValue;
 

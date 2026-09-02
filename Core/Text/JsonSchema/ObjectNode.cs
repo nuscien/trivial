@@ -234,7 +234,7 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     /// Removes the value with the specified key from the properties.
     /// </summary>
     /// <param name="propertyName">The property name.</param>
-    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the mapping.</returns>
+    /// <returns><c>true</c> if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the mapping.</returns>
     public bool RemoveProperty(string propertyName)
         => Properties.Remove(propertyName);
 

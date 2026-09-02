@@ -59,14 +59,14 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public abstract bool Equals(IJsonValueNode other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <returns><c>true</c> if obj and this instance represent the same value; otherwise, <c>false</c>.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
@@ -121,7 +121,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// Tests if the specific value kind is the one matched.
     /// </summary>
     /// <param name="kind">The value kind to test.</param>
-    /// <returns>true if they are the same value kind; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are the same value kind; otherwise, <c>false</c>.</returns>
     public bool IsValueKind(JsonValueKind kind)
         => ValueKind == kind;
 
@@ -189,7 +189,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <param name="exception">The exception thrown if failed.</param>
-    /// <returns>true if converts succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if converts succeeded; otherwise, <c>false</c>.</returns>
     internal bool TryConvert<T>(bool strict, out T result, out Exception exception)
     {
         try
@@ -824,7 +824,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out bool result)
         => TryConvert(strict, out result);
 
@@ -833,7 +833,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out bool result)
     {
         result = default;
@@ -852,7 +852,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(out DateTime result)
         => TryConvert(out result);
 
@@ -860,7 +860,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(out DateTime result)
     {
         result = WebFormat.ZeroTick;
@@ -880,7 +880,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out decimal result)
         => TryConvert(strict, out result);
 
@@ -889,7 +889,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out decimal result)
     {
         result = default;
@@ -909,7 +909,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out float result)
         => TryConvert(strict, out result);
 
@@ -918,7 +918,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out float result)
     {
         result = default;
@@ -938,7 +938,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out double result)
         => TryConvert(strict, out result);
 
@@ -947,7 +947,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out double result)
     {
         result = default;
@@ -967,7 +967,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out short result)
         => TryConvert(strict, out result);
 
@@ -976,7 +976,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out short result)
     {
         result = default;
@@ -996,7 +996,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out uint result)
         => TryConvert(strict, out result);
 
@@ -1005,7 +1005,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out uint result)
     {
         result = default;
@@ -1025,7 +1025,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out int result)
         => TryConvert(strict, out result);
 
@@ -1034,7 +1034,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out int result)
     {
         result = default;
@@ -1054,7 +1054,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out long result)
         => TryConvert(strict, out result);
 
@@ -1063,7 +1063,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out long result)
     {
         result = default;
@@ -1083,7 +1083,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out ulong result)
         => TryConvert(strict, out result);
 
@@ -1092,7 +1092,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected virtual bool TryConvert(bool strict, out ulong result)
     {
         result = default;
@@ -1112,7 +1112,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(bool strict, out string result)
         => TryConvert(strict, out result);
 
@@ -1121,7 +1121,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     protected abstract bool TryConvert(bool strict, out string result);
 
     /// <summary>
@@ -1139,7 +1139,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// Tries to get the value of the element as a GUID.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryConvert(out Guid result)
     {
         if (TryConvert(true, out string s)) return Guid.TryParse(s, out result);
@@ -1196,7 +1196,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryGetValue(string key, out IJsonValueNode result)
     {
         var v = TryGetValueOrNull(key);
@@ -1209,7 +1209,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryGetValue(ReadOnlySpan<char> key, out IJsonValueNode result)
     {
         var v = TryGetValueOrNull(key);
@@ -1252,7 +1252,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryGetValue(int index, out IJsonValueNode result)
     {
         var v = TryGetValueOrNull(index);
@@ -1295,7 +1295,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     bool IJsonValueNode.TryGetValue(Index index, out IJsonValueNode result)
     {
         try
@@ -1770,7 +1770,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are same; otherwise, <c>false</c>.</returns>
     public static bool operator ==(BaseJsonValueNode leftValue, IJsonValueNode rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -1783,7 +1783,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <param name="leftValue">The left value to compare.</param>
     /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
+    /// <returns><c>true</c> if they are different; otherwise, <c>false</c>.</returns>
     public static bool operator !=(BaseJsonValueNode leftValue, IJsonValueNode rightValue)
     {
         if (ReferenceEquals(leftValue, rightValue)) return false;

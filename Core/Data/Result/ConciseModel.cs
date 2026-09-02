@@ -311,7 +311,7 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     /// Removes a keyword.
     /// </summary>
     /// <param name="value">The keyword to remove.</param>
-    /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the original keyword collection.</returns>
+    /// <returns><c>true</c> if item is successfully removed; otherwise, false. This method also returns false if item was not found in the original keyword collection.</returns>
     public bool RemoveKeyword(string value)
     {
         var keywords = Keywords;
@@ -324,7 +324,7 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     /// </summary>
     /// <param name="value">The keyword to test.</param>
     /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool ContainKeyword(string value, StringComparison comparison)
     {
         var keywords = Keywords;
@@ -344,7 +344,7 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     /// </summary>
     /// <param name="value">The keyword to test.</param>
     /// <param name="ignoreCase">true if case insensitve; otherwise, false.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool ContainKeyword(string value, bool ignoreCase = false)
     {
         var keywords = Keywords;
