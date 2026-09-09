@@ -114,14 +114,40 @@ public class DataCacheItemInfo<T>
         => UpdateDate + (Expiration ?? expiration);
 
     /// <summary>
+    /// Gets or sets the expired date.
+    /// </summary>
+    /// <param name="expiration">The expiration time span.</param>
+    /// <param name="skipOriginal">true if test only by the given expiration; otherwise, false, to use the original expiration if has.</param>
+    /// <returns>The expired date.</returns>
+    public DateTime GetExpiredDate(TimeSpan expiration, bool skipOriginal)
+        => UpdateDate + (skipOriginal ? expiration : (Expiration ?? expiration));
+
+    /// <summary>
     /// Tests if the item is expired.
     /// </summary>
     /// <param name="expiration">The expiration time span.</param>
-    /// <returns>true if expired; otherwise, false.</returns>
-    public bool IsExpired(TimeSpan? expiration)
+    /// <returns><c>true</c> if expired; otherwise, <c>false</c>.</returns>
+    public bool IsExpired(TimeSpan? expiration = null)
     {
         if (!expiration.HasValue && !Expiration.HasValue) return false;
         return DateTime.Now >= (UpdateDate + (Expiration ?? expiration).Value);
+    }
+
+    /// <summary>
+    /// Gets the progress about the item alive lifecycle.
+    /// </summary>
+    /// <param name="expiration">The expiration time span.</param>
+    /// <returns>A progress value between 0 and 1; or 0, if no expiration value.</returns>
+    public double GetExpirationProgress(TimeSpan? expiration = null)
+    {
+        var expire = Expiration ?? expiration;
+        if (!expire.HasValue) return 0;
+        var duration = (UpdateDate + expire.Value - DateTime.Now).TotalSeconds;
+        if (duration <= 0) return 1;
+        var value = 1 - (duration / expire.Value.TotalSeconds);
+        if (value <= 0) return 0;
+        if (value >= 1) return 1;
+        return value;
     }
 
     /// <summary>
