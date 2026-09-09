@@ -9948,6 +9948,56 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Tries to parse a string to a JSON object.
     /// </summary>
+    /// <param name="utf8Json">The JSON data to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance; or null, if error format.</returns>
+    public static JsonObjectNode TryParse(Stream utf8Json, JsonDocumentOptions options = default)
+    {
+        try
+        {
+            if (utf8Json is null || !utf8Json.CanRead) return null;
+            return Parse(utf8Json, options);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse a string to a JSON object.
+    /// </summary>
     /// <param name="file">A file with JSON object string content to parse.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
     /// <returns>A JSON object instance; or null, if error format.</returns>

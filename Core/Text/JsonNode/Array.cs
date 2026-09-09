@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -3260,6 +3261,21 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    public void Add(Guid value, string format)
+        => AddItem(new JsonStringNode(value, format));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(Uri value)
+        => AddItem(new JsonStringNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(DateTime value)
         => AddItem(new JsonStringNode(value));
 
@@ -3267,7 +3283,31 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    public void Add(DateTime value, string format)
+        => AddItem(new JsonStringNode(value, format));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(short value)
+        => AddItem(new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(short value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(ushort value)
         => AddItem(new JsonIntegerNode(value));
 
     /// <summary>
@@ -3288,8 +3328,26 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(int value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(long value)
         => AddItem(new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(long value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a value.
@@ -3302,6 +3360,15 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(float value, string format, IFormatProvider provider = null)
+        => AddItem(float.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(double value)
         => AddItem(double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
@@ -3309,8 +3376,26 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(double value, string format, IFormatProvider provider = null)
+        => AddItem(double.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(decimal value)
         => AddItem(new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(decimal value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a value.

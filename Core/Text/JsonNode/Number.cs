@@ -92,6 +92,26 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Initializes a new instance of the JsonIntegerNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonIntegerNode(ushort value)
+        : base(JsonValueKind.Number, value)
+    {
+        IsSafe = true;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonIntegerNode(float value)
+        : base(JsonValueKind.Number, (long)Math.Round(value))
+    {
+        IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonIntegerNode(double value)
         : base(JsonValueKind.Number, (long)Math.Round(value))
     {

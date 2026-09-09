@@ -256,7 +256,11 @@ public class SelectionData<T> : IList<SelectionItem<T>>
     /// <param name="values">The values to output.</param>
     public void AddRange(IEnumerable<string> values)
     {
-        if (values != null) list.AddRange(values.Select(item => new SelectionItem<T>(item, default)));
+        if (values is null) return;
+        if (typeof(T) == typeof(string))
+            list.AddRange(values.Select(item => new SelectionItem<T>(item, (T)(object)item)));
+        else
+            list.AddRange(values.Select(item => new SelectionItem<T>(item, default)));
     }
 
     /// <summary>
