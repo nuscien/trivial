@@ -298,14 +298,14 @@ public class QueryData : StringKeyValuePairs
         => ParseSet(query.ToString(), append, encoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <returns>A query string.</returns>
     public override string ToString()
         => ToString(DefaultEncoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="encoding">The encoding.</param>
     /// <returns>A query string.</returns>
@@ -322,11 +322,11 @@ public class QueryData : StringKeyValuePairs
     }
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="url">The URL.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(string url, Encoding encoding = null)
     {
         if (url == null) return null;
@@ -346,20 +346,29 @@ public class QueryData : StringKeyValuePairs
     }
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
+    /// </summary>
+    /// <param name="url">The URL.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <returns>A URL with query.</returns>
+    public string ToString(IJsonValueNode<string> url, Encoding encoding = null)
+        => ToString(url?.Value, encoding);
+
+    /// <summary>
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="uri">The URI.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(Uri uri, Encoding encoding = null)
         => ToString(uri?.OriginalString, encoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <param name="url">The URL.</param>
     /// <param name="encoding">The optional encoding.</param>
-    /// <returns>A query string.</returns>
+    /// <returns>A URL with query.</returns>
     public string ToString(StringBuilder url, Encoding encoding = null)
         => ToString(url?.ToString(), encoding);
 
@@ -433,6 +442,15 @@ public class QueryData : StringKeyValuePairs
         q.ParseSet(query, false, encoding);
         return q;
     }
+
+    /// <summary>
+    /// Pluses a URI and a query data.
+    /// </summary>
+    /// <param name="uri">The URI.</param>
+    /// <param name="query">The query data.</param>
+    /// <returns>The new URI with the given URI and the query.</returns>
+    public static Uri operator +(Uri uri, QueryData query)
+        => HttpClientExtensions.CreateUri(query, uri);
 #pragma warning restore IDE0056, IDE0057, CA1834
 }
 

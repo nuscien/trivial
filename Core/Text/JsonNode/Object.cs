@@ -1648,9 +1648,21 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             return id;
         }
 
+        if (TryGetStringTrimmedValue("Id", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "Id";
+            return id;
+        }
+
         if (TryGetStringTrimmedValue("_id", out id, out kind) && !string.IsNullOrEmpty(id))
         {
             key = "_id";
+            return id;
+        }
+
+        if (TryGetStringTrimmedValue("uuid", out id, out kind) && !string.IsNullOrEmpty(id))
+        {
+            key = "uuid";
             return id;
         }
 
@@ -5026,6 +5038,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="valueObj">The JSON object with the property of value to set.</param>
+    /// <param name="valueKey">The JSON object key of the property value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonObjectNode valueObj, string valueKey)
+    {
+        AssertKey(key);
+        var prop = valueObj?.GetValue(valueKey, true);
+        if (prop is null) return;
+        SetValue(key, prop);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="value">The JSON object node created.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
@@ -6973,6 +7001,85 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">A JSON object element.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int SetRange(JsonElement json)
+    {
+        if (json.ValueKind != JsonValueKind.Object)
+        {
+            return json.ValueKind switch
+            {
+                JsonValueKind.Null => 0,
+                JsonValueKind.Undefined => 0,
+                _ => throw new JsonException("json is not a JSON object.")
+            };
+        }
+
+        return SetRangeInternal(json);
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">A JSON document.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int SetRange(JsonDocument json)
+        => json is null ? 0 : SetRange(json.RootElement);
+
+    /// <summary>
+    /// Parses JSON object and patches into current object.
+    /// </summary>
+    /// <param name="json">A specific JSON object string to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int PatchParse(string json, JsonDocumentOptions options = default)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return 0;
+        var docs = JsonDocument.Parse(json, options);
+        return SetRange(docs);
+    }
+
+    /// <summary>
+    /// Parses JSON object and patches into current object.
+    /// </summary>
+    /// <param name="utf8Json">The JSON data to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public int PatchParse(Stream utf8Json, JsonDocumentOptions options = default)
+    {
+        if (utf8Json is null) return 0;
+        var docs = JsonDocument.Parse(utf8Json, options);
+        return SetRange(docs);
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    private int SetRangeInternal(JsonElement json)
+    {
+        var enumerator = json.EnumerateObject();
+        var i = 0;
+        while (enumerator.MoveNext())
+        {
+            SetValue(enumerator.Current);
+            i++;
+        }
+
+        return i;
     }
 
     /// <summary>
@@ -9810,6 +9917,56 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         {
         }
         catch (AggregateException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse a string to a JSON object.
+    /// </summary>
+    /// <param name="utf8Json">The JSON data to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance; or null, if error format.</returns>
+    public static JsonObjectNode TryParse(Stream utf8Json, JsonDocumentOptions options = default)
+    {
+        try
+        {
+            if (utf8Json is null || !utf8Json.CanRead) return null;
+            return Parse(utf8Json, options);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 

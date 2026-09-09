@@ -3232,6 +3232,21 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    public void Add(Guid value, string format)
+        => AddItem(new JsonStringNode(value, format));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(Uri value)
+        => AddItem(new JsonStringNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(DateTime value)
         => AddItem(new JsonStringNode(value));
 
@@ -3239,7 +3254,31 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    public void Add(DateTime value, string format)
+        => AddItem(new JsonStringNode(value, format));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(short value)
+        => AddItem(new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(short value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(ushort value)
         => AddItem(new JsonIntegerNode(value));
 
     /// <summary>
@@ -3260,8 +3299,26 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(int value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(long value)
         => AddItem(new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(long value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a value.
@@ -3274,6 +3331,15 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(float value, string format, IFormatProvider provider = null)
+        => AddItem(float.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(double value)
         => AddItem(double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
@@ -3281,8 +3347,26 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(double value, string format, IFormatProvider provider = null)
+        => AddItem(double.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(decimal value)
         => AddItem(new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public void Add(decimal value, string format, IFormatProvider provider = null)
+        => AddItem(new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a value.
@@ -5242,6 +5326,181 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         return arr;
     }
+
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(DBNull value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(string value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(IJsonValueNode<string> value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
+    public void operator +=(SecureString value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(Guid value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(DateTime value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(short value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(uint value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(int value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(long value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(float value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(double value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(decimal value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(bool value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonBooleanNode value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonArrayNode value)
+        => Add(value);
+
+    /// <summary>
+    /// Pluses two array.
+    /// </summary>
+    /// <param name="rightValue">The right value to merge.</param>
+    /// <returns>The array node after merging.</returns>
+    public void operator +=(JsonObjectNode rightValue)
+        => Add(rightValue);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(IJsonObjectHost value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonDocument value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonElement value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void operator +=(JsonNode value)
+        => Add(value);
+
+    /// <summary>
+    /// Adds null.
+    /// </summary>
+    public void operator ++()
+        => AddNull();
+
+    /// <summary>
+    /// Removes last item.
+    /// </summary>
+    public void operator --()
+    {
+        if (Length < 1) return;
+        try
+        {
+            Remove(Length - 1);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+#endif
 
     /// <summary>
     /// Gets all values of specific kind.

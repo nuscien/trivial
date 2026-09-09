@@ -129,6 +129,13 @@ public class DataCacheItemInfo<T>
     /// </summary>
     public void ForceExtendToNow()
         => UpdateDate = DateTime.Now;
+
+    /// <summary>
+    /// Gets the type of value.
+    /// </summary>
+    /// <returns>The type of value.</returns>
+    public Type GetValueType()
+        => Value is null ? typeof(T) : Value.GetType();
 }
 
 /// <summary>

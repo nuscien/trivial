@@ -459,25 +459,43 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CancellationToken cancellationToken = default)
     {
-        CommandArguments a = null;
-        try
+        var a = GetCommandArguments();
+        return ProcessAsync(a, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<bool> defaultHandler, CancellationToken cancellationToken = default)
+    {
+        var a = GetCommandArguments();
+        if (!a.HasVerb && defaultHandler is not null)
         {
-            var args = Environment.GetCommandLineArgs();
-            if (args == null || args.Length == 0)
-                return ProcessAsync(new CommandArguments(args), null, cancellationToken);
-            var cmd = Environment.CommandLine;
-            a = cmd != null && cmd.StartsWith(args[0] ?? string.Empty)
-                ? new CommandArguments(cmd.Substring(args[0]?.Length ?? 0).Trim())
-                : new CommandArguments(args.Skip(1));
-        }
-        catch (InvalidOperationException)
-        {
-        }
-        catch (NotSupportedException)
-        {
+            var result = defaultHandler();
+            if (result) return Task.CompletedTask;
         }
 
-        if (a == null) a = new(null as string);
+        return ProcessAsync(a, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<CommandDispatcher, CommandArguments, bool> defaultHandler, CancellationToken cancellationToken = default)
+    {
+        var a = GetCommandArguments();
+        if (!a.HasVerb && defaultHandler is not null)
+        {
+            var result = defaultHandler(this, a);
+            if (result) return Task.CompletedTask;
+        }
+
         return ProcessAsync(a, null, cancellationToken);
     }
 
@@ -507,6 +525,43 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CommandArguments args, CancellationToken cancellationToken = default)
         => ProcessAsync(args, null, cancellationToken);
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="args">The command arguments.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<bool> defaultHandler, CommandArguments args, CancellationToken cancellationToken = default)
+    {
+        if (defaultHandler is not null && (args is null || !args.HasVerb))
+        {
+            var result = defaultHandler();
+            if (result) return Task.CompletedTask;
+        }
+
+        return ProcessAsync(args, cancellationToken);
+    }
+
+    /// <summary>
+    /// Processes.
+    /// </summary>
+    /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
+    /// <param name="args">The command arguments.</param>
+    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <returns>A task that represents the asynchronous processing operation.</returns>
+    public Task ProcessAsync(Func<CommandDispatcher, CommandArguments, bool> defaultHandler, CommandArguments args, CancellationToken cancellationToken = default)
+    {
+        args ??= new(null as string);
+        if (defaultHandler is not null && !args.HasVerb)
+        {
+            var result = defaultHandler(this, args);
+            if (result) return Task.CompletedTask;
+        }
+
+        return ProcessAsync(args, cancellationToken);
+    }
 
     /// <summary>
     /// Processes.
@@ -831,4 +886,26 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
 
     private Route GetVerb(string verb)
         => string.IsNullOrEmpty(verb) ? null : list.FindLast(ele => ele.IsMatch(verb));
+
+    private CommandArguments GetCommandArguments()
+    {
+        try
+        {
+            var args = Environment.GetCommandLineArgs();
+            if (args == null || args.Length == 0)
+                return new CommandArguments(args);
+            var cmd = Environment.CommandLine;
+            return cmd != null && cmd.StartsWith(args[0] ?? string.Empty)
+                ? new CommandArguments(cmd.Substring(args[0]?.Length ?? 0).Trim())
+                : new CommandArguments(args.Skip(1));
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+
+        return new(null as string);
+    }
 }

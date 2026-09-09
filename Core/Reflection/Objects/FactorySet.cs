@@ -122,7 +122,7 @@ public sealed class FactorySet
     }
 
     /// <summary>
-    /// OnRegisterInternal a singleton instance.
+    /// Registers a singleton instance.
     /// </summary>
     /// <typeparam name="T">The type of the singleton.</typeparam>
     /// <param name="singleton">The singleton to register.</param>

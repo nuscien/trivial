@@ -4646,4 +4646,54 @@ public sealed partial class StyleConsole
         col.Add(new ConsoleText(string.Join(Environment.NewLine, value), foreground, background));
         Flush();
     }
+
+    /// <summary>
+    /// Writes a list of items to the console, each on a new line.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="items">The items to write.</param>
+    /// <param name="write">A function that converts an item to a console text.</param>
+    public void WriteLines<T>(IEnumerable<T> items, Func<T, ConsoleText> write)
+    {
+        if (items is null) return;
+        write ??= item => new(item.ToString());
+        foreach (var item in items)
+        {
+            if (item is null) continue;
+            var text = write(item);
+            if (text is null) continue;
+            WriteLine(text);
+        }
+    }
+
+    /// <summary>
+    /// Writes a list of items to the console, each on a new line.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="items">The items to write.</param>
+    public void WriteLines(IConsoleTextPrettier style, IEnumerable<string> items)
+    {
+        if (items is null) return;
+        foreach (var item in items)
+        {
+            if (item is null) continue;
+            WriteLine(style, item);
+        }
+    }
+
+    /// <summary>
+    /// Writes a list of items to the console, each on a new line.
+    /// </summary>
+    /// <typeparam name="T">The type of data model.</typeparam>
+    /// <param name="style">The style.</param>
+    /// <param name="items">A data model collection.</param>
+    public void WriteLines<T>(IConsoleTextCreator<T> style, IEnumerable<T> items)
+    {
+        if (items is null) return;
+        foreach (var item in items)
+        {
+            if (item is null) continue;
+            WriteLine(style, item);
+        }
+    }
 }

@@ -99,7 +99,19 @@ public enum ChangeMethods : byte
     /// The source is not valid any more.
     /// </summary>
     [Description("The object is no longer valid to access.")]
-    Invalid = 7
+    Invalid = 7,
+
+    /// <summary>
+    /// The source is forbidden to access.
+    /// </summary>
+    [Description("The object is forbidden to access.")]
+    Forbidden = 8,
+
+    /// <summary>
+    /// Unknown or special error occurred during accessing the source.
+    /// </summary>
+    [Description("Unknown or special error occurred during accessing the object.")]
+    OtherError = 15,
 }
 
 /// <summary>
