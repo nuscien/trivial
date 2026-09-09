@@ -7024,8 +7024,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             };
         }
 
-        var result = new JsonObjectNode();
-        return result.SetRangeInternal(json);
+        return SetRangeInternal(json);
     }
 
     /// <summary>
