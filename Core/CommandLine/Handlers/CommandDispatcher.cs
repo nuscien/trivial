@@ -455,7 +455,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// <summary>
     /// Processes.
     /// </summary>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CancellationToken cancellationToken = default)
     {
@@ -467,7 +467,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Processes.
     /// </summary>
     /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(Func<bool> defaultHandler, CancellationToken cancellationToken = default)
     {
@@ -485,7 +485,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Processes.
     /// </summary>
     /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(Func<CommandDispatcher, CommandArguments, bool> defaultHandler, CancellationToken cancellationToken = default)
     {
@@ -503,7 +503,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Processes.
     /// </summary>
     /// <param name="args">The command arguments.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(string args, CancellationToken cancellationToken = default)
         => ProcessAsync(new CommandArguments(args), null, cancellationToken);
@@ -512,7 +512,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Processes.
     /// </summary>
     /// <param name="args">The command arguments.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(string[] args, CancellationToken cancellationToken = default)
         => ProcessAsync(new CommandArguments(args), null, cancellationToken);
@@ -521,7 +521,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// Processes.
     /// </summary>
     /// <param name="args">The command arguments.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(CommandArguments args, CancellationToken cancellationToken = default)
         => ProcessAsync(args, null, cancellationToken);
@@ -531,7 +531,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
     /// <param name="args">The command arguments.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(Func<bool> defaultHandler, CommandArguments args, CancellationToken cancellationToken = default)
     {
@@ -549,7 +549,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="defaultHandler">A callback handler for default case (no verb).</param>
     /// <param name="args">The command arguments.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the asynchronous processing operation.</returns>
     public Task ProcessAsync(Func<CommandDispatcher, CommandArguments, bool> defaultHandler, CommandArguments args, CancellationToken cancellationToken = default)
     {
@@ -568,7 +568,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="conversationMode">The conversation mode.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     public async Task ProcessAsync(CommandArguments args, CommandConversationModes? conversationMode, CancellationToken cancellationToken = default)
     {

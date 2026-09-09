@@ -741,6 +741,40 @@ public static class HttpClientExtensions
         return deserializer(str);
     }
 
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Deserializes the HTTP content into an object by the specific serializer.
+    /// </summary>
+    /// <typeparam name="T">The type of the result expected.</typeparam>
+    /// <param name="webResponse">The web response.</param>
+    /// <param name="deserializer">The JSON deserializer.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The result serialized.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    public static Task<T> DeserializeAsync<T>(this WebResponse webResponse, Func<string, T> deserializer, CancellationToken cancellationToken)
+        => DeserializeAsync(webResponse, deserializer, null, cancellationToken);
+
+    /// <summary>
+    /// Deserializes the HTTP content into an object by the specific serializer.
+    /// </summary>
+    /// <typeparam name="T">The type of the result expected.</typeparam>
+    /// <param name="webResponse">The web response.</param>
+    /// <param name="deserializer">The JSON deserializer.</param>
+    /// <param name="encoding">The character encoding to use.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>The result serialized.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    public static async Task<T> DeserializeAsync<T>(this WebResponse webResponse, Func<string, T> deserializer, Encoding encoding, CancellationToken cancellationToken)
+    {
+        if (webResponse == null) throw ObjectConvert.ArgumentNull(nameof(webResponse));
+        if (deserializer == null) throw ObjectConvert.ArgumentNull(nameof(deserializer));
+        using var stream = webResponse.GetResponseStream();
+        using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+        var str = await reader.ReadToEndAsync(cancellationToken);
+        return deserializer(str);
+    }
+#endif
+
     /// <summary>
     /// Deserializes the HTTP content into an object by the specific serializer.
     /// </summary>

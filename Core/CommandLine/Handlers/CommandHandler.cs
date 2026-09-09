@@ -32,7 +32,7 @@ public interface ICommandHandler
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     Task ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default);
 
@@ -92,7 +92,7 @@ public abstract class BaseCommandHandler : ICommandHandler
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
@@ -154,7 +154,7 @@ public abstract class AsyncCommandHandler : ICommandHandler
     /// </summary>
     /// <param name="args">The arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the completion of all of the invoking Handler tasks.</returns>
     protected abstract Task OnProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default);
 
@@ -172,7 +172,7 @@ public abstract class AsyncCommandHandler : ICommandHandler
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
@@ -228,7 +228,7 @@ public abstract class BaseCommandVerb
     /// <summary>
     /// Occurs on processing.
     /// </summary>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A task that represents the completion of all of the invoking Handler tasks.</returns>
     protected abstract Task OnProcessAsync(CancellationToken cancellationToken = default);
 
@@ -288,7 +288,7 @@ public abstract class BaseCommandVerb
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     internal async Task ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default)
     {
@@ -398,7 +398,7 @@ public class CommandVerbHandler<T> : ICommandHandler
     /// </summary>
     /// <param name="args">The command arguments.</param>
     /// <param name="context">The conversation context during the command processing.</param>
-    /// <param name="cancellationToken">An optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns><c>true</c> if process succeeded; otherwise, <c>false</c>.</returns>
     Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
     {
