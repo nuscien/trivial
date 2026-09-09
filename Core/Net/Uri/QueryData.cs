@@ -298,7 +298,7 @@ public class QueryData : StringKeyValuePairs
         => ParseSet(query.ToString(), append, encoding);
 
     /// <summary>
-    /// Returns a string that represents the current object.
+    /// Returns a string that represents the current query data.
     /// </summary>
     /// <returns>A query string.</returns>
     public override string ToString()
