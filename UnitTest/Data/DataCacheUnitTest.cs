@@ -19,7 +19,7 @@ namespace Trivial.Data;
 public class DataCacheUnitTest
 {
     /// <summary>
-    /// Tests query data.
+    /// Tests data cache collection.
     /// </summary>
     [TestMethod]
     public void TestCollection()
@@ -120,7 +120,7 @@ public class DataCacheUnitTest
     }
 
     /// <summary>
-    /// Tests query data.
+    /// Tests namespaced data cache collection.
     /// </summary>
     [TestMethod]
     public void TestNsCollection()
@@ -207,5 +207,17 @@ public class DataCacheUnitTest
         Thread.Sleep(50);
         Assert.IsFalse(cache.Contains(null, "abcdefg"));
         Assert.IsNotNull(cache.Contains("xyz", "*#06#"));
+    }
+
+    /// <summary>
+    /// Tests data cache item.
+    /// </summary>
+    [TestMethod]
+    public void TestItem()
+    {
+        var cacheItem = new DataCacheItemInfo<int>("a", 12, DateTime.Now.AddHours(-1), TimeSpan.FromHours(4));
+        var progress = cacheItem.GetExpirationProgress();
+        Assert.IsGreaterThan(0.2, progress);
+        Assert.IsLessThan(0.3, progress);
     }
 }

@@ -114,21 +114,37 @@ public class DataCacheItemInfo<T>
         => UpdateDate + (Expiration ?? expiration);
 
     /// <summary>
-    /// Gets the type of value.
+    /// Gets or sets the expired date.
     /// </summary>
-    /// <returns>The type of value.</returns>
-    public Type GetValueType()
-        => Value is null ? typeof(T) : Value.GetType();
+    /// <param name="expiration">The expiration time span.</param>
+    /// <param name="skipOriginal">true if test only by the given expiration; otherwise, false, to use the original expiration if has.</param>
+    /// <returns>The expired date.</returns>
+    public DateTime GetExpiredDate(TimeSpan expiration, bool skipOriginal)
+        => UpdateDate + (skipOriginal ? expiration : (Expiration ?? expiration));
 
     /// <summary>
     /// Tests if the item is expired.
     /// </summary>
     /// <param name="expiration">The expiration time span.</param>
     /// <returns><c>true</c> if expired; otherwise, <c>false</c>.</returns>
-    public bool IsExpired(TimeSpan? expiration)
+    public bool IsExpired(TimeSpan? expiration = null)
     {
         if (!expiration.HasValue && !Expiration.HasValue) return false;
         return DateTime.Now >= (UpdateDate + (Expiration ?? expiration).Value);
+    }
+
+    /// <summary>
+    /// Gets the progress about the item alive lifecycle.
+    /// </summary>
+    /// <param name="expiration">The expiration time span.</param>
+    /// <returns>A progress value between 0 and 1.</returns>
+    public double GetExpirationProgress(TimeSpan? expiration = null)
+    {
+        var expire = Expiration ?? expiration;
+        if (!expire.HasValue) return 1;
+        var duration = (UpdateDate + expire.Value - DateTime.Now).TotalSeconds;
+        if (duration <= 0) return 1;
+        return 1 - (duration / expire.Value.TotalSeconds);
     }
 
     /// <summary>
