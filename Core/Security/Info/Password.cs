@@ -23,7 +23,7 @@ namespace Trivial.Security;
 /// The information about changing password.
 /// </summary>
 [Guid("91CF6F91-CC90-49AB-9222-947738389CF3")]
-public class PasswordChanging
+public class PasswordChanging : IIdPropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the PasswordChaning class.

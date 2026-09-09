@@ -117,7 +117,7 @@ public class KeyValueObservableModel<T> : BaseObservableProperties
 /// <typeparam name="T">The type of the value.</typeparam>
 [DataContract]
 [Guid("CB88EE38-D835-4838-8FB4-EB0088B44F48")]
-public class NameValueObservableModel<T> : BaseObservableProperties
+public class NameValueObservableModel<T> : BaseObservableProperties, INamePropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the NameValueObservableModel class.
@@ -212,7 +212,7 @@ public class NameValueObservableModel<T> : BaseObservableProperties
 /// </summary>
 [DataContract]
 [Guid("BFCF2C61-D656-45EE-8B1C-61E1B124ECBF")]
-public class NameArgsObservableModel : ObservableProperties
+public class NameArgsObservableModel : ObservableProperties, IIdPropertyModel, INamePropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the NameArgsObservableModel class.
@@ -477,7 +477,7 @@ public class NameArgsObservableModel : ObservableProperties
 /// </summary>
 [DataContract]
 [Guid("63CE7D37-4662-45DF-8455-613FEC982031")]
-public class PackageInfoObservableModel : BaseObservableProperties
+public class PackageInfoObservableModel : BaseObservableProperties, INamePropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the PackageInfoObservableModel class.

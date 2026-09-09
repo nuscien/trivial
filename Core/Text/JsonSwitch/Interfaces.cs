@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Trivial.Data;
 
 namespace Trivial.Text;
 
@@ -55,13 +56,8 @@ public delegate bool JsonSwitchArgsPredicate<TArgs, TResult, TInfo>(IJsonValueNo
 /// <summary>
 /// The interface of JSON switch context info bag.
 /// </summary>
-public interface IJsonSwitchContextInfo
+public interface IJsonSwitchContextInfo : IIdPropertyModel
 {
-    /// <summary>
-    /// Gets the identifier.
-    /// </summary>
-    public string Id { get; }
-
     /// <summary>
     /// Gets the creation date time.
     /// </summary>

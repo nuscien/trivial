@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Trivial.Data;
 using Trivial.Maths;
 using Trivial.Reflection;
 
@@ -19,7 +20,7 @@ namespace Trivial.Text;
 /// <typeparam name="TNode">The type of JSON node.</typeparam>
 /// <typeparam name="TArgs">The type of args.</typeparam>
 [DebuggerDisplay("{StateInfoString}")]
-public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, ICloneable where TNode : IJsonValueNode
+public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, ICloneable, IIdPropertyModel where TNode : IJsonValueNode
 {
     /// <summary>
     /// Initializes a new instance of the JsonSwitchContext class.

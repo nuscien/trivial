@@ -14,7 +14,7 @@ namespace Trivial.Data;
 /// The Collection item info.
 /// </summary>
 /// <typeparam name="T">The type of data model.</typeparam>
-public class DataCacheItemInfo<T>
+public class DataCacheItemInfo<T> : IIdPropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the DataCacheItemInfo class.
@@ -137,13 +137,14 @@ public class DataCacheItemInfo<T>
     /// Gets the progress about the item alive lifecycle.
     /// </summary>
     /// <param name="expiration">The expiration time span.</param>
-    /// <returns>A progress value between 0 and 1.</returns>
+    /// <returns>A progress value between 0 and 1; or 0, if no expiration value.</returns>
     public double GetExpirationProgress(TimeSpan? expiration = null)
     {
         var expire = Expiration ?? expiration;
-        if (!expire.HasValue) return 1;
+        if (!expire.HasValue) return 0;
         var duration = (UpdateDate + expire.Value - DateTime.Now).TotalSeconds;
         if (duration <= 0) return 1;
+        if (duration >= 1) return 0;
         return 1 - (duration / expire.Value.TotalSeconds);
     }
 

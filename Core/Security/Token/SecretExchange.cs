@@ -130,7 +130,7 @@ namespace Trivial.Security;
 ///   </code>
 /// </example>
 [Guid("2E887BCE-F862-429F-B67C-D15A4DF1856B")]
-public class RSASecretExchange : ICloneable
+public class RSASecretExchange : ICloneable, IIdPropertyModel
 {
     /// <summary>
     /// The RSA exchange JWT payload model.

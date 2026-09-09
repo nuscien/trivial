@@ -35,7 +35,7 @@ namespace Trivial.Net;
 /// </code>
 /// </example>
 [Guid("60135861-0DC5-4766-80A7-556152860DD9")]
-public class ServerSentEventInfo
+public class ServerSentEventInfo : IIdPropertyModel
 {
     private readonly Dictionary<string, string> dict = new();
 

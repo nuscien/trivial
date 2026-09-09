@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Trivial.Data;
 using Trivial.Text;
 
 namespace Trivial.Tasks;
@@ -14,7 +15,7 @@ namespace Trivial.Tasks;
 /// A base response object for JSON based stateless light-weight remote procedure call protocol.
 /// </summary>
 [JsonConverter(typeof(JsonRpcResponseJsonConverter))]
-public abstract class BaseJsonRpcResponseObject : IJsonObjectHost
+public abstract class BaseJsonRpcResponseObject : IJsonObjectHost, IIdPropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseJsonRpcResponseObject"/> class.

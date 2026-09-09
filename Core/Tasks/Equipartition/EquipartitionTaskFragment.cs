@@ -69,7 +69,7 @@ public partial class EquipartitionTask
     /// Task fragment model for serialization only.
     /// </summary>
     [DataContract]
-    internal class FragmentModel
+    internal class FragmentModel : IIdPropertyModel
     {
         /// <summary>
         /// Gets or sets the task fragment identifier.
@@ -117,7 +117,7 @@ public partial class EquipartitionTask
     /// <summary>
     /// Task fragment.
     /// </summary>
-    public class Fragment : ISerializable, IJsonObjectHost
+    public class Fragment : ISerializable, IJsonObjectHost, IIdPropertyModel
     {
         /// <summary>
         /// Initializes a new instance of the EquipartitionTask.Fragment class.
@@ -431,7 +431,7 @@ public partial class EquipartitionTask
     /// <summary>
     /// The fragment state changed event arguments.
     /// </summary>
-    public class FragmentStateEventArgs : ChangeEventArgs<FragmentStates>
+    public class FragmentStateEventArgs : ChangeEventArgs<FragmentStates>, IIdPropertyModel
     {
         /// <summary>
         /// Initializes a new instance of the EquipartitionTask.FragmentStateEventArgs class.

@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Trivial.Data;
 using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Text;
@@ -18,7 +19,7 @@ namespace Trivial.Tasks;
 /// <summary>
 /// The operation description for API.
 /// </summary>
-public class JsonOperationDescription : BaseObservableProperties
+public class JsonOperationDescription : BaseObservableProperties, IIdPropertyModel
 {
     /// <summary>
     /// Gets or sets the operation identifier.

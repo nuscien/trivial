@@ -402,6 +402,114 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Gets the all items of which identifier is the specific one.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection.</param>
+    /// <param name="id">The identifier.</param>
+    /// <returns>The result collection.</returns>
+    public static IEnumerable<T> GetAllById<T>(IEnumerable<T> col, string id) where T : IIdPropertyModel
+    {
+        if (col is null) yield break;
+        foreach (var item in col)
+        {
+            if (item is null) continue;
+            if (item.Id == id) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the first item by identifier; or return default if not found.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection.</param>
+    /// <param name="id">The identifier.</param>
+    /// <returns>The item found; or default.</returns>
+    public static T GetByIdOrDefault<T>(IEnumerable<T> col, string id) where T : IIdPropertyModel
+        => GetAllById(col, id).FirstOrDefault();
+
+    /// <summary>
+    /// Gets the first item by identifier; or return default if not found.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection.</param>
+    /// <param name="id">The identifier.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if found; otherwise, false.</returns>
+    public static bool TryGetById<T>(IEnumerable<T> col, string id, out T result) where T : IIdPropertyModel
+    {
+        if (col is null)
+        {
+            result = default;
+            return false;
+        }
+
+        foreach (var item in col)
+        {
+            if (item is null || item.Id != id) continue;
+            result = item;
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the all items of which identifier is the specific one.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection.</param>
+    /// <param name="name">The name.</param>
+    /// <returns>The result collection.</returns>
+    public static IEnumerable<T> GetAllByName<T>(IEnumerable<T> col, string name) where T : INamePropertyModel
+    {
+        if (col is null) yield break;
+        foreach (var item in col)
+        {
+            if (item is null) continue;
+            if (item.Name == name) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the first item by identifier; or return default if not found.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection.</param>
+    /// <param name="name">The name.</param>
+    /// <returns>The item found; or default.</returns>
+    public static T GetByNameOrDefault<T>(IEnumerable<T> col, string name) where T : INamePropertyModel
+        => GetAllByName(col, name).FirstOrDefault();
+
+    /// <summary>
+    /// Gets the first item by identifier; or return default if not found.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="col">The collection.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if found; otherwise, false.</returns>
+    public static bool TryGetByName<T>(IEnumerable<T> col, string name, out T result) where T : INamePropertyModel
+    {
+        if (col is null)
+        {
+            result = default;
+            return false;
+        }
+
+        foreach (var item in col)
+        {
+            if (item is null || item.Name != name) continue;
+            result = item;
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
     /// Determines whether the instance contains the specified
     /// </summary>
     /// <param name="list">The key value pairs.</param>

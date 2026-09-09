@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Data;
 using Trivial.Net;
 using Trivial.Text;
 
@@ -21,7 +22,7 @@ namespace Trivial.Security;
 /// </summary>
 [DataContract]
 [Guid("C1A9D81A-3319-4D80-BE99-642144777BDC")]
-public class ProtectedResourceMetadataResponse
+public class ProtectedResourceMetadataResponse : IIdPropertyModel, INamePropertyModel
 {
     /// <summary>
     /// Gets or sets the identifier of the protected resource, which is a URL that uses the https scheme and has no fragment component.

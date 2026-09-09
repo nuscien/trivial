@@ -24,7 +24,7 @@ namespace Trivial.Tasks;
 /// <summary>
 /// Equipartition fragment task and its thread-safe resolver.
 /// </summary>
-public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>
+public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>, IIdPropertyModel
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #if NET10_0_OR_GREATER

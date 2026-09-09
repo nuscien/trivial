@@ -7,13 +7,14 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Trivial.Data;
 
 namespace Trivial.Text;
 
 /// <summary>
 /// The base description for JSON schema node.
 /// </summary>
-public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
+public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost, IIdPropertyModel
 {
     private readonly IJsonNodeSchemaDescriptionHandler handler;
 

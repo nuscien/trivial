@@ -22,23 +22,8 @@ namespace Trivial.Data;
 /// <summary>
 /// The concise model interface.
 /// </summary>
-public interface IConciseModel
+public interface IConciseModel : IIdPropertyModel, ITitlePropertyModel, IDescriptionPropertyModel
 {
-    /// <summary>
-    /// Gets the identifier.
-    /// </summary>
-    string Id { get; }
-
-    /// <summary>
-    /// Gets the title.
-    /// </summary>
-    string Title { get; }
-
-    /// <summary>
-    /// Gets the description.
-    /// </summary>
-    string Description { get; }
-
     /// <summary>
     /// Gets the image URI (thumbnail or avatar).
     /// </summary>

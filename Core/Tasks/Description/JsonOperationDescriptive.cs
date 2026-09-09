@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Data;
 
 namespace Trivial.Tasks;
 
@@ -37,7 +38,7 @@ public interface IJsonOperationDescriptive<T>
 /// The attribute JSON operation descriptive .
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
-public sealed class JsonOperationDescriptiveAttribute : Attribute
+public sealed class JsonOperationDescriptiveAttribute : Attribute, IIdPropertyModel
 {
     /// <summary>
     /// Initializes a new instance of the JsonOperationDescriptiveAttribute class.

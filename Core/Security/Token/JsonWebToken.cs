@@ -10,7 +10,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
+using Trivial.Data;
 using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
@@ -649,7 +649,7 @@ public class JsonWebTokenHeader
 /// The base Json Web Token payload model.
 /// </summary>
 [DataContract]
-public class JsonWebTokenPayload
+public class JsonWebTokenPayload : IIdPropertyModel
 {
     /// <summary>
     /// Gets or sets the optional JWT ID.
