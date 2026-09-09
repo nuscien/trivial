@@ -767,7 +767,7 @@ public class JsonUnitTest
         {
             Assert.AreEqual("This is a text.", s);
             Assert.AreEqual(10000, i);
-        }).Default(Assert.Fail);
+        }).Default(() =>Assert.Fail());
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(1, sc.Count);
         Assert.IsFalse(json.GetValue("arr").Switch().Case<string, int>(TestObject, (s, i) => Assert.Fail()).IsPassed);
