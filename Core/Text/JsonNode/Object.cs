@@ -7007,7 +7007,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Sets properties.
     /// </summary>
     /// <param name="json">A JSON object element.</param>
-    /// <returns>A JSON object instance.</returns>
+    /// <returns>The count of property changed.</returns>
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public int SetRange(JsonElement json)
@@ -7029,7 +7029,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Sets properties.
     /// </summary>
     /// <param name="json">A JSON document.</param>
-    /// <returns>A JSON object instance.</returns>
+    /// <returns>The count of property changed.</returns>
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public int SetRange(JsonDocument json)
@@ -7040,7 +7040,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="json">A specific JSON object string to parse.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
-    /// <returns>A JSON object instance.</returns>
+    /// <returns>The count of property changed.</returns>
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public int PatchParse(string json, JsonDocumentOptions options = default)
@@ -7055,7 +7055,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="utf8Json">The JSON data to parse.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
-    /// <returns>A JSON object instance.</returns>
+    /// <returns>The count of property changed.</returns>
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public int PatchParse(Stream utf8Json, JsonDocumentOptions options = default)
@@ -7069,6 +7069,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Sets properties.
     /// </summary>
     /// <param name="json">The JSON value.</param>
+    /// <returns>The count of property changed.</returns>
     private int SetRangeInternal(JsonElement json)
     {
         var enumerator = json.EnumerateObject();
