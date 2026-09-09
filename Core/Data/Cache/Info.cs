@@ -144,8 +144,10 @@ public class DataCacheItemInfo<T> : IIdPropertyModel
         if (!expire.HasValue) return 0;
         var duration = (UpdateDate + expire.Value - DateTime.Now).TotalSeconds;
         if (duration <= 0) return 1;
-        if (duration >= 1) return 0;
-        return 1 - (duration / expire.Value.TotalSeconds);
+        var value = 1 - (duration / expire.Value.TotalSeconds);
+        if (value <= 0) return 0;
+        if (value >= 1) return 1;
+        return value;
     }
 
     /// <summary>
