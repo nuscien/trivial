@@ -971,6 +971,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             JsonValueKind.True => JsonBooleanNode.TrueString,
             JsonValueKind.False => JsonBooleanNode.FalseString,
             JsonValueKind.Number => data.ToString(),
+            JsonValueKind.Null or JsonValueKind.Undefined => null,
             _ => throw new InvalidOperationException($"The value kind of property {key} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.")
         };
         throw new InvalidOperationException($"The value kind of property {key} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.");
@@ -4013,6 +4014,29 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
 
             if (quoteStart == null)
             {
+                if (prop.EndsWith(']'))
+                {
+                    var indexOffset = prop.IndexOf('[');
+                    if (indexOffset > 0)
+                    {
+                        prop = prop.Substring(0, prop.Length - 1).TrimEnd();
+                        var indexValue = prop.Substring(indexOffset + 1).TrimStart();
+                        prop = prop.Substring(0, indexOffset).TrimEnd();
+                        path.Add(prop);
+                        if (!string.IsNullOrEmpty(indexValue))
+                        {
+                            var indexArray = indexValue.Split(new[] { "][" }, StringSplitOptions.None);
+                            path.AddRange(indexArray);
+                        }
+
+                        continue;
+                    }
+                    else if (indexOffset == 0)
+                    {
+                        prop = prop.Substring(1, prop.Length - 2).Trim();
+                    }
+                }
+
                 path.Add(prop);
                 continue;
             }
@@ -9288,7 +9312,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         predicate ??= PassTrue;
         var dict = new JsonObjectNode();
         var i = -1;
-        if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+        if (kind == JsonValueKind.Null)
         {
             foreach (var item in store)
             {
@@ -9306,6 +9330,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
                     if (predicate(value, item.Key, i)) dict[item.Key] = value;
                 }
             }
+        }
+        else if (kind == JsonValueKind.Undefined)
+        {
         }
         else
         {
@@ -9684,6 +9711,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
     public static implicit operator JsonObjectNode(JsonNode json)
     {
+        if (json is null) return null;
         if (json is JsonObject obj) return obj;
         throw new JsonException("json is not a JSON object.");
     }
