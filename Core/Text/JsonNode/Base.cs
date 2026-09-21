@@ -185,6 +185,113 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// <summary>
     /// Converts to a specific type.
     /// </summary>
+    /// <param name="handler">A hanlder to process value node.</param>
+    public void TryConvert(IJsonValueNodeHandler handler)
+    {
+        switch (ValueKind)
+        {
+            case JsonValueKind.String:
+                if (this is IJsonValueNode<string> sn) handler.Is(sn.Value);
+                else if (TryConvert(true, out string s)) handler.Is(s);
+                break;
+            case JsonValueKind.Number:
+                if (this is IJsonValueNode<long> jin)
+                {
+                    handler.Is(jin.Value);
+                }
+                else if (this is IJsonValueNode<double> jdn)
+                {
+                    if (JsonValues.IsInteger(jdn.Value, out var l))
+                        handler.Is(l);
+                    else
+                        handler.Is(jdn.Value);
+                }
+                else if (TryConvert(true, out double d))
+                {
+                    if (JsonValues.IsInteger(d, out var l))
+                        handler.Is(l);
+                    else
+                        handler.Is(d);
+                }
+
+                break;
+            case JsonValueKind.True:
+            case JsonValueKind.False:
+                if (this is IJsonValueNode<bool> bn) handler.Is(bn.Value);
+                else if (TryConvert(true, out bool b)) handler.Is(b);
+                break;
+            case JsonValueKind.Object:
+                if (this is JsonObjectNode o) handler.Is(o);
+                break;
+            case JsonValueKind.Array:
+                if (this is JsonArrayNode a) handler.Is(a);
+                break;
+            case JsonValueKind.Null:
+                handler.IsNull();
+                break;
+            case JsonValueKind.Undefined:
+                handler.Undefine();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Converts to a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of result.</typeparam>
+    /// <param name="handler">A hanlder to process value node.</param>
+    public T TryConvert<T>(IJsonValueNodeHandler<T> handler)
+    {
+        switch (ValueKind)
+        {
+            case JsonValueKind.String:
+                if (this is IJsonValueNode<string> sn) return handler.Is(sn.Value);
+                else if (TryConvert(true, out string s)) return handler.Is(s);
+                break;
+            case JsonValueKind.Number:
+                if (this is IJsonValueNode<long> jin)
+                {
+                    return handler.Is(jin.Value);
+                }
+                else if (this is IJsonValueNode<double> jdn)
+                {
+                    if (JsonValues.IsInteger(jdn.Value, out var l))
+                        return handler.Is(l);
+                    else
+                        return handler.Is(jdn.Value);
+                }
+                else if (TryConvert(true, out double d))
+                {
+                    if (JsonValues.IsInteger(d, out var l))
+                        return handler.Is(l);
+                    else
+                        return handler.Is(d);
+                }
+
+                break;
+            case JsonValueKind.True:
+            case JsonValueKind.False:
+                if (this is IJsonValueNode<bool> bn) return handler.Is(bn.Value);
+                else if (TryConvert(true, out bool b)) return handler.Is(b);
+                break;
+            case JsonValueKind.Object:
+                if (this is JsonObjectNode o) return handler.Is(o);
+                break;
+            case JsonValueKind.Array:
+                if (this is JsonArrayNode a) return handler.Is(a);
+                break;
+            case JsonValueKind.Null:
+                return handler.IsNull();
+            case JsonValueKind.Undefined:
+                return handler.Undefine();
+        }
+
+        return handler.Undefine();
+    }
+
+    /// <summary>
+    /// Converts to a specific type.
+    /// </summary>
     /// <typeparam name="T">The type to convert.</typeparam>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>

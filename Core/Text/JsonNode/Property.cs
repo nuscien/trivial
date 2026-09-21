@@ -36,3 +36,116 @@ public interface IJsonPropertyRoutePolicy
     /// <returns><c>true</c> if gets succeeded; otherwise, false, includes the scenarios that it does NOT exist or its type is not expected.</returns>
     bool TryGetObjectValue(JsonObjectNode source, string key, out JsonObjectNode value, out string exactKey);
 }
+
+/// <summary>
+/// A handler for JSON value node.
+/// </summary>
+public interface IJsonValueNodeHandler
+{
+    /// <summary>
+    /// Occurs on the value is a string.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    void Is(string value);
+
+    /// <summary>
+    /// Occurs on the value is an integer.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    void Is(long value);
+
+    /// <summary>
+    /// Occurs on the value is a double floating-point number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    void Is(double value);
+
+    /// <summary>
+    /// Occurs on the value is a boolean.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    void Is(bool value);
+
+    /// <summary>
+    /// Occurs on the value is a JSON object.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    void Is(JsonObjectNode value);
+
+    /// <summary>
+    /// Occurs on the value is a JSON array.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    void Is(JsonArrayNode value);
+
+    /// <summary>
+    /// Occurs on the value is null.
+    /// </summary>
+    void IsNull();
+
+    /// <summary>
+    /// Occurs on the value is undefined.
+    /// </summary>
+    void Undefine();
+}
+
+/// <summary>
+/// A handler for JSON value node.
+/// </summary>
+/// <typeparam name="T">The type of the result.</typeparam>
+public interface IJsonValueNodeHandler<T>
+{
+    /// <summary>
+    /// Occurs on the value is a string.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result.</returns>
+    T Is(string value);
+
+    /// <summary>
+    /// Occurs on the value is an integer.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result.</returns>
+    T Is(long value);
+
+    /// <summary>
+    /// Occurs on the value is a double floating-point number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result.</returns>
+    T Is(double value);
+
+    /// <summary>
+    /// Occurs on the value is a boolean.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result.</returns>
+    T Is(bool value);
+
+    /// <summary>
+    /// Occurs on the value is a JSON object.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result.</returns>
+    T Is(JsonObjectNode value);
+
+    /// <summary>
+    /// Occurs on the value is a JSON array.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result.</returns>
+    T Is(JsonArrayNode value);
+
+    /// <summary>
+    /// Occurs on the value is null.
+    /// </summary>
+    /// <returns>The result.</returns>
+    T IsNull();
+
+    /// <summary>
+    /// Occurs on the value is undefined.
+    /// </summary>
+    /// <returns>The result.</returns>
+    T Undefine();
+}

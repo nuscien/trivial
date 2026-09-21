@@ -65,7 +65,7 @@ public class JsonUnitTest
         Assert.IsFalse(json.IsReadOnly);
         Assert.IsNotEmpty(json.Keys);
         Assert.IsNotEmpty(json.Values);
-        Assert.AreEqual(9, json.Keys.Count());
+        Assert.HasCount(9, json.Keys);
         Assert.IsFalse(json.IsNullOrUndefined("str-a"));
         Assert.IsTrue(json.IsValueKind("str-a", JsonValueKind.String));
         Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));
@@ -110,6 +110,15 @@ public class JsonUnitTest
         Assert.AreEqual(JsonValueKind.Array, json.GetValueKind("arr"));
         Assert.AreEqual(json, json.Clone());
         Assert.IsNotNull(json.ToString(new[] { "num", "q", "props" }));
+
+        json.Add("blank", string.Empty, string.IsNullOrWhiteSpace, true);
+        json.Add("zero", 0, Arithmetic.IsZero, true);
+        json.Add("failure", "No such property", string.IsNullOrWhiteSpace);
+        json.Add("hundred", 100L, Arithmetic.IsZero);
+        Assert.IsFalse(json.ContainsKey("blank"));
+        Assert.IsFalse(json.ContainsKey("zero"));
+        Assert.IsFalse(json.ContainsKey("failure"));
+        Assert.IsFalse(json.ContainsKey("hundred"));
 
         var props = json.GetObjectValue("props");
         var p1 = new JsonObjectNode

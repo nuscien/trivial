@@ -10,7 +10,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Maths;
@@ -21,6 +23,147 @@ namespace Trivial.Maths;
 public static partial class Arithmetic
 {
     internal const double DoubleAccuracy = 1e-10;
+
+    /// <summary>
+    /// Tests if the specific number is zero.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is zero; otherwise, <c>false</c>.</returns>
+    public static bool IsZero(int value)
+        => value == 0;
+
+    /// <summary>
+    /// Tests if the specific number is zero.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is zero; otherwise, <c>false</c>.</returns>
+    public static bool IsZero(long value)
+        => value == 0L;
+
+    /// <summary>
+    /// Tests if the specific number is zero.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is zero; otherwise, <c>false</c>.</returns>
+    public static bool IsZero(float value)
+        => value == 0f;
+    /// <summary>
+    /// Tests if the specific number is zero.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is zero; otherwise, <c>false</c>.</returns>
+    public static bool IsZero(double value)
+        => value == 0d;
+
+    /// <summary>
+    /// Tests if the specific number is zero.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is zero; otherwise, <c>false</c>.</returns>
+    public static bool IsZero(decimal value)
+        => value == decimal.Zero;
+
+    /// <summary>
+    /// Tests if the specific number is an integer.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is an integer; otherwise, <c>false</c>.</returns>
+    public static bool IsInteger(double value)
+        => !double.IsNaN(value) && !double.IsInfinity(value) && value == Math.Truncate(value);
+
+    /// <summary>
+    /// Tests if the specific number is an integer.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <param name="v">The integer value if the number is an integer; otherwise, the default value of <see cref="long"/>.</param>
+    /// <returns><c>true</c> if the number is an integer; otherwise, <c>false</c>.</returns>
+    public static bool IsInteger(double value, out long v)
+    {
+        if (!IsInteger(value) || value > long.MaxValue || value < long.MinValue)
+        {
+            v = default;
+            return false;
+        }
+
+        try
+        {
+            v = (long)value;
+            return true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ArithmeticException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        v = default;
+        return false;
+    }
+
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Tests if the specific number is an integer.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is an integer; otherwise, <c>false</c>.</returns>
+    public static bool IsInteger(float value)
+        => !float.IsNaN(value) && !float.IsInfinity(value) && value == MathF.Truncate(value);
+
+    /// <summary>
+    /// Tests if the specific number is an integer.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <param name="v">The integer value if the number is an integer; otherwise, the default value of <see cref="long"/>.</param>
+    /// <returns><c>true</c> if the number is an integer; otherwise, <c>false</c>.</returns>
+    public static bool IsInteger(float value, out long v)
+    {
+        if (!IsInteger(value) || value > long.MaxValue || value < long.MinValue)
+        {
+            v = default;
+            return false;
+        }
+
+        try
+        {
+            v = (long)value;
+            return true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ArithmeticException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        v = default;
+        return false;
+    }
+#endif
 
     /// <summary>
     /// Gets a result of factorial for a specific number.

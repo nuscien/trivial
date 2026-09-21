@@ -115,6 +115,22 @@ public static class BooleanOperations
         };
 
     /// <summary>
+    /// Tests if the specific number is true.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is true; otherwise, <c>false</c>.</returns>
+    public static bool IsTrue(bool value)
+        => value;
+
+    /// <summary>
+    /// Tests if the specific number is false.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <returns><c>true</c> if the number is false; otherwise, <c>false</c>.</returns>
+    public static bool IsFalse(bool value)
+        => !value;
+
+    /// <summary>
     /// Converts operation string.
     /// </summary>
     /// <param name="op">The operator.</param>

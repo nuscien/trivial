@@ -683,6 +683,56 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Tests if the specific number is an integer.
+    /// </summary>
+    /// <param name="value">The number to test.</param>
+    /// <param name="v">The integer value if the number is an integer; otherwise, the default value of <see cref="long"/>.</param>
+    /// <returns><c>true</c> if the number is an integer; otherwise, <c>false</c>.</returns>
+    public static bool IsInteger(double value, out long v)
+    {
+        if (!Arithmetic.IsInteger(value) || value > JsonIntegerNode.MaxSafeInteger || value < JsonIntegerNode.MinSafeInteger)
+        {
+            v = default;
+            return false;
+        }
+
+        try
+        {
+            v = (long)value;
+            return true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (ArithmeticException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        v = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tests if the specific JSON value node is null or undefined.
+    /// </summary>
+    /// <param name="json">The JSON value node to test.</param>
+    /// <returns><c>true</c> if the JSON value node is null or undefined; otherwise, <c>false</c>.</returns>
+    public static bool IsNull(BaseJsonValueNode json)
+        => json is null || json.ValueKind == JsonValueKind.Null || json.ValueKind == JsonValueKind.Undefined;
+
+    /// <summary>
     /// Appends a copy of the specified string to this instance.
     /// </summary>
     /// <param name="sb">The string builder.</param>
@@ -1283,6 +1333,39 @@ public static class JsonValues
     /// <returns>A collection of the JSON object node.</returns>
     public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key)
         => WithProperty(array?.SelectObjects(), key);
+
+    /// <summary>
+    /// Filters the collection of JSON object nodes by selecting the property value of the specified key.
+    /// </summary>
+    /// <param name="col">The collection of JSON object nodes.</param>
+    /// <param name="key">The property key to select.</param>
+    /// <returns>A collection of JSON object nodes.</returns>
+    public static IEnumerable<BaseJsonValueNode> SelectProperty(this IEnumerable<JsonObjectNode> col, string key)
+    {
+        if (col is null) yield break;
+        foreach (var item in col)
+        {
+            if (item is null) yield return null;
+            yield return item.TryGetValue(key);
+        }
+    }
+
+    /// <summary>
+    /// Filters the collection of JSON object nodes by selecting the property value of the specified key.
+    /// </summary>
+    /// <param name="col">The collection of JSON object nodes.</param>
+    /// <param name="key">The property key to select.</param>
+    /// <param name="skipNull">true to skip null values; otherwise, false.</param>
+    /// <returns>A collection of JSON object nodes.</returns>
+    public static IEnumerable<JsonObjectNode> SelectPropertyObjects(this IEnumerable<JsonObjectNode> col, string key, bool skipNull = false)
+    {
+        if (col is null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.TryGetObjectValue(key) is JsonObjectNode json) yield return json;
+            if (!skipNull) yield return null;
+        }
+    }
 
     /// <summary>
     /// Converts to JSON object node collection.

@@ -3191,6 +3191,21 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         });
 
     /// <summary>
+    /// Filters the collection of JSON object nodes by selecting the property value of the specified key.
+    /// </summary>
+    /// <param name="key">The property key to select.</param>
+    /// <param name="skipNull">true to skip null values; otherwise, false.</param>
+    /// <returns>A collection of JSON object nodes.</returns>
+    public IEnumerable<JsonObjectNode> SelectPropertyObjects(string key, bool skipNull = false)
+    {
+        foreach (var ele in store)
+        {
+            if (ele is JsonObjectNode item && item.TryGetObjectValue(key) is JsonObjectNode json) yield return json;
+            if (!skipNull) yield return null;
+        }
+    }
+
+    /// <summary>
     /// Fills items by null until the count matches the specific minimum requirement.
     /// </summary>
     /// <param name="count">The minimum count required.</param>
@@ -3226,6 +3241,25 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     public void Add(string value)
         => AddItem(new JsonStringNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    public void Add(string value, Func<string, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddItem(new JsonStringNode(value));
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddItem(new JsonStringNode(value));
+    }
 
     /// <summary>
     /// Adds a value.
@@ -3328,6 +3362,25 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    public void Add(int value, Func<int, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddItem(new JsonIntegerNode(value));
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddItem(new JsonIntegerNode(value));
+    }
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     public void Add(int value, string format, IFormatProvider provider = null)
@@ -3339,6 +3392,25 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     public void Add(long value)
         => AddItem(new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    public void Add(long value, Func<long, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddItem(new JsonIntegerNode(value));
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddItem(new JsonIntegerNode(value));
+    }
 
     /// <summary>
     /// Adds a value.
@@ -3403,6 +3475,25 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     public void Add(bool value)
         => AddItem(value ? JsonBooleanNode.True : JsonBooleanNode.False);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    public void Add(bool value, Func<bool, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddItem(value ? JsonBooleanNode.True : JsonBooleanNode.False);
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddItem(value ? JsonBooleanNode.True : JsonBooleanNode.False);
+    }
 
     /// <summary>
     /// Adds a value.

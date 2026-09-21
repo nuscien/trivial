@@ -2066,7 +2066,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="trueString">The string value of true.</param>
     /// <param name="falseString">The string value of false.</param>
     /// <param name="ignoreIfNotBoolean">true if return null if the kind of property is not boolean; otherwise, false, that means it will return the string value if it is a string or a number.</param>
-    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
+    /// <returns>The string value of the boolean; or null, if not match.</returns>
     public string TryGetBooleanStringValue(string key, string trueString, string falseString, bool ignoreIfNotBoolean = false)
     {
         if (TryGetBooleanValue(key, true, out var b)) return b ? trueString : falseString;
@@ -2081,7 +2081,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="trueString">The string value of true.</param>
     /// <param name="falseString">The string value of false.</param>
     /// <param name="isBoolean">true if the kind is boolean; otherwise, false.</param>
-    /// <returns><c>true</c> if has the property and the type is the one expected; otherwise, <c>false</c>.</returns>
+    /// <returns>The string value of the boolean; or null, if not match.</returns>
     public string TryGetBooleanStringValue(string key, string trueString, string falseString, out bool isBoolean)
     {
         if (TryGetBooleanValue(key, true, out var b))
@@ -3572,6 +3572,36 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns><c>true</c> if the kind is the one expected; otherwise, <c>false</c>.</returns>
     public bool TryGetValue(ReadOnlySpan<char> key, out BaseJsonValueNode result)
         => TryGetValue(key.ToString(), out result);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="handler">The handler to process the value node.</param>
+    /// <returns>The value node.</returns>
+    public BaseJsonValueNode TryGetValue(string key, IJsonValueNodeHandler handler)
+    {
+        var v = TryGetValueOrNull(key);
+        if (handler is null) return v;
+        if (v is null) handler.Undefine();
+        else v.TryConvert(handler);
+        return v;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="handler">The handler to process the value node.</param>
+    /// <returns>The value node.</returns>
+    public T TryGetValue<T>(string key, IJsonValueNodeHandler<T> handler)
+    {
+        var v = TryGetValueOrNull(key);
+        if (handler is null) return default;
+        if (v is null) return handler.Undefine();
+        else return v.TryConvert(handler);
+    }
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -7817,6 +7847,38 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
+    /// <param name="test">A function to test the value before adding.</param>
+    /// <param name="revert">true to invert the result of the test; otherwise, false.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, JsonObjectNode value, Func<int, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            Add(key, value);
+            return;
+        }
+
+        var result = test(value?.Count ?? 0);
+        if (revert) result = !result;
+        if (result) Add(key, value);
+    }
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, JsonArrayNode value)
+        => AddProperty(key, value ?? JsonValues.Null);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, IJsonObjectHost value)
@@ -7875,6 +7937,28 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, string value)
         => AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, string value, Func<string, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+    }
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -7942,6 +8026,28 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, int value, Func<int, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddProperty(key, new JsonIntegerNode(value));
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddProperty(key, new JsonIntegerNode(value));
+    }
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
@@ -7958,6 +8064,28 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, long value)
         => AddProperty(key, new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, long value, Func<long, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddProperty(key, new JsonIntegerNode(value));
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddProperty(key, new JsonIntegerNode(value));
+    }
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -8056,6 +8184,28 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, bool value)
         => AddProperty(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="test">A handler to test if the value should be added.</param>
+    /// <param name="revert"><c>true</c>, if the result of the test is inverted; otherwise, <c>false</c>.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, bool value, Func<bool, bool> test, bool revert = false)
+    {
+        if (test is null)
+        {
+            AddProperty(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+            return;
+        }
+
+        var result = test(value);
+        if (revert) result = !result;
+        if (result) AddProperty(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+    }
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
