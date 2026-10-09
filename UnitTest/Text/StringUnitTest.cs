@@ -59,6 +59,15 @@ public class StringUnitTest
         Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", true));
         Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning to you", " ", " to", StringComparison.OrdinalIgnoreCase, false, 6));
         Assert.AreEqual("good morning", StringExtensions.Between("let's say good morning", "good", "x", StringComparison.OrdinalIgnoreCase, true));
+
+        var span = StringExtensions.After(TestString, ", ", true);
+        Assert.StartsWith(", and it grieved her sorely. ", span.ToString());
+        span = StringExtensions.After(span, 2);
+        Assert.StartsWith("and it grieved her sorely. ", span.ToString());
+        span = StringExtensions.Before(span, "\r\n");
+        Assert.DoesNotContain(span.ToString(), "\"");
+        span = StringExtensions.Before(span, 3);
+        Assert.AreEqual("and", span.ToString());
     }
 
     /// <summary>

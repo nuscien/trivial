@@ -27,6 +27,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Drawing\docs\**" />
+    <EmbeddedResource Remove="Drawing\docs\**" />
+    <None Remove="Drawing\docs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
   </ItemGroup>
 

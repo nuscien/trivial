@@ -798,10 +798,23 @@ public static class StringExtensions
     /// Gets the sub-string after the first occurrence of a specific string.
     /// </summary>
     /// <param name="source">The source string.</param>
+    /// <param name="length">The desired length for the slice.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> After(ReadOnlySpan<char> source, int length)
+    {
+        if (length < 0) return source;
+        if (length >= source.Length) return ReadOnlySpan<char>.Empty;
+        return source.Slice(length);
+    }
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
     /// <param name="q">The query string.</param>
     /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
     /// <returns>The result.</returns>
-    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, ReadOnlySpan<char> q, bool withQ)
+    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, ReadOnlySpan<char> q, bool withQ = false)
     {
         var i = source.IndexOf(q);
         if (i < 0) return ReadOnlySpan<char>.Empty;
@@ -821,8 +834,28 @@ public static class StringExtensions
     /// <param name="q">The query string.</param>
     /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
     /// <returns>The result.</returns>
-    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, string q, bool withQ)
+    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, string q, bool withQ = false)
         => Before(source, string.IsNullOrEmpty(q) ? ReadOnlySpan<char>.Empty : q.AsSpan(), withQ);
+
+    /// <summary>
+    /// Gets the sub-string after the first occurrence of a specific string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="q">The query string.</param>
+    /// <param name="withQ">true if the result includes the query; otherwise, false.</param>
+    /// <returns>The result.</returns>
+    public static ReadOnlySpan<char> Before(ReadOnlySpan<char> source, char q, bool withQ)
+    {
+        var i = source.IndexOf(q);
+        if (i < 0) return ReadOnlySpan<char>.Empty;
+        if (withQ)
+        {
+            i++;
+            if (i >= source.Length) return source;
+        }
+
+        return source.Slice(0, i);
+    }
 
     /// <summary>
     /// Gets the sub-string after the first occurrence of a specific string.
