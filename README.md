@@ -12,6 +12,8 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
+![.NET 11](./docs/assets/badge_NET_11.svg)
+![.NET 10](./docs/assets/badge_NET_10.svg)
 ![.NET 9](./docs/assets/badge_NET_9.svg)
 ![.NET 8](./docs/assets/badge_NET_8.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)

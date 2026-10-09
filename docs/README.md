@@ -10,6 +10,8 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
+![.NET 11](./assets/badge_NET_11.svg)
+![.NET 10](./assets/badge_NET_10.svg)
 ![.NET 9](./assets/badge_NET_9.svg)
 ![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
@@ -34,6 +36,8 @@ This library includes utilities and services for tasks, security, JSON, etc.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
 
+![.NET 11](./assets/badge_NET_11.svg)
+![.NET 10](./assets/badge_NET_10.svg)
 ![.NET 9](./assets/badge_NET_9.svg)
 ![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
@@ -48,6 +52,8 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Mime?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Mime)
 
+![.NET 11](./assets/badge_NET_11.svg)
+![.NET 10](./assets/badge_NET_10.svg)
 ![.NET 9](./assets/badge_NET_9.svg)
 ![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
@@ -66,6 +72,8 @@ Also provide Code-128 and EAN parser supports.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
 
+![.NET 11](./assets/badge_NET_11.svg)
+![.NET 10](./assets/badge_NET_10.svg)
 ![.NET 9](./assets/badge_NET_9.svg)
 ![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
@@ -78,6 +86,8 @@ The useful utilities for ASP.NET application.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
+![.NET 11](./assets/badge_NET_11.svg)
+![.NET 10](./assets/badge_NET_10.svg)
 ![.NET 9](./assets/badge_NET_9.svg)
 ![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
