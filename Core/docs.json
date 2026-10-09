@@ -1,0 +1,377 @@
+{
+  "$schema": "https://cdn.jsdelivr.net/npm/hje@2.4.6/dist/mdblogs.schema.json",
+  "name": "Trivial core libraries",
+  "name#zh": "Trivial 核心库",
+  "description": "Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.",
+  "description#zh": "Trivial 库包含许多实用的工具、模型和组件，这些都是琐碎但有用的，帮助您专注于项目的业务逻辑。",
+  "docs": [
+    {
+      "disable": "label",
+      "name": "Task and retry policy",
+      "name#zh": "任务和重试策略"
+    },
+    {
+      "id": "tasks/interceptor",
+      "name": "Interceptor",
+      "name#zh": "并发任务",
+      "dir": "Tasks/Interceptor",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "tasks/equipartition",
+      "name": "Equipartition task",
+      "name#zh": "分片任务",
+      "dir": "Tasks/Equipartition",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "tasks/retry",
+      "name": "Retry policy",
+      "name#zh": "重试",
+      "dir": "Tasks/Retry",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "tasks/json-rpc",
+      "name": "JSON-RPC",
+      "name#zh": "JSON RPC",
+      "dir": "Tasks/JsonPrc",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Text (also including JSON and CSV)",
+      "name#zh": "文本（包括 JSON 和 CSV）"
+    },
+    {
+      "id": "text/json",
+      "name": "JSON",
+      "name#zh": "JSON",
+      "dir": "Text/JsonNode",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "text/csv",
+      "name": "CSV",
+      "name#zh": "CSV",
+      "dir": "Text/Table",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "text/utils",
+      "name": "String utilities",
+      "name#zh": "字符串工具",
+      "dir": "Text/Utils",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "text/pinyin",
+      "name": "Chinese Pinyin",
+      "name#zh": "汉语拼音",
+      "dir": "Text/Pinyin",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Data",
+      "name#zh": "数据"
+    },
+    {
+      "id": "data/cache",
+      "name": "Cache",
+      "name#zh": "缓存",
+      "dir": "Data/Cache",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "data/criteria",
+      "name": "Criteria",
+      "name#zh": "条件",
+      "dir": "Data/Query",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "data/reader",
+      "name": "Data Reader",
+      "name#zh": "数据读取器",
+      "dir": "Data/Reader",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Maths and numerals",
+      "name#zh": "数学和数字"
+    },
+    {
+      "id": "maths/arithmetic",
+      "name": "Arithmetic",
+      "name#zh": "算术",
+      "dir": "Maths/Arithmetic",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "maths/numerals",
+      "name": "Numerals and positional notation",
+      "name#zh": "数字和进制",
+      "dir": "Maths/Numerals",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "maths/spatial",
+      "name": "Spatial",
+      "name#zh": "空间",
+      "dir": "Maths/Coordinate",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "maths/set",
+      "name": "Set",
+      "name#zh": "集合",
+      "dir": "Maths/Set",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Network",
+      "name#zh": "网络"
+    },
+    {
+      "id": "net/uri",
+      "name": "HTTP URI and query",
+      "name#zh": "HTTP URI 和查询",
+      "dir": "Net/Uri",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "net/http",
+      "name": "JSON HTTP client and HTTP client extensions",
+      "name#zh": "JSON HTTP 客户端和 HTTP 客户端扩展",
+      "dir": "Net/Http",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Security",
+      "name#zh": "安全"
+    },
+    {
+      "id": "security/oauth",
+      "name": "OAuth",
+      "name#zh": "OAuth",
+      "dir": "Security/Token",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "security/rsa",
+      "name": "RSA",
+      "name#zh": "RSA",
+      "dir": "Security/Asymmetric",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "security/hash",
+      "name": "Hash",
+      "name#zh": "哈希",
+      "dir": "Security/Hash",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "security/symmetric",
+      "name": "Symmetric",
+      "name#zh": "对称加密",
+      "dir": "Security/Symmetric",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "security/string",
+      "name": "Secure string",
+      "name#zh": "安全字符串",
+      "dir": "Security/Info",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "File and stream",
+      "name#zh": "文件和流"
+    },
+    {
+      "id": "io/file",
+      "name": "File & directory",
+      "name#zh": "文件和目录",
+      "dir": "IO/File",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "io/stream",
+      "name": "Stream",
+      "name#zh": "数据流",
+      "dir": "IO/Stream",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "io/reader",
+      "name": "Characters reader",
+      "name#zh": "字符读取器",
+      "dir": "IO/Reader",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Collection",
+      "name#zh": "集合"
+    },
+    {
+      "id": "collection",
+      "name": "Collection",
+      "name#zh": "集合",
+      "dir": "Collection",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Reflection",
+      "name#zh": "反射"
+    },
+    {
+      "id": "reflection/observable",
+      "name": "Observable properties",
+      "name#zh": "监听属性",
+      "dir": "Reflection/Observable",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "reflection/objects",
+      "name": "Singleton and renew",
+      "name#zh": "单例和更新",
+      "dir": "Reflection/Objects",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "reflection/error",
+      "name": "Error handling",
+      "name#zh": "错误处理",
+      "dir": "Reflection/Error",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Colors",
+      "name#zh": "颜色"
+    },
+    {
+      "id": "drawing/color",
+      "name": "Color calculator",
+      "name#zh": "颜色计算器",
+      "dir": "Drawing/Color",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Geography",
+      "name#zh": "地理"
+    },
+    {
+      "id": "geography",
+      "name": "Geography",
+      "name#zh": "地理",
+      "dir": "Geography/",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Command Line",
+      "name#zh": "命令行"
+    },
+    {
+      "id": "command-line/arguments",
+      "name": "Arguments",
+      "name#zh": "命令行参数",
+      "intro": "An instance provided a way to access values from the arguments and dispatch the command verbs.",
+      "dir": "CommandLine/Args",
+      "file": true,
+      "end": true
+    },
+    {
+      "id": "command-line/cli",
+      "name": "CLI",
+      "name#zh": "命令行基本交互",
+      "intro": "An adaptive command line interface for both terminal and command prompt.",
+      "dir": "CommandLine/Interceptor",
+      "file": true,
+      "end": true
+    },
+    {
+      "disable": "label",
+      "name": "Web",
+      "name#zh": "网络"
+    },
+    {
+      "id": "web",
+      "name": "Web Format",
+      "name#zh": "网络常用格式",
+      "dir": "Web",
+      "file": true,
+      "end": true
+    }
+  ],
+  "options": {
+    "disableName": true
+  },
+  "redir": {
+  },
+  "$defs": {
+    "contributors": [
+      {
+        "name": "Kingcean Tuan",
+        "url": "https://kingcean.net"
+      }
+    ],
+    "keywords": [
+      {
+        "name": "Installation",
+        "name#zh": "安装",
+        "value": "install"
+      },
+      {
+        "name": "Prepare",
+        "name#zh": "准备",
+        "value": "prepare"
+      },
+      {
+        "name": "NPM",
+        "value": "npm"
+      }
+    ]
+  }
+}

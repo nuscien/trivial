@@ -4,4 +4,4 @@
 using Trivial.Drawing;
 ```
 
-- [Color calculator](./color)
+- [Color calculator](./Color/)

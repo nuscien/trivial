@@ -203,6 +203,7 @@ public static partial class WebFormat
             "heic" => "image/heic",
             "ico" or "cur" => "image/x-icon",
             "jpe" or "jpeg" or "jpg" or "jfif" => "image/jpeg",
+            "jxl" => "image/jxl",
             "psd" => "image/vnd.adobe.photoshop",
             "ai" => "application/illustrator",
             "cdr" => "application/vnd.corel-draw",

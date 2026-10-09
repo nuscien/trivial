@@ -3,34 +3,22 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:image" content="images/bg/poster.jpg">
+    <meta property="og:image" content="./Materials/poster.png">
     <title>Trivial</title>
     <link href="https://cdn.jsdelivr.net/npm/hje@3.0.0/docs/css/site.net.css" rel="stylesheet" />
-    <link href="./css/current.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="./images/logos/tuans-s.png" />
-    <style type="text/css">
-    body > header:first-child > section:first-child > h1 > img {
-        width: 48px; height: 48px; vertical-align: middle; margin-right: 8px;
-    }
-    body > header:first-child > section:first-child > h1 > img:hover {
-        width: 50px; height: 50px; vertical-align: middle; margin-right: 6px;
-    }
-   body > header + section {
-        min-height: 640px; margin-bottom: 60px;
-    }
-    </style>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/hje@3.0.0/docs/js/mdblogs.js" ></script>
-    <script type="text/javascript">
-    function onInit() {
-    }
-    </script>
+    <link href="./docs/css/current.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/vs2015.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="./docs/assets/logo.png" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/marked@16.2.1/lib/marked.umd.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/hje@3.0.0/docs/js/mdblogs.js"></script>
 </head>
-<body onload="onInit()">
+<body>
     <header>
         <section>
             <h1><img alt="Trivial" src="./docs/assets/logo.png" /><a href="https://trivial.kingcean.net"><strong>Trivial</strong><span> libraries</span></a></h1>
             <ul>
-                <li>
+                <li class="state-sel">
                     <a href="https://trivial.kingcean.net/">Core</a>
                 </li>
                 <li>
@@ -42,28 +30,38 @@
             </ul>
         </section>
     </header>
-    <section>
-        <h2 id="title-namespaces">Namespaces</h2>
+    <section id="blog_header" >
         <section>
-            <a class="link-long-button" href="./Core/Tasks/"><span>Task and retry policy</span>
-            </a><a class="link-long-button" href="./Core/Text/"><span>Text (also including JSON and CSV)</span>
-            </a><a class="link-long-button" href="./Core/Data/"><span>Data</span>
-            </a><a class="link-long-button" href="./Core/Maths/"><span>Maths and numerals</span>
-            </a><a class="link-long-button" href="./Core/Net/"><span>Network</span>
-            </a><a class="link-long-button" href="./Core/Security/"><span>Security</span>
-            </a><a class="link-long-button" href="./Core/IO/"><span>File and stream</span>
-            </a><a class="link-long-button" href="./Core/Collection/"><span>Collection</span>
-            </a><a class="link-long-button" href="./Core/Reflection/"><span>Reflection</span>
-            </a><a class="link-long-button" href="./Core/Drawing/"><span>Colors</span>
-            </a><a class="link-long-button" href="./Core/Geography/"><span>Geography</span>
-            </a><a class="link-long-button" href="./Core/CommandLine/"><span>Command line</span>
-            </a>
+            <p>Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.</p>
+            <p>
+                <a href="https://www.nuget.org/packages/Trivial" target="_blank"><img alt="NuGet package" src="https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads" /></a>
+            </p>
+            <p>
+                <img alt=".NET 11" src="./docs/assets/badge_NET_11.svg" />
+                <img alt=".NET 10" src="./docs/assets/badge_NET_10.svg" />
+                <img alt=".NET Framework 4.8" src="./docs/assets/badge_NET_Fx_4_8.svg" />
+                <img alt=".NET Framework 4.6.2" src="./docs/assets/badge_NET_Fx_4_6_2.svg" />
+            </p>
         </section>
     </section>
+    <section id="blog_content" ></section>
+    <script type="text/javascript">
+        DeepX.MdBlogs.render("blog_content", "./Core/docs.json", {
+            title: true,
+            onselect(ev) {
+                document.getElementById("blog_header").style.display = "none";
+            }
+        });
+    </script>
     <footer>
         <section>
             <div class="x-copyright">
-                <span><strong>Trivial</strong> libraries</span>
+                <strong>Trivial libraries</strong><br />
+                <span>&copy; Kingcean Tuan 2021. All rights reserved</span><br />
+                <br /><span>Other links</span>
+                <br /><a href="https://kingcean.net">Kingcean.net</a>
+                <br /><a href="https://nuscien.github.io">NuScien</a>
+                <br /><a href="https://dot.net">Microsoft .NET</a>
             </div>
         </section>
     </footer>

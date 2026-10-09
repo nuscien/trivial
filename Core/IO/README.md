@@ -4,6 +4,6 @@
 using Trivial.IO;
 ```
 
-- [File & directory](./file)
-- [Stream](./stream)
-- [Characters reader](./charsreader)
+- [File & directory](./File)
+- [Stream](./Stream)
+- [Characters reader](./Reader)

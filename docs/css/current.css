@@ -7,3 +7,12 @@ body > main.main-content {
 body > main.main-content > p > img {
     max-width: 100%;
 }
+body > header:first-child > section:first-child > h1 > img {
+    width: 48px; height: 48px; vertical-align: middle; margin-right: 8px;
+}
+body > header:first-child > section:first-child > h1 > img:hover {
+    width: 50px; height: 50px; vertical-align: middle; margin-right: 6px;
+}
+body > section#blog_content {
+    min-height: 640px; margin-bottom: 60px;
+}
