@@ -2,6 +2,8 @@ body {
     background-image: none;
 }
 body > main.main-content {
-    min-height: 420px;
+    min-height: 480px;
 }
-
+body > main.main-content > p > img {
+    min-width: 100%;
+}

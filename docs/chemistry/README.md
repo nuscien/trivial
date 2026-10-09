@@ -4,7 +4,7 @@ The basic chemistry models.
 
 ### Import
 
-This library targets .NET 6, .NET 5, .NET Core 3.1, .NET Standard 2.0, .NET Framework 4.6.1 and .NET Framework 4.8.
+This library targets .NET 11, .NET 10, .NET Framework 4.6.2 and .NET Framework 4.8.
 
 You can install the package from [NuGet](https://www.nuget.org/packages/Trivial.Chemistry) to your project by following way.
 

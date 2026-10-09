@@ -16,7 +16,7 @@ In `Trivial.Web` namespace of `Trivial.Web.dll` library.
 
 The useful utilities for ASP.NET application.
 
-This library targets .NET 10. Requires ASP.NET Core.
+This library targets .NET 11 and .NET 10. Requires ASP.NET Core.
 
 You can install the package from [NuGet](https://www.nuget.org/packages/Trivial.Web) to your project.
 
@@ -28,7 +28,7 @@ PM > Install-Package Trivial.Web
 
 The MIME constants and its mapping of file extension part.
 
-This library targets .NET 10, .NET Framework 4.6.2 and .NET Framework 4.8.
+This library targets .NET 11, .NET 10, .NET Framework 4.6.2 and .NET Framework 4.8.
 
 You can install the package from [NuGet](https://www.nuget.org/packages/Trivial.Messages) to your project.
 
