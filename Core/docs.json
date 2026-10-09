@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cdn.jsdelivr.net/npm/hje@2.4.6/dist/mdblogs.schema.json",
+  "$schema": "https://cdn.jsdelivr.net/npm/hje@3.0.0/dist/mdblogs.schema.json",
   "name": "Trivial core libraries",
   "name#zh": "Trivial 核心库",
   "description": "Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.",
@@ -77,6 +77,7 @@
       "name#zh": "汉语拼音",
       "dir": "Text/Pinyin",
       "file": true,
+      "file#zh": "zh.md",
       "end": true
     },
     {
@@ -367,10 +368,6 @@
         "name": "Prepare",
         "name#zh": "准备",
         "value": "prepare"
-      },
-      {
-        "name": "NPM",
-        "value": "npm"
       }
     ]
   }
