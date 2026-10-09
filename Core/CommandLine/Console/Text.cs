@@ -33,6 +33,24 @@ public class ConsoleTextStyle : ICloneable
         BackgroundConsoleColor = background;
     }
 
+#if NETFRAMEWORK
+    /// <summary>
+    /// Initializes a new instance of the ConsoleTextStyle class.
+    /// </summary>
+    /// <param name="style">The font style.</param>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    public ConsoleTextStyle(FontStyle style, ConsoleColor? foreground = null, ConsoleColor? background = null)
+    {
+        if (style.HasFlag(FontStyle.Bold)) Bold = true;
+        if (style.HasFlag(FontStyle.Italic)) Italic = true;
+        if (style.HasFlag(FontStyle.Underline)) Underline = true;
+        if (style.HasFlag(FontStyle.Strikeout)) Strikeout = true;
+        ForegroundConsoleColor = foreground;
+        BackgroundConsoleColor = background;
+    }
+#endif
+
     /// <summary>
     /// Initializes a new instance of the ConsoleTextStyle class.
     /// </summary>

@@ -66,6 +66,10 @@ public class JsonUnitTest
         Assert.IsNotEmpty(json.Keys);
         Assert.IsNotEmpty(json.Values);
         Assert.HasCount(9, json.Keys);
+        Assert.HasCount(9, json.ToList());
+        Assert.HasCount(9, json.ToArray());
+        Assert.HasCount(9, json.ToDictionary());
+        Assert.HasCount(9, json.ToSortedDictionary());
         Assert.IsFalse(json.IsNullOrUndefined("str-a"));
         Assert.IsTrue(json.IsValueKind("str-a", JsonValueKind.String));
         Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));

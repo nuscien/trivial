@@ -315,8 +315,8 @@ public class ServerSentEventInfo : IIdPropertyModel
     /// <typeparam name="TValue">The type of data to deserialize.</typeparam>
     /// <param name="options">The JSON serialization options.</param>
     /// <returns>The value deserialized from data string in JSON format.</returns>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON. -or- There is remaining data in the string beyond a single JSON value.</exception>
-    /// <exception cref="NotSupportedException">There is no compatible System.Text.Json.Serialization.JsonConverter for TValue or its serializable members.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- TElement is not compatible with the JSON. -or- There is remaining data in the string beyond a single JSON value.</exception>
+    /// <exception cref="NotSupportedException">There is no compatible System.Text.Json.Serialization.JsonConverter for TElement or its serializable members.</exception>
     public TValue DeserializeJsonData<TValue>(JsonSerializerOptions options = default)
         => string.IsNullOrWhiteSpace(DataString) ? default : JsonSerializer.Deserialize<TValue>(DataString, options);
 

@@ -33,7 +33,7 @@ public static partial class ListExtensions
     {
         if (dict == null) throw ObjectConvert.ArgumentNull(nameof(dict));
         value = dict.TryGetValue(key, out var v) && !string.IsNullOrEmpty(v) ? v : null;
-        return v != null;
+        return value != null;
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="source">A collection to filter.</param>
     /// <returns>A collection that contains elements from the input sequence that satisfy the not empty condition.</returns>
-    public static IEnumerable<string> WhereNotNullOrEmpty(this IEnumerable<string> source)
+    public static IEnumerable<string> WhereNotEmpty(this IEnumerable<string> source)
         => source?.Where(IsNotNullOrEmpty);
 
     /// <summary>
@@ -135,8 +135,87 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="source">A collection to filter.</param>
     /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
-    public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string> source)
+    public static IEnumerable<string> WhereNotNullNorWhiteSpace(this IEnumerable<string> source)
         => source?.Where(IsNotNullOrWhiteSpace);
+
+    /// <summary>
+    /// Creates an editable lookup from a collection according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TElement">The type of the element.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <returns>An editable lookup.</returns>
+    public static EditableLookup<TKey, TElement> ToEditableLookup<TKey, TElement>(this IEnumerable<TElement> source, Func<TElement, TKey> keySelector)
+    {
+        if (source is null) return null;
+        var lookup = new EditableLookup<TKey, TElement>();
+        foreach (var item in source)
+        {
+            lookup.AddItem(keySelector(item), item);
+        }
+
+        return lookup;
+    }
+
+    /// <summary>
+    /// Creates an editable lookup from a collection according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TElement">The type of the element.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="comparer">The equality comparer to use for the keys.</param>
+    /// <returns>An editable lookup.</returns>
+    public static EditableLookup<TKey, TElement> ToEditableLookup<TKey, TElement>(this IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IEqualityComparer<TKey> comparer)
+    {
+        if (source is null) return null;
+        var lookup = new EditableLookup<TKey, TElement>(comparer);
+        foreach (var item in source)
+        {
+            lookup.AddItem(keySelector(item), item);
+        }
+
+        return lookup;
+    }
+
+    /// <summary>
+    /// Creates an editable lookup from a collection according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TElement">The type of the element.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <returns>An editable lookup.</returns>
+    public static EditableLookup<TKey, TElement> ToEditableLookup<TKey, TElement>(this IEnumerable<KeyValuePair<TKey, IEnumerable<TElement>>> source)
+    {
+        if (source is null) return null;
+        var lookup = new EditableLookup<TKey, TElement>();
+        foreach (var item in source)
+        {
+            lookup.AddItem(item.Key, item.Value);
+        }
+
+        return lookup;
+    }
+
+    /// <summary>
+    /// Creates an editable lookup from a collection according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TElement">The type of the element.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <returns>An editable lookup.</returns>
+    public static EditableLookup<TKey, TElement> ToEditableLookup<TKey, TElement>(this IEnumerable<KeyValuePair<TKey, TElement>> source)
+    {
+        if (source is null) return null;
+        var lookup = new EditableLookup<TKey, TElement>();
+        foreach (var item in source)
+        {
+            lookup.AddItem(item.Key, item.Value);
+        }
+
+        return lookup;
+    }
 
     /// <summary>
     /// Creates a new list to copy the input collection and insert a specific number of default value at beginning.

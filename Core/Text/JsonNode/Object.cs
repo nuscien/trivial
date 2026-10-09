@@ -80,6 +80,7 @@ namespace Trivial.Text;
 /// </example>
 [Serializable]
 [JsonConverter(typeof(JsonValueNodeConverter.ObjectConverter))]
+[DebuggerDisplay("{DebugString,nq}")]
 [Guid("2D5D5CB8-9ACD-4DB6-9B0F-1D766EF64D75")]
 public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
 #if NET10_0_OR_GREATER
@@ -223,7 +224,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Gets a collection containing the property keys of the object.
     /// </summary>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
     public ICollection<string> Keys => store.Keys;
 
     /// <summary>
@@ -263,8 +264,46 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     IEnumerable<BaseJsonValueNode> IReadOnlyDictionary<string, BaseJsonValueNode>.Values => store.Values;
 
     /// <summary>
+    /// Gets the string for debug view.
+    /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebugString
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            sb.AppendFormat("Count = {0}", Count);
+            var count = TryGetStringTrimmedValue("count", true) ?? TryGetStringTrimmedValue("Count", true);
+            if (!string.IsNullOrEmpty(count)) sb.AppendFormat(" ({0})", count);
+            var id = TryGetId(out var idKey);
+            if (!string.IsNullOrEmpty(id)) sb.AppendFormat(", {0} = {1}", idKey ?? "ID", id);
+            var name = TryGetName(out var nameKey);
+            if (!string.IsNullOrEmpty(name)) sb.AppendFormat(", {0} = {1}", nameKey ?? "Name", name);
+            if (!string.IsNullOrEmpty(Schema)) sb.AppendFormat(", $schema = {0}", Schema);
+            if (!string.IsNullOrEmpty(TypeDiscriminator)) sb.AppendFormat(", $type = {0}", TypeDiscriminator);
+            sb.Append(", Keys = [");
+            sb.Append(string.Join(", ", Keys));
+            sb.Append(']');
+            return sb.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Gets the string for debug view.
+    /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
+    internal string JsonString => ToString(IndentStyles.Compact);
+
+    /// <summary>
+    /// Gets a value indicating whether the JSON object is thread-safe (concurrent).
+    /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
+    private bool IsThreadSafe => store is ConcurrentDictionary<string, BaseJsonValueNode>;
+
+    /// <summary>
     /// Gets a value indicating whether the JSON object is read-only.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public bool IsReadOnly => store.IsReadOnly;
 
     /// <summary>
@@ -307,7 +346,6 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <summary>
     /// Gets or sets the comment of the JSON object.
     /// </summary>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public string CommentValue
     {
         get => TryGetStringValue("$comment");
@@ -488,7 +526,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
     public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
     {
-        if (store is ConcurrentDictionary<string, BaseJsonValueNode>)
+        if (IsThreadSafe)
         {
             if (skipIfEnabled) return;
         }
@@ -1671,6 +1709,73 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
 
         key = "$id";
         kind = idKind;
+        return null;
+    }
+
+    /// <summary>
+    /// Tries get the name or title.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The name found; or null, if non-exists.</returns>
+    public string TryGetName(out string key)
+    {
+        var name = TryGetStringTrimmedValue("name", true);
+        if (name is not null)
+        {
+            key = "name";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("Name", true);
+        if (name is not null)
+        {
+            key = "Name";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("NAME", true);
+        if (name is not null)
+        {
+            key = "NAME";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("$name", true);
+        if (name is not null)
+        {
+            key = "$name";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("_name", true);
+        if (name is not null)
+        {
+            key = "_name";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("title", true);
+        if (name is not null)
+        {
+            key = "title";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("Title", true);
+        if (name is not null)
+        {
+            key = "Title";
+            return name;
+        }
+
+        name = TryGetStringTrimmedValue("TITLE", true);
+        if (name is not null)
+        {
+            key = "TITLE";
+            return name;
+        }
+
+        key = null;
         return null;
     }
 
@@ -4098,7 +4203,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns><c>true</c> if deserialize succeeded; otherwise, <c>false</c>.</returns>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the property key was empty or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- <typeparamref name="T"/> is not compatible with the JSON.</exception>
     public bool TryDeserializeValue<T>(string key, JsonSerializerOptions options, out T result)
     {
         if (!store.TryGetValue(key, out var item))
@@ -9307,7 +9412,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>A JSON object instance.</returns>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options; or the key was empty or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- <typeparamref name="T"/> is not compatible with the JSON.</exception>
     public T DeserializeValue<T>(string key, Func<string, T> parser, JsonSerializerOptions options = default)
     {
         AssertKey(key);
@@ -9527,7 +9632,64 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// </summary>
     /// <returns>A dictionary that contains the key value pairs from this instance.</returns>
     public Dictionary<string, BaseJsonValueNode> ToDictionary()
-        => new(store);
+    {
+        try
+        {
+            return new(store);
+        }
+        catch (InvalidOperationException)
+        {
+            return new(store);
+        }
+    }
+
+    /// <summary>
+    /// Creates a dictionary from this instance.
+    /// </summary>
+    /// <returns>A dictionary that contains the key value pairs from this instance.</returns>
+    public SortedDictionary<string, BaseJsonValueNode> ToSortedDictionary()
+    {
+        try
+        {
+            return new(store);
+        }
+        catch (InvalidOperationException)
+        {
+            return new(store);
+        }
+    }
+
+    /// <summary>
+    /// Creates an array of the JSON properties.
+    /// </summary>
+    /// <returns>An array that contains the properties of this JSON object.</returns>
+    public KeyValuePair<string, BaseJsonValueNode>[] ToArray()
+    {
+        try
+        {
+            return store.ToArray();
+        }
+        catch (InvalidOperationException)
+        {
+            return store.ToArray();
+        }
+    }
+
+    /// <summary>
+    /// Creates an list of the JSON properties.
+    /// </summary>
+    /// <returns>An list that contains the properties of this JSON object.</returns>
+    public List<KeyValuePair<string, BaseJsonValueNode>> ToList()
+    {
+        try
+        {
+            return store.ToList();
+        }
+        catch (InvalidOperationException)
+        {
+            return store.ToList();
+        }
+    }
 
     /// <summary>
     /// Creates a lookup from this JSON object according to a specified key selector function.
@@ -9554,7 +9716,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Creates a lookup from this JSON object according to a specified key selector function.
     /// </summary>
     /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
-    /// <typeparam name="TElement">The type of the value returned by elementSelector.</typeparam>
+    /// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector"/>.</typeparam>
     /// <param name="keySelector">A function to extract a key from each element.</param>
     /// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
     /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
@@ -9566,7 +9728,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Creates a lookup from this JSON object according to a specified key selector function.
     /// </summary>
     /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
-    /// <typeparam name="TElement">The type of the value returned by elementSelector.</typeparam>
+    /// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector"/>.</typeparam>
     /// <param name="keySelector">A function to extract a key from each element.</param>
     /// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
     /// <param name="comparer">A handler to compare keys.</param>
@@ -9804,7 +9966,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Converts from JSON document.
     /// </summary>
     /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonObjectNode class.</returns>
+    /// <returns>An instance of the JSON object node.</returns>
     /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
     public static implicit operator JsonObjectNode(JsonDocument json)
     {
@@ -9816,7 +9978,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Converts from JSON element.
     /// </summary>
     /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonObjectNode class.</returns>
+    /// <returns>An instance of the JSON object node.</returns>
     /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
     public static implicit operator JsonObjectNode(JsonElement json)
     {
@@ -9839,7 +10001,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Converts from JSON node.
     /// </summary>
     /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonObjectNode class.</returns>
+    /// <returns>An instance of the JSON object node.</returns>
     /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
     public static implicit operator JsonObjectNode(JsonObject json)
     {
