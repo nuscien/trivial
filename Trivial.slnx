@@ -3,6 +3,7 @@
     <File Path="azure-pipelines.yml" />
     <File Path="Basic.props" />
     <File Path="CONTRIBUTING.md" />
+    <File Path="index.html" />
     <File Path="LICENSE" />
     <File Path="README.md" />
     <File Path="SECURITY.md" />

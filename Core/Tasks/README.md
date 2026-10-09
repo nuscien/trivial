@@ -4,7 +4,7 @@
 using Trivial.Tasks;
 ```
 
-- [Interceptor](./interceptor)
-- [Equipartition task](./equipartition)
-- [Retry policy](./retry)
-- [JSON-RPC](./rpc)
+- [Interceptor](./Interceptor)
+- [Equipartition task](./Equipartition)
+- [Retry policy](./Retry)
+- [JSON-RPC](./JsonRpc)
