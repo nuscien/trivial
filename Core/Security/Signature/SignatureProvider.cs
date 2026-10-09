@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -9,6 +10,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Trivial.Collection;
+using Trivial.IO;
 using Trivial.Text;
 
 namespace Trivial.Security;
@@ -1076,6 +1078,172 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
     public bool Verify(Stream data, byte[] signature)
         => ecdsa.VerifyData(data, signature, hashName);
+}
+
+/// <summary>
+/// The hash signature for string, by Module-Lattice based Digital Signature Algorithm.
+/// </summary>
+[Guid("11C6BF1B-8A62-41E1-B4EA-E9173CBDB0BA")]
+public class MLDsaSignatureProvider : ISignatureProvider
+{
+    private readonly bool needDispose;
+    private readonly MLDsa mldsa;
+
+    /// <summary>
+    /// Creates an ML-DSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ML-DSA parameters.</param>
+    /// <returns>An ML-DSA hash signature provider instance.</returns>
+    public static MLDsaSignatureProvider CreateMLDSA87(byte[] secret)
+        => new(MLDsa.ImportMLDsaPrivateKey(MLDsaAlgorithm.MLDsa87, secret), true);
+
+    /// <summary>
+    /// Creates an ML-DSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ML-DSA instance created.</param>
+    /// <returns>An ML-DSA hash signature provider instance.</returns>
+    public static MLDsaSignatureProvider CreateMLDSA87(out MLDsa secret)
+    {
+        secret = MLDsa.GenerateKey(MLDsaAlgorithm.MLDsa87);
+        return new(secret, true);
+    }
+
+    /// <summary>
+    /// Creates an ML-DSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ML-DSA parameters.</param>
+    /// <returns>An ML-DSA hash signature provider instance.</returns>
+    public static MLDsaSignatureProvider CreateMLDSA65(byte[] secret)
+        => new(MLDsa.ImportMLDsaPrivateKey(MLDsaAlgorithm.MLDsa65, secret), true);
+
+    /// <summary>
+    /// Creates an ML-DSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ML-DSA instance created.</param>
+    /// <returns>An ML-DSA hash signature provider instance.</returns>
+    public static MLDsaSignatureProvider CreateMLDSA65(out MLDsa secret)
+    {
+        secret = MLDsa.GenerateKey(MLDsaAlgorithm.MLDsa65);
+        return new(secret, true);
+    }
+
+    /// <summary>
+    /// Creates an ML-DSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ML-DSA parameters.</param>
+    /// <returns>An ML-DSA hash signature provider instance.</returns>
+    public static MLDsaSignatureProvider CreateMLDSA44(byte[] secret)
+        => new(MLDsa.ImportMLDsaPrivateKey(MLDsaAlgorithm.MLDsa44, secret), true);
+
+    /// <summary>
+    /// Creates an ML-DSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+    /// </summary>
+    /// <param name="secret">The ML-DSA instance created.</param>
+    /// <returns>An ML-DSA hash signature provider instance.</returns>
+    public static MLDsaSignatureProvider CreateMLDSA44(out MLDsa secret)
+    {
+        secret = MLDsa.GenerateKey(MLDsaAlgorithm.MLDsa44);
+        return new(secret, true);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the MLDsaSignatureProvider class.
+    /// </summary>
+    /// <param name="secret">The ML-DSA PEM.</param>
+#if NET10_0_OR_GREATER
+    [Experimental("SYSLIB5006")]
+#endif
+    public MLDsaSignatureProvider(string secret) : this(MLDsa.ImportFromPem(secret), true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the MLDsaSignatureProvider class.
+    /// </summary>
+    /// <param name="ecdsaInstance">The ML-DSA instance.</param>
+    /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+    public MLDsaSignatureProvider(MLDsa ecdsaInstance, bool needDisposeAlgorithmAutomatically = false) : this(ecdsaInstance, true, needDisposeAlgorithmAutomatically)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the MLDsaSignatureProvider class.
+    /// </summary>
+    /// <param name="mldsaInstance">The ML-DSA instance.</param>
+    /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+    /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+    public MLDsaSignatureProvider(MLDsa mldsaInstance, bool hasPrivateKey, bool needDisposeAlgorithmAutomatically)
+    {
+        mldsa = mldsaInstance;
+        if (mldsa == null || !hasPrivateKey) return;
+        needDispose = needDisposeAlgorithmAutomatically;
+        try
+        {
+            var p = mldsa.ExportMLDsaPrivateKey();
+            CanSign = true;
+        }
+        catch (SystemException)
+        {
+        }
+        catch (ApplicationException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Deconstructor.
+    /// </summary>
+    ~MLDsaSignatureProvider()
+    {
+        if (!needDispose || mldsa == null) return;
+        mldsa.Dispose();
+    }
+
+    /// <summary>
+    /// Gets the signature name.
+    /// </summary>
+    public string Name => $"ML-DSA-{mldsa.Algorithm.SignatureSizeInBytes}";
+
+    /// <summary>
+    /// Gets a value indicating whether it can sign a specific data.
+    /// </summary>
+    public bool CanSign { get; private set; }
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public byte[] Sign(byte[] data)
+        => mldsa.SignData(data);
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public byte[] Sign(Stream data)
+        => mldsa.SignData(StreamCopy.ToArray(data));
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
+    public bool Verify(byte[] data, byte[] signature)
+        => mldsa.VerifyData(data, signature);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns><c>true</c> if the signature is valid; otherwise, <c>false</c>.</returns>
+    public bool Verify(Stream data, byte[] signature)
+        => mldsa.VerifyData(StreamCopy.ToArray(data), signature);
 }
 #endif
 

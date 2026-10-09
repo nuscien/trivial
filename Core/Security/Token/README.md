@@ -94,6 +94,15 @@ Following are the signature providers. You can call one of these function and pa
 | RS512 | `RSASignatureProvider.CreateRS512` |
 | RS384 | `RSASignatureProvider.CreateRS384` |
 | RS256 | `RSASignatureProvider.CreateRS256` |
+| ES512 | `ECDsaSignatureProvider.CreateES512` |
+| ES384 | `ECDsaSignatureProvider.CreateES384` |
+| ES256 | `ECDsaSignatureProvider.CreateES256` |
+| PS512 | `RSASignatureProvider.CreatePS512` |
+| PS384 | `RSASignatureProvider.CreatePS384` |
+| PS256 | `RSASignatureProvider.CreatePS256` |
+| ML-DSA-87 | `MLDsaSignatureProvider.CreateMLDSA87` |
+| ML-DSA-65 | `MLDsaSignatureProvider.CreateMLDSA65` |
+| ML-DSA-44 | `MLDsaSignatureProvider.CreateMLDSA44` |
 
 You can also initialize a new instance of the `KeyedSignatureProvider` class for your own signature provider.
 

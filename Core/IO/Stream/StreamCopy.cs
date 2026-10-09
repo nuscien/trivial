@@ -276,6 +276,20 @@ public static class StreamCopy
         }
     }
 
+    /// <summary>
+    /// Converts a stream to a byte array.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <returns>A byte array containing the stream's data.</returns>
+    public static byte[] ToArray(Stream stream)
+    {
+        if (stream is null) return Array.Empty<byte>();
+        if (stream is MemoryStream ms) return ms.ToArray();
+        using var memoryStream = new MemoryStream();
+        stream.CopyTo(memoryStream);
+        return memoryStream.ToArray();
+    }
+
     internal static bool TrySeek(this Stream stream, SeekOrigin origin)
     {
         try
