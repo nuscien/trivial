@@ -88,21 +88,22 @@ Following are the signature providers. You can call one of these function and pa
 
 | Algorithm Name | Function Name |
 | -------------- | ------------------------- |
-| HS512 | `HashSignatureProvider.CreateHS512` |
-| HS384 | `HashSignatureProvider.CreateHS384` |
-| HS256 | `HashSignatureProvider.CreateHS256` |
-| RS512 | `RSASignatureProvider.CreateRS512` |
-| RS384 | `RSASignatureProvider.CreateRS384` |
-| RS256 | `RSASignatureProvider.CreateRS256` |
-| ES512 | `ECDsaSignatureProvider.CreateES512` |
-| ES384 | `ECDsaSignatureProvider.CreateES384` |
-| ES256 | `ECDsaSignatureProvider.CreateES256` |
-| PS512 | `RSASignatureProvider.CreatePS512` |
-| PS384 | `RSASignatureProvider.CreatePS384` |
-| PS256 | `RSASignatureProvider.CreatePS256` |
-| ML-DSA-87 | `MLDsaSignatureProvider.CreateMLDSA87` |
-| ML-DSA-65 | `MLDsaSignatureProvider.CreateMLDSA65` |
-| ML-DSA-44 | `MLDsaSignatureProvider.CreateMLDSA44` |
+| HS512 | `HashSignatureProvider.CreateHS512(string pem)` |
+| HS384 | `HashSignatureProvider.CreateHS384(string pem)` |
+| HS256 | `HashSignatureProvider.CreateHS256(string pem)` |
+| RS512 | `RSASignatureProvider.CreateRS512(string pem)` |
+| RS384 | `RSASignatureProvider.CreateRS384(string pem)` |
+| RS256 | `RSASignatureProvider.CreateRS256(string pem)` |
+| ES512 | `ECDsaSignatureProvider.CreateES512(string pem)` |
+| ES384 | `ECDsaSignatureProvider.CreateES384(string pem)` |
+| ES256 | `ECDsaSignatureProvider.CreateES256(string pem)` |
+| ES256K | `ECDsaSignatureProvider.CreateES256K(string pem)` |
+| PS512 | `RSASignatureProvider.CreatePS512(string pem)` |
+| PS384 | `RSASignatureProvider.CreatePS384(string pem)` |
+| PS256 | `RSASignatureProvider.CreatePS256(string pem)` |
+| ML-DSA-87 | `new MLDsaSignatureProvider(string pem)` |
+| ML-DSA-65 | `new MLDsaSignatureProvider(string pem)` |
+| ML-DSA-44 | `new MLDsaSignatureProvider(string pem)` |
 
 You can also initialize a new instance of the `KeyedSignatureProvider` class for your own signature provider.
 

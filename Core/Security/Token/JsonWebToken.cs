@@ -636,6 +636,25 @@ public class JsonWebTokenHeader
     public string Type { get; set; } = "JWT";
 
     /// <summary>
+    /// Gets or sets the key identifier.
+    /// </summary>
+    [DataMember(Name = "kid")]
+    [JsonPropertyName("kid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string KeyId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content type.
+    /// In the normal case in which nested signing or encryption operations are not employed, the use of this Header Parameter is NOT RECOMMENDED.
+    /// In the case that nested signing or encryption is employed, this Header Parameter MUST be present; in this case, the value MUST be "JWT", to indicate that a Nested JWT is carried in this JWT.
+    /// While media type names are not case sensitive, it is COMMENDED that "JWT" always be spelled using uppercase characters for compatibility with legacy implementations.
+    /// </summary>
+    [DataMember(Name = "cty")]
+    [JsonPropertyName("cty")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string ContentType { get; set; }
+
+    /// <summary>
     /// Gets the JSON web token header without signature algorithm.
     /// </summary>
     public static JsonWebTokenHeader NoAlgorithm => new() { AlgorithmName = "none" };

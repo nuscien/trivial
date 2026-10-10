@@ -109,7 +109,7 @@ json.SwitchValue("prop-c")
     .Default(node => { /* matched and node == JsonBooleanNode.True */ });
 json.SwitchValue("prop-d")
     .Case(node => node is JsonArrayNode arr && arr.Length == 2, node => { /* matched and node is the JsonArrayNode */ })
-     .Default(node => { /* not matched */ });
+    .Default(node => { /* not matched */ });
 ```
 
 ## JSON converters
@@ -118,40 +118,38 @@ Includes a lot of useful JSON converters so that you can use `System.Text.Json.S
 
 Following are date time related.
 
-| Converter | .NET type | JSON value kind (serialize/deserialize) | Additional JSON value kind (deserialize only) | Nullable |
-| ----------------- | ---------- | ---------- | ---------- | --- |
-| `JsonJavaScriptTicksConverter` | `DateTime` | JavaScript ticks `number` | Date JSON `string` | × |
-| `JsonJavaScriptTicksConverter.NullableConverter` | `DateTime?` | JavaScript ticks `number` | Date JSON `string` | √ |
-| `JsonJavaScriptTicksConverter.FallbackConverter` | `DateTime` | Date JSON `string` |JavaScript ticks `number` | × |
-| `JsonJavaScriptTicksConverter.FallbackNullableConverter` | `DateTime?` | Date JSON `string` |JavaScript ticks `number` | √ |
-| `JsonUnixTimestampConverter` | `DateTime` | Unix timestamp `number` | Date JSON `string` | × |
-| `JsonUnixTimestampConverter.NullableConverter` | `DateTime?` | Unix timestamp `number` | Date JSON `string` | √ |
-| `JsonUnixTimestampConverter.FallbackConverter` | `DateTime` | Date JSON `string` | Unix timestamp `number` | × |
-| `JsonUnixTimestampConverter.FallbackNullableConverter` | `DateTime?` | Date JSON `string` | Unix timestamp `number` | √ |
+| Converter | .NET type | JSON value kind (serialize/deserialize) | Additional JSON value kind (deserialize only) |
+| ----------------- | ---------- | ---------- | ---------- |
+| `JsonJavaScriptTicksConverter` | `DateTime` | JavaScript ticks `number` | Date JSON `string` |
+| `JsonJavaScriptTicksConverter.FallbackConverter` | `DateTime` | Date JSON `string` | JavaScript ticks `number` |
+| `JsonJavaScriptTicksConverter.StringConverter` | `DateTime` | JavaScript ticks in `string` | JavaScript ticks `number` |
+| `JsonUnixTimestampConverter` | `DateTime` | Unix timestamp `number` | Date JSON `string` |
+| `JsonUnixTimestampConverter.FallbackConverter` | `DateTime` | Date JSON `string` | Unix timestamp `number` |
+| `JsonUnixTimestampConverter.StringConverter` | `DateTime` | Unix timestamp in `string` | Unix timestamp `number` |
 
 Following are number related.
 
-| Converter | .NET type | JSON value kind (serialize/deserialize) | Additional JSON value kind (deserialize only) | Nullable |
-| ----------------- | ---------- | ---------- | ---------- | --- |
-| `JsonNumberConverter` | number types | `number` | number `string` | √ |
-| `JsonNumberConverter.NumberStringConverter` | number types | number `string` | `number` | √ |
-| `JsonNumberConverter.StrictConverter` | number types | `number` | number `string` | × |
+| Converter | .NET type | JSON value kind (serialize/deserialize) | Additional JSON value kind (deserialize only) |
+| ----------------- | ---------- | ---------- | ---------- |
+| `JsonNumberConverter` | number types | `number` | number `string` |
+| `JsonNumberConverter.NumberStringConverter` | number types | number `string` | `number` |
+| `JsonNumberConverter.StrictConverter` | number types | `number` | number `string` |
 
 Following are string collection related.
 
-| Converter | .NET type | JSON value kind | Nullable |
-| ----------------- | ---------- | ---------- | --- |
-| `JsonStringListConverter` | common class of `IEnumerable<string>` | `string` or `string[]` | √ |
-| `JsonStringListConverter.WhiteSpaceSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` | √ |
-| `JsonStringListConverter.CommaSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` | √ |
-| `JsonStringListConverter.SemicolonSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` | √ |
-| `JsonStringListConverter.VerticalBarSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` | √ |
+| Converter | .NET type | JSON value kind |
+| ----------------- | ---------- | ---------- |
+| `JsonStringListConverter` | common class of `IEnumerable<string>` | `string` or `string[]` |
+| `JsonStringListConverter.WhiteSpaceSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` |
+| `JsonStringListConverter.CommaSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` |
+| `JsonStringListConverter.SemicolonSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` |
+| `JsonStringListConverter.VerticalBarSeparatedConverter` | common class of `IEnumerable<string>` | `string` or `string[]` |
 
 Following are others.
 
-| Converter | .NET type | JSON value kind | Nullable |
-| ----------------- | ---------- | ---------- | --- |
-| `JsonObjectNodeConverter` | `JsonObjectNode` or `JsonArrayNode` | `object` or `array` | √ |
+| Converter | .NET type | JSON value kind |
+| ----------------- | ---------- | ---------- |
+| `JsonObjectNodeConverter` | `JsonObjectNode` or `JsonArrayNode` | `object` or `array` |
 
 For example.
 

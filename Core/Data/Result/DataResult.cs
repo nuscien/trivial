@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataValue.cs" company="Nanchang Jinchen Software Co., Ltd.">
-//   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
-// </copyright>
-// <summary>
-//   The data value for definition for a list row or a table column.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -59,6 +50,19 @@ public class MessageResult : BaseObservableProperties
         Message = copy.Message;
         TrackingId = copy.TrackingId;
         Tag = copy.Tag;
+    }
+
+    /// <summary>
+    /// Gets or sets the code of error.
+    /// </summary>
+    [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The error code.")]
+    public string ErrorCode
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value);
     }
 
     /// <summary>
@@ -352,19 +356,6 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
     public JsonDataResult(DataEventArgs<JsonObjectNode> args, bool additional = false)
         : this(args, additional ? new JsonObjectNode() : null)
     {
-    }
-
-    /// <summary>
-    /// Gets or sets the offset of the result.
-    /// </summary>
-    [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The error code.")]
-    public string ErrorCode
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
     }
 
     /// <summary>

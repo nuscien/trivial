@@ -1,4 +1,4 @@
-# Numerals
+# Numerals and positional notation
 
 The numerals, mathematics symbols and number utilities.
 

@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataValue.cs" company="Nanchang Jinchen Software Co., Ltd.">
-//   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
-// </copyright>
-// <summary>
-//   The data value for definition for a list row or a table column.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -34,14 +25,14 @@ namespace Trivial.Data;
 public class ErrorMessageResult : MessageResult
 {
     /// <summary>
-    /// Initializes a new instance of the ErrorMessageResult class.
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
     /// </summary>
     public ErrorMessageResult()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorMessageResult class.
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
     /// </summary>
     /// <param name="ex">The exception.</param>
     public ErrorMessageResult(Exception ex) : this(ex, ex?.GetType()?.Name)
@@ -49,7 +40,7 @@ public class ErrorMessageResult : MessageResult
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorMessageResult class.
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
     /// </summary>
     /// <param name="ex">The exception.</param>
     /// <param name="errorCode">The error code.</param>
@@ -85,7 +76,7 @@ public class ErrorMessageResult : MessageResult
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorMessageResult class.
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
     /// </summary>
     /// <param name="message">The message.</param>
     public ErrorMessageResult(string message) : base(message)
@@ -93,26 +84,13 @@ public class ErrorMessageResult : MessageResult
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorMessageResult class.
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
     /// </summary>
     /// <param name="message">The message.</param>
     /// <param name="errorCode">The error code.</param>
     public ErrorMessageResult(string message, string errorCode) : base(message)
     {
         ErrorCode = errorCode;
-    }
-
-    /// <summary>
-    /// Gets or sets the offset of the result.
-    /// </summary>
-    [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The error code.")]
-    public string ErrorCode
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
     }
 
     /// <summary>
@@ -206,21 +184,21 @@ public class ErrorMessageResult : MessageResult
 }
 
 /// <summary>
-/// The data result.
+/// The error data result.
 /// </summary>
 /// <typeparam name="T">The type of data.</typeparam>
 [DataContract]
 internal class ErrorDataResult<T> : DataResult<T>
 {
     /// <summary>
-    /// Initializes a new instance of the ErrorDataResult class.
+    /// Initializes a new instance of the <see cref="ErrorDataResult{T}"/> class.
     /// </summary>
     public ErrorDataResult()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorDataResult class.
+    /// Initializes a new instance of the <see cref="ErrorDataResult{T}"/> class.
     /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="message">The message.</param>
@@ -231,7 +209,7 @@ internal class ErrorDataResult<T> : DataResult<T>
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorDataResult class.
+    /// Initializes a new instance of the <see cref="ErrorDataResult{T}"/> class.
     /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="data">The data.</param>
@@ -240,19 +218,6 @@ internal class ErrorDataResult<T> : DataResult<T>
         : base(data, message)
     {
         ErrorCode = errorCode;
-    }
-
-    /// <summary>
-    /// Gets or sets the offset of the result.
-    /// </summary>
-    [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The error code.")]
-    public string ErrorCode
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
     }
 
     /// <summary>
@@ -283,10 +248,10 @@ internal class ErrorDataResult<T> : DataResult<T>
 }
 
 /// <summary>
-/// The data result.
+/// The error data result.
 /// </summary>
 /// <typeparam name="TData">The type of data.</typeparam>
-/// <typeparam name="TInfo">The type of additional information.</ty
+/// <typeparam name="TInfo">The type of additional information.</typeparam>
 [DataContract]
 internal class ErrorDataResult<TData, TInfo> : DataResult<TData, TInfo>
 {
@@ -298,7 +263,7 @@ internal class ErrorDataResult<TData, TInfo> : DataResult<TData, TInfo>
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorDataResult class.
+    /// Initializes a new instance of the <see cref="ErrorDataResult{TData, TInfo}"/> class.
     /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="message">The message.</param>
@@ -309,7 +274,7 @@ internal class ErrorDataResult<TData, TInfo> : DataResult<TData, TInfo>
     }
 
     /// <summary>
-    /// Initializes a new instance of the ErrorDataResult class.
+    /// Initializes a new instance of the <see cref="ErrorDataResult{TData, TInfo}"/> class.
     /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="data">The data.</param>
@@ -319,19 +284,6 @@ internal class ErrorDataResult<TData, TInfo> : DataResult<TData, TInfo>
         : base(data, additional, message)
     {
         ErrorCode = errorCode;
-    }
-
-    /// <summary>
-    /// Gets or sets the offset of the result.
-    /// </summary>
-    [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The error code.")]
-    public string ErrorCode
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
     }
 
     /// <summary>

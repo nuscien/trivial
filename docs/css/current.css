@@ -1,6 +1,3 @@
-body {
-    background-image: none;
-}
 body > main.main-content {
     min-height: 480px;
 }
@@ -15,4 +12,15 @@ body > header:first-child > section:first-child > h1 > img:hover {
 }
 body > section#blog_content {
     min-height: 640px; margin-bottom: 60px;
+}
+body > footer > section:first-child > div.x-copyright > img:first-child {
+    width: 250px; height: 50px; background-color: transparent; padding: 0; border-radius: 0;
+}
+body > footer > section:first-child > div.x-copyright > img:first-child + span {
+    margin-bottom: 10px; text-align: left;
+}
+body > footer > section:first-child > div.x-copyright > span,
+body > footer > section:first-child > div.x-copyright > strong,
+body > footer > section:first-child > div.x-copyright > a{
+    display: block;
 }

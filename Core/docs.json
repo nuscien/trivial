@@ -13,9 +13,10 @@
     {
       "id": "tasks/interceptor",
       "name": "Interceptor",
-      "name#zh": "并发任务",
+      "name#zh": "并发拦截器",
       "dir": "Tasks/Interceptor",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -53,6 +54,7 @@
       "name#zh": "JSON",
       "dir": "Text/JsonNode",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -77,7 +79,7 @@
       "name#zh": "汉语拼音",
       "dir": "Text/Pinyin",
       "file": true,
-      "file#zh": "zh.md",
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -112,7 +114,7 @@
     {
       "disable": "label",
       "name": "Maths and numerals",
-      "name#zh": "数学和数字"
+      "name#zh": "数学"
     },
     {
       "id": "maths/arithmetic",
@@ -128,6 +130,7 @@
       "name#zh": "数字和进制",
       "dir": "Maths/Numerals",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {

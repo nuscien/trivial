@@ -3265,6 +3265,13 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    public void Add(StringBuilder value)
+        => AddItem(new JsonStringNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     public void Add(IJsonValueNode<string> value)
         => AddItem(value != null ? (value is JsonStringNode s ? s : new JsonStringNode(value)) : JsonValues.Null);
 

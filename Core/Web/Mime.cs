@@ -410,10 +410,18 @@ public static partial class WebFormat
             "xar" or "pkgx" => "application/x-xar",
             "cpio" => "application/x-cpio",
 
+            // AI
+            "onnx" => "application/onnx",
+            "gguf" => "application/gguf",
+            "pth" => "application/pytorch",
+            "trt" => "application/tensorrt",
+
             // Others
             "pdf" => "application/pdf",
             "application" => "application/x-ms-application",
             "iso" => "application/x-iso9660-image",
+            "vhdx" => "application/x-vhdx-disk",
+            "vhd" or "vpc" => "application/x-vhd-disk",
             "123" => "application/vnd.lotus-1-2-3",
             "crd" => "application/x-mscardfile",
             "clp" => "application/x-msclip",

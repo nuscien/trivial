@@ -604,7 +604,7 @@ public class TokenInfo
     public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase, Cases parameterCase = Cases.Original)
     {
         if (string.IsNullOrEmpty(TokenType)) return null;
-        var scheme = StringExtensions.ToSpecificCaseInvariant(TokenType, schemeCase);
+        var scheme = StringExtensions.ToSpecificCaseInvariant(TokenType ?? BearerTokenType, schemeCase);
         return AccessToken == null ? new(scheme) : new(scheme, StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase));
     }
 

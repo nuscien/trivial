@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -67,6 +68,7 @@ public interface ISignatureProvider
 /// The hash signature for string.
 /// </summary>
 [Guid("0476149D-9482-409B-9D75-427801ABC853")]
+[DebuggerDisplay("{Name,nq}")]
 public class HashSignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;
@@ -435,6 +437,7 @@ public class HashSignatureProvider : ISignatureProvider
 /// The hash signature for string, by Rivest-Shamir-Adleman algorithm.
 /// </summary>
 [Guid("0A09C949-B088-461E-A886-A72C06C296EB")]
+[DebuggerDisplay("{Name,nq}")]
 public class RSASignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;
@@ -832,6 +835,7 @@ public class RSASignatureProvider : ISignatureProvider
 /// The hash signature for string, by Elliptic Curve Digital Signature Algorithm.
 /// </summary>
 [Guid("5EB7E921-9CF8-41EA-96D1-9F7DA015FFEE")]
+[DebuggerDisplay("{Name,nq}")]
 public class ECDsaSignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;
@@ -961,10 +965,32 @@ public class ECDsaSignatureProvider : ISignatureProvider
     private static ECDsaSignatureProvider Create(string secret, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
     {
         StringExtensions.AssertNotWhiteSpace(nameof(secret), secret);
-        var cert = X509Certificate2.CreateFromPem(secret);
-        var p = cert.GetECDsaPrivateKey();
-        var hasPrivateKey = p is not null;
-        if (!hasPrivateKey) p = cert.GetECDsaPublicKey();
+        ECDsa p;
+        var hasPrivateKey = false;
+        if (secret.Contains("-BEGIN CERTIFICATE-", StringComparison.OrdinalIgnoreCase))
+        {
+            var cert = X509Certificate2.CreateFromPem(secret);
+            p = cert.GetECDsaPrivateKey();
+            if (p is not null) hasPrivateKey = true;
+            else p = cert.GetECDsaPublicKey();
+        }
+        else
+        {
+            p = ECDsa.Create();
+            p.ImportFromPem(secret);
+            try
+            {
+                ECParameters parameters = p.ExportParameters(true);
+                hasPrivateKey = true;
+            }
+            catch (CryptographicException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
+
         return p == null
             ? throw new FormatException("secret is not a valid ECDsa key. A PEM string expected.")
             : new(p, hasPrivateKey, hashAlgorithmName, signAlgorithmName);
@@ -1084,6 +1110,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
 /// The hash signature for string, by Module-Lattice based Digital Signature Algorithm.
 /// </summary>
 [Guid("11C6BF1B-8A62-41E1-B4EA-E9173CBDB0BA")]
+[DebuggerDisplay("{Name,nq}")]
 public class MLDsaSignatureProvider : ISignatureProvider
 {
     private readonly bool needDispose;
@@ -1146,14 +1173,30 @@ public class MLDsaSignatureProvider : ISignatureProvider
         return new(secret, true);
     }
 
+#if NET10_0
+    [Experimental("SYSLIB5006")]
+#endif
+    private static MLDsa ImportFromPem(string secret)
+    {
+        if (secret.Contains("-BEGIN CERTIFICATE-", StringComparison.OrdinalIgnoreCase))
+        {
+            var cert = X509Certificate2.CreateFromPem(secret);
+            return cert.GetMLDsaPrivateKey() ?? cert.GetMLDsaPublicKey();
+        }
+        else
+        {
+            return MLDsa.ImportFromPem(secret);
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the MLDsaSignatureProvider class.
     /// </summary>
     /// <param name="secret">The ML-DSA PEM.</param>
-#if NET10_0_OR_GREATER
+#if NET10_0
     [Experimental("SYSLIB5006")]
 #endif
-    public MLDsaSignatureProvider(string secret) : this(MLDsa.ImportFromPem(secret), true)
+    public MLDsaSignatureProvider(string secret) : this(ImportFromPem(secret), true)
     {
     }
 
@@ -1179,13 +1222,13 @@ public class MLDsaSignatureProvider : ISignatureProvider
         needDispose = needDisposeAlgorithmAutomatically;
         try
         {
-            var p = mldsa.ExportMLDsaPrivateKey();
+            var bytes = mldsa.ExportMLDsaPrivateKey();
             CanSign = true;
         }
-        catch (SystemException)
+        catch (CryptographicException)
         {
         }
-        catch (ApplicationException)
+        catch (InvalidOperationException)
         {
         }
     }
@@ -1202,7 +1245,7 @@ public class MLDsaSignatureProvider : ISignatureProvider
     /// <summary>
     /// Gets the signature name.
     /// </summary>
-    public string Name => $"ML-DSA-{mldsa.Algorithm.SignatureSizeInBytes}";
+    public string Name => mldsa.Algorithm.Name;
 
     /// <summary>
     /// Gets a value indicating whether it can sign a specific data.
@@ -1250,6 +1293,8 @@ public class MLDsaSignatureProvider : ISignatureProvider
 /// <summary>
 /// The customized keyed signature for string.
 /// </summary>
+[Guid("4DF7DF49-6C34-4C52-B875-833BEF46E4BB")]
+[DebuggerDisplay("{Name,nq}")]
 public class KeyedSignatureProvider : ISignatureProvider
 {
     private readonly SignHandler sign;
