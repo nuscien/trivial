@@ -286,6 +286,11 @@ public sealed class JsonWebToken<T>
     }
 
     /// <summary>
+    /// The registered content type of JSON web token.
+    /// </summary>
+    public const string MIME = "application/jwt";
+
+    /// <summary>
     /// Parses a JWT string encoded.
     /// </summary>
     /// <param name="jwt">The string encoded.</param>

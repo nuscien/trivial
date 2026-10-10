@@ -38,8 +38,8 @@
     {
       "id": "tasks/json-rpc",
       "name": "JSON-RPC",
-      "name#zh": "JSON RPC",
-      "dir": "Tasks/JsonPrc",
+      "name#zh": "JSON-RPC",
+      "dir": "Tasks/JsonRpc",
       "file": true,
       "end": true
     },
@@ -93,6 +93,7 @@
       "name#zh": "缓存",
       "dir": "Data/Cache",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -165,9 +166,10 @@
     {
       "id": "net/http",
       "name": "JSON HTTP client and HTTP client extensions",
-      "name#zh": "JSON HTTP 客户端和 HTTP 客户端扩展",
+      "name#zh": "HTTP 扩展和 JSON 支持",
       "dir": "Net/Http",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -181,6 +183,7 @@
       "name#zh": "OAuth",
       "dir": "Security/Token",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -189,6 +192,7 @@
       "name#zh": "RSA",
       "dir": "Security/Asymmetric",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {
@@ -288,15 +292,16 @@
     },
     {
       "disable": "label",
-      "name": "Colors",
-      "name#zh": "颜色"
+      "name": "Drawing",
+      "name#zh": "绘画"
     },
     {
       "id": "drawing/color",
-      "name": "Color calculator",
-      "name#zh": "颜色计算器",
+      "name": "Color",
+      "name#zh": "颜色",
       "dir": "Drawing/Color",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": true
     },
     {

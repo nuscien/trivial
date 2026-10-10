@@ -2,7 +2,7 @@
 
 Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.
 
-[![MIT licensed](./docs/assets/badge_lisence_MIT.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
+[![MIT licensed](./docs/assets/badge_license_MIT.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
 [![Build Status](https://dev.azure.com/nuscien/trivial/_apis/build/status/nuscien.trivial?branchName=main)](https://dev.azure.com/nuscien/trivial/_build/latest?definitionId=1&branchName=main)
 
 ## [Trivial](./Core)
