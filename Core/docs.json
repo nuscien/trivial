@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cdn.jsdelivr.net/npm/hje@3.0.0/dist/mdblogs.schema.json",
+  "$schema": "https://cdn.jsdelivr.net/npm/hje@3.2.1/dist/mdblogs.schema.json",
   "name": "Trivial core libraries",
   "name#zh": "Trivial 核心库",
   "description": "Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.",

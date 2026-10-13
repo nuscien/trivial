@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:image" content="./Materials/poster.png">
     <title>Trivial</title>
-    <link href="https://cdn.jsdelivr.net/npm/hje@3.0.0/docs/css/site.net.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/hje@3.2.1/css/site.net.css" rel="stylesheet" />
     <link href="./docs/css/current.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/vs2015.min.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="./docs/assets/logo.png" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/marked@16.2.1/lib/marked.umd.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/hje@3.0.0/docs/js/mdblogs.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/hje@3.2.1/dist/mdblogs.bundle.js"></script>
 </head>
 <body>
     <header>
@@ -30,32 +30,55 @@
             </ul>
         </section>
     </header>
-    <section id="blog_header" >
-        <section>
-            <p>
-                <span>Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.</span>
-            </p>
-            <p>
-                <a href="https://www.nuget.org/packages/Trivial" ><img alt="NuGet package" src="https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads" /></a>
-                <a href="https://github.com/nuscien/trivial" ><img alt="GitHub Repo" src="./docs/assets/badge_GitHub-Repo.svg" /></a>
-            </p>
-            <p>
-                <img alt="MIT Licensed" src="./docs/assets/badge_license_MIT.svg" />
-                <img alt=".NET 11" src="./docs/assets/badge_NET_11.svg" />
-                <img alt=".NET 10" src="./docs/assets/badge_NET_10.svg" />
-                <img alt=".NET Framework 4.8" src="./docs/assets/badge_NET_Fx_4_8.svg" />
-                <img alt=".NET Framework 4.6.2" src="./docs/assets/badge_NET_Fx_4_6_2.svg" />
-            </p>
-        </section>
-    </section>
     <section id="blog_content" ></section>
     <script type="text/javascript">
-        DeepX.MdBlogs.render("blog_content", "./Core/docs.json", {
-            title: true,
-            onselect(ev) {
-                document.getElementById("blog_header").style.display = "none";
-            }
-        });
+    const tfms = [".NET 11", ".NET 11", ".NET Framework 4.8", ".NET Framework 4.6.2"];
+    DeepX.MdBlogs.render("blog_content", "./Core/docs.json", {
+        title: true,
+        banner: {
+            tagName: "div",
+            className: "x-zone-banner",
+            children: [
+                {
+                    tagName: "p",
+                    children: [
+                        { tagName: "span", children: "Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects." }
+                    ]
+                },
+                {
+                    tagName: "p",
+                    children: [
+                        {
+                            tagName: "a",
+                            props: { href: "https://www.nuget.org/packages/Trivial" },
+                            children: [{ tagName: "img", props: { alt: "NuGet package", src: "https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads" } }]
+                        },
+                        {
+                            tagName: "a",
+                            props: { href: "https://github.com/nuscien/trivial" },
+                            children: [{ tagName: "img", props: { alt: "GitHub Repo", src: "./docs/assets/badge_GitHub-Repo.svg" } }]
+                        }
+                    ]
+                },
+                {
+                    tagName: "p",
+                    children: tfms.map(function (tfm) {
+                        if (!tfm) return null;
+                        if (tfm.indexOf(".NET Framework ") === 0)
+                            tfm = tfm.replace(".NET Framework ", "NET_Fx_").replace(".", "_").replace(".", "_");
+                        else if (tfm.indexOf(".NET ") === 0)
+                            tfm = tfm.replace(".NET ", "NET_").replace(".", "_");
+                        else
+                            return null;
+                        return {
+                            tagName: "img",
+                            props: { alt: tfm, src: "./docs/assets/badge_" + tfm + ".svg" }
+                        };
+                    })
+                }
+            ]
+        }
+    });
     </script>
     <footer>
         <section>
