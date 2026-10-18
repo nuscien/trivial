@@ -1,8 +1,10 @@
 # Color
 
-Color adjustment, converter, parser and mixer.
-
 In `Trivial.Drawing` [namespace](../).
+
+<!-- Start -->
+
+Color adjustment, converter, parser and mixer.
 
 ## Adjustment
 

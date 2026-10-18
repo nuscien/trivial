@@ -1,8 +1,10 @@
 # Hash
 
-Hash algorithm utility.
-
 In `Trivial.Security` [namespace](../).
+
+<!-- Start -->
+
+Hash algorithm utility.
 
 ### Hash utility
 

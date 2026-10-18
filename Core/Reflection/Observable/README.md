@@ -2,6 +2,8 @@
 
 In `Trivial.Data` [namespace](../).
 
+<!-- Start -->
+
 ## Base observable properties
 
 You can inherit the `BaseObservableProperties` class to implement your model with observable properties. Following is a sample.

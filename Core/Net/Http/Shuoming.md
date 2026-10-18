@@ -2,6 +2,8 @@
 
 在 `Trivial.Net` [命名空间](../) 中。
 
+<!-- Start -->
+
 ## HTTP 客户端扩展
 
 现在你可以直接从 `System.Net.Http.HttpContent` 写入特定文件或序列化为特定类型，通过以下扩展方法。

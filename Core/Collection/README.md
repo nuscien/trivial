@@ -1,8 +1,10 @@
 # Collection
 
-Provides collection utilities.
-
 In `Trivial.Collection` namespace.
+
+<!-- Start -->
+
+Provides collection utilities.
 
 ## Extensions
 

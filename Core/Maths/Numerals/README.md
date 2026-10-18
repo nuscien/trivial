@@ -1,8 +1,10 @@
 # Numerals and positional notation
 
-The numerals, mathematics symbols and number utilities.
-
 In `Trivial.Maths` [namespace](../).
+
+<!-- Start -->
+
+The numerals, mathematics symbols and number utilities.
 
 ## Symbols
 

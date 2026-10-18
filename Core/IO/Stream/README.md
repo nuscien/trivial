@@ -1,8 +1,10 @@
 # I/O
 
-Provide the helper functions and extension functions for stream.
-
 In `Trivial.IO` [namespace](../).
+
+<!-- Start -->
+
+Provide the helper functions and extension functions for stream.
 
 ## Copy
 

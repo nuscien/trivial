@@ -1,8 +1,10 @@
 # Spatial
 
-This library contains a lot of models for spatial.
-
 In `Trivial.Maths` [namespace](./maths).
+
+<!-- Start -->
+
+This library contains a lot of models for spatial.
 
 ## Angle and polar point
 

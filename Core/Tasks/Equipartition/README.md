@@ -1,8 +1,10 @@
 # Equipartition Task
 
-You can create a set of equipartition task fragment to ask the distributed client to process.
-
 In `Trivial.Tasks` [namespace](../).
+
+<!-- Start -->
+
+You can create a set of equipartition task fragment to ask the distributed client to process.
 
 ## Task and fragments
 

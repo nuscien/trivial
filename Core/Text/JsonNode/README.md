@@ -1,8 +1,10 @@
 # JSON
 
-Includes writable JSON DOM and lots of commonly used JSON converters.
-
 In `Trivial.Text` [namespace](../).
+
+<!-- Start -->
+
+Includes writable JSON DOM and lots of commonly used JSON converters.
 
 ## JSON DOM
 

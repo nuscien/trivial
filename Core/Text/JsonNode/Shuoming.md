@@ -1,8 +1,10 @@
 # JSON
 
-包含可写的 JSON 节点和许多常用的 JSON 转换器。
-
 位于 `Trivial.Text` [命名空间](../) 中。
+
+<!-- Start -->
+
+包含可写的 JSON 节点和许多常用的 JSON 转换器。
 
 ## JSON 节点
 

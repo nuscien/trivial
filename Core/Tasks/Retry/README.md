@@ -1,8 +1,10 @@
 # Retry
 
-You can set up a task and a retry policy so that the task will process and retry automatically expected when it fails.
-
 In `Trivial.Tasks` [namespace](../).
+
+<!-- Start -->
+
+You can set up a task and a retry policy so that the task will process and retry automatically expected when it fails.
 
 ## Linear retry policy
 

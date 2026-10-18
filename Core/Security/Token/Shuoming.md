@@ -1,8 +1,10 @@
 # OAuth
 
-OAuth 2.0 客户端/服务器和 JWT 支持。
-
 在 `Trivial.Security` [命名空间](../) 中。
+
+<!-- Start -->
+
+OAuth 2.0 客户端/服务器和 JWT 支持。
 
 ## 认证
 

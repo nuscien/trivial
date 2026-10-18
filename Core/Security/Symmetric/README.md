@@ -1,8 +1,10 @@
 # Symmetric
 
-Symmetric algorithm utility.
-
 In `Trivial.Security` [namespace](../).
+
+<!-- Start -->
+
+Symmetric algorithm utility.
 
 ## Symmetric utility
 

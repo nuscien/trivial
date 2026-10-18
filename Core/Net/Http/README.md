@@ -1,8 +1,10 @@
 # HTTP client
 
-HTTP client extensions and JSON HTTP client.
-
 In `Trivial.Net` [namespace](./net).
+
+<!-- Start -->
+
+HTTP client extensions and JSON HTTP client.
 
 ## HTTP client extensions
 

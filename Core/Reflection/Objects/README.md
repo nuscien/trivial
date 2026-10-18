@@ -1,8 +1,10 @@
 # Singleton and renew
 
-A way to manage the singleton instance.
-
 In `Trivial.Reflection` [namespace](../).
+
+<!-- Start -->
+
+A way to manage the singleton instance.
 
 ## Singleton resolver
 

@@ -1,8 +1,10 @@
 # Error handling
 
-You can handle the exception as what you want.
-
 In `Trivial.Reflection` [namespace](../).
+
+<!-- Start -->
+
+You can handle the exception as what you want.
 
 ## Customized exception handler
 

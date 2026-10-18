@@ -2,6 +2,8 @@
 
 In `Trivial.Text` [namespace](../).
 
+<!-- Start -->
+
 ## CSV parser
 
 You can parse a Comma-Separated Values (CSV) text by following way.

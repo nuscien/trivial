@@ -1,8 +1,10 @@
 # File and directory
 
-Provide the helper functions and extension functions for file and directory.
-
 In `Trivial.IO` [namespace](../).
+
+<!-- Start -->
+
+Provide the helper functions and extension functions for file and directory.
 
 ## Directory copy
 

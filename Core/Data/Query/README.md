@@ -1,8 +1,10 @@
 # Criteria
 
-You can use criteria models and manage your query.
-
 In `Trivial.Data` [namespace](../).
+
+<!-- Start -->
+
+You can use criteria models and manage your query.
 
 ## PropertyCriteria
 

@@ -1,8 +1,10 @@
 # Cache
 
-Data cache.
-
 In `Trivial.Data` [namespace](../).
+
+<!-- Start -->
+
+Data cache.
 
 ## Data cache collection
 

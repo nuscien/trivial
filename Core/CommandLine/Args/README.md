@@ -1,8 +1,10 @@
 # Console arguments
 
-A console component to let user write text.
-
 In `Trivial.CommandLine` [namespace](../).
+
+<!-- Start -->
+
+A console component to let user write text.
 
 ## Arguments
 

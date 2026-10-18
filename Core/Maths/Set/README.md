@@ -1,8 +1,10 @@
 # Set
 
-This library contains a lot of models for sets.
-
 In `Trivial.Maths` [namespace](../).
+
+<!-- Start -->
+
+This library contains a lot of models for sets.
 
 ## Interval
 

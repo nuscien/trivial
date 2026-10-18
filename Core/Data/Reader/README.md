@@ -1,8 +1,10 @@
 # Data reader
 
-The data reader.
-
 In `Trivial.Data` [namespace](../).
+
+<!-- Start -->
+
+The data reader.
 
 ## List data reader
 

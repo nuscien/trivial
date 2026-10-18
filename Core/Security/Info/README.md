@@ -1,8 +1,10 @@
 # Secure string
 
-Secure string utility and secret exchange.
-
 In `Trivial.Security` [namespace](../).
+
+<!-- Start -->
+
+Secure string utility and secret exchange.
 
 ## Secure string extensions
 

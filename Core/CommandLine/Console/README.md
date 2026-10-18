@@ -1,8 +1,10 @@
 # CLI
 
-An adaptive command line interface for both terminal and command prompt.
-
 In `Trivial.CommandLine` [namespace](../).
+
+<!-- Start -->
+
+An adaptive command line interface for both terminal and command prompt.
 
 ## Console
 

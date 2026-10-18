@@ -1,10 +1,10 @@
 # Chinese Pinyin
 
-> 汉语拼音
-
-The Pinyin marks and formatter.
-
 In `Trivial.Text` [namespace](../).
+
+<!-- Start -->
+
+The Pinyin (汉语拼音) marks and formatter.
 
 ## Finals and initials
 

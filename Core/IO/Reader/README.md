@@ -1,8 +1,10 @@
 # Characters reader
 
-A text reader to read character collection or stream collection.
-
 In `Trivial.IO` [namespace](./io).
+
+<!-- Start -->
+
+A text reader to read character collection or stream collection.
 
 ## Characters reader
 

@@ -1,8 +1,10 @@
 # Interceptor
 
-You can set an action with a specific interceptor to control its execution.
-
 In `Trivial.Tasks` [namespace](../).
+
+<!-- Start -->
+
+You can set an action with a specific interceptor to control its execution.
 
 ### Debounce
 

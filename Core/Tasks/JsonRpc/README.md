@@ -1,8 +1,10 @@
 # JSON-RPC
 
-You can host a JSON-RPC service to handle the functions.
-
 In `Trivial.Tasks` [namespace](../).
+
+<!-- Start -->
+
+You can host a JSON-RPC service to handle the functions.
 
 ## Route
 

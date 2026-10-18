@@ -1,8 +1,10 @@
 # String Utilities
 
-Provides some helper functions and extension functions for text.
-
 In `Trivial.Text` [namespace](../).
+
+<!-- Start -->
+
+Provides some helper functions and extension functions for text.
 
 ## String case
 
