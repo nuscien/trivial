@@ -33,6 +33,22 @@ public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>
     private readonly ConcurrentDictionary<string, DataCacheFactoryInfo<T>> factories = new ();
 
     /// <summary>
+    /// Initializes a new instance of <see cref="NamespacedDataCacheCollection{T}"/>
+    /// </summary>
+    public NamespacedDataCacheCollection()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="NamespacedDataCacheCollection{T}"/>
+    /// </summary>
+    public NamespacedDataCacheCollection(int maxCount, TimeSpan? expiration = null)
+    {
+        MaxCount = maxCount;
+        Expiration = expiration;
+    }
+
+    /// <summary>
     /// Adds or removes an event handler on the Collection item is added;
     /// </summary>
     public event DataEventHandler<DataCacheItemInfo<T>> AddedOrUpdated;

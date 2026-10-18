@@ -18,7 +18,7 @@ var cli = StyleConsole.Default;
 // Write something.
 cli.Write("Loading {0}......", "something");
 
-// Remove some charactors and add other string with color.
+// Remove some characters and add other string with color.
 cli.Backspace(3);
 cli.Write(ConsoleColor.Green, "  Done!");
 

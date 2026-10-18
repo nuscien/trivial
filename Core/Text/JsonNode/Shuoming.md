@@ -147,12 +147,6 @@ json.SwitchValue("prop-d")
 | `JsonStringListConverter.SemicolonSeparatedConverter` | `IEnumerable<string>` 的通用类 | `string` 或 `string[]` |
 | `JsonStringListConverter.VerticalBarSeparatedConverter` | `IEnumerable<string>` 的通用类 | `string` 或 `string[]` |
 
-以下是其他的。
-
-| 转化器 | .NET 类型 | JSON 值类型 |
-| ----------------- | ---------- | ---------- |
-| `JsonObjectNodeConverter` | `JsonObjectNode` 或 `JsonArrayNode` | `object` 或 `array` |
-
 例如。
 
 ```csharp
@@ -161,11 +155,10 @@ public class Model
     [JsonConverter(typeof(JsonNumberConverter))
     public int Number { get; set; }
 
-    [JsonPropertyName("creation")]
-    [JsonConverter(typeof(JsonJavaScriptTicksConverter))
+    [JsonPropertyName("create")]
+    [JsonConverter(typeof(JsonJavaScriptTicksConverter))]
     public DateTime CreationTime { get; set; }
 
-    [JsonConverter(typeof(JsonObjectNodeConverter)]
     public JsonObject Properties { get; set; }
 }
 ```
@@ -175,9 +168,9 @@ public class Model
 ```json
 {
     "number": "1234",
-    "creation": 1577628663614,
+    "create": 1577628663614,
     "properties": {
-        "items": [ 5, 6, 7, "a", "b", "c" ]
+        "items": [ 5, 6, 7, "a", "b", "c" ],
         "b": true
     }
 }

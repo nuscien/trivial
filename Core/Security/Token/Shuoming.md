@@ -109,7 +109,7 @@ var jwt = parser.ToToken(sign, true);
 
 你也可以初始化 `KeyedSignatureProvider` 类的新实例来创建你自己的签名提供程序。
 
-请参阅 [JWT.IO](https://jwt.io/) 测试 JWT 或获取详细信息。
+请参阅 [JWT Debugger](https://jwt.io/) 测试 JWT 或获取详细信息。
 
 ## Token request route
 

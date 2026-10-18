@@ -11,7 +11,6 @@
       "name#zh": "任务和重试策略"
     },
     {
-      "id": "tasks/interceptor",
       "name": "Interceptor",
       "name#zh": "并发拦截器",
       "dir": "Tasks/Interceptor",
@@ -20,21 +19,28 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Tasks",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "tasks/equipartition",
       "name": "Equipartition task",
       "name#zh": "分片任务",
       "dir": "Tasks/Equipartition",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Tasks",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "tasks/retry",
       "name": "Retry policy",
       "name#zh": "重试",
       "dir": "Tasks/Retry",
@@ -42,10 +48,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Tasks",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "tasks/json-rpc",
       "name": "JSON-RPC",
       "name#zh": "JSON-RPC",
       "dir": "Tasks/JsonRpc",
@@ -53,6 +62,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Tasks",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -61,7 +74,6 @@
       "name#zh": "文本（包括 JSON 和 CSV）"
     },
     {
-      "id": "text/json",
       "name": "JSON",
       "name#zh": "JSON",
       "dir": "Text/JsonNode",
@@ -70,10 +82,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Text",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "text/csv",
       "name": "CSV",
       "name#zh": "CSV",
       "dir": "Text/Table",
@@ -81,10 +96,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Text",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "text/utils",
       "name": "String utilities",
       "name#zh": "字符串工具",
       "dir": "Text/Utils",
@@ -92,10 +110,27 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Text",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "text/pinyin",
+      "name": "Alphabet",
+      "name#zh": "字母表",
+      "dir": "Text/Alphabet",
+      "file": true,
+      "end": {
+        "start": true,
+        "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Text",
+        "assembly": "Trivial.dll"
+      }
+    },
+    {
       "name": "Chinese Pinyin",
       "name#zh": "汉语拼音",
       "dir": "Text/Pinyin",
@@ -104,6 +139,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Text",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -112,7 +151,6 @@
       "name#zh": "数据"
     },
     {
-      "id": "data/cache",
       "name": "Cache",
       "name#zh": "缓存",
       "dir": "Data/Cache",
@@ -121,10 +159,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Data",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "data/criteria",
       "name": "Criteria",
       "name#zh": "条件",
       "dir": "Data/Query",
@@ -132,10 +173,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Data",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "data/reader",
       "name": "Data Reader",
       "name#zh": "数据读取器",
       "dir": "Data/Reader",
@@ -143,6 +187,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Data",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -151,7 +199,6 @@
       "name#zh": "数学"
     },
     {
-      "id": "maths/arithmetic",
       "name": "Arithmetic",
       "name#zh": "算术",
       "dir": "Maths/Arithmetic",
@@ -159,10 +206,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Maths",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "maths/numerals",
       "name": "Numerals and positional notation",
       "name#zh": "数字和进制",
       "dir": "Maths/Numerals",
@@ -171,10 +221,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Maths",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "maths/spatial",
       "name": "Spatial",
       "name#zh": "空间",
       "dir": "Maths/Coordinate",
@@ -182,10 +235,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Maths",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "maths/set",
       "name": "Set",
       "name#zh": "集合",
       "dir": "Maths/Set",
@@ -193,6 +249,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Maths",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -201,7 +261,6 @@
       "name#zh": "网络"
     },
     {
-      "id": "net/uri",
       "name": "HTTP URI and query",
       "name#zh": "HTTP URI 和查询",
       "dir": "Net/Uri",
@@ -209,10 +268,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Net",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "net/http",
       "name": "JSON HTTP client and HTTP client extensions",
       "name#zh": "HTTP 扩展和 JSON 支持",
       "dir": "Net/Http",
@@ -221,6 +283,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Net",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -229,7 +295,6 @@
       "name#zh": "安全"
     },
     {
-      "id": "security/oauth",
       "name": "OAuth",
       "name#zh": "OAuth",
       "dir": "Security/Token",
@@ -238,10 +303,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Security",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "security/rsa",
       "name": "RSA",
       "name#zh": "RSA",
       "dir": "Security/Asymmetric",
@@ -250,10 +318,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Security",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "security/hash",
       "name": "Hash",
       "name#zh": "哈希",
       "dir": "Security/Hash",
@@ -261,10 +332,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Security",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "security/symmetric",
       "name": "Symmetric",
       "name#zh": "对称加密",
       "dir": "Security/Symmetric",
@@ -272,10 +346,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Security",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "security/string",
       "name": "Secure string",
       "name#zh": "安全字符串",
       "dir": "Security/Info",
@@ -283,6 +360,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Security",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -291,7 +372,6 @@
       "name#zh": "文件和流"
     },
     {
-      "id": "io/file",
       "name": "File & directory",
       "name#zh": "文件和目录",
       "dir": "IO/File",
@@ -299,10 +379,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.IO",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "io/stream",
       "name": "Stream",
       "name#zh": "数据流",
       "dir": "IO/Stream",
@@ -310,10 +393,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.IO",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "io/reader",
       "name": "Characters reader",
       "name#zh": "字符读取器",
       "dir": "IO/Reader",
@@ -321,6 +407,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.IO",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -329,7 +419,6 @@
       "name#zh": "集合"
     },
     {
-      "id": "collection",
       "name": "Collection",
       "name#zh": "集合",
       "dir": "Collection",
@@ -337,6 +426,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Collection",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -345,7 +438,6 @@
       "name#zh": "反射"
     },
     {
-      "id": "reflection/observable",
       "name": "Observable properties",
       "name#zh": "监听属性",
       "dir": "Reflection/Observable",
@@ -353,10 +445,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Reflection",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "reflection/objects",
       "name": "Singleton and renew",
       "name#zh": "单例和更新",
       "dir": "Reflection/Objects",
@@ -364,10 +459,13 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Reflection",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "reflection/error",
       "name": "Error handling",
       "name#zh": "错误处理",
       "dir": "Reflection/Error",
@@ -375,6 +473,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Reflection",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -383,7 +485,6 @@
       "name#zh": "绘画"
     },
     {
-      "id": "drawing/color",
       "name": "Color",
       "name#zh": "颜色",
       "dir": "Drawing/Color",
@@ -392,6 +493,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Drawing",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -400,7 +505,6 @@
       "name#zh": "地理"
     },
     {
-      "id": "geography",
       "name": "Geography",
       "name#zh": "地理",
       "dir": "Geography/",
@@ -408,6 +512,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Geography",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -416,27 +524,35 @@
       "name#zh": "命令行"
     },
     {
-      "id": "command-line/arguments",
       "name": "Arguments",
       "name#zh": "命令行参数",
       "intro": "An instance provided a way to access values from the arguments and dispatch the command verbs.",
       "dir": "CommandLine/Args",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.CommandLine",
+        "assembly": "Trivial.dll"
       }
     },
     {
-      "id": "command-line/cli",
       "name": "CLI",
       "name#zh": "命令行基本交互",
       "intro": "An adaptive command line interface for both terminal and command prompt.",
-      "dir": "CommandLine/Interceptor",
+      "dir": "CommandLine/Console",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.CommandLine",
+        "assembly": "Trivial.dll"
       }
     },
     {
@@ -445,7 +561,6 @@
       "name#zh": "网络"
     },
     {
-      "id": "web",
       "name": "Web Format",
       "name#zh": "网络常用格式",
       "dir": "Web",
@@ -453,6 +568,10 @@
       "end": {
         "start": true,
         "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Web",
+        "assembly": "Trivial.dll"
       }
     }
   ],

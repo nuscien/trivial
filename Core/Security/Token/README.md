@@ -109,7 +109,7 @@ Following are the signature providers. You can call one of these function and pa
 
 You can also initialize a new instance of the `KeyedSignatureProvider` class for your own signature provider.
 
-See [JWT.IO](https://jwt.io/) to test JWT or get details.
+See [JWT Debugger](https://jwt.io/) to test JWT or get details.
 
 ## Token request route
 

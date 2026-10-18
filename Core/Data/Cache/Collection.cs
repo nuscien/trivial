@@ -51,6 +51,22 @@ public class DataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOn
     public event DataEventHandler<DataCacheItemInfo<T>> AddedOrUpdated;
 
     /// <summary>
+    /// Initializes a new instance of <see cref="DataCacheCollection{T}"/>
+    /// </summary>
+    public DataCacheCollection()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="DataCacheCollection{T}"/>
+    /// </summary>
+    public DataCacheCollection(int maxCount, TimeSpan? expiration = null)
+    {
+        MaxCount = maxCount;
+        Expiration = expiration;
+    }
+
+    /// <summary>
     /// Gets the maxinum count of the elements contained in the Collection item collection; or null, if no limitation.
     /// </summary>
     public int? MaxCount { get; set; }
