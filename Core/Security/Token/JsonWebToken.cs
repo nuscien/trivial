@@ -10,7 +10,6 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
@@ -137,7 +136,7 @@ public sealed class JsonWebToken<T>
         /// </summary>
         /// <param name="algorithm">The signature algorithm instance.</param>
         /// <param name="checkName">true if check whether the algorithm name are same before verfiy; otherwise, false.</param>
-        /// <returns>true if valid; otherwise, false.</returns>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
         public bool Verify(ISignatureProvider algorithm, bool checkName = false)
         {
             if (checkName && !IsSameSignatureAlgorithmName(algorithm)) return false;
@@ -150,9 +149,25 @@ public sealed class JsonWebToken<T>
         /// <summary>
         /// Verifies the JSON web token.
         /// </summary>
+        /// <param name="algorithms">The signature algorithms pool.</param>
+        /// <param name="checkName">true if check whether the algorithm name are same before verfiy; otherwise, false.</param>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
+        public bool Verify(IDictionary<string, ISignatureProvider> algorithms, bool checkName = false)
+        {
+            if (algorithms is null) return false;
+            if (headerCache is null) Refresh();
+            var key = headerCache?.KeyId;
+            if (string.IsNullOrWhiteSpace(key)) return false;
+            if (!algorithms.TryGetValue(key, out var algorithm)) return false;
+            return Verify(algorithm, checkName);
+        }
+
+        /// <summary>
+        /// Verifies the JSON web token.
+        /// </summary>
         /// <param name="algorithm">The signature algorithm instance.</param>
         /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
-        /// <returns>true if valid; otherwise, false.</returns>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
         public bool IsSameSignatureAlgorithmName(ISignatureProvider algorithm, bool caseSensitive = false)
             => IsSameSignatureAlgorithmName(algorithm?.Name, caseSensitive);
 
@@ -161,7 +176,7 @@ public sealed class JsonWebToken<T>
         /// </summary>
         /// <param name="algorithm">The signature algorithm name.</param>
         /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
-        /// <returns>true if valid; otherwise, false.</returns>
+        /// <returns><c>true</c> if valid; otherwise, <c>false</c>.</returns>
         public bool IsSameSignatureAlgorithmName(string algorithm, bool caseSensitive = false)
         {
             var name = GetAlgorithmName();
@@ -234,7 +249,7 @@ public sealed class JsonWebToken<T>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public bool Equals(string other)
         {
             var str = ToString();
@@ -246,7 +261,7 @@ public sealed class JsonWebToken<T>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public bool Equals(Parser other)
         {
             if (other is null) return false;
@@ -257,7 +272,7 @@ public sealed class JsonWebToken<T>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
         public override bool Equals(object other)
         {
             if (other is null) return false;
@@ -286,6 +301,11 @@ public sealed class JsonWebToken<T>
     }
 
     /// <summary>
+    /// The registered content type of JSON web token.
+    /// </summary>
+    public const string MIME = "application/jwt";
+
+    /// <summary>
     /// Parses a JWT string encoded.
     /// </summary>
     /// <param name="jwt">The string encoded.</param>
@@ -309,11 +329,111 @@ public sealed class JsonWebToken<T>
 
         var arr = jwt.Split('.');
         if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
-        var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
-        if (header == null) throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
-        var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]);
-        if (payload == null) throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
+        var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]) ?? throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
+        var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]) ?? throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
         var algorithm = algorithmFactory != null ? algorithmFactory(payload, header.AlgorithmName) : null;
+        if (verify)
+        {
+            var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
+            var sign = WebFormat.Base64UrlDecode(arr[2]);
+            if (algorithm != null)
+            {
+                if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
+            }
+            else
+            {
+                if (sign.Length > 0) throw ObjectConvert.ArgumentNull(nameof(algorithm));
+            }
+        }
+
+        var obj = new JsonWebToken<T>(payload, algorithm)
+        {
+            headerBase64Url = arr[0],
+            signatureCache = arr[2]
+        };
+        obj.header.Type = header.Type;
+        obj.header.AlgorithmName = header.AlgorithmName;
+        return obj;
+    }
+
+    /// <summary>
+    /// Parses a JWT string encoded.
+    /// </summary>
+    /// <param name="jwt">The string encoded.</param>
+    /// <param name="algorithmFactory">The signature algorithm factory.</param>
+    /// <param name="verify">true if verify the signature; otherwise, false.</param>
+    /// <returns>A JSON web token object.</returns>
+    /// <exception cref="ArgumentNullException">jwt was null or empty. -or- algorithm was null and verify is true.</exception>
+    /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
+    /// <exception cref="FormatException">jwt was in incorrect format.</exception>
+    /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
+    public static JsonWebToken<T> Parse(string jwt, Func<T, string, string, ISignatureProvider> algorithmFactory, bool verify = true)
+    {
+        if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
+        var prefix = $"{TokenInfo.BearerTokenType} ";
+        if (jwt.IndexOf(prefix) == 0)
+        {
+            if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
+            jwt = jwt.Substring(prefix.Length);
+        }
+
+        var arr = jwt.Split('.');
+        if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
+        var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]) ?? throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
+        var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]) ?? throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
+        var algorithm = algorithmFactory != null ? algorithmFactory(payload, header.AlgorithmName, header.KeyId) : null;
+        if (verify)
+        {
+            var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
+            var sign = WebFormat.Base64UrlDecode(arr[2]);
+            if (algorithm != null)
+            {
+                if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
+            }
+            else
+            {
+                if (sign.Length > 0) throw ObjectConvert.ArgumentNull(nameof(algorithm));
+            }
+        }
+
+        var obj = new JsonWebToken<T>(payload, algorithm)
+        {
+            headerBase64Url = arr[0],
+            signatureCache = arr[2]
+        };
+        obj.header.Type = header.Type;
+        obj.header.AlgorithmName = header.AlgorithmName;
+        return obj;
+    }
+
+    /// <summary>
+    /// Parses a JWT string encoded.
+    /// </summary>
+    /// <param name="jwt">The string encoded.</param>
+    /// <param name="algorithmFactory">The signature algorithm factory.</param>
+    /// <param name="verify">true if verify the signature; otherwise, false.</param>
+    /// <returns>A JSON web token object.</returns>
+    /// <exception cref="ArgumentNullException">jwt was null or empty. -or- algorithm was null and verify is true.</exception>
+    /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
+    /// <exception cref="FormatException">jwt was in incorrect format.</exception>
+    /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
+    public static JsonWebToken<T> Parse(string jwt, IDictionary<string, ISignatureProvider> algorithmFactory, bool verify = true)
+    {
+        if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
+        var prefix = $"{TokenInfo.BearerTokenType} ";
+        if (jwt.IndexOf(prefix) == 0)
+        {
+            if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
+            jwt = jwt.Substring(prefix.Length);
+        }
+
+        var arr = jwt.Split('.');
+        if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
+        var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]) ?? throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
+        var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]) ?? throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
+        if (!algorithmFactory.TryGetValue(header.KeyId, out var algorithm)) algorithm = null;
         if (verify)
         {
             var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
@@ -401,6 +521,66 @@ public sealed class JsonWebToken<T>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
     /// <exception cref="JsonException">DeserializeToken failed.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
+    {
+        if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
+        if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
+        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+        try
+        {
+            return Parse(token.AccessToken, algorithmFactory, verify);
+        }
+        catch (ArgumentException ex)
+        {
+            var msg = string.IsNullOrWhiteSpace(ex.Message) || ex.Message.Length < 7 || ex.Message.IndexOf("jwt ") != 0
+                ? "The access token is incorrect."
+                : ("The access token" + ex.Message.Substring(3));
+            throw new ArgumentException(msg, nameof(token), ex);
+        }
+    }
+
+    /// <summary>
+    /// Parses a JWT string encoded.
+    /// </summary>
+    /// <param name="token">The access token.</param>
+    /// <param name="algorithmFactory">The signature algorithm factory.</param>
+    /// <param name="verify">true if verify the signature; otherwise, false.</param>
+    /// <returns>A JSON web token object.</returns>
+    /// <exception cref="ArgumentNullException">token was null. -or- algorithm was null and verify is true.</exception>
+    /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
+    /// <exception cref="FormatException">The access token was in incorrect format.</exception>
+    /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
+    public static JsonWebToken<T> Parse(TokenInfo token, Func<T, string, string, ISignatureProvider> algorithmFactory, bool verify = true)
+    {
+        if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
+        if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
+        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+        try
+        {
+            return Parse(token.AccessToken, algorithmFactory, verify);
+        }
+        catch (ArgumentException ex)
+        {
+            var msg = string.IsNullOrWhiteSpace(ex.Message) || ex.Message.Length < 7 || ex.Message.IndexOf("jwt ") != 0
+                ? "The access token is incorrect."
+                : ("The access token" + ex.Message.Substring(3));
+            throw new ArgumentException(msg, nameof(token), ex);
+        }
+    }
+
+    /// <summary>
+    /// Parses a JWT string encoded.
+    /// </summary>
+    /// <param name="token">The access token.</param>
+    /// <param name="algorithmFactory">The signature algorithm factory.</param>
+    /// <param name="verify">true if verify the signature; otherwise, false.</param>
+    /// <returns>A JSON web token object.</returns>
+    /// <exception cref="ArgumentNullException">token was null. -or- algorithm was null and verify is true.</exception>
+    /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
+    /// <exception cref="FormatException">The access token was in incorrect format.</exception>
+    /// <exception cref="InvalidOperationException">Verify failure.</exception>
+    /// <exception cref="JsonException">DeserializeToken failed.</exception>
+    public static JsonWebToken<T> Parse(TokenInfo token, IDictionary<string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
@@ -634,6 +814,25 @@ public class JsonWebTokenHeader
     [DataMember(Name = "typ")]
     [JsonPropertyName("typ")]
     public string Type { get; set; } = "JWT";
+
+    /// <summary>
+    /// Gets or sets the key identifier.
+    /// </summary>
+    [DataMember(Name = "kid")]
+    [JsonPropertyName("kid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string KeyId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content type.
+    /// In the normal case in which nested signing or encryption operations are not employed, the use of this Header Parameter is NOT RECOMMENDED.
+    /// In the case that nested signing or encryption is employed, this Header Parameter MUST be present; in this case, the value MUST be "JWT", to indicate that a Nested JWT is carried in this JWT.
+    /// While media type names are not case sensitive, it is COMMENDED that "JWT" always be spelled using uppercase characters for compatibility with legacy implementations.
+    /// </summary>
+    [DataMember(Name = "cty")]
+    [JsonPropertyName("cty")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string ContentType { get; set; }
 
     /// <summary>
     /// Gets the JSON web token header without signature algorithm.
@@ -1069,6 +1268,12 @@ public class JsonWebTokenPayload
     public List<string> AuthenticationContextClassReferences { get; set; }
 
     /// <summary>
+    /// Gets or sets the additional mapping properties from JSON.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> AdditionalProperties { get; set; }
+
+    /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.
     /// </summary>
     /// <param name="sign">The signature provider.</param>
@@ -1086,7 +1291,7 @@ public class JsonWebTokenPayload
     /// <summary>
     /// Tests if the token is actived to use by checking the expiration.
     /// </summary>
-    /// <returns>true if the token is actived; otherwise, false.</returns>
+    /// <returns><c>true</c> if the token is actived; otherwise, <c>false</c>.</returns>
     public bool IsActived()
         => IsActived(DateTime.Now);
 
@@ -1094,7 +1299,7 @@ public class JsonWebTokenPayload
     /// Tests if the token is actived to use by checking the expiration.
     /// </summary>
     /// <param name="date">A specific date time to test when the token is actived.</param>
-    /// <returns>true if the token is actived; otherwise, false.</returns>
+    /// <returns><c>true</c> if the token is actived; otherwise, <c>false</c>.</returns>
     public bool IsActived(DateTime date)
     {
         var d = Expiration;
@@ -1109,7 +1314,7 @@ public class JsonWebTokenPayload
     /// </summary>
     /// <param name="value">The audience value to test.</param>
     /// <param name="comparer">An equality comparer to compare values.</param>
-    /// <returns>true if the audience value is in the list, or the list is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if the audience value is in the list, or the list is null; otherwise, <c>false</c>.</returns>
     public bool IsAudience(string value, StringComparer comparer = null)
         => IsAudience(value, false, comparer);
 
@@ -1119,7 +1324,7 @@ public class JsonWebTokenPayload
     /// <param name="value">The audience value to test.</param>
     /// <param name="testExpiration">true if also test if the token is actived; otherwise, false.</param>
     /// <param name="comparer">An equality comparer to compare values.</param>
-    /// <returns>true if the audience value is in the list, or the list is null; otherwise, false.</returns>
+    /// <returns><c>true</c> if the audience value is in the list, or the list is null; otherwise, <c>false</c>.</returns>
     public bool IsAudience(string value, bool testExpiration, StringComparer comparer = null)
     {
         if (testExpiration && !IsActived()) return false;

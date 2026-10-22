@@ -393,6 +393,116 @@ public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializ
     }
 
     /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, string value)
+    {
+        if (value is null) return;
+        Add(key, value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotEmpty(string key, StringBuilder value)
+    {
+        if (value is null || value.Length < 1) return;
+        Add(key, value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, StringBuilder value)
+    {
+        if (value is null) return;
+        Add(key, value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, int? value)
+    {
+        if (!value.HasValue) return;
+        Add(key, value.Value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, long? value)
+    {
+        if (!value.HasValue) return;
+        Add(key, value.Value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, double? value)
+    {
+        if (!value.HasValue || double.IsNaN(value.Value)) return;
+        Add(key, value.Value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, double value)
+    {
+        if (double.IsNaN(value)) return;
+        Add(key, value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, float? value)
+    {
+        if (!value.HasValue || double.IsNaN(value.Value)) return;
+        Add(key, value.Value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, float value)
+    {
+        if (double.IsNaN(value)) return;
+        Add(key, value, true);
+    }
+
+    /// <summary>
+    /// Sets (and overrides) a property. But skips if the value is null or empty.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The new value.</param>
+    public void SetIfNotNull(string key, bool? value)
+    {
+        if (!value.HasValue) return;
+        Add(key, value.Value, true);
+    }
+
+    /// <summary>
     /// Encodes the key.
     /// </summary>
     /// <param name="key">The key.</param>
