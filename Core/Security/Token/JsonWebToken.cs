@@ -1269,6 +1269,12 @@ public class JsonWebTokenPayload : IIdPropertyModel
     public List<string> AuthenticationContextClassReferences { get; set; }
 
     /// <summary>
+    /// Gets or sets the additional mapping properties from JSON.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> AdditionalProperties { get; set; }
+
+    /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.
     /// </summary>
     /// <param name="sign">The signature provider.</param>
