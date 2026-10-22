@@ -170,6 +170,7 @@
       "name#zh": "条件",
       "dir": "Data/Query",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -376,6 +377,7 @@
       "name#zh": "文件和目录",
       "dir": "IO/File",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -390,6 +392,7 @@
       "name#zh": "数据流",
       "dir": "IO/Stream",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -404,6 +407,7 @@
       "name#zh": "字符读取器",
       "dir": "IO/Reader",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true

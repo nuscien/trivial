@@ -213,8 +213,8 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
     /// <summary>
     /// Gets or sets the result collection.
     /// </summary>
-    [DataMember(Name = "col")]
-    [JsonPropertyName("col")]
+    [DataMember(Name = "items")]
+    [JsonPropertyName("items")]
     [Description("The data collection of the result.")]
     public ObservableCollection<T> Data
     {
