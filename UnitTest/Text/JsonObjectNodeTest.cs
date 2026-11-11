@@ -63,54 +63,6 @@ public class JsonObjectNodeTest
     }
 
     [TestMethod]
-    public void SerializationConstructorAndObjectData()
-    {
-        Assert.AreEqual(0, new SerializableObject(null).Count);
-        var info = NewSerializationInfo();
-        info.AddValue("null", null, typeof(string));
-        info.AddValue("long", 42L);
-        info.AddValue("int", 42);
-        info.AddValue("uint", 42U);
-        info.AddValue("double", 4.5D);
-        info.AddValue("float", 4.5F);
-        info.AddValue("decimal", 4.5M);
-        info.AddValue("date", SampleDate);
-        info.AddValue("guid", SampleGuid);
-        info.AddValue("string", "text");
-        info.AddValue("object", new JsonObjectNode { { "v", 1 } });
-        info.AddValue("array", new JsonArrayNode { 1 });
-        info.AddValue("systemObject", new JsonObject { ["v"] = 1 });
-        info.AddValue("systemArray", new JsonArray(1));
-        info.AddValue("host", new ObjectHost());
-        using var doc = JsonDocument.Parse("{\"v\":1}");
-        info.AddValue("element", doc.RootElement);
-        info.AddValue("unsupported", new object());
-        var json = new SerializableObject(info);
-        Assert.IsTrue(json.IsNull("null"));
-        foreach (var key in new[] { "long", "int", "uint" }) Assert.AreEqual(42L, json.GetInt64Value(key));
-        foreach (var key in new[] { "double", "float", "decimal" }) Assert.AreEqual(4.5M, json.GetDecimalValue(key));
-        Assert.AreEqual(SampleDate, json.GetDateTimeValue("date"));
-        Assert.AreEqual(SampleGuid, json.GetGuidValue("guid"));
-        Assert.AreEqual("text", json.GetStringValue("string"));
-        foreach (var key in new[] { "object", "systemObject", "host", "element" }) Assert.AreEqual(1, json.GetObjectValue(key).GetInt32Value("v"));
-        foreach (var key in new[] { "array", "systemArray" }) Assert.AreEqual(1, json.GetArrayValue(key).Count);
-        Assert.IsFalse(json.ContainsKey("unsupported"));
-        json.SetValue("true", true);
-        json.SetValue("false", false);
-        var output = NewSerializationInfo();
-        json.GetObjectData(output, default);
-        Assert.AreEqual("text", output.GetString("string"));
-        Assert.AreEqual(42L, output.GetInt64("long"));
-        Assert.AreEqual(4.5D, output.GetDouble("double"));
-        Assert.AreEqual(4.5M, output.GetDecimal("decimal"));
-        Assert.IsTrue(output.GetBoolean("true"));
-        Assert.IsFalse(output.GetBoolean("false"));
-        Assert.IsInstanceOfType<JsonObjectNode>(output.GetValue("object", typeof(JsonObjectNode)));
-        Assert.IsInstanceOfType<JsonArrayNode>(output.GetValue("array", typeof(JsonArrayNode)));
-        Assert.ThrowsExactly<SerializationException>(() => output.GetValue("null", typeof(object)));
-    }
-
-    [TestMethod]
     public void KeyValidationAndKinds()
     {
         var json = JsonObjectNode.Parse("{\"n\":null,\"i\":1,\"l\":2147483648,\"d\":1.5,\"s\":\"text\",\"t\":true,\"f\":false,\"o\":{},\"a\":[]}");
@@ -1466,15 +1418,6 @@ public class JsonObjectNodeTest
             ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
             throw;
         }
-    }
-
-#pragma warning disable SYSLIB0050
-    private static SerializationInfo NewSerializationInfo() => new(typeof(JsonObjectNode), new FormatterConverter());
-#pragma warning restore SYSLIB0050
-
-    private sealed class SerializableObject : JsonObjectNode
-    {
-        public SerializableObject(SerializationInfo info) : base(info, default) { }
     }
 
     private sealed class ObjectHost : IJsonObjectHost

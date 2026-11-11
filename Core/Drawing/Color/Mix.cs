@@ -191,6 +191,39 @@ public static partial class ColorCalculator
     /// <summary>
     /// Adds a color on another one.
     /// </summary>
+    /// <param name="activator">The activator to create a new color.</param>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color.</returns>
+    public static T Overlay<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == 0) return activator(bA, bR, bG, bB);
+        if (bA == 0 || aA == 255) return activator(aA, aR, aG, aB);
+        var ratio = aA * 1f / 255;
+        if (bA < 255) ratio += (255 - bA) / 255f * (1 - ratio);
+        if (ratio >= 1) return activator(aA, aR, aG, aB);
+        var negRatio = 1 - ratio;
+#if NETFRAMEWORK
+        var a = 255 - (int)Math.Round((255d - aA) * (255d - bA) * 255);
+#else
+        var a = 255 - (int)MathF.Round((255f - aA) * (255f - bA) * 255);
+#endif
+        return activator(
+            a,
+            ToChannel(aR * ratio + bR * negRatio),
+            ToChannel(aG * ratio + bG * negRatio),
+            ToChannel(aB * ratio + bB * negRatio));
+    }
+
+    /// <summary>
+    /// Adds a color on another one.
+    /// </summary>
     /// <param name="top">The color on top.</param>
     /// <param name="alpha">Alpha for top color. Value is from 0 to 1.</param>
     /// <param name="bottom">The color on bottom.</param>
@@ -293,6 +326,41 @@ public static partial class ColorCalculator
     /// <summary>
     /// Mixes colors.
     /// </summary>
+    /// <param name="activator">The color instance maker.</param>
+    /// <param name="type">The type to mix colors.</param>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static T Mix<T>(Func<int, int, int, int, T> activator, ColorMixTypes type, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => type switch
+        {
+            ColorMixTypes.Cover => MixByCover(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Lighten => MixByLighten(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Darken => MixByDarken(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Weaken => MixByWeaken(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Wetness => MixByWetness(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Dryness => MixByDryness(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Deepen => MixByDeepen(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Emphasis => MixByEmphasis(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Accent => MixByAccent(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Add => MixByAdd(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Remove => MixByRemove(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Diff => MixByDiff(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Distance => MixByDistance(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Symmetry => MixBySymmetry(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            ColorMixTypes.Strengthen => MixByStrengthen(activator, aA, aR, aG, aB, bA, bR, bG, bB),
+            _ => MixByMean(activator, aA, aR, aG, aB, bA, bR, bG, bB)
+        };
+
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
     /// <param name="level">The relative saturation level.</param>
     /// <param name="a">The blend color.</param>
     /// <param name="b">The base color.</param>
@@ -316,6 +384,25 @@ public static partial class ColorCalculator
     public static Color Mix(RelativeSaturationLevels level, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
         => Saturate(MixByMean(aA, aR, aG, aB, bA, bR, bG, bB), level);
 
+    /// <summary>
+    /// Mixes colors.
+    /// </summary>
+    /// <param name="activator">The activator function to create a new color.</param>
+    /// <param name="level">The relative saturation level.</param>
+    /// <param name="aA">The alpha channel of blend color.</param>
+    /// <param name="aR">The red channel of blend color.</param>
+    /// <param name="aG">The green channel of blend color.</param>
+    /// <param name="aB">The blue channel of blend color.</param>
+    /// <param name="bA">The alpha channel of base color.</param>
+    /// <param name="bR">The red channel of base color.</param>
+    /// <param name="bG">The green channel of base color.</param>
+    /// <param name="bB">The blue channel of base color.</param>
+    /// <returns>A new color mixed.</returns>
+    public static T Mix<T>(Func<int, int, int, int, T> activator, RelativeSaturationLevels level, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var c = MixByMean(aA, aR, aG, aB, bA, bR, bG, bB);
+        return Saturate(activator, c.A, c.R, c.G, c.B, level);
+    }
 
     /// <summary>
     /// Mixes colors.
@@ -635,6 +722,24 @@ public static partial class ColorCalculator
             ToChannel((aB * topAlpha + bB * bottomAlpha) / total));
     }
 
+    private static T MixByMean<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return activator(
+                aA,
+                ToChannel((aR + bR) / 2),
+                ToChannel((aG + bG) / 2),
+                ToChannel((aB + bB) / 2));
+        var topAlpha = aA / 255f;
+        var bottomAlpha = bA / 255f;
+        var total = topAlpha + bottomAlpha;
+        return activator(
+            Math.Max(aA, bA),
+            ToChannel((aR * topAlpha + bR * bottomAlpha) / total),
+            ToChannel((aG * topAlpha + bG * bottomAlpha) / total),
+            ToChannel((aB * topAlpha + bB * bottomAlpha) / total));
+    }
+
     private static Color MixByCover(Color a, Color b)
     {
         if (a.A == 0) return b;
@@ -665,8 +770,32 @@ public static partial class ColorCalculator
             ToChannel(aB * ratio + bB * negRatio));
     }
 
+    private static T MixByCover<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == 0) return activator(bA, bR, bG, bB);
+        if (bA == 0 || aA == 255) return activator(aA, aR, aG, aB);
+        var ratio = aA * 1f / 255;
+        if (bA < 255) ratio += (255 - bA) / 255f * (1 - ratio);
+        if (ratio >= 1) return activator(aA, aR, aG, aB);
+        var negRatio = 1 - ratio;
+        return activator(
+            Math.Max(aA, bA),
+            ToChannel(aR * ratio + bR * negRatio),
+            ToChannel(aG * ratio + bG * negRatio),
+            ToChannel(aB * ratio + bB * negRatio));
+    }
+
     private static Color MixByLighten(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
         => MixWithAlpha(
+            Math.Max(aR, bR),
+            Math.Max(aG, bG),
+            Math.Max(aB, bB),
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static T MixByLighten<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
             Math.Max(aR, bR),
             Math.Max(aG, bG),
             Math.Max(aB, bB),
@@ -681,8 +810,26 @@ public static partial class ColorCalculator
             aA, aR, aG, aB,
             bA, bR, bG, bB);
 
+    private static T MixByDarken<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
+            Math.Min(aR, bR),
+            Math.Min(aG, bG),
+            Math.Min(aB, bB),
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
     private static Color MixByWetness(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
         => MixWithAlpha(
+            Math.Abs(128 - aR) >= Math.Abs(128 - bR) ? aR : bR,
+            Math.Abs(128 - aG) >= Math.Abs(128 - bG) ? aG : bG,
+            Math.Abs(128 - aB) >= Math.Abs(128 - bB) ? aB : bB,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static T MixByWetness<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
             Math.Abs(128 - aR) >= Math.Abs(128 - bR) ? aR : bR,
             Math.Abs(128 - aG) >= Math.Abs(128 - bG) ? aG : bG,
             Math.Abs(128 - aB) >= Math.Abs(128 - bB) ? aB : bB,
@@ -697,6 +844,15 @@ public static partial class ColorCalculator
             aA, aR, aG, aB,
             bA, bR, bG, bB);
 
+    private static T MixByDryness<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
+            Math.Abs(128 - aR) <= Math.Abs(128 - bR) ? aR : bR,
+            Math.Abs(128 - aG) <= Math.Abs(128 - bG) ? aG : bG,
+            Math.Abs(128 - aB) <= Math.Abs(128 - bB) ? aB : bB,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
     private static Color MixByWeaken(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
         => MixWithAlpha(
             255 - (255 - aR) * (255 - bR) / 255f,
@@ -705,8 +861,26 @@ public static partial class ColorCalculator
             aA, aR, aG, aB,
             bA, bR, bG, bB);
 
+    private static T MixByWeaken<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
+            255 - (255 - aR) * (255 - bR) / 255f,
+            255 - (255 - aG) * (255 - bG) / 255f,
+            255 - (255 - aB) * (255 - bB) / 255f,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
     private static Color MixByDeepen(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
         => MixWithAlpha(
+            aR * bR / 255f,
+            aG * bG / 255f,
+            aB * bB / 255f,
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static T MixByDeepen<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
             aR * bR / 255f,
             aG * bG / 255f,
             aB * bB / 255f,
@@ -727,6 +901,20 @@ public static partial class ColorCalculator
         return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
+    private static T MixByEmphasis<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var red = (aR > 127 ? 255 - aR : aR) * (bR > 127 ? 255 - bR : bR) / 255f;
+        var green = (aG > 127 ? 255 - aG : aG) * (bG > 127 ? 255 - bG : bG) / 255f;
+        var blue = (aB > 127 ? 255 - aB : aB) * (bB > 127 ? 255 - bB : bB) / 255f;
+        if (aR > 127) red = (bR > 127 ? 255 : aR) - red;
+        else red = bR > 127 ? aR + red : red;
+        if (aG > 127) green = (bG > 127 ? 255 : aG) - green;
+        else green = bG > 127 ? aG + red : green;
+        if (aB > 127) blue = (bB > 127 ? 255 : aB) - blue;
+        else blue = bB > 127 ? aB + blue : blue;
+        return MixWithAlpha(activator, red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
+    }
+
     private static Color MixByAccent(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
         if (aA == bA)
@@ -739,6 +927,24 @@ public static partial class ColorCalculator
         var topAlpha = aA / alpha;
         var bottomAlpha = bA / alpha;
         return Color.FromArgb(
+            Math.Max(aA, bA),
+                ToChannel(aR * topAlpha + bR * bottomAlpha),
+                ToChannel(aG * topAlpha + bG * bottomAlpha),
+                ToChannel(aB * topAlpha + bB * bottomAlpha));
+    }
+
+    private static T MixByAccent<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return activator(
+                Math.Max(aA, bA),
+                ToChannel(aR + bR),
+                ToChannel(aG + bG),
+                ToChannel(aB + bB));
+        float alpha = aA + bA;
+        var topAlpha = aA / alpha;
+        var bottomAlpha = bA / alpha;
+        return activator(
             Math.Max(aA, bA),
                 ToChannel(aR * topAlpha + bR * bottomAlpha),
                 ToChannel(aG * topAlpha + bG * bottomAlpha),
@@ -763,6 +969,24 @@ public static partial class ColorCalculator
                 ToChannel(aB * topAlpha + bB * bottomAlpha));
     }
 
+    private static T MixByAdd<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return activator(
+                Math.Max(aA, bA),
+                ToChannel(aR + bR),
+                ToChannel(aG + bG),
+                ToChannel(aB + bB));
+        float alpha = aA + bA;
+        var topAlpha = aA / alpha;
+        var bottomAlpha = bA / alpha;
+        return activator(
+            Math.Max(aA, bA),
+                ToChannel(aR * topAlpha + bR * bottomAlpha),
+                ToChannel(aG * topAlpha + bG * bottomAlpha),
+                ToChannel(aB * topAlpha + bB * bottomAlpha));
+    }
+
     private static Color MixByRemove(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
         var red = aR - bR;
@@ -774,8 +998,28 @@ public static partial class ColorCalculator
         return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
+    private static T MixByRemove<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var red = aR - bR;
+        if (red < 0) red = 0;
+        var green = aG - bG;
+        if (green < 0) green = 0;
+        var blue = aB - bB;
+        if (blue < 0) blue = 0;
+        return MixWithAlpha(activator, red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
+    }
+
     private static Color MixByDiff(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
         => MixWithAlpha(
+            Math.Abs(aR - bR),
+            Math.Abs(aG - bG),
+            Math.Abs(aB - bB),
+            aA, aR, aG, aB,
+            bA, bR, bG, bB);
+
+    private static T MixByDiff<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+        => MixWithAlpha(
+            activator,
             Math.Abs(aR - bR),
             Math.Abs(aG - bG),
             Math.Abs(aB - bB),
@@ -793,6 +1037,17 @@ public static partial class ColorCalculator
         return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
+    private static T MixByDistance<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var red = aR - bR;
+        if (red < 0) red += 256;
+        var green = aG - bG;
+        if (green < 0) green += 256;
+        var blue = aB - bB;
+        if (blue < 0) blue += 256;
+        return MixWithAlpha(activator, red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
+    }
+
     private static Color MixBySymmetry(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
         var red = 2 * bR - aR;
@@ -807,6 +1062,20 @@ public static partial class ColorCalculator
         return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
+    private static T MixBySymmetry<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var red = 2 * bR - aR;
+        if (red < 0) red = 0;
+        else if (red > 255) red = 255;
+        var green = 2 * bG - aG;
+        if (green < 0) green = 0;
+        else if (green > 255) green = 255;
+        var blue = 2 * bB - aB;
+        if (blue < 0) blue = 0;
+        else if (blue > 255) blue = 255;
+        return MixWithAlpha(activator, red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
+    }
+
     private static Color MixByStrengthen(byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
         var red = 2 * aR - bR;
@@ -819,6 +1088,20 @@ public static partial class ColorCalculator
         if (blue < 0) blue = 0;
         else if (blue > 255) blue = 255;
         return MixWithAlpha(red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
+    }
+
+    private static T MixByStrengthen<T>(Func<int, int, int, int, T> activator, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        var red = 2 * aR - bR;
+        if (red < 0) red = 0;
+        else if (red > 255) red = 255;
+        var green = 2 * aG - bG;
+        if (green < 0) green = 0;
+        else if (green > 255) green = 255;
+        var blue = 2 * aB - bB;
+        if (blue < 0) blue = 0;
+        else if (blue > 255) blue = 255;
+        return MixWithAlpha(activator, red, green, blue, aA, aR, aG, aB, bA, bR, bG, bB);
     }
 
     private static Color MixWithAlpha(int red, int green, int blue, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
@@ -838,6 +1121,23 @@ public static partial class ColorCalculator
             ToChannel(blue * negRation + cB * ratio));
     }
 
+    private static T MixWithAlpha<T>(Func<int, int, int, int, T> activator, int red, int green, int blue, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return activator(Math.Max(aA, bA), red, green, blue);
+        var ratio = Math.Abs(aA - bA) * 1f / Math.Max(aA, bA);
+        var negRation = 1 - ratio;
+        var c = aA > bA;
+        var cR = c ? aR : bR;
+        var cG = c ? aG : bG;
+        var cB = c ? aB : bB;
+        return activator(
+            Math.Max(aA, bA),
+            ToChannel(red * negRation + cR * ratio),
+            ToChannel(green * negRation + cG * ratio),
+            ToChannel(blue * negRation + cB * ratio));
+    }
+
     private static Color MixWithAlpha(float red, float green, float blue, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
     {
         if (aA == bA)
@@ -849,6 +1149,23 @@ public static partial class ColorCalculator
         var cG = c ? aG : bG;
         var cB = c ? aB : bB;
         return Color.FromArgb(
+            Math.Max(aA, bA),
+            ToChannel(red * negRation + cR * ratio),
+            ToChannel(green * negRation + cG * ratio),
+            ToChannel(blue * negRation + cB * ratio));
+    }
+
+    private static T MixWithAlpha<T>(Func<int, int, int, int, T> activator, float red, float green, float blue, byte aA, byte aR, byte aG, byte aB, byte bA, byte bR, byte bG, byte bB)
+    {
+        if (aA == bA)
+            return activator(Math.Max(aA, bA), ToChannel(red), ToChannel(green), ToChannel(blue));
+        var ratio = Math.Abs(aA - bA) * 1f / Math.Max(aA, bA);
+        var negRation = 1 - ratio;
+        var c = aA > bA;
+        var cR = c ? aR : bR;
+        var cG = c ? aG : bG;
+        var cB = c ? aB : bB;
+        return activator(
             Math.Max(aA, bA),
             ToChannel(red * negRation + cR * ratio),
             ToChannel(green * negRation + cG * ratio),

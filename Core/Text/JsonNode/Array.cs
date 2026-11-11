@@ -55,7 +55,7 @@ namespace Trivial.Text;
 [Serializable]
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ArrayConverter))]
 [Guid("710F2703-04E9-4C13-9B6A-3403EC89A298")]
-public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
+public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
 #if NET10_0_OR_GREATER
     , IParsable<JsonArrayNode>, IAdditionOperators<JsonArrayNode, JsonArrayNode, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<BaseJsonValueNode>, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<IJsonValueNode>, JsonArrayNode>
 #endif
@@ -70,6 +70,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     {
     }
 
+#if NETFRAMEWORK
     /// <summary>
     /// Initializes a new instance of the JsonArrayNode class.
     /// </summary>
@@ -140,6 +141,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
             }
         }
     }
+#endif
 
     /// <summary>
     /// Initializes a new instance of the JsonArrayNode class.
@@ -5099,9 +5101,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         indentStr = indentPrefix.ToString();
         var str = new StringBuilder();
         indentLevel++;
-        #pragma warning disable CA1834
+#pragma warning disable CA1834
         str.Append("[");
-        #pragma warning restore CA1834
+#pragma warning restore CA1834
         foreach (var prop in store)
         {
             str.AppendLine();

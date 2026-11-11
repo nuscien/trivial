@@ -2146,6 +2146,200 @@ public static class JsonValues
         => DeserializeTo(source, col, false, options);
 
     /// <summary>
+    /// Parses the value to an enum.
+    /// </summary>
+    /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <returns>An enum.</returns>
+    /// <exception cref="InvalidOperationException">Value was null.</exception>
+    public static T ToEnum<T>(this IJsonValueNode<string> instance) where T : struct, Enum
+    {
+        if (string.IsNullOrEmpty(instance?.Value)) throw new InvalidOperationException("Value is null.");
+        return ObjectConvert.ParseEnum<T>(instance.Value);
+    }
+
+    /// <summary>
+    /// Parses the value to an enum.
+    /// </summary>
+    /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <returns>An enum.</returns>
+    /// <exception cref="InvalidOperationException">Value was null.</exception>
+    public static T ToEnum<T>(this IJsonValueNode<string> instance, bool ignoreCase) where T : struct, Enum
+    {
+        if (string.IsNullOrEmpty(instance?.Value)) throw new InvalidOperationException("Value is null.");
+        return ObjectConvert.ParseEnum<T>(instance.Value, ignoreCase);
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <returns>An enum.</returns>
+    /// <exception cref="InvalidOperationException">Value was null.</exception>
+    public static T? TryToEnum<T>(this IJsonValueNode<string> instance) where T : struct, Enum
+    {
+        if (string.IsNullOrEmpty(instance?.Value)) return null;
+        if (Enum.TryParse<T>(instance.Value, out var result)) return result;
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <param name="type">The type of enum.</param>
+    /// <returns>An enum.</returns>
+    public static object TryToEnum(this IJsonValueNode<string> instance, Type type)
+    {
+        if (string.IsNullOrWhiteSpace(instance?.Value)) return null;
+        if (type == null || !type.IsEnum) return null;
+        try
+        {
+#if NETFRAMEWORK
+            return Enum.Parse(type, instance.Value);
+#else
+            if (Enum.TryParse(type, instance.Value, out var r)) return r;
+#endif
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <param name="type">The type of enum.</param>
+    /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+    /// <returns>An enum.</returns>
+    public static object TryToEnum(this IJsonValueNode<string> instance, Type type, bool ignoreCase)
+    {
+        if (string.IsNullOrWhiteSpace(instance?.Value)) return null;
+        if (type == null || !type.IsEnum) return null;
+        try
+        {
+#if NETFRAMEWORK
+            return Enum.Parse(type, instance.Value, ignoreCase);
+#else
+            if (Enum.TryParse(type, instance.Value, ignoreCase, out var r)) return r;
+#endif
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+    /// <returns>An enum.</returns>
+    public static T? TryToEnum<T>(this IJsonValueNode<string> instance, bool ignoreCase) where T : struct, Enum
+    {
+        if (string.IsNullOrEmpty(instance?.Value)) return null;
+        if (Enum.TryParse<T>(instance.Value, ignoreCase, out var result)) return result;
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="result">The result output.</param>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
+    public static bool TryToEnum<T>(this IJsonValueNode<string> instance, out T result) where T : struct, Enum
+    {
+        if (!string.IsNullOrEmpty(instance?.Value) && Enum.TryParse(instance.Value, out result))
+            return true;
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+    /// <param name="result">The result output.</param>
+    /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
+    public static bool TryToEnum<T>(this IJsonValueNode<string> instance, bool ignoreCase, out T result) where T : struct, Enum
+    {
+        if (!string.IsNullOrEmpty(instance?.Value) && Enum.TryParse(instance.Value, ignoreCase, out result))
+            return true;
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Retrieves a substring from this instance. The substring starts at a specified character position and has a specified length.
+    /// </summary>
+    /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
+    /// <param name="length">The number of characters in the substring.</param>
+    /// <returns>A JSON string that is equivalent to the substring of length length that begins at startIndex in this instance, or instance with empty string value if startIndex is equal to the length of this instance and length is zero.</returns>
+    public static JsonStringNode Substring(this IJsonValueNode<string> instance, int startIndex, int? length = null)
+    {
+        if (instance?.Value == null) return null;
+        var str = length.HasValue ? instance.Value.Substring(startIndex, length.Value) : instance.Value.Substring(startIndex);
+        if (str != null && str.Length == instance.Value.Length) return instance is JsonStringNode s ? s : new(instance);
+        return new(str);
+    }
+
+    /// <summary>
+    /// Converts to a JSON array.
+    /// </summary>
+    /// <param name="separator">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+    /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+    /// <param name="trimEachItem">true if trim each item; otherwise, false.</param>
+    /// <returns>A JSON array node.</returns>
+    public static JsonArrayNode ToJsonArray(this IJsonValueNode<string> instance, char[] separator, StringSplitOptions options = StringSplitOptions.None, bool trimEachItem = false)
+    {
+        if (instance?.Value == null) return null;
+        var arr = new JsonArrayNode();
+        if (!trimEachItem)
+        {
+            arr.AddRange(instance.Value.Split(separator, options));
+            return arr;
+        }
+
+        var col = StringExtensions.YieldSplit(instance.Value, separator);
+        col = StringExtensions.TrimForEach(col, options == StringSplitOptions.RemoveEmptyEntries);
+        arr.AddRange(col);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to a JSON array.
+    /// </summary>
+    /// <param name="separator">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+    /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+    /// <param name="trimEachItem">true if trim each item; otherwise, false.</param>
+    /// <returns>A JSON array node.</returns>
+    public static JsonArrayNode ToJsonArray(this IJsonValueNode<string> instance, char separator, StringSplitOptions options = StringSplitOptions.None, bool trimEachItem = false)
+        => ToJsonArray(instance, [separator], options, trimEachItem);
+
+    /// <summary>
     /// Writes a specific value to JSON.
     /// </summary>
     /// <param name="writer">The UTF-8 JSON writer to write to.</param>

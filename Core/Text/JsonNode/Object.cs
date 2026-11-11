@@ -82,7 +82,7 @@ namespace Trivial.Text;
 [JsonConverter(typeof(JsonValueNodeConverter.ObjectConverter))]
 [DebuggerDisplay("{DebugString,nq}")]
 [Guid("2D5D5CB8-9ACD-4DB6-9B0F-1D766EF64D75")]
-public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
+public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
 #if NET10_0_OR_GREATER
     , IParsable<JsonObjectNode>
 #endif
@@ -98,6 +98,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
     }
 
+#if NETFRAMEWORK
     /// <summary>
     /// Initializes a new instance of the JsonObjectNode class.
     /// </summary>
@@ -160,6 +161,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
             }
         }
     }
+#endif
 
     /// <summary>
     /// Initializes a new instance of the JsonObjectNode class.

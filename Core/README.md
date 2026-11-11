@@ -1,8 +1,10 @@
 ﻿# Trivial
 
+https://trivial.nuscien.com
+
 Includes utilities and services for tasks, security, JSON, etc.
 
-## [Tasks](https://trivial.kingcean.net/tasks)
+## Tasks
 
 ```csharp
 using Trivial.Tasks;
@@ -40,7 +42,7 @@ action();
 Create a linear retry policy by `LinearRetryPolicy` or a customized one to process an action with the specific retry policy.
 And you can use `ObservableTask` to observe the state of an action processing.
 
-## [Network](https://trivial.kingcean.net/net)
+## Network
 
 Contains the helper functions and extension functions for network, such as HTTP web client and its content.
 
@@ -51,7 +53,7 @@ using Trivial.Net;
 Use `JsonHttpClient` to serialize the JSON format response with additional retry policy.
 And `HttpUri` for HTTP URI fields accessing.
 
-## [Security](https://trivial.kingcean.net/security)
+## Security
 
 ```csharp
 using Trivial.Security;
@@ -108,7 +110,7 @@ Convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]` 
 
 And class `RSASecretExchange` is used to transfer the secret by RSA encryption.
 
-## [Text](https://trivial.kingcean.net/text)
+## Text
 
 ```csharp
 using Trivial.Text;
@@ -137,7 +139,7 @@ foreach (var model in csv.ConvertTo<CsvModel>(new[] { "A", "B" }))
 }
 ```
 
-## [Data](https://trivial.kingcean.net/data)
+## Data
 
 ```csharp
 using Trivial.Data;
@@ -147,7 +149,7 @@ using Trivial.Data;
 
 Save a number of model in memory cache by generic class `DataCacheCollection`.
 
-## [Drawing](https://trivial.kingcean.net/drawing)
+## Drawing
 
 ```csharp
 using Trivial.Drawing;
@@ -164,7 +166,7 @@ color = ColorCalculator.Saturate(color, RelativeSaturationLevels.High);
 color = ColorCalculator.Mix(ColorMixTypes.Lighten, color, Color.FromArgb(0, 240, 0));
 ```
 
-## [Mathematics](https://trivial.kingcean.net/maths)
+## Mathematics
 
 ```csharp
 using Trivial.Maths;
@@ -212,7 +214,7 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 
 ## Further
 
-- [IO](https://trivial.kingcean.net/io)
-- [Geography](https://trivial.kingcean.net/geo)
-- [Reflection](https://trivial.kingcean.net/reflection)
-- [CommandLine](https://trivial.kingcean.net/cmdline)
+- IO
+- Geography
+- Reflection
+- CommandLine

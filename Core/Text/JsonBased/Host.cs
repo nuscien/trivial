@@ -18,8 +18,8 @@ namespace Trivial.Text;
 /// <summary>
 /// The host service for JSON object node to provide a way to access its JSON properties.
 /// </summary>
-/// <param name="parent">The parent JSON object node.</param>
-public class JsonObjectHostService(JsonObjectNode parent) : BaseJsonObjectHostService(parent), IReadOnlyDictionary<string, BaseJsonValueNode>
+/// <param name="source">The source JSON object node.</param>
+public class JsonObjectHostService(JsonObjectNode source) : BaseJsonObjectHostService(source), IReadOnlyDictionary<string, BaseJsonValueNode>
 {
     BaseJsonValueNode IReadOnlyDictionary<string, BaseJsonValueNode>.this[string key] => throw new NotImplementedException();
 
@@ -145,7 +145,7 @@ public class JsonObjectHostService(JsonObjectNode parent) : BaseJsonObjectHostSe
         => Source.TryGetStringTrimmedValue(key, out result);
 
     /// <summary>
-    /// Synchronizes back to parent node.
+    /// Synchronizes back to source node.
     /// </summary>
     /// <returns>The properties synchronized.</returns>
     public new int SyncToParent()
@@ -158,9 +158,9 @@ public class JsonObjectHostService(JsonObjectNode parent) : BaseJsonObjectHostSe
         => base.ClearCache();
 
     /// <summary>
-    /// Resets the parent JSON object node.
+    /// Resets the source JSON object node.
     /// </summary>
-    /// <param name="parent">The parent JSON object node.</param>
+    /// <param name="parent">The source JSON object node.</param>
     /// <param name="keepCache">true if need keeping the Collection; otherwise, false.</param>
     public new void ResetParent(JsonObjectNode parent, bool keepCache = false)
         => base.ResetParent(parent, keepCache);

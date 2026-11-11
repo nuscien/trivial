@@ -39,6 +39,19 @@ public static partial class ColorCalculator
     /// <summary>
     /// Calculates to get the color with opacity and a given color.
     /// </summary>
+    /// <param name="activator">The color instance maker.</param>
+    /// <param name="alphaChannel">The original alpha channel of the source color.</param>
+    /// <param name="redChannel">The channel red of the source color.</param>
+    /// <param name="greenChannel">The channel green of the source color.</param>
+    /// <param name="blueChannel">The channel blue of the source color.</param>
+    /// <param name="alphaRatio">The alpha ratio. Value is from 0 to 1.</param>
+    /// <returns>A color with new alpha channel value.</returns>
+    public static T Opacity<T>(Func<int, int, int, int, T> activator, byte alphaChannel, byte redChannel, byte greenChannel, byte blueChannel, double alphaRatio)
+        => activator(ToChannel(alphaChannel * alphaRatio), redChannel, greenChannel, blueChannel);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
     /// <param name="value">The source color value.</param>
     /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
     /// <returns>A color with new alpha channel value.</returns>
@@ -56,6 +69,19 @@ public static partial class ColorCalculator
     /// <returns>A color with new alpha channel value.</returns>
     public static Color Opacity(byte alphaChannel, byte redChannel, byte greenChannel, byte blueChannel, float alphaRatio)
         => Color.FromArgb(ToChannel(alphaChannel * alphaRatio), redChannel, greenChannel, blueChannel);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="activator">The color instance maker.</param>
+    /// <param name="alphaChannel">The original alpha channel of the source color.</param>
+    /// <param name="redChannel">The channel red of the source color.</param>
+    /// <param name="greenChannel">The channel green of the source color.</param>
+    /// <param name="blueChannel">The channel blue of the source color.</param>
+    /// <param name="alphaRatio">The alpha ratio. Value is from 0 to 1.</param>
+    /// <returns>A color with new alpha channel value.</returns>
+    public static T Opacity<T>(Func<int, int, int, int, T> activator, byte alphaChannel, byte redChannel, byte greenChannel, byte blueChannel, float alphaRatio)
+        => activator(ToChannel(alphaChannel * alphaRatio), redChannel, greenChannel, blueChannel);
 
     /// <summary>
     /// Calculates to get the color with opacity and a given color.
@@ -92,6 +118,20 @@ public static partial class ColorCalculator
     /// <summary>
     /// Calculates to get the color with opacity and a given color.
     /// </summary>
+    /// <param name="activator">The color instance maker.</param>
+    /// <param name="alphaChannel">The original alpha channel of the source color.</param>
+    /// <param name="redChannel">The channel red of the source color.</param>
+    /// <param name="greenChannel">The channel green of the source color.</param>
+    /// <param name="blueChannel">The channel blue of the source color.</param>
+    /// <param name="alphaRatio">The alpha ratio. Value is from 0 to 1.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color with new alpha channel value.</returns>
+    public static T Opacity<T>(Func<int, int, int, int, T> activator, byte alphaChannel, byte redChannel, byte greenChannel, byte blueChannel, double alphaRatio, bool resetOriginalAlpha)
+        => activator(resetOriginalAlpha ? ToChannel(alphaRatio * 255) : ToChannel(alphaChannel * alphaRatio), redChannel, greenChannel, blueChannel);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
     /// <param name="value">The source color value.</param>
     /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
     /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
@@ -111,6 +151,20 @@ public static partial class ColorCalculator
     /// <returns>A color with new alpha channel value.</returns>
     public static Color Opacity(byte alphaChannel, byte redChannel, byte greenChannel, byte blueChannel, float alphaRatio, bool resetOriginalAlpha)
         => Color.FromArgb(resetOriginalAlpha ? ToChannel(alphaRatio * 255) : ToChannel(alphaChannel * alphaRatio), redChannel, greenChannel, blueChannel);
+
+    /// <summary>
+    /// Calculates to get the color with opacity and a given color.
+    /// </summary>
+    /// <param name="activator">The color instance maker.</param>
+    /// <param name="alphaChannel">The original alpha channel of the source color.</param>
+    /// <param name="redChannel">The channel red of the source color.</param>
+    /// <param name="greenChannel">The channel green of the source color.</param>
+    /// <param name="blueChannel">The channel blue of the source color.</param>
+    /// <param name="alphaRatio">The alpha ratio. Value is from 0 to 1.</param>
+    /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+    /// <returns>A color with new alpha channel value.</returns>
+    public static Color Opacity(Func<int, int, int, int, Color> activator, byte alphaChannel, byte redChannel, byte greenChannel, byte blueChannel, float alphaRatio, bool resetOriginalAlpha)
+        => activator(resetOriginalAlpha ? ToChannel(alphaRatio * 255) : ToChannel(alphaChannel * alphaRatio), redChannel, greenChannel, blueChannel);
 
     /// <summary>
     /// Calculates to get the color with opacity and a given color.
