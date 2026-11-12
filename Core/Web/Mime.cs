@@ -305,6 +305,10 @@ public static partial class WebFormat
             // Web
             "json" or "map" or "jsonc" => Text.JsonValues.JsonMIME,
             "jsonl" => Text.JsonValues.JsonlMIME,
+            "bson" => Text.JsonValues.BsonMIME,
+            "cbor" => "application/cbor",
+            "sml" => "application/x-jackson-smile",
+            "ubj" => "application/ubjson",
             "xml" or "xsl" or "xsf" or "xsd" or "config" or "xslt" or "mno" or "vml" or "wsdl" or "disco" => XmlMIME,
             "yaml" or "yml" => YamlMIME,
             "epub" => "application/epub+zip",

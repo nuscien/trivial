@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -4667,6 +4668,32 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, ushort value)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonIntegerNode(value));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, short value)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonIntegerNode(value));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void SetValue(string key, uint value)
     {
         AssertKey(key);
@@ -4804,6 +4831,62 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
         AssertKey(key);
         SetProperty(key, new JsonStringNode(value, format, provider));
     }
+
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, Half value)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonDoubleNode(value));
+    }
+#endif
+
+#if NET11_0_OR_GREATER
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, Decimal32 value)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonDecimalNode(value));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, Decimal64 value)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonDecimalNode(value));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void SetValue(string key, Decimal128 value)
+    {
+        AssertKey(key);
+        SetProperty(key, new JsonDecimalNode(value));
+    }
+#endif
 
     /// <summary>
     /// Sets the value of the specific property.
@@ -8115,6 +8198,16 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, ushort value)
+        => AddProperty(key, new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, short value)
         => AddProperty(key, new JsonIntegerNode(value));
 
@@ -8281,6 +8374,50 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, decimal value, string format, IFormatProvider provider)
         => AddProperty(key, new JsonStringNode(value, format, provider));
+
+#if NET10_0_OR_GREATER
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(string key, Half value)
+        => AddProperty(key, new JsonDoubleNode(value));
+#endif
+
+#if NET11_0_OR_GREATER
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(string key, Decimal32 value)
+        => AddProperty(key, new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(string key, Decimal64 value)
+        => AddProperty(key, new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(string key, Decimal128 value)
+        => AddProperty(key, new JsonDecimalNode(value));
+#endif
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
