@@ -4843,7 +4843,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     public void SetValue(string key, Half value)
     {
         AssertKey(key);
-        SetProperty(key, new JsonDoubleNode(value));
+        SetProperty(key, Half.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
     }
 #endif
 
@@ -4858,7 +4858,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     public void SetValue(string key, Decimal32 value)
     {
         AssertKey(key);
-        SetProperty(key, new JsonDecimalNode(value));
+        SetProperty(key, Decimal32.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
     }
 
     /// <summary>
@@ -4871,7 +4871,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     public void SetValue(string key, Decimal64 value)
     {
         AssertKey(key);
-        SetProperty(key, new JsonDecimalNode(value));
+        SetProperty(key, Decimal64.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
     }
 
     /// <summary>
@@ -4884,7 +4884,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     public void SetValue(string key, Decimal128 value)
     {
         AssertKey(key);
-        SetProperty(key, new JsonDecimalNode(value));
+        SetProperty(key, Decimal128.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
     }
 #endif
 
@@ -8384,7 +8384,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, Half value)
-        => AddProperty(key, new JsonDoubleNode(value));
+        => AddProperty(key, Half.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 #endif
 
 #if NET11_0_OR_GREATER
@@ -8396,7 +8396,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, Decimal32 value)
-        => AddProperty(key, new JsonDecimalNode(value));
+        => AddProperty(key, Decimal32.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 
     /// <summary>
     /// Sets the value of the specific property.
@@ -8406,7 +8406,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, Decimal64 value)
-        => AddProperty(key, new JsonDecimalNode(value));
+        => AddProperty(key, Decimal64.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 
     /// <summary>
     /// Sets the value of the specific property.
@@ -8416,7 +8416,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(string key, Decimal128 value)
-        => AddProperty(key, new JsonDecimalNode(value));
+        => AddProperty(key, Decimal128.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 #endif
 
     /// <summary>

@@ -57,6 +57,16 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonStringNode(IObjectRef<string> value)
+        : this(value?.Value)
+    {
+        if (value is JsonStringNode s) ValueType = s.ValueType;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(DateTime value)
         : base(JsonValueKind.String, ToJson(value, true))
     {
@@ -155,6 +165,17 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="startIndex">The zero-based starting index.</param>
+    /// <param name="length">The length.</param>
+    public JsonStringNode(char[] value, int startIndex, int length)
+        : this(value != null ? new string(value, startIndex, length) : null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
     /// <param name="c">The char.</param>
     /// <param name="repeatCount">The count to repeat the char.</param>
     public JsonStringNode(char c, int repeatCount)
@@ -194,8 +215,64 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonStringNode(ushort value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(ushort value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(short value)
         : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(short value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(uint value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(uint value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 2;
     }
@@ -240,16 +317,6 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     public JsonStringNode(long value, string format, IFormatProvider provider = null)
         : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
-    {
-        ValueType = 2;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonStringNode class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    public JsonStringNode(uint value)
-        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 2;
     }
@@ -329,6 +396,142 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     {
         ValueType = 3;
     }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(Int128 value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(Int128 value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(UInt128 value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(UInt128 value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 2;
+    }
+#endif
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(Half value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(Half value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+#endif
+#if NET11_0_OR_GREATER
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(Decimal32 value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(Decimal32 value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(Decimal64 value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(Decimal64 value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(Decimal128 value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(Decimal128 value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+#endif
 
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.

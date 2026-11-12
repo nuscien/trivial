@@ -3486,7 +3486,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(Half value)
-        => AddItem(new JsonDoubleNode(value));
+        => AddItem(Half.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 #endif
 
 #if NET11_0_OR_GREATER
@@ -3497,7 +3497,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(Decimal32 value)
-        => AddItem(new JsonDecimalNode(value));
+        => AddItem(Decimal32.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 
     /// <summary>
     /// Adds a value.
@@ -3506,7 +3506,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(Decimal64 value)
-        => AddItem(new JsonDecimalNode(value));
+        => AddItem(Decimal64.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 
     /// <summary>
     /// Adds a value.
@@ -3515,7 +3515,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
     /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
     public void Add(Decimal128 value)
-        => AddItem(new JsonDecimalNode(value));
+        => AddItem(Decimal128.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 #endif
 
     /// <summary>
@@ -4031,7 +4031,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, Half value)
-        => InsertItem(index, new JsonDoubleNode(value));
+        => InsertItem(index, Half.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 #endif
 
 #if NET11_0_OR_GREATER
@@ -4042,7 +4042,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, Decimal32 value)
-        => InsertItem(index, new JsonDecimalNode(value));
+        => InsertItem(index, Decimal32.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -4051,7 +4051,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, Decimal64 value)
-        => InsertItem(index, new JsonDecimalNode(value));
+        => InsertItem(index, Decimal64.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -4060,7 +4060,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, Decimal128 value)
-        => InsertItem(index, new JsonDecimalNode(value));
+        => InsertItem(index, Decimal128.IsNaN(value) ? JsonValues.Null : new JsonDecimalNode(value));
 #endif
 
     /// <summary>
