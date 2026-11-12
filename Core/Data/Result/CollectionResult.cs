@@ -473,6 +473,17 @@ public class JsonCollectionResult : CollectionResult<JsonObjectNode>
     }
 
     /// <summary>
+    /// Initializes a new instance of the DataResult class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its properties.</param>
+    protected JsonCollectionResult(CollectionResult<JsonObjectNode> copy)
+        : base(copy)
+    {
+        if (copy is not JsonCollectionResult result) return;
+        Components = result.Components;
+    }
+
+    /// <summary>
     /// Gets or sets the components.
     /// </summary>
     [DataMember(Name = "components")]

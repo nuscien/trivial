@@ -47,6 +47,7 @@ public class MessageResult : BaseObservableProperties
     protected MessageResult(MessageResult copy)
     {
         if (copy == null) return;
+        ErrorCode = copy.ErrorCode;
         Message = copy.Message;
         TrackingId = copy.TrackingId;
         Tag = copy.Tag;
@@ -356,6 +357,17 @@ public class JsonDataResult : DataResult<JsonObjectNode, JsonObjectNode>
     public JsonDataResult(DataEventArgs<JsonObjectNode> args, bool additional = false)
         : this(args, additional ? new JsonObjectNode() : null)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DataResult class.
+    /// </summary>
+    /// <param name="copy">The instance to copy its properties.</param>
+    protected JsonDataResult(DataResult<JsonObjectNode, JsonObjectNode> copy)
+        : base(copy)
+    {
+        if (copy is not JsonDataResult result) return;
+        Components = result.Components;
     }
 
     /// <summary>
