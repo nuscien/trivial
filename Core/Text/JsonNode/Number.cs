@@ -81,6 +81,16 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Initializes a new instance of the JsonIntegerNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonIntegerNode(ushort value)
+        : base(JsonValueKind.Number, value)
+    {
+        IsSafe = true;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonIntegerNode(short value)
         : base(JsonValueKind.Number, value)
     {
@@ -1594,8 +1604,12 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         if (float.IsNaN(value) || float.IsInfinity(value)) return;
         try
         {
-            if (value > long.MaxValue || value < long.MinValue) return;
-            IsInteger = (long)value == value;
+#if NET8_0_OR_GREATER
+            if (float.Truncate(value) != value) return;
+#else
+            if ((long)value != value) return;
+#endif
+            IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
         catch (InvalidCastException)
         {
@@ -1615,8 +1629,12 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         if (double.IsNaN(value) || double.IsInfinity(value)) return;
         try
         {
-            if (value > long.MaxValue || value < long.MinValue) return;
-            IsInteger = (long)value == value;
+#if NET8_0_OR_GREATER
+            if (double.Truncate(value) != value) return;
+#else
+            if ((long)value != value) return;
+#endif
+            IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
         catch (InvalidCastException)
         {
@@ -1635,8 +1653,12 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     {
         try
         {
-            if (value > long.MaxValue || value < long.MinValue) return;
-            IsInteger = (long)value == value;
+#if NET8_0_OR_GREATER
+            if (decimal.Truncate(value) != value) return;
+#else
+            if ((long)value != value) return;
+#endif
+            IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
         catch (InvalidCastException)
         {
@@ -1645,6 +1667,29 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         {
         }
     }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDoubleNode(Half value)
+        : base(JsonValueKind.Number, (double)value)
+    {
+        try
+        {
+            if (Half.Truncate(value) != value) return;
+            var l = (long)value;
+            IsInteger = l <= long.MaxValue && l >= long.MinValue;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+#endif
 
     /// <summary>
     /// Initializes a new instance of the JsonDoubleNode class.
@@ -1678,6 +1723,15 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     float IObjectRef<float>.Value => (float)Value;
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Returns the integral digits of the value; any fractional digits are discarded.
+    /// </summary>
+    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
+    public double Truncate()
+        => double.Truncate(Value);
+#endif
 
     /// <summary>
     /// Tests if the number value is macthed by the specific condition.
@@ -3169,8 +3223,12 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         if (float.IsNaN(value) || float.IsInfinity(value)) return;
         try
         {
-            if (value > long.MaxValue || value < long.MinValue) return;
-            IsInteger = (long)value == value;
+#if NET8_0_OR_GREATER
+            if (float.Truncate(value) != value) return;
+#else
+            if ((long)value != value) return;
+#endif
+            IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
         catch (InvalidCastException)
         {
@@ -3190,8 +3248,12 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         if (double.IsNaN(value) || double.IsInfinity(value)) return;
         try
         {
-            if (value > long.MaxValue || value < long.MinValue) return;
-            IsInteger = (long)value == value;
+#if NET8_0_OR_GREATER
+            if (double.Truncate(value) != value) return;
+#else
+            if ((long)value != value) return;
+#endif
+            IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
         catch (InvalidCastException)
         {
@@ -3210,8 +3272,12 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     {
         try
         {
-            if (value > long.MaxValue || value < long.MinValue) return;
-            IsInteger = (long)value == value;
+#if NET8_0_OR_GREATER
+            if (decimal.Truncate(value) != value) return;
+#else
+            if ((long)value != value) return;
+#endif
+            IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
         catch (InvalidCastException)
         {
@@ -3230,6 +3296,80 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     {
         IsInteger = value.Milliseconds == 0;
     }
+
+#if NET11_0_OR_GREATER
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(Decimal32 value)
+        : base(JsonValueKind.Number, (decimal)value)
+    {
+        try
+        {
+            if (Decimal32.IsNaN(value) || Decimal32.IsInfinity(value)) return;
+            var integer = Decimal32.Truncate(value);
+            if (integer != value) return;
+            var l = (long)value;
+            if (l > long.MaxValue || l < long.MinValue) return;
+            IsInteger = true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(Decimal64 value)
+        : base(JsonValueKind.Number, (decimal)value)
+    {
+        try
+        {
+            if (Decimal64.IsNaN(value) || Decimal64.IsInfinity(value)) return;
+            var integer = Decimal64.Truncate(value);
+            if (integer != value) return;
+            var l = (long)value;
+            if (l > long.MaxValue || l < long.MinValue) return;
+            IsInteger = true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(Decimal128 value)
+        : base(JsonValueKind.Number, (decimal)value)
+    {
+        try
+        {
+            if (Decimal128.IsNaN(value) || Decimal128.IsInfinity(value)) return;
+            var integer = Decimal128.Truncate(value);
+            if (integer != value) return;
+            var l = (long)value;
+            if (l > long.MaxValue || l < long.MinValue) return;
+            IsInteger = true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+#endif
 
     /// <summary>
     /// Gets a value indicating whether the number value is an whole number.
@@ -3253,6 +3393,15 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     double IObjectRef<double>.Value => (double)Value;
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Returns the integral digits of the value; any fractional digits are discarded.
+    /// </summary>
+    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
+    public decimal Truncate()
+        => decimal.Truncate(Value);
+#endif
 
     /// <summary>
     /// Tests if the number value is macthed by the specific condition.

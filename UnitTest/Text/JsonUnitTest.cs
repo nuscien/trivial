@@ -27,6 +27,15 @@ public class JsonUnitTest
         var now = DateTime.Now;
         var json = CreateModel(now);
 
+        Assert.IsFalse(new JsonDecimalNode(Math.PI).IsInteger);
+        Assert.IsTrue(new JsonDecimalNode(17f).IsInteger);
+        Assert.IsTrue(new JsonDecimalNode((decimal)100).IsInteger);
+        Assert.IsTrue(new JsonDecimalNode(0).IsInteger);
+        Assert.IsFalse(new JsonDoubleNode(Math.PI).IsInteger);
+        Assert.IsTrue(new JsonDoubleNode(17f).IsInteger);
+        Assert.IsTrue(new JsonDoubleNode((decimal)100).IsInteger);
+        Assert.IsTrue(new JsonDoubleNode(0).IsInteger);
+
         Assert.AreEqual(9, json.Keys.Count());
         Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));
         Assert.IsTrue(json.GetValue("str-a") is JsonStringNode);

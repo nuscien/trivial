@@ -47,6 +47,11 @@ public static class JsonValues
     public const string JsonlMIME = "application/jsonl";
 
     /// <summary>
+    /// Gets the MIME content type of BSON.
+    /// </summary>
+    public const string BsonMIME = "application/bson";
+
+    /// <summary>
     /// The default JSON serializer options.
     /// </summary>
     internal static readonly JsonSerializerOptions Options = new()

@@ -3368,6 +3368,46 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public void Add(decimal value, string format, IFormatProvider provider = null)
         => AddItem(new JsonStringNode(value, format, provider));
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(Half value)
+        => AddItem(new JsonDoubleNode(value));
+#endif
+
+#if NET11_0_OR_GREATER
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(Decimal32 value)
+        => AddItem(new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(Decimal64 value)
+        => AddItem(new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null.</exception>
+    /// <exception cref="ArgumentException">The property key should not be empty or consists only of white-space characters.</exception>
+    public void Add(Decimal128 value)
+        => AddItem(new JsonDecimalNode(value));
+#endif
+
     /// <summary>
     /// Adds a value.
     /// </summary>
@@ -3788,6 +3828,24 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, ushort value)
+        => InsertItem(index, new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, short value)
+        => InsertItem(index, new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, uint value)
         => InsertItem(index, new JsonIntegerNode(value));
 
@@ -3835,6 +3893,46 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, decimal value)
         => InsertItem(index, new JsonDecimalNode(value));
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, Half value)
+        => InsertItem(index, new JsonDoubleNode(value));
+#endif
+
+#if NET11_0_OR_GREATER
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, Decimal32 value)
+        => InsertItem(index, new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, Decimal64 value)
+        => InsertItem(index, new JsonDecimalNode(value));
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, Decimal128 value)
+        => InsertItem(index, new JsonDecimalNode(value));
+#endif
 
     /// <summary>
     /// Inserts the value at the specific index.
