@@ -129,6 +129,42 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     }
 
     /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonIntegerNode(IJsonValueNode<int> value)
+        : this(value?.Value ?? 0)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonIntegerNode(IJsonValueNode<long> value)
+        : this(value?.Value ?? 0)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonIntegerNode(IObjectRef<int> value)
+        : this(value?.Value ?? 0)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonIntegerNode(IObjectRef<long> value)
+        : this(value?.Value ?? 0)
+    {
+    }
+
+    /// <summary>
     /// Gets a value indicating whether the number value is an whole number.
     /// </summary>
     public bool IsInteger => true;
@@ -1699,6 +1735,42 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         : base(JsonValueKind.Number, value.TotalSeconds)
     {
         IsInteger = value.Milliseconds == 0;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDoubleNode(IJsonValueNode<double> value)
+        : this(value?.Value ?? double.NaN)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDoubleNode(IObjectRef<float> value)
+        : this(value?.Value ?? float.NaN)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDoubleNode(IObjectRef<double> value)
+        : this(value?.Value ?? double.NaN)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDoubleNode(IJsonValueNode<float> value)
+        : this(value?.Value ?? float.NaN)
+    {
     }
 
     /// <summary>
@@ -3370,6 +3442,24 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         }
     }
 #endif
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(IJsonValueNode<decimal> value)
+        : this(value?.Value ?? decimal.Zero)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(IObjectRef<decimal> value)
+        : this(value?.Value ?? decimal.Zero)
+    {
+    }
 
     /// <summary>
     /// Gets a value indicating whether the number value is an whole number.
