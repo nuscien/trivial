@@ -705,10 +705,10 @@ public class JsonHttpClient<T>
             if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                 throw FailedHttpException.Create(resp);
             var obj = Deserializer != null
-#if NET10_0_OR_GREATER
-                ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
-#else
+#if NETFRAMEWORK
                 ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer)
+#else
+                ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
 #endif
                 : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content, cancellationToken);
             if (cache != null && resp.IsSuccessStatusCode)

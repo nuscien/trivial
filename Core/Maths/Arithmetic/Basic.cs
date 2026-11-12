@@ -113,7 +113,7 @@ public static partial class Arithmetic
         return false;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tests if the specific number is an integer.
     /// </summary>
@@ -507,7 +507,7 @@ public static partial class Arithmetic
     public static ulong Min(ulong a, ulong b, ulong c)
         => Math.Min(Math.Min(a, b), c);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Returns the smaller of the specific numbers.
     /// </summary>
@@ -889,7 +889,7 @@ public static partial class Arithmetic
     public static ulong Max(ulong a, ulong b, ulong c)
         => Math.Max(Math.Max(a, b), c);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Returns the larger of the specific numbers.
     /// </summary>

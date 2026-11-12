@@ -28,10 +28,10 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// The lock.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET10_0_OR_GREATER
-    private readonly Lock locker;
-#else
+#if NETFRAMEWORK
     private readonly object locker;
+#else
+    private readonly Lock locker;
 #endif
 
     /// <summary>
@@ -76,10 +76,10 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
     /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
     /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
-#if NET10_0_OR_GREATER
-    public ConcurrentList(Lock syncRoot, IEnumerable<T> collection, bool useSource = false)
-#else
+#if NETFRAMEWORK
     public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource = false)
+#else
+    public ConcurrentList(Lock syncRoot, IEnumerable<T> collection, bool useSource = false)
 #endif
     {
         locker = syncRoot ?? new();
@@ -729,7 +729,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged,
     object ICloneable.Clone()
         => Clone();
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Adds a value.
     /// </summary>

@@ -133,7 +133,7 @@ public static partial class Arithmetic
     public static Task<bool> IsPrimeAsync(long value, CancellationToken cancellationToken = default)
         => IsPrimeAsync((ulong)Math.Abs(value), cancellationToken);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets a value indicating whether a number is a prime number.
     /// </summary>

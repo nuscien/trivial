@@ -576,7 +576,7 @@ public class ServerSentEventInfo : IIdPropertyModel
         }
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Parses Server-Sent Event record.
     /// </summary>

@@ -397,7 +397,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         ValueType = 3;
     }
 
-#if NET8_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
@@ -441,8 +441,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     {
         ValueType = 2;
     }
-#endif
-#if NET6_0_OR_GREATER
+
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
@@ -465,6 +464,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         ValueType = 3;
     }
 #endif
+
 #if NET11_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the JsonStringNode class.

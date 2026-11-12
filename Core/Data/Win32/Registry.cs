@@ -12,7 +12,7 @@ namespace Trivial.Data;
 /// <summary>
 /// The Windows Registry utility.
 /// </summary>
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 #endif
 public static class RegistryUtility

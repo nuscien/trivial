@@ -840,7 +840,7 @@ public static class Numbers
             _ => null
         };
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Parses a string to a number.
     /// </summary>
