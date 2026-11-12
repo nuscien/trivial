@@ -1333,7 +1333,7 @@ public class JsonWebTokenPayload : IIdPropertyModel
         return comparer is null ? Audience.Contains(value) : Audience.Contains(value, comparer);
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Sets the birth date of the user.
     /// </summary>

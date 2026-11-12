@@ -27,10 +27,10 @@ namespace Trivial.Tasks;
 public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>, IIdPropertyModel
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET10_0_OR_GREATER
-    private readonly Lock locker = new();
-#else
+#if NETFRAMEWORK
     private readonly object locker = new();
+#else
+    private readonly Lock locker = new();
 #endif
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

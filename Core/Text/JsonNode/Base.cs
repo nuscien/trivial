@@ -699,7 +699,11 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
                         return Enum.ToObject(type, enumInt);
                     }
 
-#if NET10_0_OR_GREATER
+#if NETFRAMEWORK
+                    exception = null;
+                    return Enum.Parse(type, enumStr);
+
+#else
                     if (Enum.TryParse(type, enumStr, out object enumObj))
                     {
                         exception = null;
@@ -711,10 +715,6 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
                         if (throwException) throw exception;
                         return default;
                     }
-#else
-                    exception = null;
-                    return Enum.Parse(type, enumStr);
-
 #endif
                 }
                 catch (ArgumentException ex)

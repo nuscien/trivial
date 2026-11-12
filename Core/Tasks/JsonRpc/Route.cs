@@ -153,7 +153,7 @@ public class JsonRpcRequestRoute
         return i;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Removes a handler.
     /// </summary>

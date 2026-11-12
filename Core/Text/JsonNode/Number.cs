@@ -34,7 +34,7 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.IntegerConverter))]
 [Guid("46D19567-7B97-42B8-9BC5-01CFB01E320B")]
 public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, IObjectRef<decimal>, IObjectRef<float>, IObjectRef<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonIntegerNode>
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     , IParsable<JsonIntegerNode>, IUnaryNegationOperators<JsonIntegerNode, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, long, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, int, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, long, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, int, JsonIntegerNode>
 #endif
 {
@@ -313,7 +313,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
         if (other is IJsonValueNode<float> f1) return Value.Equals(f1.Value);
         if (other is IJsonValueNode<double> f2) return Value.Equals(f2.Value);
         if (other is IJsonValueNode<decimal> f3) return Value.Equals(f3.Value);
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
         if (other is IJsonValueNode<Half> f4) return Value.Equals(f4.Value);
         if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
         if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
@@ -496,7 +496,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     public int CompareTo(float other)
         => Value.CompareTo(other);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to format the value of the current double instance into the provided span of characters.
     /// </summary>
@@ -943,7 +943,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
         return false;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Parses.
     /// </summary>
@@ -1023,7 +1023,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
         throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Converts the JSON raw back.
     /// </summary>
@@ -1595,7 +1595,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.DoubleConverter))]
 [Guid("25098B53-EC11-48E1-A8FD-AFB685C38BA9")]
 public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDoubleNode>
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     , IParsable<JsonDoubleNode>, IUnaryNegationOperators<JsonDoubleNode, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, double, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, double, JsonDoubleNode>
 #endif
 {
@@ -1649,10 +1649,10 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         if (float.IsNaN(value) || float.IsInfinity(value)) return;
         try
         {
-#if NET10_0_OR_GREATER
-            if (float.Truncate(value) != value) return;
-#else
+#if NETFRAMEWORK
             if ((long)value != value) return;
+#else
+            if (float.Truncate(value) != value) return;
 #endif
             IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
@@ -1674,10 +1674,10 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         if (double.IsNaN(value) || double.IsInfinity(value)) return;
         try
         {
-#if NET10_0_OR_GREATER
-            if (double.Truncate(value) != value) return;
-#else
+#if NETFRAMEWORK
             if ((long)value != value) return;
+#else
+            if (double.Truncate(value) != value) return;
 #endif
             IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
@@ -1698,10 +1698,10 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     {
         try
         {
-#if NET10_0_OR_GREATER
-            if (decimal.Truncate(value) != value) return;
-#else
+#if NETFRAMEWORK
             if ((long)value != value) return;
+#else
+            if (decimal.Truncate(value) != value) return;
 #endif
             IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
@@ -1713,7 +1713,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         }
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Initializes a new instance of the JsonDoubleNode class.
     /// </summary>
@@ -1805,7 +1805,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     float IObjectRef<float>.Value => (float)Value;
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Returns the integral digits of the value; any fractional digits are discarded.
     /// </summary>
@@ -1897,7 +1897,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         if (other is IJsonValueNode<float> f1) return Value.Equals(f1.Value);
         if (other is IJsonValueNode<double> f2) return Value.Equals(f2.Value);
         if (other is IJsonValueNode<decimal> f3) return Value.Equals(f3.Value);
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
         if (other is IJsonValueNode<Half> f4) return Value.Equals(f4.Value);
         if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
         if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
@@ -2125,7 +2125,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     public int CompareTo(decimal other)
         => Value.CompareTo(other);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to format the value of the current double instance into the provided span of characters.
     /// </summary>
@@ -3248,7 +3248,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.DecimalConverter))]
 [Guid("2DE9E34B-A394-4BF7-B814-2A6765420E05")]
 public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDecimalNode>
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     , IParsable<JsonDecimalNode>, IUnaryNegationOperators<JsonDecimalNode, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, decimal, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, decimal, JsonDecimalNode>
 #endif
 {
@@ -3302,10 +3302,10 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         if (float.IsNaN(value) || float.IsInfinity(value)) return;
         try
         {
-#if NET10_0_OR_GREATER
-            if (float.Truncate(value) != value) return;
-#else
+#if NETFRAMEWORK
             if ((long)value != value) return;
+#else
+            if (float.Truncate(value) != value) return;
 #endif
             IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
@@ -3327,10 +3327,10 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         if (double.IsNaN(value) || double.IsInfinity(value)) return;
         try
         {
-#if NET10_0_OR_GREATER
-            if (double.Truncate(value) != value) return;
-#else
+#if NETFRAMEWORK
             if ((long)value != value) return;
+#else
+            if (double.Truncate(value) != value) return;
 #endif
             IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
@@ -3351,10 +3351,10 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     {
         try
         {
-#if NET10_0_OR_GREATER
-            if (decimal.Truncate(value) != value) return;
-#else
+#if NETFRAMEWORK
             if ((long)value != value) return;
+#else
+            if (decimal.Truncate(value) != value) return;
 #endif
             IsInteger = value <= long.MaxValue && value >= long.MinValue;
         }
@@ -3491,7 +3491,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     double IObjectRef<double>.Value => (double)Value;
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Returns the integral digits of the value; any fractional digits are discarded.
     /// </summary>
@@ -3583,7 +3583,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         if (other is IJsonValueNode<float> f1) return Value.Equals(f1.Value);
         if (other is IJsonValueNode<double> f2) return Value.Equals(f2.Value);
         if (other is IJsonValueNode<decimal> f3) return Value.Equals(f3.Value);
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
         if (other is IJsonValueNode<Half> f4) return Value.Equals(f4.Value);
         if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
         if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
@@ -3810,7 +3810,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     public int CompareTo(decimal other)
         => Value.CompareTo(other);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to format the value of the current double instance into the provided span of characters.
     /// </summary>

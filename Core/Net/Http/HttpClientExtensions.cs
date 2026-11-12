@@ -189,10 +189,10 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         if (destination == null) throw ObjectConvert.ArgumentNull(nameof(destination));
-#if NET10_0_OR_GREATER
-        var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
-#else
+#if NETFRAMEWORK
         var downloadingStream = await httpContent.ReadAsStreamAsync();
+#else
+        var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #endif
         await StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
     }
@@ -262,10 +262,10 @@ public static class HttpClientExtensions
         {
             Timeout = TimeSpan.FromDays(2)
         };
-#if NET10_0_OR_GREATER
-        using var content = await httpClient.GetStreamAsync(uri, cancellationToken);
-#else
+#if NETFRAMEWORK
         using var content = await httpClient.GetStreamAsync(uri);
+#else
+        using var content = await httpClient.GetStreamAsync(uri, cancellationToken);
 #endif
         using var resp = await httpClient.GetAsync(uri, cancellationToken);
         return await WriteFileAsync(resp.Content, fileName, DefaultBlockSize, progress, cancellationToken);
@@ -398,12 +398,12 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
         var type = typeof(T);
-#if NET10_0_OR_GREATER
-        if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync(cancellationToken);
-        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
-#else
+#if NETFRAMEWORK
         if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync();
         var stream = await httpContent.ReadAsStreamAsync();
+#else
+        if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync(cancellationToken);
+        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #endif
         StreamCopy.TrySeek(stream, origin);
         if (type == typeof(JsonObjectNode)) return (T)(object)await JsonObjectNode.ParseAsync(stream, default, cancellationToken);
@@ -469,10 +469,10 @@ public static class HttpClientExtensions
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-#if NET10_0_OR_GREATER
-        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
-#else
+#if NETFRAMEWORK
         var stream = await httpContent.ReadAsStreamAsync();
+#else
+        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #endif
         StreamCopy.TrySeek(stream, origin);
         return await JsonSerializer.DeserializeAsync<T>(stream, options, cancellationToken);
@@ -579,7 +579,7 @@ public static class HttpClientExtensions
         return JsonSerializer.DeserializeAsync<T>(stream, options);
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Deserializes the HTTP JSON content into an object as the specific type.
     /// </summary>
@@ -741,7 +741,7 @@ public static class HttpClientExtensions
         return deserializer(str);
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Deserializes the HTTP content into an object by the specific serializer.
     /// </summary>
@@ -789,10 +789,10 @@ public static class HttpClientExtensions
     public static async Task<StreamingCollectionResult<T>> DeserializeCollectionResultAsync<T>(this HttpContent httpContent, Action<StreamingCollectionResult<T>, ServerSentEventInfo> callback, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw ObjectConvert.ArgumentNull(nameof(httpContent));
-#if NET10_0_OR_GREATER
-        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
-#else
+#if NETFRAMEWORK
         var stream = await httpContent.ReadAsStreamAsync();
+#else
+        var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #endif
         if (httpContent.Headers?.ContentType?.MediaType == WebFormat.ServerSentEventsMIME) return new(stream, callback, options);
         var copy = await JsonSerializer.DeserializeAsync<CollectionResult<T>>(stream, options, cancellationToken);

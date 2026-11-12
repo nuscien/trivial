@@ -1424,7 +1424,7 @@ public static class StringExtensions
         return await reader.ReadToEndAsync();
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Converts to string.
     /// </summary>
@@ -1771,17 +1771,17 @@ public static class StringExtensions
     }
 
     internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex)
-#if NET10_0_OR_GREATER
-        => sb.Append(input.AsSpan(startIndex));
-#else
+#if NETFRAMEWORK
         => sb.Append(input.Substring(startIndex));
+#else
+        => sb.Append(input.AsSpan(startIndex));
 #endif
 
     internal static void AppendSubstring(this StringBuilder sb, string input, int startIndex, int length)
-#if NET10_0_OR_GREATER
-        => sb.Append(input.AsSpan(startIndex, length));
-#else
+#if NETFRAMEWORK
         => sb.Append(input.Substring(startIndex, length));
+#else
+        => sb.Append(input.AsSpan(startIndex, length));
 #endif
 
     private static string ToUpper(string source, CultureInfo culture)

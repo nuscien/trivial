@@ -115,10 +115,10 @@ namespace Trivial.Collection
             var shared = ListExtensions.ToSynchronizedList(source, true);
             source.Add(3);
             Assert.AreEqual(3, shared.Count);
-#if NET10_0_OR_GREATER
-            var root = new Lock();
-#else
+#if NETFRAMEWORK
             var root = new object();
+#else
+            var root = new Lock();
 #endif
             var wrapped = ListExtensions.ToSynchronizedList((IEnumerable<int>)source, root);
             Assert.AreEqual(3, wrapped.Count);

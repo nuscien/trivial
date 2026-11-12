@@ -84,7 +84,7 @@ namespace Trivial.Text;
 [DebuggerDisplay("{DebugString,nq}")]
 [Guid("2D5D5CB8-9ACD-4DB6-9B0F-1D766EF64D75")]
 public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, BaseJsonValueNode>, IDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     , IParsable<JsonObjectNode>
 #endif
 {
@@ -4538,7 +4538,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
         SetProperty(key, new JsonStringNode(string.Format(value, args)));
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
@@ -4832,7 +4832,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
         SetProperty(key, new JsonStringNode(value, format, provider));
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
@@ -8375,7 +8375,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
     public void Add(string key, decimal value, string format, IFormatProvider provider)
         => AddProperty(key, new JsonStringNode(value, format, provider));
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
@@ -9044,7 +9044,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
         file.Refresh();
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Writes to file.
     /// </summary>
@@ -10275,7 +10275,7 @@ public sealed class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDic
         return Parse(stream, options);
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     static JsonObjectNode IParsable<JsonObjectNode>.Parse(string s, IFormatProvider provider)
         => Parse(s);
 

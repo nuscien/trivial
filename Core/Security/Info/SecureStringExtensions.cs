@@ -128,7 +128,7 @@ public static class SecureStringExtensions
         }
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Appends a string into a secure string instance.
     /// </summary>

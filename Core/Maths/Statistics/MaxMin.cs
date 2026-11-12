@@ -113,7 +113,7 @@ public static partial class StatisticalMethod
         return result;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Converts a set of number to another calculated by softmax that turns into a collection of the real values that sum to 1.
     /// </summary>
@@ -336,10 +336,10 @@ public static partial class StatisticalMethod
         var sum = 0f;
         foreach (var number in numbers)
         {
-#if NET10_0_OR_GREATER
-            var exp = MathF.Exp(number);
-#else
+#if NETFRAMEWORK
             var exp = (float)Math.Exp(number);
+#else
+            var exp = MathF.Exp(number);
 #endif
             result.Add(exp);
             sum += exp;
@@ -375,10 +375,10 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET10_0_OR_GREATER
-            var exp = MathF.Exp(numbers[i]);
-#else
+#if NETFRAMEWORK
             var exp = (float)Math.Exp(numbers[i]);
+#else
+            var exp = MathF.Exp(numbers[i]);
 #endif
             result[i] = exp;
             sum += exp;
@@ -413,10 +413,10 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET10_0_OR_GREATER
-            var exp = MathF.Exp(numbers[i]);
-#else
+#if NETFRAMEWORK
             var exp = (float)Math.Exp(numbers[i]);
+#else
+            var exp = MathF.Exp(numbers[i]);
 #endif
             result[i] = exp;
             sum += exp;
@@ -544,7 +544,7 @@ public static partial class StatisticalMethod
         return result;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Converts a set of number to another calculated by softmin function.
     /// </summary>
@@ -766,10 +766,10 @@ public static partial class StatisticalMethod
         var sum = 0f;
         foreach (var number in numbers)
         {
-#if NET10_0_OR_GREATER
-            var exp = MathF.Exp(-number);
-#else
+#if NETFRAMEWORK
             var exp = (float)Math.Exp(-number);
+#else
+            var exp = MathF.Exp(-number);
 #endif
             result.Add(exp);
             sum += exp;
@@ -805,10 +805,10 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET10_0_OR_GREATER
-            var exp = MathF.Exp(-numbers[i]);
-#else
+#if NETFRAMEWORK
             var exp = (float)Math.Exp(-numbers[i]);
+#else
+            var exp = MathF.Exp(-numbers[i]);
 #endif
             result[i] = exp;
             sum += exp;
@@ -843,10 +843,10 @@ public static partial class StatisticalMethod
         var sum = 0f;
         for (var i = 0; i < numbers.Length; i++)
         {
-#if NET10_0_OR_GREATER
-            var exp = MathF.Exp(-numbers[i]);
-#else
+#if NETFRAMEWORK
             var exp = (float)Math.Exp(-numbers[i]);
+#else
+            var exp = MathF.Exp(-numbers[i]);
 #endif
             result[i] = exp;
             sum += exp;

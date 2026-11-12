@@ -83,7 +83,7 @@ public class ObservableProperties : BaseObservableProperties
     /// Gets the revision token of member-wised property updated.
     /// </summary>
     [JsonIgnore]
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     [NotMapped]
 #endif
     public new object RevisionToken => base.RevisionToken;
@@ -93,7 +93,7 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     [NotMapped]
 #endif
     public new IEnumerable<string> Keys => base.Keys;
@@ -103,7 +103,7 @@ public class ObservableProperties : BaseObservableProperties
     /// </summary>
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     [NotMapped]
 #endif
     public new PropertySettingPolicies PropertiesSettingPolicy

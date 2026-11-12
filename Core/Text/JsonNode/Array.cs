@@ -56,7 +56,7 @@ namespace Trivial.Text;
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonValueNodeConverter.ArrayConverter))]
 [Guid("710F2703-04E9-4C13-9B6A-3403EC89A298")]
 public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<BaseJsonValueNode>, IReadOnlyList<IJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     , IParsable<JsonArrayNode>, IAdditionOperators<JsonArrayNode, JsonArrayNode, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<BaseJsonValueNode>, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<IJsonValueNode>, JsonArrayNode>
 #endif
 {
@@ -3478,7 +3478,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     public void Add(decimal value, string format, IFormatProvider provider = null)
         => AddItem(new JsonStringNode(value, format, provider));
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Adds a value.
     /// </summary>
@@ -4023,7 +4023,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     public void Insert(int index, decimal value)
         => InsertItem(index, new JsonDecimalNode(value));
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Inserts the value at the specific index.
     /// </summary>
@@ -4459,7 +4459,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
         => File.WriteAllText(path, ToString(style) ?? "null");
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Writes to file. If the target file already exists, it is overwritten.
     /// </summary>
@@ -4727,7 +4727,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     public IEnumerable<BaseJsonValueNode> Take(int count)
         => store.Select(ele => ele ?? JsonValues.Null).Take(count);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets a new enumerable collection that contains the elements from source with the last count elements of the array.
     /// </summary>
@@ -5047,7 +5047,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
     public ILookup<TKey, TElement> ToLookup<TKey, TElement>(Func<BaseJsonValueNode, TKey> keySelector, Func<BaseJsonValueNode, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         => Enumerable.ToLookup(this, keySelector, elementSelector, comparer);
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Creates a hash set from this JSON array.
     /// </summary>
@@ -5554,7 +5554,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
         return arr;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Adds a value.
     /// </summary>
@@ -6109,7 +6109,7 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
         return arr;
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     static JsonArrayNode IParsable<JsonArrayNode>.Parse(string s, IFormatProvider provider)
         => Parse(s);
 

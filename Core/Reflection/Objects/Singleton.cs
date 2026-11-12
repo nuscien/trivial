@@ -253,10 +253,10 @@ public class SingletonResolver : BaseSingletonResolver
     /// The locker.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#if NET10_0_OR_GREATER
-    private readonly Lock locker = new();
-#else
+#if NETFRAMEWORK
     private readonly object locker = new();
+#else
+    private readonly Lock locker = new();
 #endif
 
     /// <summary>
@@ -812,10 +812,10 @@ public class SingletonKeeper<T>
     private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     private readonly Func<Task<T>> renew;
     private readonly List<Action<T>> callbacks = new();
-#if NET10_0_OR_GREATER
-    private readonly Lock callbackLocker = new();
-#else
+#if NETFRAMEWORK
     private readonly object callbackLocker = new();
+#else
+    private readonly Lock callbackLocker = new();
 #endif
     private DateTime? disabled;
 

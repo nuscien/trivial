@@ -581,7 +581,7 @@ public class JsonObjectNodeTest
         node.SetValue("objectDate", SampleDate);
         Assert.AreEqual(29, node.GetObjectValue("objectDate").GetInt32Value("day"));
         Assert.AreEqual(2024, node.GetObjectValue("objectDate").GetInt32Value("year"));
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
         node.SetFormatValue("spanFormat", "{0}", new object[] { 42 }.AsSpan());
         Assert.AreEqual("42", node.GetStringValue("spanFormat"));
 #endif
@@ -897,7 +897,7 @@ public class JsonObjectNodeTest
         Assert.AreEqual(1, json.RemoveRange("d", "missing"));
         Assert.AreEqual(1, json.Remove(new[] { "e" }.AsSpan()));
         Assert.IsFalse(json.Any());
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
         json.SetValue("span", 1);
         Assert.AreEqual(1, json.RemoveRange(new[] { "span" }.AsSpan()));
 #endif
@@ -953,7 +953,7 @@ public class JsonObjectNodeTest
             Assert.AreEqual(canonical, ((JsonObjectNode)node.ToJsonObject()).ToString());
             Assert.AreEqual(canonical, ((JsonObjectNode)node.ToJsonNode()).ToString());
         }
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
         Assert.AreEqual(canonical, ParseGeneric<JsonObjectNode>(text).ToString());
         Assert.IsTrue(TryParseGeneric<JsonObjectNode>(text, out var parsed));
         Assert.AreEqual(canonical, parsed.ToString());
@@ -1113,7 +1113,7 @@ public class JsonObjectNodeTest
             Assert.AreEqual(42, (await JsonObjectNode.ParseAsync(stream)).GetInt32Value("Value"));
             stream.Position = 0;
             Assert.AreEqual(42, (await JsonObjectNode.ParseAsync(stream, new JsonDocumentOptions())).GetInt32Value("Value"));
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
             await json.WriteToAsync(file.FullName);
             await json.WriteToAsync(file);
             await json.WriteToAsync(file.FullName, new[] { "Value" }, true);
@@ -1310,7 +1310,7 @@ public class JsonObjectNodeTest
         Assert.IsNull(JsonObjectNode.TryParse(stream));
     }
 
-#if NET10_0_OR_GREATER
+#if !NETFRAMEWORK
     private static T ParseGeneric<T>(string value) where T : IParsable<T> => T.Parse(value, CultureInfo.InvariantCulture);
 
     private static bool TryParseGeneric<T>(string value, out T result) where T : IParsable<T> => T.TryParse(value, CultureInfo.InvariantCulture, out result);

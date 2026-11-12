@@ -267,20 +267,20 @@ public class JsonUnitTest
 
         var jsonArray = json.GetArrayValue("arr");
         Assert.AreEqual(0, jsonArray.Count);
-#if NET10_0_OR_GREATER
-        jsonArray += "*+-\"\'\\";
-        jsonArray += 456;
-#else
+#if NETFRAMEWORK
         jsonArray.Add("*+-\"\'\\");
         jsonArray.Add(456);
+#else
+        jsonArray += "*+-\"\'\\";
+        jsonArray += 456;
 #endif
         jsonArray.AddRange(jsonArray);
         jsonArray.Remove(2);
         Assert.AreEqual(456, jsonArray.GetInt32Value(1));
-#if NET10_0_OR_GREATER
-        jsonArray += new JsonObjectNode
-#else
+#if NETFRAMEWORK
         jsonArray.Add(new JsonObjectNode
+#else
+        jsonArray += new JsonObjectNode
 #endif
         {
             { "newProp", new JsonObjectNode {
@@ -290,10 +290,10 @@ public class JsonUnitTest
             {
                 0
             } }
-#if NET10_0_OR_GREATER
-        };
-#else
+#if NETFRAMEWORK
         });
+#else
+        };
 #endif
         Assert.AreEqual("newValue", jsonArray[3, "newProp", "deep"]);
         Assert.IsTrue(jsonArray.Contains(3));
@@ -337,21 +337,21 @@ public class JsonUnitTest
         Assert.AreEqual(9, list[7]);
         jsonArray.AddNull();
         Assert.AreEqual(JsonValues.Null, jsonArray[jsonArray.Count - 1]);
-#if NET10_0_OR_GREATER
-        jsonArray += new JsonArrayNode
-#else
+#if NETFRAMEWORK
         jsonArray.Add(new JsonArrayNode
+#else
+        jsonArray += new JsonArrayNode
 #endif
         {
             8, 9, 0
-#if NET10_0_OR_GREATER
-        };
-        jsonArray += null as string;
-        jsonArray++;
-#else
+#if NETFRAMEWORK
         });
         jsonArray.Add(null as string);
         jsonArray.AddNull();
+#else
+        };
+        jsonArray += null as string;
+        jsonArray++;
 #endif
         jsonArray.RemoveNull();
         Assert.AreEqual(JsonValueKind.Array, jsonArray[jsonArray.Count - 1].ValueKind);
