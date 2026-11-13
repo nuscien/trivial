@@ -4478,6 +4478,23 @@ public sealed class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IRead
 #endif
 
     /// <summary>
+    /// Writes this JSON object and its nested values to a stream as CBOR.
+    /// </summary>
+    /// <param name="stream">The writable output stream, which remains open and is not flushed or repositioned.</param>
+    /// <remarks>
+    /// Strings remain text, including date/time strings. Decimal numbers use CBOR tag 4.
+    /// Undefined object properties are omitted; undefined array elements are written as null.
+    /// Objects and arrays use indefinite lengths. Output may be partial if writing fails.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">The stream is null.</exception>
+    /// <exception cref="ArgumentException">The stream is not writable.</exception>
+    /// <exception cref="IOException">Writing to the stream failed.</exception>
+    /// <exception cref="JsonException">The nodes contain a cycle or more than 1000 nested containers.</exception>
+    /// <exception cref="NotSupportedException">A node type cannot be written as CBOR.</exception>
+    public void WriteToCbor(Stream stream)
+        => JsonValues.WriteCborValue(new SimpleCborStreamWriter(stream), this, new());
+
+    /// <summary>
     /// Deserializes.
     /// </summary>
     /// <param name="returnType">The type of the object to convert to and return.</param>

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -2154,6 +2155,7 @@ public static class JsonValues
     /// Parses the value to an enum.
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <returns>An enum.</returns>
     /// <exception cref="InvalidOperationException">Value was null.</exception>
     public static T ToEnum<T>(this IJsonValueNode<string> instance) where T : struct, Enum
@@ -2166,6 +2168,7 @@ public static class JsonValues
     /// Parses the value to an enum.
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <returns>An enum.</returns>
     /// <exception cref="InvalidOperationException">Value was null.</exception>
     public static T ToEnum<T>(this IJsonValueNode<string> instance, bool ignoreCase) where T : struct, Enum
@@ -2178,6 +2181,7 @@ public static class JsonValues
     /// Tries to parse the value to an enum.
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <returns>An enum.</returns>
     /// <exception cref="InvalidOperationException">Value was null.</exception>
     public static T? TryToEnum<T>(this IJsonValueNode<string> instance) where T : struct, Enum
@@ -2191,6 +2195,7 @@ public static class JsonValues
     /// Tries to parse the value to an enum.
     /// </summary>
     /// <param name="type">The type of enum.</param>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <returns>An enum.</returns>
     public static object TryToEnum(this IJsonValueNode<string> instance, Type type)
     {
@@ -2223,6 +2228,7 @@ public static class JsonValues
     /// <summary>
     /// Tries to parse the value to an enum.
     /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="type">The type of enum.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <returns>An enum.</returns>
@@ -2258,6 +2264,7 @@ public static class JsonValues
     /// Tries to parse the value to an enum.
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <returns>An enum.</returns>
     public static T? TryToEnum<T>(this IJsonValueNode<string> instance, bool ignoreCase) where T : struct, Enum
@@ -2271,6 +2278,7 @@ public static class JsonValues
     /// Tries to parse the value to an enum.
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="result">The result output.</param>
     /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
     public static bool TryToEnum<T>(this IJsonValueNode<string> instance, out T result) where T : struct, Enum
@@ -2286,6 +2294,7 @@ public static class JsonValues
     /// Tries to parse the value to an enum.
     /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
     /// <returns><c>true</c> if parse succeeded; otherwise, <c>false</c>.</returns>
@@ -2300,6 +2309,7 @@ public static class JsonValues
     /// <summary>
     /// Retrieves a substring from this instance. The substring starts at a specified character position and has a specified length.
     /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
     /// <param name="length">The number of characters in the substring.</param>
     /// <returns>A JSON string that is equivalent to the substring of length length that begins at startIndex in this instance, or instance with empty string value if startIndex is equal to the length of this instance and length is zero.</returns>
@@ -2314,6 +2324,7 @@ public static class JsonValues
     /// <summary>
     /// Converts to a JSON array.
     /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="separator">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
     /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
     /// <param name="trimEachItem">true if trim each item; otherwise, false.</param>
@@ -2337,12 +2348,146 @@ public static class JsonValues
     /// <summary>
     /// Converts to a JSON array.
     /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
     /// <param name="separator">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
     /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
     /// <param name="trimEachItem">true if trim each item; otherwise, false.</param>
     /// <returns>A JSON array node.</returns>
     public static JsonArrayNode ToJsonArray(this IJsonValueNode<string> instance, char separator, StringSplitOptions options = StringSplitOptions.None, bool trimEachItem = false)
         => ToJsonArray(instance, [separator], options, trimEachItem);
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<long> instance, Int64Condition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<long> instance, Int32Condition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<int> instance, Int64Condition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<int> instance, Int32Condition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<double> instance, DoubleCondition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<float> instance, SingleCondition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Tests if the number value is macthed by the specific condition.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="condition">The condition to test the number value.</param>
+    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
+    public static bool IsMatched(this IJsonValueNode<decimal> instance, DecimalCondition condition)
+        => instance is not null && (condition == null || condition.IsMatched(instance.Value));
+
+    /// <summary>
+    /// Converts to a specific positional notation format string.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="type">The positional notation.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
+    public static string ToPositionalNotationString(this IJsonValueNode<long> instance, int type)
+        => instance is null ? null : Numbers.ToPositionalNotationString(instance.Value, type);
+
+    /// <summary>
+    /// Converts to a specific positional notation format string.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="type">The positional notation.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
+    public static string ToPositionalNotationString(this IJsonValueNode<int> instance, int type)
+        => instance is null ? null : Numbers.ToPositionalNotationString(instance.Value, type);
+
+    /// <summary>
+    /// Converts to a specific positional notation format string.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="type">The positional notation.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    public static string ToPositionalNotationString(this IJsonValueNode<double> instance, int type)
+        => instance is null ? null : Numbers.ToPositionalNotationString(instance.Value, type);
+
+    /// <summary>
+    /// Converts to a specific positional notation format string.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="type">The positional notation.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    public static string ToPositionalNotationString(this IJsonValueNode<float> instance, int type)
+        => instance is null ? null : Numbers.ToPositionalNotationString(instance.Value, type);
+
+    /// <summary>
+    /// Converts to a specific positional notation format string.
+    /// </summary>
+    /// <param name="instance">The JSON value node instance.</param>
+    /// <param name="type">The positional notation.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    public static string ToPositionalNotationString(this IJsonValueNode<decimal> instance, int type)
+        => instance is null ? null : Numbers.ToPositionalNotationString(instance.Value, type);
+
+#if !NETFRAMEWORK
+    /// <summary>
+    /// Returns the integral digits of the value; any fractional digits are discarded.
+    /// </summary>
+    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
+    public static double Truncate(this IJsonValueNode<double> instance)
+        => instance is null ? double.NaN : double.Truncate(instance.Value);
+
+    /// <summary>
+    /// Returns the integral digits of the value; any fractional digits are discarded.
+    /// </summary>
+    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
+    public static float Truncate(this IJsonValueNode<float> instance)
+        => instance is null ? float.NaN : float.Truncate(instance.Value);
+
+    /// <summary>
+    /// Returns the integral digits of the value; any fractional digits are discarded.
+    /// </summary>
+    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
+    public static decimal Truncate(this IJsonValueNode<decimal> instance)
+        => instance is null ? decimal.Zero : decimal.Truncate(instance.Value);
+#endif
 
     /// <summary>
     /// Writes a specific value to JSON.
@@ -2511,13 +2656,30 @@ public static class JsonValues
             if (obj is Int128 i128)
             {
                 if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128);
-                else return new JsonStringNode(i128.ToString("g"));
+                else return new JsonStringNode(i128);
             }
 
             if (obj is UInt128 i128u)
             {
                 if (i128u <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128u);
-                else return new JsonStringNode(i128u.ToString("g"));
+                else return new JsonStringNode(i128u);
+            }
+#endif
+
+#if NET11_0_OR_GREATER
+            if (obj is Decimal32 decimal32)
+            {
+                return new JsonDecimalNode(decimal32);
+            }
+
+            if (obj is Decimal64 decimal64)
+            {
+                return new JsonDecimalNode(decimal64);
+            }
+
+            if (obj is Decimal128 decimal128)
+            {
+                return new JsonDecimalNode(decimal128);
             }
 #endif
         }
@@ -2589,6 +2751,90 @@ public static class JsonValues
         return Undefined;
     }
 
+    internal static void WriteCborValue(SimpleCborStreamWriter writer, BaseJsonValueNode value, List<BaseJsonValueNode> ancestors, string key = null)
+    {
+        var kind = value?.ValueKind ?? JsonValueKind.Null;
+        if (kind == JsonValueKind.Undefined && key != null) return;
+        if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+        {
+            if (key == null) writer.AppendNullItem();
+            else writer.AppendNullProperty(key);
+            return;
+        }
+
+        if (kind == JsonValueKind.True || kind == JsonValueKind.False)
+        {
+            if (key == null) writer.AppendItem(kind == JsonValueKind.True);
+            else writer.AppendProperty(key, kind == JsonValueKind.True);
+            return;
+        }
+
+        switch (value)
+        {
+            case BaseJsonValueNode<string> text when kind == JsonValueKind.String:
+                if (text is JsonStringNode str && str.ValueType == 2 && str.TryGetDateTime(out var date)) {
+                    if (key == null) writer.AppendItem(date);
+                    else writer.AppendProperty(key, date);
+                    return;
+                }
+
+                if (key == null) writer.AppendItem(text.Value);
+                else writer.AppendProperty(key, text.Value);
+                return;
+            case BaseJsonValueNode<long> integer when kind == JsonValueKind.Number:
+                if (key == null) writer.AppendItem(integer.Value);
+                else writer.AppendProperty(key, integer.Value);
+                return;
+            case BaseJsonValueNode<int> integer32 when kind == JsonValueKind.Number:
+                if (key == null) writer.AppendItem(integer32.Value);
+                else writer.AppendProperty(key, integer32.Value);
+                return;
+            case BaseJsonValueNode<double> number when kind == JsonValueKind.Number:
+                if (key == null) writer.AppendItem(number.Value);
+                else writer.AppendProperty(key, number.Value);
+                return;
+            case BaseJsonValueNode<float> number32 when kind == JsonValueKind.Number:
+                if (key == null) writer.AppendItem(number32.Value);
+                else writer.AppendProperty(key, number32.Value);
+                return;
+            case BaseJsonValueNode<decimal> decimalNumber when kind == JsonValueKind.Number:
+                if (key == null) writer.AppendItem(decimalNumber.Value);
+                else writer.AppendProperty(key, decimalNumber.Value);
+                return;
+        }
+
+        if (value is not JsonObjectNode && value is not JsonArrayNode)
+            throw new NotSupportedException($"The JSON node type {value.GetType().Name} cannot be written as CBOR.");
+        if (ancestors.Count >= 1000 || ancestors.Any(node => ReferenceEquals(node, value)))
+            throw new JsonException("The JSON nodes contain a cycle or exceed the maximum CBOR nesting depth of 1000.");
+        ancestors.Add(value);
+        if (value is JsonObjectNode obj)
+        {
+            if (key == null) writer.StartObject();
+            else writer.StartObject(key);
+            foreach (var prop in obj)
+            {
+                if (prop.Key.StartsWith('$')) WriteCborValue(writer, prop.Value, ancestors, prop.Key);
+            }
+
+            foreach (var prop in obj)
+            {
+                if (!prop.Key.StartsWith('$')) WriteCborValue(writer, prop.Value, ancestors, prop.Key);
+            }
+
+            writer.EndObject();
+        }
+        else if (value is JsonArrayNode array)
+        {
+            if (key == null) writer.StartArray();
+            else writer.StartArray(key);
+            foreach (var item in array)
+                WriteCborValue(writer, item, ancestors);
+            writer.EndArray();
+        }
+
+        ancestors.RemoveAt(ancestors.Count - 1);
+    }
 
     /// <summary>
     /// Skips the comments during reading JSON.

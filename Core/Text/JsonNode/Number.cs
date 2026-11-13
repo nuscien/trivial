@@ -143,6 +143,15 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Initializes a new instance of the JsonIntegerNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonIntegerNode(JsonIntegerNode value)
+        : this(value?.Value ?? 0)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonIntegerNode(IJsonValueNode<int> value)
         : this(value?.Value ?? 0)
     {
@@ -222,22 +231,6 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     double IObjectRef<double>.Value => Value;
 
     /// <summary>
-    /// Tests if the number value is macthed by the specific condition.
-    /// </summary>
-    /// <param name="condition">The condition to test the number value.</param>
-    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
-    public bool IsMatched(Int64Condition condition)
-        => condition == null || condition.IsMatched(Value);
-
-    /// <summary>
-    /// Tests if the number value is macthed by the specific condition.
-    /// </summary>
-    /// <param name="condition">The condition to test the number value.</param>
-    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
-    public bool IsMatched(Int32Condition condition)
-        => condition == null || condition.IsMatched(Value);
-
-    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the integer.</returns>
@@ -260,15 +253,6 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(string format, IFormatProvider provider = null)
         => provider != null ? Value.ToString(format, provider) : Value.ToString(format);
-
-    /// <summary>
-    /// Converts to a specific positional notation format string.
-    /// </summary>
-    /// <param name="type">The positional notation.</param>
-    /// <returns>A string of the number in the specific positional notation.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
-    public string ToPositionalNotationString(int type)
-        => Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1750,6 +1734,15 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// Initializes a new instance of the JsonDoubleNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonDoubleNode(JsonDoubleNode value)
+        : this(value?.Value ?? double.NaN)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonDoubleNode(IJsonValueNode<double> value)
         : this(value?.Value ?? double.NaN)
     {
@@ -1805,23 +1798,6 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     float IObjectRef<float>.Value => (float)Value;
 
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Returns the integral digits of the value; any fractional digits are discarded.
-    /// </summary>
-    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
-    public double Truncate()
-        => double.Truncate(Value);
-#endif
-
-    /// <summary>
-    /// Tests if the number value is macthed by the specific condition.
-    /// </summary>
-    /// <param name="condition">The condition to test the number value.</param>
-    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
-    public bool IsMatched(DoubleCondition condition)
-        => condition == null || condition.IsMatched(Value);
-
     /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
@@ -1845,14 +1821,6 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(string format, IFormatProvider provider = null)
         => provider != null ? Value.ToString(format, provider) : Value.ToString(format);
-
-    /// <summary>
-    /// Converts to a specific positional notation format string.
-    /// </summary>
-    /// <param name="type">The positional notation.</param>
-    /// <returns>A string of the number in the specific positional notation.</returns>
-    public string ToPositionalNotationString(int type)
-        => Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -3454,6 +3422,15 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// Initializes a new instance of the JsonDecimalNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonDecimalNode(JsonDecimalNode value)
+        : this(value?.Value ?? decimal.Zero)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonDecimalNode(IJsonValueNode<decimal> value)
         : this(value?.Value ?? decimal.Zero)
     {
@@ -3491,23 +3468,6 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     double IObjectRef<double>.Value => (double)Value;
 
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Returns the integral digits of the value; any fractional digits are discarded.
-    /// </summary>
-    /// <returns>The result of d rounded toward zero, to the nearest whole number.</returns>
-    public decimal Truncate()
-        => decimal.Truncate(Value);
-#endif
-
-    /// <summary>
-    /// Tests if the number value is macthed by the specific condition.
-    /// </summary>
-    /// <param name="condition">The condition to test the number value.</param>
-    /// <returns><c>true</c> if it is matched; otherwise, <c>false</c>.</returns>
-    public bool IsMatched(DecimalCondition condition)
-        => condition == null || condition.IsMatched(Value);
-
     /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
@@ -3531,14 +3491,6 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(string format, IFormatProvider provider = null)
         => provider != null ? Value.ToString(format, provider) : Value.ToString(format);
-
-    /// <summary>
-    /// Converts to a specific positional notation format string.
-    /// </summary>
-    /// <param name="type">The positional notation.</param>
-    /// <returns>A string of the number in the specific positional notation.</returns>
-    public string ToPositionalNotationString(int type)
-        => Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.

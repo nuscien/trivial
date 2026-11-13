@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using Trivial.Data;
 
 namespace Trivial.Web;
 
@@ -306,7 +307,7 @@ public static partial class WebFormat
             "json" or "map" or "jsonc" => Text.JsonValues.JsonMIME,
             "jsonl" => Text.JsonValues.JsonlMIME,
             "bson" => Text.JsonValues.BsonMIME,
-            "cbor" => "application/cbor",
+            "cbor" => SimpleCborStreamWriter.Mime,
             "sml" => "application/x-jackson-smile",
             "ubj" => "application/ubjson",
             "xml" or "xsl" or "xsf" or "xsd" or "config" or "xslt" or "mno" or "vml" or "wsdl" or "disco" => XmlMIME,

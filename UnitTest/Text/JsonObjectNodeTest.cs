@@ -30,6 +30,134 @@ public class JsonObjectNodeTest
     private static readonly Guid SampleGuid = new("f9524ddf-a080-44a4-b8b9-c1994946c620");
 
     [TestMethod]
+    public void WriteToCborPrimitivesAndNestedContainers()
+    {
+        var json = JsonObjectNode.Parse("{\"s\":\"\u4e2d\ud83d\ude00\",\"t\":true,\"f\":false,\"n\":null,\"o\":{},\"a\":[1,\"x\",true,false,null,{},[2],[]]}");
+        using var stream = new MemoryStream();
+        json.WriteToCbor(stream);
+        Assert.AreEqual("BF-61-73-67-E4-B8-AD-F0-9F-98-80-61-74-F5-61-66-F4-61-6E-F6-61-6F-BF-FF-61-61-9F-01-61-78-F5-F4-F6-BF-FF-9F-02-FF-9F-FF-FF-FF",
+            BitConverter.ToString(stream.ToArray()));
+        Assert.AreEqual(6, json.Count);
+        Assert.AreEqual(8, json.GetArrayValue("a").Count);
+        using var emptyStream = new MemoryStream();
+        new JsonObjectNode().WriteToCbor(emptyStream);
+        Assert.AreEqual("BF-FF", BitConverter.ToString(emptyStream.ToArray()));
+    }
+
+    [TestMethod]
+    public void WriteToCborNumbersPreservePrecision()
+    {
+        var values = new BaseJsonValueNode[]
+        {
+            new JsonIntegerNode(long.MinValue), new JsonIntegerNode(long.MaxValue),
+            new JsonDoubleNode(1.5d), new JsonDecimalNode(12.34m),
+            new JsonDecimalNode(decimal.MaxValue), new JsonDecimalNode(decimal.MinValue),
+            new JsonDoubleNode(double.NaN), new JsonDoubleNode(double.PositiveInfinity)
+        };
+        var encodings = new[]
+        {
+            "3B-7F-FF-FF-FF-FF-FF-FF-FF", "1B-7F-FF-FF-FF-FF-FF-FF-FF",
+            "FB-3F-F8-00-00-00-00-00-00", "C4-82-21-19-04-D2",
+            "C4-82-00-C2-4C-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF",
+            "C4-82-00-C3-4C-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FF-FE", "F6", "F6"
+        };
+        for (var i = 0; i < values.Length; i++)
+        {
+            var array = new JsonArrayNode();
+            array.AddRange(new[] { values[i] });
+            var json = new JsonObjectNode { { "v", values[i] }, { "a", array } };
+            using var stream = new MemoryStream();
+            json.WriteToCbor(stream);
+            Assert.AreEqual("BF-61-76-" + encodings[i] + "-61-61-9F-" + encodings[i] + "-FF-FF", BitConverter.ToString(stream.ToArray()), $"Value index {i}");
+        }
+    }
+
+    [TestMethod]
+    public void WriteToCborUndefinedAndSpecialProperties()
+    {
+        var array = new JsonArrayNode();
+        array.AddRange(new[] { JsonValues.Undefined, JsonValues.Null });
+        var json = new JsonObjectNode
+        {
+            { "a", array }, { "u", JsonValues.Undefined }, { "$x", 1 },
+            { "", string.Empty }, { "n", (string)null }
+        };
+        using var stream = new MemoryStream();
+        json.WriteToCbor(stream);
+        Assert.AreEqual("BF-62-24-78-01-61-61-9F-F6-F6-FF-60-60-61-6E-F6-FF", BitConverter.ToString(stream.ToArray()));
+        Assert.AreEqual(JsonValueKind.Undefined, json.GetValueKind("u"));
+        Assert.AreEqual(JsonValueKind.Undefined, array[0].ValueKind);
+    }
+
+    [TestMethod]
+    public void WriteToCborDateStringsRemainText()
+    {
+        var json = new JsonObjectNode { { "d", "2026-11-13T00:00:00Z" } };
+        using var stream = new MemoryStream();
+        json.WriteToCbor(stream);
+        Assert.AreEqual("BF-61-64-74-" + BitConverter.ToString(Encoding.UTF8.GetBytes("2026-11-13T00:00:00Z")) + "-FF", BitConverter.ToString(stream.ToArray()));
+    }
+
+    [TestMethod]
+    public void WriteToCborCyclesAndRepeatedReferences()
+    {
+        var shared = new JsonObjectNode { { "v", 1 } };
+        var json = new JsonObjectNode { { "a", shared }, { "b", shared }, { "c", new JsonArrayNode { shared, shared } } };
+        using var stream = new MemoryStream();
+        json.WriteToCbor(stream);
+        Assert.AreEqual("BF-61-61-BF-61-76-01-FF-61-62-BF-61-76-01-FF-61-63-9F-BF-61-76-01-FF-BF-61-76-01-FF-FF-FF", BitConverter.ToString(stream.ToArray()));
+
+        var child = new JsonObjectNode();
+        var root = new JsonObjectNode { { "c", child } };
+        child.Add("r", root);
+        using var cyclicStream = new MemoryStream();
+        Assert.ThrowsExactly<JsonException>(() => root.WriteToCbor(cyclicStream));
+        var array = new JsonArrayNode();
+        var mixed = new JsonObjectNode { { "a", array } };
+        array.Add(mixed);
+        using var mixedStream = new MemoryStream();
+        Assert.ThrowsExactly<JsonException>(() => mixed.WriteToCbor(mixedStream));
+    }
+
+    [TestMethod]
+    public void WriteToCborMaximumDepth()
+    {
+        var root = new JsonObjectNode();
+        var current = root;
+        for (var i = 1; i < 1000; i++)
+        {
+            var next = new JsonObjectNode();
+            current.Add("n", next);
+            current = next;
+        }
+
+        using var stream = new MemoryStream();
+        root.WriteToCbor(stream);
+        Assert.AreEqual(string.Concat(Enumerable.Repeat("BF-61-6E-", 999)) + "BF" + string.Concat(Enumerable.Repeat("-FF", 1000)), BitConverter.ToString(stream.ToArray()));
+        current.Add("n", new JsonObjectNode());
+        using var tooDeepStream = new MemoryStream();
+        Assert.ThrowsExactly<JsonException>(() => root.WriteToCbor(tooDeepStream));
+    }
+
+    [TestMethod]
+    public void WriteToCborStreamValidationAndOwnership()
+    {
+        var json = new JsonObjectNode { { "v", 1 } };
+        Assert.ThrowsExactly<ArgumentNullException>(() => json.WriteToCbor(null));
+        using var readOnly = new MemoryStream(new byte[0], false);
+        Assert.ThrowsExactly<ArgumentException>(() => json.WriteToCbor(readOnly));
+        using var output = new MemoryStream();
+        using var stream = new CborOutputStream(output);
+        stream.WriteByte(0x00);
+        json.WriteToCbor(stream);
+        stream.WriteByte(0x02);
+        Assert.AreEqual("00-BF-61-76-01-FF-02", BitConverter.ToString(output.ToArray()));
+        stream.FailWrites = true;
+        Assert.ThrowsExactly<IOException>(() => json.WriteToCbor(stream));
+        Assert.AreEqual("00-BF-61-76-01-FF-02", BitConverter.ToString(output.ToArray()));
+    }
+
+    [TestMethod]
     public void ConstructorAndMetadata()
     {
         var json = new JsonObjectNode();
@@ -1322,6 +1450,45 @@ public class JsonObjectNodeTest
 #if !NETFRAMEWORK
         public override int Read(Span<byte> buffer) => throw exception;
 #endif
+    }
+
+    private sealed class CborOutputStream(Stream output) : Stream
+    {
+        public bool FailWrites { get; set; }
+
+        public override bool CanRead => false;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => true;
+
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() => throw new NotSupportedException();
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            if (FailWrites) throw new IOException("Test write failure.");
+            output.Write(buffer, offset, count);
+        }
+
+        public override void WriteByte(byte value)
+        {
+            if (FailWrites) throw new IOException("Test write failure.");
+            output.WriteByte(value);
+        }
     }
 
     private sealed class SchemaHandler : System.Net.Http.HttpMessageHandler

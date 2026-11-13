@@ -78,6 +78,24 @@ You can also get the YAML string.
 var yaml = json.ToYamlString();
 ```
 
+## CBOR
+
+Write CBOR to a writable stream without any additional NuGet packages:
+
+```csharp
+using var stream = new System.IO.MemoryStream();
+json.WriteToCbor(stream);
+byte[] cbor = stream.ToArray();
+```
+
+`WriteToCbor` stream nested maps and arrays with indefinite lengths.
+Integer, double, and exact decimal values retain their node types (decimals use CBOR tag 4).
+Strings, including dates, remain text. Undefined object properties are omitted,
+while undefined array elements become null.
+As with JSON writing, properties starting with `$` are written first. Cycles and nesting beyond
+1000 containers throw `JsonException`. The stream is not flushed, closed, or repositioned;
+errors propagate and may leave partial output.
+
 ## JSON access in thread-safe
 
 For scenarios of concurrency, you can enable thread-safe mode.
