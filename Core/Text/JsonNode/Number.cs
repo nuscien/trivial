@@ -977,6 +977,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to an integer.</exception>
     public static implicit operator JsonIntegerNode(JsonValue value)
     {
         if (value is null) return null;
@@ -2620,6 +2621,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to a double floating number.</exception>
     public static implicit operator JsonDoubleNode(JsonValue value)
     {
         if (value is null) return null;
@@ -4317,6 +4319,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">The value is not a JSON value.</exception>
     public static implicit operator JsonDecimalNode(JsonNode value)
     {
         if (value is null) return null;
