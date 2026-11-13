@@ -560,7 +560,7 @@ public partial struct Angle
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (leftValue is null) return true;
             if (rightValue is null) return false;
-            return leftValue.Degrees < rightValue.Degrees;
+            return leftValue.Degrees > rightValue.Degrees;
         }
 
         /// <summary>
@@ -588,7 +588,7 @@ public partial struct Angle
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (leftValue is null) return true;
             if (rightValue is null) return false;
-            return leftValue.Degrees <= rightValue.Degrees;
+            return leftValue.Degrees >= rightValue.Degrees;
         }
 
         /// <summary>

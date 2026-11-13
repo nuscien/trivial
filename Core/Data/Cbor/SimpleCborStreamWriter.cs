@@ -10,7 +10,7 @@ namespace Trivial.Data;
 /// <summary>
 /// Writes one CBOR data item to a writable stream without buffering containers.
 /// <para>
-/// This class is obsolete and will be removed in a future version. Use the CborWriter class in .NET 12 instead.
+/// This class is obsolete and will be removed in a future version. Use the CborWriter class in .NET instead.
 /// </para>
 /// </summary>
 /// <remarks>

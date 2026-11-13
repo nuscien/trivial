@@ -10,7 +10,7 @@ Concise Binary Object Representation.
 
 Class `SimpleCborStreamWriter` writes CBOR directly to a writable `Stream`. It does not read, seek, flush, or close the stream.
 
-> This class is obsolete and will be removed in a future version. Use the `CborWriter` class in .NET 12 instead.
+> This class is obsolete and will be removed in a future version. Use the `CborWriter` class in .NET latest version (12 or higher) instead.
 
 ```csharp
 using var stream = new MemoryStream();

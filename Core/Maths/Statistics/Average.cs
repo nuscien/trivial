@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using Trivial.Reflection;
 
@@ -21,17 +22,17 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is int[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length;
             if (count < 1) return double.NaN;
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<int> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -46,17 +47,17 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is int[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length - 1;
             if (count < 1) return double.NaN;
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<int> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count - 1;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -95,17 +96,17 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is long[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length;
             if (count < 1) return double.NaN;
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<long> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -120,17 +121,17 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is long[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length - 1;
             if (count < 1) return double.NaN;
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<long> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count - 1;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -169,17 +170,40 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is float[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length;
             if (count < 1) return double.NaN;
+#if !NETFRAMEWORK
+            if (Vector.IsHardwareAccelerated && Vector<float>.IsSupported && count >= 1000 && Vector<float>.Count >= 4)
+            {
+                var step = Vector<float>.Count;
+                var vectorLength = count - count % step;
+                var vectorAverage = arr.Average();
+                var lowSquares = Vector<double>.Zero;
+                var highSquares = Vector<double>.Zero;
+                var i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    var delta = new Vector<float>(arr, i) - new Vector<float>(vectorAverage);
+                    Vector.Widen(delta, out var lowDelta, out var highDelta);
+                    lowSquares += lowDelta * lowDelta;
+                    highSquares += highDelta * highDelta;
+                }
+
+                var squareTotal = 0d;
+                for (var j = 0; j < Vector<double>.Count; j++) squareTotal += lowSquares[j] + highSquares[j];
+                for (; i < count; i++) squareTotal += Math.Pow(arr[i] - vectorAverage, 2);
+                return squareTotal / count;
+            }
+#endif
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<float> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -194,17 +218,40 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is float[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length - 1;
             if (count < 1) return double.NaN;
+#if !NETFRAMEWORK
+            if (Vector.IsHardwareAccelerated && Vector<float>.IsSupported && arr.Length >= 1000 && Vector<float>.Count >= 4)
+            {
+                var step = Vector<float>.Count;
+                var vectorLength = arr.Length - arr.Length % step;
+                var vectorAverage = arr.Average();
+                var lowSquares = Vector<double>.Zero;
+                var highSquares = Vector<double>.Zero;
+                var i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    var delta = new Vector<float>(arr, i) - new Vector<float>(vectorAverage);
+                    Vector.Widen(delta, out var lowDelta, out var highDelta);
+                    lowSquares += lowDelta * lowDelta;
+                    highSquares += highDelta * highDelta;
+                }
+
+                var squareTotal = 0d;
+                for (var j = 0; j < Vector<double>.Count; j++) squareTotal += lowSquares[j] + highSquares[j];
+                for (; i < arr.Length; i++) squareTotal += Math.Pow(arr[i] - vectorAverage, 2);
+                return squareTotal / count;
+            }
+#endif
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<float> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count - 1;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -244,17 +291,39 @@ public static partial class StatisticalMethod
         if (col == null) return float.NaN;
         if (col is float[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length;
             if (count < 1) return float.NaN;
+#if !NETFRAMEWORK
+            if (Vector.IsHardwareAccelerated && Vector<float>.IsSupported && count >= 1000 && Vector<float>.Count >= 4)
+            {
+                var step = Vector<float>.Count;
+                var vectorLength = count - count % step;
+                var vectorAverage = arr.Average();
+                var average = new Vector<float>(vectorAverage);
+                var sumSquares = Vector<float>.Zero;
+                var i = 0;
+                i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    var delta = new Vector<float>(arr, i) - average;
+                    sumSquares += delta * delta;
+                }
+
+                var squareTotal = 0f;
+                for (var j = 0; j < step; j++) squareTotal += sumSquares[j];
+                for (; i < count; i++) squareTotal += (arr[i] - vectorAverage) * (arr[i] - vectorAverage);
+                return squareTotal / count;
+            }
+#endif
+            var avg = arr.Average();
             return arr.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<float> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count;
             if (count < 1) return float.NaN;
+            var avg = list.Average();
             return list.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
         }
     }
@@ -269,17 +338,39 @@ public static partial class StatisticalMethod
         if (col == null) return float.NaN;
         if (col is float[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length - 1;
             if (count < 1) return float.NaN;
+#if !NETFRAMEWORK
+            if (Vector.IsHardwareAccelerated && Vector<float>.IsSupported && arr.Length >= 1000 && Vector<float>.Count >= 4)
+            {
+                var step = Vector<float>.Count;
+                var vectorLength = arr.Length - arr.Length % step;
+                var vectorAverage = arr.Average();
+                var average = new Vector<float>(vectorAverage);
+                var sumSquares = Vector<float>.Zero;
+                var i = 0;
+                i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    var delta = new Vector<float>(arr, i) - average;
+                    sumSquares += delta * delta;
+                }
+
+                var squareTotal = 0f;
+                for (var j = 0; j < step; j++) squareTotal += sumSquares[j];
+                for (; i < arr.Length; i++) squareTotal += (arr[i] - vectorAverage) * (arr[i] - vectorAverage);
+                return squareTotal / count;
+            }
+#endif
+            var avg = arr.Average();
             return arr.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<float> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count - 1;
             if (count < 1) return float.NaN;
+            var avg = list.Average();
             return list.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
         }
     }
@@ -319,17 +410,48 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is double[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length;
             if (count < 1) return double.NaN;
+#if !NETFRAMEWORK
+            if (Vector.IsHardwareAccelerated && Vector<double>.IsSupported && count >= 1000 && Vector<double>.Count >= 4)
+            {
+                var step = Vector<double>.Count;
+                var vectorLength = count - count % step;
+                var sum = Vector<double>.Zero;
+                var i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    sum += new Vector<double>(arr, i);
+                }
+
+                var total = 0d;
+                for (var j = 0; j < step; j++) total += sum[j];
+                for (; i < count; i++) total += arr[i];
+                var vectorAverage = total / count;
+                var average = new Vector<double>(vectorAverage);
+                var sumSquares = Vector<double>.Zero;
+                i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    var delta = new Vector<double>(arr, i) - average;
+                    sumSquares += delta * delta;
+                }
+
+                var squareTotal = 0d;
+                for (var j = 0; j < step; j++) squareTotal += sumSquares[j];
+                for (; i < count; i++) squareTotal += Math.Pow(arr[i] - vectorAverage, 2);
+                return squareTotal / count;
+            }
+#endif
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<double> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -344,17 +466,48 @@ public static partial class StatisticalMethod
         if (col == null) return double.NaN;
         if (col is double[] arr)
         {
-            var avg = arr.Average();
             var count = arr.Length - 1;
             if (count < 1) return double.NaN;
+#if !NETFRAMEWORK
+            if (Vector.IsHardwareAccelerated && Vector<double>.IsSupported && arr.Length >= 1000 && Vector<double>.Count >= 4)
+            {
+                var step = Vector<double>.Count;
+                var vectorLength = arr.Length - arr.Length % step;
+                var sum = Vector<double>.Zero;
+                var i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    sum += new Vector<double>(arr, i);
+                }
+
+                var total = 0d;
+                for (var j = 0; j < step; j++) total += sum[j];
+                for (; i < arr.Length; i++) total += arr[i];
+                var vectorAverage = total / arr.Length;
+                var average = new Vector<double>(vectorAverage);
+                var sumSquares = Vector<double>.Zero;
+                i = 0;
+                for (; i < vectorLength; i += step)
+                {
+                    var delta = new Vector<double>(arr, i) - average;
+                    sumSquares += delta * delta;
+                }
+
+                var squareTotal = 0d;
+                for (var j = 0; j < step; j++) squareTotal += sumSquares[j];
+                for (; i < arr.Length; i++) squareTotal += Math.Pow(arr[i] - vectorAverage, 2);
+                return squareTotal / count;
+            }
+#endif
+            var avg = arr.Average();
             return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
 
         if (col is not ICollection<double> list) list = col.ToList();
         {
-            var avg = list.Average();
             var count = list.Count - 1;
             if (count < 1) return double.NaN;
+            var avg = list.Average();
             return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
         }
     }
@@ -516,18 +669,14 @@ public static partial class StatisticalMethod
         }
 
         var list = col.Where(ele => ele is not null).OrderBy(keySelector).ToList();
-        var i = 0;
-        var j = list.Count - 1;
-        while (i < j)
+        if (list.Count == 0)
         {
-            if (list[i].Equals(list[j]))
-                break;
-            i++;
-            j--;
+            count = 0;
+            return defaultValue;
         }
 
-        count = j - i + 1;
-        return list[i];
+        count = list.Count % 2 == 0 ? 2 : 1;
+        return list[list.Count / 2];
     }
 
     /// <summary>

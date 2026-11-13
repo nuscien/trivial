@@ -6,9 +6,8 @@ In `Trivial.Maths` [namespace](./maths).
 
 This library contains a lot of models for spatial.
 
-## Angle and polar point
+## Polar point
 
-- `Angle` Angle.
 - `PolarPoint` The point in polar coordinates.
 - `SphericalPoint` The point in spherical coordinates.
 

@@ -257,6 +257,34 @@
       }
     },
     {
+      "name": "Angle",
+      "name#zh": "角度",
+      "dir": "Maths/Angle",
+      "file": true,
+      "end": {
+        "start": true,
+        "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Maths",
+        "assembly": "Trivial.dll"
+      }
+    },
+    {
+      "name": "Statistics",
+      "name#zh": "统计",
+      "dir": "Maths/Statistics",
+      "file": true,
+      "end": {
+        "start": true,
+        "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Maths",
+        "assembly": "Trivial.dll"
+      }
+    },
+    {
       "disable": "label",
       "name": "Network",
       "name#zh": "网络"

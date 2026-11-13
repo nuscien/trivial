@@ -8,3 +8,5 @@ using Trivial.Maths;
 - [Numerals and positional notation](./Numerals)
 - [Spatial](./Coordinate)
 - [Set](./Set)
+- [Angle](./Angle)
+- [Statistics](./Statistics)
