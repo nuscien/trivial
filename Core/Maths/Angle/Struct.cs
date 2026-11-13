@@ -431,7 +431,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     public static bool operator >(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return false;
-        return leftValue.Degrees < rightValue.Degrees;
+        return leftValue.Degrees > rightValue.Degrees;
     }
 
     /// <summary>
@@ -455,7 +455,7 @@ public partial struct Angle : IAngle, IObjectRef<double>, IComparable, IComparab
     public static bool operator >=(Angle leftValue, IAngle rightValue)
     {
         if (rightValue is null) return false;
-        return leftValue.Degrees <= rightValue.Degrees;
+        return leftValue.Degrees >= rightValue.Degrees;
     }
 
     /// <summary>

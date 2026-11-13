@@ -283,7 +283,11 @@ public static partial class WebFormat
             "vp9" => "video/vp9",
 
             // Text
-            "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" or "bas" or "cnf" or "xdr" or "asm" or "vcs" or "lrc" => Text.StringExtensions.PlainTextMIME,
+            "txt" or "text" or "log" or "def" or "gitignore" or "editorconfig" or "bas" or "xdr" or "lrc" => Text.StringExtensions.PlainTextMIME,
+            "ini" => "text/x-ini",
+            "asm" => "text/x-asm",
+            "vcs" => "text/x-vcalendar",
+            "cnf" => "text/x-properties",
             "csv" => Text.CsvParser.MIME,
             "tsv" => Text.TsvParser.MIME,
             "md" => MarkdownMIME,
@@ -410,6 +414,7 @@ public static partial class WebFormat
             "bz3" or "tbz3" => "application/x-bzip3-compressed-tar",
             "bz4" or "tbz4" => "application/x-bzip4-compressed-tar",
             "z" => "application/x-compress",
+            "zst" => "application/zstd",
             "xar" or "pkgx" => "application/x-xar",
             "cpio" => "application/x-cpio",
 

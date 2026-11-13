@@ -1734,7 +1734,7 @@ public static partial class StatisticalMethod
             index = i;
         }
 
-        return min ?? defaultValue;
+        return has ? min : defaultValue;
     }
 
     /// <summary>
@@ -1761,7 +1761,7 @@ public static partial class StatisticalMethod
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The maximum number found; or returns defaultValue, if col is null or empty..</returns>
     public static T Max<T>(IEnumerable<T> col, T defaultValue) where T : IComparable
-        => Max(col, default, out _);
+        => Max(col, defaultValue, out _);
 
     /// <summary>
     /// Gets the maximum number of the specific collection.
@@ -1797,6 +1797,6 @@ public static partial class StatisticalMethod
             index = i;
         }
 
-        return max ?? defaultValue;
+        return has ? max : defaultValue;
     }
 }
