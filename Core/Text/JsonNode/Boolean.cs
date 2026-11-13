@@ -298,6 +298,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to a boolean.</exception>
     public static implicit operator JsonBooleanNode(JsonValue value)
     {
         if (value is null) return null;
@@ -321,6 +322,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to a boolean.</exception>
     public static implicit operator JsonBooleanNode(JsonNode value)
     {
         if (value is null) return null;

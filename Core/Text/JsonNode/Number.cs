@@ -132,6 +132,15 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// Initializes a new instance of the JsonIntegerNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonIntegerNode(JsonIntegerNode value)
+        : this(value?.Value ?? 0)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonIntegerNode(IJsonValueNode<int> value)
         : this(value?.Value ?? 0)
     {
@@ -984,6 +993,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IObjectRef<int>, 
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to an integer.</exception>
     public static implicit operator JsonIntegerNode(JsonValue value)
     {
         if (value is null) return null;
@@ -1735,6 +1745,15 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
         : base(JsonValueKind.Number, value.TotalSeconds)
     {
         IsInteger = value.Milliseconds == 0;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDoubleNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDoubleNode(JsonDoubleNode value)
+        : this(value?.Value ?? double.NaN)
+    {
     }
 
     /// <summary>
@@ -2645,6 +2664,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IObjectRef<float
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to a double floating number.</exception>
     public static implicit operator JsonDoubleNode(JsonValue value)
     {
         if (value is null) return null;
@@ -3442,6 +3462,15 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
         }
     }
 #endif
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(JsonDecimalNode value)
+        : this(value?.Value ?? decimal.Zero)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the JsonDecimalNode class.
@@ -4360,6 +4389,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IObjectRef<dou
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">The value is not a JSON value.</exception>
     public static implicit operator JsonDecimalNode(JsonNode value)
     {
         if (value is null) return null;

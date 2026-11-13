@@ -49,6 +49,16 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// Initializes a new instance of the JsonStringNode class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonStringNode(JsonStringNode value)
+        : this(value?.Value)
+    {
+        if (value is not null) ValueType = value.ValueType;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonStringNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(IJsonValueNode<string> value)
         : this(value?.Value)
     {
@@ -1818,6 +1828,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to a JSON string.</exception>
     public static implicit operator JsonStringNode(System.Text.Json.Nodes.JsonNode value)
     {
         if (value is null) return null;

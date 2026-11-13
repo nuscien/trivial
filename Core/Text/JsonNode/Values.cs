@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -2236,13 +2237,29 @@ public static class JsonValues
             if (obj is Int128 i128)
             {
                 if (i128 >= JsonIntegerNode.MinSafeInteger && i128 <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128);
-                else return new JsonStringNode(i128.ToString("g"));
+                else return new JsonStringNode(i128);
             }
 
             if (obj is UInt128 i128u)
             {
                 if (i128u <= JsonIntegerNode.MaxSafeInteger) return new JsonIntegerNode((long)i128u);
-                else return new JsonStringNode(i128u.ToString("g"));
+                else return new JsonStringNode(i128u);
+            }
+#endif
+#if NET11_0_OR_GREATER
+            if (obj is Decimal32 decimal32)
+            {
+                return new JsonDecimalNode(decimal32);
+            }
+
+            if (obj is Decimal64 decimal64)
+            {
+                return new JsonDecimalNode(decimal64);
+            }
+
+            if (obj is Decimal128 decimal128)
+            {
+                return new JsonDecimalNode(decimal128);
             }
 #endif
         }
