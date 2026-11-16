@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The exception thrown by previous task or node.
+/// Represents a failure propagated from a previous task or node rather than from the current handler.
 /// </summary>
+/// <remarks>Task flows wrap predecessor failures with the predecessor as <see cref="SourceObject"/> and the
+/// original exception as <see cref="Exception.InnerException"/>. Each subsequent failed step adds another wrapper;
+/// cancellation of the underlying predecessor task is propagated without wrapping.</remarks>
 public class PreviousTaskException : Exception
 {
     /// <summary>
@@ -45,7 +48,8 @@ public class PreviousTaskException : Exception
 #endif
 
     /// <summary>
-    /// Gets the source object that throws the inner exception.
+    /// Gets the source of the preceding failure, or null if no source was specified.
     /// </summary>
+    /// <remarks>For failures propagated by a task flow, this is the immediately preceding flow, not necessarily the root failing flow.</remarks>
     public object SourceObject { get; }
 }

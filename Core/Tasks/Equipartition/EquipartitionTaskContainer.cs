@@ -22,8 +22,9 @@ using Trivial.Web;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// Equipartition task thread-safe container with grouping.
+/// Groups in-memory equipartition tasks and selects fragments from unfinished tasks.
 /// </summary>
+/// <remarks>Concurrent access and persistence require external coordination.</remarks>
 public class EquipartitionTaskContainer
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

@@ -20,12 +20,12 @@ using Trivial.Web;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// Equipartition fragment task and its thread-safe resolver.
+/// Tracks a job as a fixed collection of independently assignable fragments.
 /// </summary>
 public partial class EquipartitionTask
 {
     /// <summary>
-    /// Task fragment states.
+    /// Execution states tracked for a fragment. Failure is eligible for retry; success, fatal, and ignored are terminal.
     /// </summary>
     public enum FragmentStates : byte
     {
@@ -45,17 +45,17 @@ public partial class EquipartitionTask
         Success = 2,
 
         /// <summary>
-        /// Run failed.
+        /// The attempt failed and the fragment is waiting to be retried.
         /// </summary>
         Failure = 3,
 
         /// <summary>
-        /// Retrying to process.
+        /// A retry is in progress.
         /// </summary>
         Retrying = 4,
 
         /// <summary>
-        /// Fatal.
+        /// The fragment failed permanently and is done.
         /// </summary>
         Fatal = 5,
 
@@ -115,8 +115,9 @@ public partial class EquipartitionTask
     }
 
     /// <summary>
-    /// Task fragment.
+    /// Describes a partition by identifier and index, together with its state, tag, and timestamps.
     /// </summary>
+    /// <remarks>The index is interpreted by the caller; it does not contain or calculate the partition's data.</remarks>
     public class Fragment : ISerializable, IJsonObjectHost, IIdPropertyModel
     {
         /// <summary>
@@ -248,7 +249,7 @@ public partial class EquipartitionTask
         public bool IsError => State == FragmentStates.Failure || State == FragmentStates.Fatal;
 
         /// <summary>
-        /// Gets a value indicating whether this task fragment is done but not successful (even if it is either waiting or done).
+        /// Gets whether the fragment is in failure, fatal, or ignored state; failure is not terminal.
         /// </summary>
         public bool IsErrorOrIgnored => State == FragmentStates.Failure || State == FragmentStates.Fatal || State == FragmentStates.Ignored;
 
@@ -338,7 +339,8 @@ public partial class EquipartitionTask
             => string.Format("#{0} [{1}] {2}", Index.ToString(), State.ToString(), Id);
 
         /// <summary>
-        /// Parses from a JSON string.
+        /// Parses a fragment from JSON, XML, or query-string data.
+        /// Missing or unrecognized state defaults to pending; a missing index defaults to zero.
         /// </summary>
         /// <param name="s">The string to parse.</param>
         /// <exception cref="ArgumentNullException">s was null.</exception>

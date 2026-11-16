@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// The task flow.
+/// Observes an asynchronous task and provides success handlers, exception handlers, and subsequent flows.
 /// </summary>
 /// <typeparam name="T">The type of the task result.</typeparam>
+/// <remarks>
+/// Observation starts during construction. Success and exception handlers do not change this flow's result or state.
+/// Fluent registration methods return this flow without waiting for their handlers; use their asynchronous
+/// counterparts to await handlers and observe handler exceptions. Use <c>Then</c> to create a dependent flow.
+/// </remarks>
 public class TaskFlow<T>
 {
     private readonly Task t;
@@ -23,7 +28,8 @@ public class TaskFlow<T>
     /// <summary>
     /// Initializes a new instance of the TaskFlow class.
     /// </summary>
-    /// <param name="task">The task to monitor.</param>
+    /// <param name="task">The task to observe. Supply a non-null task.</param>
+    /// <remarks>Does not start a task created with the <see cref="TaskStatus.Created"/> status.</remarks>
     public TaskFlow(Task<T> task)
     {
         t2 = task;
@@ -31,9 +37,10 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Initializes a new instance of the TaskFlow class.
+    /// Initializes a new instance of the TaskFlow class by invoking a task factory immediately.
     /// </summary>
-    /// <param name="task">The task to monitor.</param>
+    /// <param name="task">The factory to invoke once. It must return a non-null task.</param>
+    /// <remarks>Exceptions thrown by the factory before returning a task escape the constructor.</remarks>
     public TaskFlow(Func<Task<T>> task)
     {
         t2 = task();
@@ -41,40 +48,43 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// The state of the task flow.
+    /// Gets the observed state. Canceled tasks are recorded as <see cref="TaskFlowStates.Failure"/>.
     /// </summary>
     public TaskFlowStates State { get; private set; }
 
     /// <summary>
-    /// Gets the status of the task.
+    /// Gets the underlying task's status, or <see cref="TaskStatus.Created"/> if no task was supplied.
     /// </summary>
+    /// <remarks>The task may complete before the flow finishes observing it. Await <see cref="WaitAsync"/> to synchronize.</remarks>
     public TaskStatus TaskStatus => t2?.Status ?? TaskStatus.Created;
 
     /// <summary>
-    /// Gets a value that indicates whether the task has completed.
+    /// Gets whether the flow has observed success, failure, or cancellation, independently of registered handlers.
     /// </summary>
     public bool IsCompleted => State == TaskFlowStates.Success || State == TaskFlowStates.Failure;
 
     /// <summary>
-    /// Gets whether the task ran to completion.
+    /// Gets whether the flow has observed successful completion of the underlying task.
     /// </summary>
     public bool IsSuccessful => State == TaskFlowStates.Success;
 
     /// <summary>
-    /// 
+    /// Gets whether the observed exception is a <see cref="PreviousTaskException"/> whose non-null source is not this flow.
     /// </summary>
+    /// <remarks>Propagated cancellation is not wrapped and does not set this flag.</remarks>
     public bool IsExceptionThrownByPrevious => exception != null && exception is PreviousTaskException ex && ex.SourceObject != null && ex.SourceObject != this;
 
     /// <summary>
-    /// Gets whether the task instance has completed execution due to being canceled.
+    /// Gets whether the underlying task was canceled, rather than faulted with an <see cref="OperationCanceledException"/>.
     /// </summary>
     public bool IsCanceled => t2?.IsCanceled == true;
 
     /// <summary>
-    /// Appends a subsequent handler on success.
+    /// Registers a handler to receive the result only when this flow succeeds.
     /// </summary>
     /// <param name="handler">The handler to register.</param>
-    /// <returns>The flow itself.</returns>
+    /// <returns>This flow, not a flow representing the handler.</returns>
+    /// <remarks>Does not await the handler or expose its exceptions. Use <see cref="ResultToAsync(Action{T})"/> to observe completion.</remarks>
     public TaskFlow<T> ResultTo(Action<T> handler)
     {
         _ = ResultToAsync(handler);
@@ -82,10 +92,11 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a subsequent handler on success.
+    /// Registers an asynchronous handler to receive the result only when this flow succeeds.
     /// </summary>
     /// <param name="handler">The handler to register.</param>
-    /// <returns>The flow itself.</returns>
+    /// <returns>This flow, not a flow representing the handler.</returns>
+    /// <remarks>Does not await the handler or expose its exceptions. Use <see cref="ResultToAsync(Func{T, Task})"/> to observe completion.</remarks>
     public TaskFlow<T> ResultTo(Func<T, Task> handler)
     {
         _ = ResultToAsync(handler);
@@ -93,11 +104,12 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a subsequent handler on success with a specific type.
+    /// Registers a handler for a successful, non-null result assignable to the specified type.
     /// </summary>
-    /// <typeparam name="TResult">The type of task result expected.</typeparam>
+    /// <typeparam name="TResult">The expected runtime result type.</typeparam>
     /// <param name="handler">The handler to register.</param>
-    /// <returns>The flow itself.</returns>
+    /// <returns>This flow.</returns>
+    /// <remarks>Null and incompatible results are skipped. The handler is not awaited and its exceptions do not change this flow.</remarks>
     public virtual TaskFlow<T> ResultTo<TResult>(Action<TResult> handler)
     {
         _ = ResultToAsync(r =>
@@ -108,11 +120,12 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a subsequent handler on success with a specific type.
+    /// Registers an asynchronous handler for a successful, non-null result assignable to the specified type.
     /// </summary>
-    /// <typeparam name="TResult">The type of task result expected.</typeparam>
+    /// <typeparam name="TResult">The expected runtime result type.</typeparam>
     /// <param name="handler">The handler to register.</param>
-    /// <returns>The flow itself.</returns>
+    /// <returns>This flow.</returns>
+    /// <remarks>Null and incompatible results are skipped. The handler is not awaited and its exceptions do not change this flow.</remarks>
     public virtual TaskFlow<T> ResultTo<TResult>(Func<TResult, Task> handler)
     {
         _ = ResultToAsync(async r =>
@@ -123,12 +136,13 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a handler on exception thrown.
+    /// Registers a handler for an observed exception, including cancellation, that matches the specified type.
     /// </summary>
-    /// <typeparam name="TException">The type of the exception.</typeparam>
-    /// <param name="errorHandling">The error handling to register.</param>
-    /// <param name="exactType">true if the exception type is the one expected exactly; otherwise, false.</param>
-    /// <returns>The flow itself.</returns>
+    /// <typeparam name="TException">The exception type to match.</typeparam>
+    /// <param name="errorHandling">The handler to register.</param>
+    /// <param name="exactType">true to require the exact runtime type; false to also match derived types.</param>
+    /// <returns>This flow.</returns>
+    /// <remarks>Does not recover the flow or consume the exception. Use <c>CatchAsync</c> to await the handler and observe its exceptions.</remarks>
     public TaskFlow<T> Catch<TException>(Action<TException> errorHandling, bool exactType = false) where TException : Exception
     {
         _ = CatchAsync(errorHandling, exactType);
@@ -136,12 +150,13 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a handler on exception thrown.
+    /// Registers an asynchronous handler for an observed exception, including cancellation, that matches the specified type.
     /// </summary>
-    /// <typeparam name="TException">The type of the exception.</typeparam>
-    /// <param name="errorHandling">The error handling to register.</param>
-    /// <param name="exactType">true if the exception type is the one expected exactly; otherwise, false.</param>
-    /// <returns>The flow itself.</returns>
+    /// <typeparam name="TException">The exception type to match.</typeparam>
+    /// <param name="errorHandling">The handler to register.</param>
+    /// <param name="exactType">true to require the exact runtime type; false to also match derived types.</param>
+    /// <returns>This flow.</returns>
+    /// <remarks>Does not recover the flow or consume the exception. Use <c>CatchAsync</c> to await the handler and observe its exceptions.</remarks>
     public TaskFlow<T> Catch<TException>(Func<TException, Task> errorHandling, bool exactType = false) where TException : Exception
     {
         _ = CatchAsync(errorHandling, exactType);
@@ -149,10 +164,11 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Waits the result.
+    /// Waits until this flow has observed the underlying task's completion, without waiting for registered handlers.
     /// </summary>
-    /// <param name="ignoreException">true if do not throw exception even if the task is failed; otherwise, false.</param>
-    /// <returns><c>true</c> if the task is completed successfully; otherwise, <c>false</c>.</returns>
+    /// <param name="ignoreException">true to suppress the observed failure or cancellation; false to rethrow it.</param>
+    /// <returns>true on success; false on failure or cancellation when exceptions are suppressed, or if no task was supplied.</returns>
+    /// <remarks>Exception handlers do not prevent this method from rethrowing the underlying exception.</remarks>
     public async Task<bool> WaitAsync(bool ignoreException = false)
     {
         await t;
@@ -162,17 +178,19 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Gets the result.
+    /// Gets the original task, preserving its result, exception, and cancellation behavior.
     /// </summary>
-    /// <returns>The result.</returns>
+    /// <returns>The underlying task, or null if no task was supplied.</returns>
+    /// <remarks>Awaiting this task does not wait for registered handlers or guarantee that <see cref="State"/> has been updated.</remarks>
     public Task<T> ResultAsync()
        => t2;
 
     /// <summary>
-    /// Appends a subsequent handler on success.
+    /// Waits for this flow and invokes a handler only on success.
     /// </summary>
-    /// <param name="handler">The handler to register.</param>
-    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
+    /// <param name="handler">The handler to invoke.</param>
+    /// <returns>true after the handler completes; false if this flow failed or was canceled.</returns>
+    /// <remarks>Handler exceptions fault the returned task without changing this flow. Underlying task failures are not rethrown.</remarks>
     public async Task<bool> ResultToAsync(Action<T> handler)
     {
         await t;
@@ -182,10 +200,11 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a subsequent handler on success.
+    /// Waits for this flow and awaits an asynchronous handler only on success.
     /// </summary>
-    /// <param name="handler">The handler to register.</param>
-    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
+    /// <param name="handler">The handler to invoke.</param>
+    /// <returns>true after the handler completes; false if this flow failed or was canceled.</returns>
+    /// <remarks>Handler exceptions fault the returned task without changing this flow. Underlying task failures are not rethrown.</remarks>
     public async Task<bool> ResultToAsync(Func<T, Task> handler)
     {
         await t;
@@ -195,12 +214,13 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a handler on exception thrown.
+    /// Waits for this flow and invokes a handler if the observed exception matches the specified type.
     /// </summary>
-    /// <typeparam name="TException">The type of the exception.</typeparam>
-    /// <param name="errorHandling">The error handling to register.</param>
-    /// <param name="exactType">true if the exception type is the one expected exactly; otherwise, false.</param>
-    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
+    /// <typeparam name="TException">The exception type to match.</typeparam>
+    /// <param name="errorHandling">The handler to invoke.</param>
+    /// <param name="exactType">true to require the exact runtime type; false to also match derived types.</param>
+    /// <returns>true after the matching handler completes; false on success or an exception type mismatch.</returns>
+    /// <remarks>Matches the outer exception, not inner exceptions. Handler exceptions propagate without changing this flow or consuming its failure.</remarks>
     public async Task<bool> CatchAsync<TException>(Action<TException> errorHandling, bool exactType = false) where TException : Exception
     {
         await t;
@@ -211,12 +231,13 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Appends a handler on exception thrown.
+    /// Waits for this flow and awaits a handler if the observed exception matches the specified type.
     /// </summary>
-    /// <typeparam name="TException">The type of the exception.</typeparam>
-    /// <param name="errorHandling">The error handling to register.</param>
-    /// <param name="exactType">true if the exception type is the one expected exactly; otherwise, false.</param>
-    /// <returns><c>true</c> if the state matches the condition; otherwise, <c>false</c>.</returns>
+    /// <typeparam name="TException">The exception type to match.</typeparam>
+    /// <param name="errorHandling">The handler to invoke.</param>
+    /// <param name="exactType">true to require the exact runtime type; false to also match derived types.</param>
+    /// <returns>true after the matching handler completes; false on success or an exception type mismatch.</returns>
+    /// <remarks>Matches the outer exception, not inner exceptions. Handler exceptions propagate without changing this flow or consuming its failure.</remarks>
     public async Task<bool> CatchAsync<TException>(Func<TException, Task> errorHandling, bool exactType = false) where TException : Exception
     {
         await t;
@@ -227,26 +248,33 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Follows a subsequent handler on success.
+    /// Creates a dependent flow by transforming this flow's successful result.
     /// </summary>
-    /// <param name="handler">The handler to run after the current task completed.</param>
-    /// <returns>A new flow created for the handler.</returns>
+    /// <typeparam name="TResult">The result type of the new flow.</typeparam>
+    /// <param name="handler">The transformation to invoke only on success.</param>
+    /// <returns>A new flow representing the transformation.</returns>
+    /// <remarks>Predecessor failures are wrapped in <see cref="PreviousTaskException"/>; cancellation propagates without wrapping.
+    /// Exceptions from the handler itself belong to the new flow and are not wrapped.</remarks>
     public TaskFlow<TResult> Then<TResult>(Func<T, TResult> handler)
         => new(ThenAsync(handler));
 
     /// <summary>
-    /// Follows a subsequent handler on success.
+    /// Creates a dependent flow by asynchronously transforming this flow's successful result.
     /// </summary>
-    /// <param name="handler">The handler to run after the current task completed.</param>
-    /// <returns>A new flow created for the handler.</returns>
+    /// <typeparam name="TResult">The result type of the new flow.</typeparam>
+    /// <param name="handler">The transformation to invoke and await only on success.</param>
+    /// <returns>A new flow representing completion of the asynchronous transformation.</returns>
+    /// <remarks>Predecessor failures are wrapped in <see cref="PreviousTaskException"/>; cancellation propagates without wrapping.
+    /// Exceptions from the handler itself belong to the new flow and are not wrapped.</remarks>
     public TaskFlow<TResult> Then<TResult>(Func<T, Task<TResult>> handler)
         => new(ThenAsync(handler));
 
     /// <summary>
-    /// Follows a subsequent handler on success.
+    /// Transforms the successful result for a dependent flow.
     /// </summary>
-    /// <param name="handler">The handler to run after the current task completed.</param>
-    /// <returns>A new flow created for the handler.</returns>
+    /// <typeparam name="TResult">The transformed result type.</typeparam>
+    /// <param name="handler">The transformation to invoke only on success.</param>
+    /// <returns>The transformed result.</returns>
     private async Task<TResult> ThenAsync<TResult>(Func<T, TResult> handler)
     {
         try
@@ -267,10 +295,14 @@ public class TaskFlow<T>
     }
 
     /// <summary>
-    /// Follows a subsequent handler on success.
+    /// Waits for this flow and asynchronously transforms its successful result.
     /// </summary>
-    /// <param name="handler">The handler to run after the current task completed.</param>
-    /// <returns>A new flow created for the handler.</returns>
+    /// <typeparam name="TResult">The transformed result type.</typeparam>
+    /// <param name="handler">The transformation to invoke and await only on success.</param>
+    /// <returns>A task representing the transformed result, rather than a new flow.</returns>
+    /// <exception cref="PreviousTaskException">This flow failed without its underlying task being canceled.</exception>
+    /// <exception cref="OperationCanceledException">The underlying task was canceled.</exception>
+    /// <remarks>Handler exceptions propagate directly. A predecessor failure identifies this flow in <see cref="PreviousTaskException.SourceObject"/>.</remarks>
     public async Task<TResult> ThenAsync<TResult>(Func<T, Task<TResult>> handler)
     {
         try

@@ -41,10 +41,26 @@
       }
     },
     {
+      "name": "Task flow",
+      "name#zh": "任务流",
+      "dir": "Tasks/TaskFlow",
+      "file": true,
+      "file#zh": "Shuoming.md",
+      "end": {
+        "start": true,
+        "end": true
+      },
+      "data": {
+        "namespace": "Trivial.Tasks",
+        "assembly": "Trivial.dll"
+      }
+    },
+    {
       "name": "Retry policy",
       "name#zh": "重试",
       "dir": "Tasks/Retry",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true

@@ -20,6 +20,8 @@ And you can convert back by using the extension function `ToPrivatePEMString` or
 
 You can save the secret or other string in local and send it another side (client/server-side) after encryption by the public key required by that side. And send a public key registered in current container to the other side so that it can use the same mechanism to transfer the secret encrypted back and you can decrypt it by your private key.
 
+Class `RSASecretExchange` will help you to do so in both sides.
+
 Following is an example of flow, suppose one is server side and another is client side.
 
 1. Client side asks for a server encrypt key to encrypt the authorization form filled in client.

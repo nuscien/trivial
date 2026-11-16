@@ -27,7 +27,7 @@ public enum TaskFlowStates : byte
     Success = 2,
 
     /// <summary>
-    /// Faulted.
+    /// Completed with a failure or cancellation, or no underlying task was supplied.
     /// </summary>
     Failure = 3
 }

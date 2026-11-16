@@ -8,17 +8,19 @@ RSA 工具和相关模型。
 
 ## RSA parameters convert
 
-你可以将 PEM 字符串（OpenSSL RSA 密钥）或 XML 格式字符串解析为 `RSAParameters` 类。
+可以将 PEM 字符串（OpenSSL RSA 密钥）或 XML 格式字符串解析为 `RSAParameters` 类。
 
 ```csharp
 var parameters = RSAParametersConvert.Parse(pem);
 ```
 
-你也可以使用扩展函数 `ToPrivatePEMString` 或 `ToPublicPEMString` 将其转换回 PEM 字符串。你还可以使用扩展函数 `ToXElement` 或 `ToXmlDocument` 将其导出为 XML。
+也可以使用扩展函数 `ToPrivatePEMString` 或 `ToPublicPEMString` 将其转换回 PEM 字符串。你还可以使用扩展函数 `ToXElement` 或 `ToXmlDocument` 将其导出为 XML。
 
 ## RSA secret exchange
 
-你可以将本地的密钥或其他字符串加密后发送到另一方（客户端/服务器端），然后使用该方所需的公钥进行加密。并将当前容器中注册的公钥发送给另一方，以便它可以使用相同的机制将加密的密钥传回，你可以使用你的私钥进行解密。
+可以将本地的密钥或其他字符串加密后发送到另一方（客户端/服务器端），然后使用该方所需的公钥进行加密。并将当前容器中注册的公钥发送给另一方，以便它可以使用相同的机制将加密的密钥传回，你可以使用你的私钥进行解密。
+
+类型 `RSASecretExchange` 将帮助你在双方进行此操作。
 
 以下是一个流程示例，假设一方是服务器端，另一方是客户端。
 
