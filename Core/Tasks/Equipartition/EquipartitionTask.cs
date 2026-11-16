@@ -22,8 +22,15 @@ using Trivial.Web;
 namespace Trivial.Tasks;
 
 /// <summary>
-/// Equipartition fragment task and its thread-safe resolver.
+/// Tracks a job as a fixed collection of independently assignable fragments.
 /// </summary>
+/// <remarks>
+/// The caller maps each fragment index to a data partition and performs the work; this class
+/// does not split data, execute work, persist state, or coordinate multiple processes.
+/// Picking and state-changing updates use an instance lock, but update state is read before
+/// acquiring it. Reads, tag-only updates, notifications, and external persistence are not
+/// a transactional concurrency boundary; coordinate competing operations externally.
+/// </remarks>
 public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragment>
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -32,7 +39,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
 #else
     private readonly object locker = new();
 #endif
-    
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string desc;
 
@@ -41,8 +48,8 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <summary>
     /// Initializes a new instance of the EquipartitionTask class.
     /// </summary>
-    /// <param name="jobId">The job identifier.</param>
-    /// <param name="count">The fragment count.</param>
+    /// <param name="jobId">The job identifier supplied by the caller.</param>
+    /// <param name="count">The number of initially pending fragments, indexed from zero. A non-positive value creates an empty task.</param>
     public EquipartitionTask(string jobId, int count)
     {
         JobId = jobId;
@@ -55,11 +62,11 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <summary>
     /// Initializes a new instance of the EquipartitionTask class.
     /// </summary>
-    /// <param name="id">The task identifier.</param>
+    /// <param name="id">The restored task identifier; a null or whitespace value generates a new identifier.</param>
     /// <param name="jobId">The job identifier.</param>
-    /// <param name="children">The fragments.</param>
-    /// <param name="creation">The creation date time.</param>
-    /// <param name="description">The description.</param>
+    /// <param name="children">The restored fragments. Null entries and entries with blank identifiers are omitted; order and duplicate indexes are retained.</param>
+    /// <param name="creation">The restored creation time, or null to use the current local time.</param>
+    /// <param name="description">The restored description.</param>
     public EquipartitionTask(string id, string jobId, IEnumerable<Fragment> children, DateTime? creation = null, string description = null)
     {
         if (!string.IsNullOrWhiteSpace(id)) Id = id;
@@ -70,13 +77,15 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     }
 
     /// <summary>
-    /// Adds or removes the event occurs when the task fragment state or tag is changed.
+    /// Occurs after a fragment is picked, updated, or canceled, including updates that leave its state unchanged.
     /// </summary>
+    /// <remarks>The event arguments contain the fragment and its previous state. Handlers run synchronously.</remarks>
     public event EventHandler<FragmentStateEventArgs> FragmentStateChanged;
 
     /// <summary>
-    /// Adds or removes the event occurs when the task is done.
+    /// Occurs when an operation changes the task from not done to done, or cancels its remaining fragments.
     /// </summary>
+    /// <remarks>Empty tasks are already done at construction and do not raise this event then.</remarks>
     public event EventHandler HasBeenDone;
 
     /// <summary>
@@ -118,7 +127,8 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     public int Count => fragments.Count;
 
     /// <summary>
-    /// Gets a value indicating whether the task is done.
+    /// Gets whether every fragment is in a terminal state (success, fatal, or ignored).
+    /// An empty task is also considered done; done does not necessarily mean successful.
     /// </summary>
     public bool IsDone
     {
@@ -137,13 +147,14 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     public DateTime Creation { get; } = DateTime.Now;
 
     /// <summary>
-    /// Gets the latest modification date time.
+    /// Gets the latest fragment modification time, or the task creation time if there are no fragments;
+    /// changes to the task description are not included.
     /// </summary>
     public DateTime Modification
     {
         get
         {
-            return fragments.Max(ele => ele.Modification);
+            return fragments.Count < 1 ? Creation : fragments.Max(ele => ele.Modification);
         }
     }
 
@@ -159,16 +170,15 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// Gets the specific task fragment.
     /// </summary>
     /// <param name="fragmentId">The task fragment identifier.</param>
-    /// <returns>The fragment instance.</returns>
-    /// <exception cref="ArgumentNullException">fragmentId was null.</exception>
-    /// <exception cref="InvalidOperationException">No element matched.</exception>
+    /// <returns>The first matching fragment instance.</returns>
+    /// <exception cref="InvalidOperationException">No fragment matched the identifier.</exception>
     public Fragment this[string fragmentId] => fragments.First(ele => ele.Id == fragmentId);
 
     /// <summary>
     /// Tests if it contains such fragment identifier.
     /// </summary>
     /// <param name="fragmentId">The task fragment identifier.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool ContainsId(string fragmentId) => fragments.FirstOrDefault(ele => ele.Id == fragmentId) != null;
 
     /// <summary>
@@ -183,7 +193,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// </summary>
     /// <param name="fragmentId">The task fragment identifier.</param>
     /// <param name="value">The fragment instance.</param>
-    /// <returns>true if contains; otherwise, false.</returns>
+    /// <returns><c>true</c> if contains; otherwise, <c>false</c>.</returns>
     public bool TryGetByFragmentId(string fragmentId, out Fragment value)
     {
         value = TryGetByFragmentId(fragmentId);
@@ -227,7 +237,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
         => fragments.Where(ele => ele.IsError);
 
     /// <summary>
-    /// Gets the collection of the task fragment which is done but not successful (even if it is either waiting or done).
+    /// Gets fragments in failure, fatal, or ignored state. Failure is waiting, not done.
     /// </summary>
     public IEnumerable<Fragment> GetErrorOrIngoredFragments()
         => fragments.Where(ele => ele.IsErrorOrIgnored);
@@ -244,69 +254,77 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
             : fragments.Where(ele => ele.State == state || states.Contains(ele.State));
 
     /// <summary>
-    /// Picks one and start.
+    /// Picks the first fragment in the specified state, changing pending to working or failure to retrying.
+    /// Other explicitly selected states are left unchanged.
     /// </summary>
-    /// <param name="state">The task fragment state expected.</param>
-    /// <returns>A fragment.</returns>
+    /// <param name="state">The exact state to match.</param>
+    /// <returns>The selected fragment, or null if none matches.</returns>
     public Fragment Pick(FragmentStates state)
         => Pick(null, state, null);
 
     /// <summary>
-    /// Picks one and start.
+    /// Picks the first eligible fragment in collection order and starts it.
+    /// Pending becomes working and failure becomes retrying.
     /// </summary>
-    /// <param name="except">The fragment identifier except.</param>
-    /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
-    /// <returns>A fragment.</returns>
+    /// <param name="except">Fragment identifiers to exclude, or null.</param>
+    /// <param name="onlyPending">Whether to exclude failed fragments from selection.</param>
+    /// <returns>The selected fragment, or null if no eligible fragment exists.</returns>
     public Fragment Pick(IEnumerable<string> except = null, bool onlyPending = false)
         => onlyPending ? Pick(except, FragmentStates.Pending, null) : Pick(except, null, null);
 
     /// <summary>
-    /// Picks one and start.
+    /// Picks the first fragment in the exact state and assigns its tag, including null to clear it.
+    /// Pending becomes working and failure becomes retrying; other states remain unchanged.
     /// </summary>
-    /// <param name="tag">New tag.</param>
-    /// <param name="state">The task fragment state expected.</param>
-    /// <returns>A fragment.</returns>
+    /// <param name="tag">The new tag.</param>
+    /// <param name="state">The exact state to match.</param>
+    /// <returns>The selected fragment, or null if none matches.</returns>
     public Fragment Pick(string tag, FragmentStates state)
         => Pick(null, state, fragment => fragment.Tag = tag);
 
     /// <summary>
-    /// Picks one and start.
+    /// Picks the first eligible fragment in collection order, starts it, and assigns its tag.
     /// </summary>
-    /// <param name="tag">New tag.</param>
-    /// <param name="except">The fragment identifier except.</param>
-    /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
-    /// <returns>A fragment.</returns>
+    /// <param name="tag">The new tag, including null to clear it.</param>
+    /// <param name="except">Fragment identifiers to exclude, or null.</param>
+    /// <param name="onlyPending">Whether to exclude failed fragments from selection.</param>
+    /// <returns>The selected fragment, or null if no eligible fragment exists.</returns>
     public Fragment Pick(string tag, IEnumerable<string> except = null, bool onlyPending = false)
         => onlyPending ? Pick(except, FragmentStates.Pending, fragment => fragment.Tag = tag) : Pick(except, null, fragment => fragment.Tag = tag);
 
     /// <summary>
-    /// Updates the task fragment.
+    /// Updates a fragment by identifier, optionally changing its state, and replaces its tag.
     /// </summary>
+    /// <remarks>
+    /// Terminal states cannot change to another state. Returning to pending is allowed only from working.
+    /// When changing state, requesting working or retrying selects working from pending and retrying
+    /// from any other nonterminal state. Repeating the current state is accepted and still notifies listeners.
+    /// </remarks>
     /// <param name="id">The task fragment identifier.</param>
-    /// <param name="state">The new state; or null if no change.</param>
-    /// <param name="tag">The new tag.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <param name="state">The requested state, or null to update only the tag.</param>
+    /// <param name="tag">The replacement tag, including null to clear it.</param>
+    /// <returns>False if the identifier is missing or the state transition is rejected; otherwise true.</returns>
     public bool UpdateFragment(string id, FragmentStates? state, string tag) => UpdateFragment(id, state, f =>
     {
         f.Tag = tag;
     });
 
     /// <summary>
-    /// Updates the task fragment.
+    /// Updates a fragment by identifier without replacing its tag.
     /// </summary>
     /// <param name="id">The task fragment identifier.</param>
-    /// <param name="state">The new state; or null if no change.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <param name="state">The requested state.</param>
+    /// <returns>False if the identifier is missing or the state transition is rejected; otherwise true.</returns>
     public bool UpdateFragment(string id, FragmentStates state)
         => UpdateFragment(id, state, null as Action<Fragment>);
 
     /// <summary>
-    /// Updates the task fragment.
+    /// Updates the matching fragment by identifier and replaces its tag. A separate supplied instance is synchronized on success.
     /// </summary>
-    /// <param name="fragment">The task fragment instance.</param>
-    /// <param name="state">The new state; or null if no change.</param>
-    /// <param name="tag">The new tag.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <param name="fragment">The fragment or a restored copy with the same identifier.</param>
+    /// <param name="state">The requested state, or null to update only the tag.</param>
+    /// <param name="tag">The replacement tag, including null to clear it.</param>
+    /// <returns>False if the fragment is missing or the state transition is rejected; otherwise true.</returns>
     public bool UpdateFragment(Fragment fragment, FragmentStates? state, string tag) => UpdateFragment(fragment?.Id, state, f =>
     {
         f.Tag = tag;
@@ -317,11 +335,11 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     });
 
     /// <summary>
-    /// Updates the task fragment.
+    /// Updates the matching fragment by identifier without replacing its tag. A separate supplied instance is synchronized on success.
     /// </summary>
-    /// <param name="fragment">The task fragment instance.</param>
-    /// <param name="state">The new state; or null if no change.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <param name="fragment">The fragment or a restored copy with the same identifier.</param>
+    /// <param name="state">The requested state.</param>
+    /// <returns>False if the fragment is missing or the state transition is rejected; otherwise true.</returns>
     public bool UpdateFragment(Fragment fragment, FragmentStates state) => UpdateFragment(fragment?.Id, state, f =>
     {
         if (fragment == f) return;
@@ -331,7 +349,9 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     });
 
     /// <summary>
-    /// Cancels.
+    /// Marks all nonterminal fragments ignored, notifies once per changed fragment, then signals completion.
+    /// Already terminal fragments are untouched; calling this with no remaining fragments does nothing.
+    /// This does not interrupt work already running outside this instance.
     /// </summary>
     public void Cancel()
     {
@@ -374,12 +394,12 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
         sb.Append("{");
         sb.AppendFormat(
             CultureInfo.InvariantCulture,
-            "\"id\":{0},\"job\":{1},\"creation\":{2},\"update\":{3}\"done\":{4}",
+            "\"id\":{0},\"job\":{1},\"creation\":\"{2}\",\"update\":\"{3}\",\"done\":{4}",
             JsonStringNode.ToJson(Id),
             JsonStringNode.ToJson(JobId),
             WebFormat.ParseDate(Creation),
             WebFormat.ParseDate(Modification),
-            IsDone);
+            IsDone ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString);
         if (desc != null) sb.Append($",\"desc\":{JsonStringNode.ToJson(desc)}");
         if (additionalFragment != null) sb.Append($",\"fragment\":{additionalFragment.ToJsonString()}");
         if (containFragments)
@@ -471,7 +491,7 @@ public partial class EquipartitionTask : IReadOnlyList<EquipartitionTask.Fragmen
     /// <param name="id">The task fragment identifier.</param>
     /// <param name="state">The new state; or null if no change.</param>
     /// <param name="callback">The success callback.</param>
-    /// <returns>true if update succeeded; otherwise, false.</returns>
+    /// <returns><c>true</c> if update succeeded; otherwise, <c>false</c>.</returns>
     private bool UpdateFragment(string id, FragmentStates? state, Action<Fragment> callback)
     {
         if (string.IsNullOrWhiteSpace(id)) return false;
