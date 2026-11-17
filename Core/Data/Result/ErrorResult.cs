@@ -92,6 +92,18 @@ public class ErrorMessageResult : MessageResult
     {
         ErrorCode = errorCode;
     }
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <param name="kind">The error kind.</param>
+    public ErrorMessageResult(string message, ChangeErrorKinds kind) : base(message)
+    {
+        SetError(kind);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
     /// </summary>

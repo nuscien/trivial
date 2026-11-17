@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Data;
@@ -18,6 +19,7 @@ namespace Trivial.Data;
 /// for flushing and disposing it. This writer is not thread-safe and must not be reused after
 /// a stream write fails. Unspecified DateTime values are interpreted as UTC.
 /// </remarks>
+[Guid("594FB659-B043-4B23-9C42-56A49B1F3D80")]
 public sealed class SimpleCborStreamWriter
 {
     public const string Mime = "application/cbor";

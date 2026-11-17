@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Trivial.Collection;
 using Trivial.Reflection;
 
 namespace Trivial.Data;
@@ -372,6 +373,17 @@ public class DataEventArgs<T> : EventArgs, IObjectRef<T>
     public DataEventArgs(T data, string message) : this(data)
     {
         Message = message;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DataEventArgs class.
+    /// </summary>
+    /// <param name="result">The data result.</param>
+    public DataEventArgs(DataResult<T> result)
+    {
+        if (result is null) return;
+        Data = result.Data;
+        Message = result.Message;
     }
 
     /// <summary>

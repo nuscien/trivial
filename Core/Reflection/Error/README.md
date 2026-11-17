@@ -8,7 +8,7 @@ You can handle the exception as what you want.
 
 ## Customized exception handler
 
-Since you may customize some exception handlers instead to set a list of exception type for catching, you can code like below. P.S.: You need use namespace `Trivial.Tasks` firstly.
+Since you may customize some exception handlers instead to set a list of exception type for catching, you can code like below.
 
 ```csharp
 // Create an instance.

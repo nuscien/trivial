@@ -60,7 +60,7 @@ public interface ICollectionResult<T>
 }
 
 /// <summary>
-/// The collection data result.
+/// The collection result can represent a complete array or one page.
 /// </summary>
 /// <typeparam name="T">The type of item.</typeparam>
 [DataContract]

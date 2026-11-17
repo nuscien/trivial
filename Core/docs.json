@@ -408,6 +408,7 @@
       "name#zh": "对称加密",
       "dir": "Security/Symmetric",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -422,6 +423,7 @@
       "name#zh": "安全字符串",
       "dir": "Security/Info",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -510,6 +512,7 @@
       "name#zh": "监听属性",
       "dir": "Reflection/Observable",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -524,6 +527,7 @@
       "name#zh": "单例和更新",
       "dir": "Reflection/Objects",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
@@ -535,9 +539,10 @@
     },
     {
       "name": "Error handling",
-      "name#zh": "错误处理",
+      "name#zh": "异常处理",
       "dir": "Reflection/Error",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true

@@ -61,6 +61,16 @@ public static class TokenPropertyKeys
         public const string NotFound = "not_found";
 
         /// <summary>
+        /// The operation is forbidden.
+        /// </summary>
+        public const string Forbidden = "forbidden";
+
+        /// <summary>
+        /// The operation is not authorized.
+        /// </summary>
+        public const string Unauthorized = "unauthorized";
+
+        /// <summary>
         /// The client is not authorized to request an access token using this method.
         /// </summary>
         public const string UnauthorizedClientTraditional = "UnauthorizedClient";
@@ -121,6 +131,11 @@ public static class TokenPropertyKeys
         /// due to a temporary overloading or maintenance of the server.
         /// </summary>
         public const string TemporarilyUnavailable = "temporarily_unavailable";
+
+        /// <summary>
+        /// Busy.
+        /// </summary>
+        public const string TooManyRequests = "too_many_requests";
 
         /// <summary>
         /// The operation is timeout.

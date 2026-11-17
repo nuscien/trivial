@@ -123,6 +123,53 @@ public class MessageResult : BaseObservableProperties
     /// </summary>
     public void CreateNewTrackingId(Guid id)
         => TrackingId = id.ToString("N");
+
+    /// <summary>
+    /// Sets the error code.
+    /// </summary>
+    /// <param name="kind">The error kind.</param>
+    public void SetError(ChangeErrorKinds kind)
+        => ErrorCode = kind switch
+        {
+            ChangeErrorKinds.None => null,
+            ChangeErrorKinds.Argument => TokenPropertyKeys.ErrorCodes.InvalidRequest,
+            ChangeErrorKinds.Unauthorized => TokenPropertyKeys.ErrorCodes.Unauthorized,
+            ChangeErrorKinds.Forbidden => TokenPropertyKeys.ErrorCodes.Forbidden,
+            ChangeErrorKinds.NotFound => TokenPropertyKeys.ErrorCodes.NotFound,
+            ChangeErrorKinds.Key => "invalid_key",
+            ChangeErrorKinds.Validation => "validation_error",
+            ChangeErrorKinds.Unsupported => "unsupported",
+            ChangeErrorKinds.Provider => "provider_error",
+            ChangeErrorKinds.Conflict => "conflict",
+            ChangeErrorKinds.Busy => TokenPropertyKeys.ErrorCodes.TooManyRequests,
+            ChangeErrorKinds.Canceled => TokenPropertyKeys.ErrorCodes.Aborted,
+            ChangeErrorKinds.Timeout => TokenPropertyKeys.ErrorCodes.Timeout,
+            ChangeErrorKinds.Service => TokenPropertyKeys.ErrorCodes.ServerError,
+            ChangeErrorKinds.Application => TokenPropertyKeys.ErrorCodes.ServerError,
+            _ => TokenPropertyKeys.ErrorCodes.Unknown,
+        };
+
+    /// <summary>
+    /// Sets the error code.
+    /// </summary>
+    /// <param name="kind">The error kind.</param>
+    /// <param name="message">The message.</param>
+    public void SetError(ChangeErrorKinds kind, string message)
+    {
+        SetError(kind);
+        Message = message;
+    }
+
+    /// <summary>
+    /// Sets the error code.
+    /// </summary>
+    /// <param name="code">The error code.</param>
+    /// <param name="message">The message.</param>
+    public void SetError(string code, string message)
+    {
+        ErrorCode = code;
+        Message = message;
+    }
 }
 
 /// <summary>

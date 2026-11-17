@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
 using Trivial.Maths;
@@ -54,6 +55,7 @@ public interface ICriteria
 /// <summary>
 /// Collection query criteria.
 /// </summary>
+[Guid("53241FBF-7DB1-48DC-A9F8-94DB37D3F9B8")]
 public sealed class CollectionCriteria : List<ICriteria>, ICriteria, IJsonObjectHost
 {
     /// <summary>
@@ -312,6 +314,7 @@ public sealed class CollectionCriteria : List<ICriteria>, ICriteria, IJsonObject
 /// <summary>
 /// Property query criteria.
 /// </summary>
+[Guid("BB1C68B4-7FAB-4234-8423-B5BF8FA26316")]
 public sealed class PropertyCriteria : ICriteria, IJsonObjectHost
 {
     /// <summary>
