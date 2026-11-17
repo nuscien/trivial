@@ -61,7 +61,7 @@ public sealed class JsonWebToken<T>
         {
             if (s == null) return;
             s = s.Trim();
-            var prefix = $"{TokenInfo.BearerTokenType} ";
+            var prefix = $"{TokenPropertyKeys.BearerTokenType} ";
             if (s.IndexOf(prefix) == 0) s = s.Substring(prefix.Length);
             if (s.IndexOf(prefix) == 0) s = s.Substring(prefix.Length);
             var arr = s.Split('.');
@@ -237,7 +237,7 @@ public sealed class JsonWebToken<T>
         /// </summary>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
         public AuthenticationHeaderValue ToAuthenticationHeaderValue()
-            => new(TokenInfo.BearerTokenType, ToString());
+            => new(TokenPropertyKeys.BearerTokenType, ToString());
 
         /// <summary>
         /// Returns the JWT string.
@@ -321,7 +321,7 @@ public sealed class JsonWebToken<T>
     public static JsonWebToken<T> Parse(string jwt, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
-        var prefix = $"{TokenInfo.BearerTokenType} ";
+        var prefix = $"{TokenPropertyKeys.BearerTokenType} ";
         if (jwt.IndexOf(prefix) == 0)
         {
             if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
@@ -372,7 +372,7 @@ public sealed class JsonWebToken<T>
     public static JsonWebToken<T> Parse(string jwt, Func<T, string, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
-        var prefix = $"{TokenInfo.BearerTokenType} ";
+        var prefix = $"{TokenPropertyKeys.BearerTokenType} ";
         if (jwt.IndexOf(prefix) == 0)
         {
             if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
@@ -423,7 +423,7 @@ public sealed class JsonWebToken<T>
     public static JsonWebToken<T> Parse(string jwt, IDictionary<string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
-        var prefix = $"{TokenInfo.BearerTokenType} ";
+        var prefix = $"{TokenPropertyKeys.BearerTokenType} ";
         if (jwt.IndexOf(prefix) == 0)
         {
             if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
@@ -474,7 +474,7 @@ public sealed class JsonWebToken<T>
     public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
     {
         if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
-        var prefix = $"{TokenInfo.BearerTokenType} ";
+        var prefix = $"{TokenPropertyKeys.BearerTokenType} ";
         if (jwt.IndexOf(prefix) == 0)
         {
             if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
@@ -525,7 +525,7 @@ public sealed class JsonWebToken<T>
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
-        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenPropertyKeys.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
         try
         {
             return Parse(token.AccessToken, algorithmFactory, verify);
@@ -555,7 +555,7 @@ public sealed class JsonWebToken<T>
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
-        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenPropertyKeys.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
         try
         {
             return Parse(token.AccessToken, algorithmFactory, verify);
@@ -585,7 +585,7 @@ public sealed class JsonWebToken<T>
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
-        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenPropertyKeys.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
         try
         {
             return Parse(token.AccessToken, algorithmFactory, verify);
@@ -615,7 +615,7 @@ public sealed class JsonWebToken<T>
     {
         if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
-        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+        if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenPropertyKeys.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
         try
         {
             return Parse(token.AccessToken, algorithm, verify);
@@ -755,7 +755,7 @@ public sealed class JsonWebToken<T>
     /// </summary>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
     public AuthenticationHeaderValue ToAuthenticationHeaderValue()
-        => new(TokenInfo.BearerTokenType, ToEncodedString());
+        => new(TokenPropertyKeys.BearerTokenType, ToEncodedString());
 
     /// <summary>
     /// Returns a string that represents the current object.

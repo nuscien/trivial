@@ -27,8 +27,8 @@ public class ProtectedResourceMetadataResponse : IIdPropertyModel, INameProperty
     /// <summary>
     /// Gets or sets the identifier of the protected resource, which is a URL that uses the https scheme and has no fragment component.
     /// </summary>
-    [DataMember(Name = "resource", EmitDefaultValue = false)]
-    [JsonPropertyName("resource")]
+    [DataMember(Name = TokenPropertyKeys.Resource, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Resource)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The identifier of the protected resource, which is a URL that uses the https scheme and has no fragment component.")]
     public string Id { get; set; }
@@ -36,8 +36,8 @@ public class ProtectedResourceMetadataResponse : IIdPropertyModel, INameProperty
     /// <summary>
     /// Gets or sets a list of OAuth authorization server issuer identifiers, for authorization servers that can be used with this protected resource.
     /// </summary>
-    [DataMember(Name = "authorization_servers", EmitDefaultValue = false)]
-    [JsonPropertyName("authorization_servers")]
+    [DataMember(Name = TokenPropertyKeys.AuthorizationServers, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.AuthorizationServers)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("A list of OAuth authorization server issuer identifiers, for authorization servers that can be used with this protected resource.")]
     public List<string> AuthorizationServers { get; set; }
@@ -55,8 +55,8 @@ public class ProtectedResourceMetadataResponse : IIdPropertyModel, INameProperty
     /// <summary>
     /// Gets or sets a list of scope values, as defined in OAuth 2.0, that are used in authorization requests to request access to this protected resource.
     /// </summary>
-    [DataMember(Name = "scopes_supported", EmitDefaultValue = false)]
-    [JsonPropertyName("scopes_supported")]
+    [DataMember(Name = TokenPropertyKeys.ScopesSupported, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ScopesSupported)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("A list of scope values used in authorization requests to request access to this protected resource.")]
     public List<string> Scopes { get; set; }
@@ -65,8 +65,8 @@ public class ProtectedResourceMetadataResponse : IIdPropertyModel, INameProperty
     /// Gets or sets a list of the supported methods of sending an OAuth 2.0 bearer token to the protected resource.
     /// Defined values are "header", "body" and "query".
     /// </summary>
-    [DataMember(Name = "bearer_methods_supported", EmitDefaultValue = false)]
-    [JsonPropertyName("bearer_methods_supported")]
+    [DataMember(Name = TokenPropertyKeys.BearerMethodsSupported, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.BearerMethodsSupported)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("A list of the supported methods of sending an OAuth 2.0 bearer token to the protected resource. Defined values are header, body and query.")]
     public List<string> BearerMethods { get; set; }
@@ -83,8 +83,8 @@ public class ProtectedResourceMetadataResponse : IIdPropertyModel, INameProperty
     /// <summary>
     /// Gets or sets human-readable name of the protected resource intended for display to the end user.
     /// </summary>
-    [DataMember(Name = "resource_name", EmitDefaultValue = false)]
-    [JsonPropertyName("resource_name")]
+    [DataMember(Name = TokenPropertyKeys.ResourceName, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ResourceName)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("Human-readable name of the protected resource intended for display to the end user.")]
     public string Name { get; set; }
@@ -517,7 +517,7 @@ public class ProtectedResourceMetadataLink
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.Append(TokenInfo.BearerTokenType);
+        sb.Append(TokenPropertyKeys.BearerTokenType);
         sb.Append(' ');
         var count = sb.Length;
         FillParameter(sb);
@@ -544,7 +544,7 @@ public class ProtectedResourceMetadataLink
     {
         var sb = new StringBuilder();
         FillParameter(sb);
-        return new(TokenInfo.BearerTokenType, sb.ToString());
+        return new(TokenPropertyKeys.BearerTokenType, sb.ToString());
     }
 
     /// <summary>
@@ -568,8 +568,8 @@ public class ProtectedResourceMetadataLink
         s = s?.Trim();
         if (string.IsNullOrEmpty(s)) return null;
         if (s.StartsWith('{')) return JsonSerializer.Deserialize<ProtectedResourceMetadataLink>(s);
-        if (s.StartsWith(TokenInfo.BearerTokenType)) s = s.Substring(6).TrimStart();
-        if (s.StartsWith(TokenInfo.BearerTokenType)) s = s.Substring(6).TrimStart();
+        if (s.StartsWith(TokenPropertyKeys.BearerTokenType)) s = s.Substring(6).TrimStart();
+        if (s.StartsWith(TokenPropertyKeys.BearerTokenType)) s = s.Substring(6).TrimStart();
         if (s.Length < 2) return null;
         var col = StringExtensions.TryParseJsonStrings(s);
         var r = new ProtectedResourceMetadataLink();
@@ -590,7 +590,7 @@ public class ProtectedResourceMetadataLink
         if (col is null) return null;
         foreach (var item in col)
         {
-            if (item.Scheme != TokenInfo.BearerTokenType || string.IsNullOrWhiteSpace(item.Parameter)) continue;
+            if (item.Scheme != TokenPropertyKeys.BearerTokenType || string.IsNullOrWhiteSpace(item.Parameter)) continue;
             return TryParse(item.Parameter);
         }
 

@@ -21,155 +21,6 @@ namespace Trivial.Security;
 public class TokenInfo
 {
     /// <summary>
-    /// The error codes of token response.
-    /// </summary>
-    public static class ErrorCodeConstants
-    {
-        /// <summary>
-        /// The unknown error
-        /// </summary>
-        public const string Unknown = "unknown";
-
-        /// <summary>
-        /// The request is missing a required parameter,
-        /// includes an invalid parameter value,
-        /// includes a parameter more than once,
-        /// or is otherwise malformed.
-        /// </summary>
-        public const string InvalidRequest = "invalid_request";
-
-        /// <summary>
-        /// Client authentication failed.
-        /// </summary>
-        public const string InvalidClient = "invalid_client";
-
-        /// <summary>
-        /// The provided authorization grant or refresh token is
-        /// invalid, expired, revoked,
-        /// does not match the redirection URI used in the authorization request,
-        /// or was issued to another client.
-        /// </summary>
-        public const string InvalidGrant = "invalid_grant";
-
-        /// <summary>
-        /// The client is not authorized to request an access token using this method.
-        /// </summary>
-        public const string UnauthorizedClient = "UnauthorizedClient";
-
-        /// <summary>
-        /// The resource owner or authorization server denied the request.
-        /// </summary>
-        public const string AccessDenied = "access_denied";
-
-        /// <summary>
-        /// The authorization server does not support obtaining an access token using this method.
-        /// </summary>
-        public const string UnsupportedResponseType = "unsupported_response_type";
-
-        /// <summary>
-        /// The authorization grant type is not supported by the authorization server.
-        /// </summary>
-        public const string UnsupportedGrantType = "unsupported_grant_type";
-
-        /// <summary>
-        /// The requested scope is invalid, unknown, or malformed.
-        /// </summary>
-        public const string InvalidScope = "invalid_scope";
-
-        /// <summary>
-        /// The authorization server encountered an unexpected condition
-        /// that prevented it from fulfilling the request.
-        /// </summary>
-        public const string ServerError = "server_error";
-
-        /// <summary>
-        /// The authorization server is currently unable to handle the request
-        /// due to a temporary overloading or maintenance of the server.
-        /// </summary>
-        public const string TemporarilyUnavailable = "temporarily_unavailable";
-    }
-
-    /// <summary>
-    /// The user identifier property name.
-    /// </summary>
-    public const string TokenKey = "token";
-
-    /// <summary>
-    /// The user identifier property name.
-    /// </summary>
-    public const string UserIdProperty = "user_id";
-
-    /// <summary>
-    /// The resource identifier property name.
-    /// </summary>
-    public const string ResourceIdProperty = "res_id";
-
-    /// <summary>
-    /// The user name property name.
-    /// </summary>
-    public const string UserNameProperty = "username";
-
-    /// <summary>
-    /// The token reference identifier property name.
-    /// </summary>
-    public const string TokenIdProperty = "token_id";
-
-    /// <summary>
-    /// The access token property name.
-    /// </summary>
-    public const string AccessTokenProperty = "access_token";
-
-    /// <summary>
-    /// The token type property name.
-    /// </summary>
-    public const string TokenTypeProperty = "token_type";
-
-    /// <summary>
-    /// The refresh token property name.
-    /// </summary>
-    public const string RefreshTokenProperty = "refresh_token";
-
-    /// <summary>
-    /// The expires in property name.
-    /// </summary>
-    public const string ExpiresInProperty = "expires_in";
-
-    /// <summary>
-    /// The ID token property name.
-    /// </summary>
-    public const string IdTokenProperty = "id_token";
-
-    /// <summary>
-    /// The error code property name.
-    /// </summary>
-    public const string ErrorCodeProperty = "error";
-
-    /// <summary>
-    /// The error description property name.
-    /// </summary>
-    public const string ErrorDescriptionProperty = "error_description";
-
-    /// <summary>
-    /// The error description property name.
-    /// </summary>
-    public const string ErrorUriProperty = "error_uri";
-
-    /// <summary>
-    /// The state property name.
-    /// </summary>
-    public const string StateProperty = "state";
-
-    /// <summary>
-    /// The scope property name.
-    /// </summary>
-    public const string ScopeProperty = "scope";
-
-    /// <summary>
-    /// The token type.
-    /// </summary>
-    public const string BearerTokenType = "Bearer";
-
-    /// <summary>
     /// Initializes a new instance of the TokenInfo class.
     /// </summary>
     public TokenInfo()
@@ -200,7 +51,7 @@ public class TokenInfo
     public TokenInfo(JsonWebToken<JsonWebTokenPayload> jwt, string refreshToken, IEnumerable<string> scope = null)
     {
         Scope = ListExtensions.ToList(scope, false);
-        TokenType = BearerTokenType;
+        TokenType = TokenPropertyKeys.BearerTokenType;
         RefreshToken = refreshToken;
         if (jwt?.Payload == null) return;
         AccessToken = jwt.ToEncodedString();
@@ -241,7 +92,7 @@ public class TokenInfo
     public TokenInfo(JsonWebToken<RSASecretExchange.JsonWebTokenPayload> jwt, string refreshToken, IEnumerable<string> scope = null)
     {
         Scope = ListExtensions.ToList(scope, false);
-        TokenType = BearerTokenType;
+        TokenType = TokenPropertyKeys.BearerTokenType;
         RefreshToken = refreshToken;
         if (jwt?.Payload == null) return;
         AccessToken = jwt.ToEncodedString();
@@ -269,7 +120,7 @@ public class TokenInfo
     public TokenInfo(JsonWebToken<JsonObjectNode> jwt, string refreshToken, IEnumerable<string> scope = null)
     {
         Scope = ListExtensions.ToList(scope, false);
-        TokenType = BearerTokenType;
+        TokenType = TokenPropertyKeys.BearerTokenType;
         RefreshToken = refreshToken;
         if (jwt?.Payload == null) return;
         AccessToken = jwt.ToEncodedString();
@@ -366,22 +217,22 @@ public class TokenInfo
     /// <summary>
     /// Gets or sets the access token.
     /// </summary>
-    [DataMember(Name = AccessTokenProperty)]
-    [JsonPropertyName(AccessTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.AccessToken)]
+    [JsonPropertyName(TokenPropertyKeys.AccessToken)]
     public string AccessToken { get; set; }
 
     /// <summary>
     /// Gets or sets the token type.
     /// </summary>
-    [DataMember(Name = TokenTypeProperty)]
-    [JsonPropertyName(TokenTypeProperty)]
+    [DataMember(Name = TokenPropertyKeys.TokenType)]
+    [JsonPropertyName(TokenPropertyKeys.TokenType)]
     public string TokenType { get; set; }
 
     /// <summary>
     /// Gets or sets the expiration seconds.
     /// </summary>
-    [DataMember(Name = ExpiresInProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(ExpiresInProperty)]
+    [DataMember(Name = TokenPropertyKeys.ExpiresIn, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ExpiresIn)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? ExpiredInSecond
     {
@@ -408,24 +259,24 @@ public class TokenInfo
     /// <summary>
     /// Gets or sets the refresh token used to re-generate an access token.
     /// </summary>
-    [DataMember(Name = RefreshTokenProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(RefreshTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.RefreshToken, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.RefreshToken)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string RefreshToken { get; set; }
 
     /// <summary>
     /// Gets or sets ID token associated with the authenticated session.
     /// </summary>
-    [DataMember(Name = IdTokenProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(IdTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.IdToken, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.IdToken)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string IdToken { get; set; }
 
     /// <summary>
     /// Gets or sets the error code.
     /// </summary>
-    [DataMember(Name = ErrorCodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(ErrorCodeProperty)]
+    [DataMember(Name = TokenPropertyKeys.ErrorCode, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ErrorCode)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ErrorCode { get; set; }
 
@@ -434,8 +285,8 @@ public class TokenInfo
     /// Human-readable text providing additional information,
     /// used to assist the client developer in understanding the error that occurred.
     /// </summary>
-    [DataMember(Name = ErrorDescriptionProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(ErrorDescriptionProperty)]
+    [DataMember(Name = TokenPropertyKeys.ErrorDescription, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ErrorDescription)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ErrorDescription { get; set; }
 
@@ -444,8 +295,8 @@ public class TokenInfo
     /// A URI identifying a human-readable web page with information about the error,
     /// used to provide the client developer with additional information about the error.
     /// </summary>
-    [DataMember(Name = ErrorUriProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(ErrorUriProperty)]
+    [DataMember(Name = TokenPropertyKeys.ErrorUri, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ErrorUri)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ErrorUrl
     {
@@ -509,24 +360,24 @@ public class TokenInfo
     /// <summary>
     /// Gets or sets the state sent by client authorization request.
     /// </summary>
-    [DataMember(Name = StateProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(StateProperty)]
+    [DataMember(Name = TokenPropertyKeys.State, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.State)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string State { get; set; }
 
     /// <summary>
     /// Gets or sets the resource identifier.
     /// </summary>
-    [DataMember(Name = ResourceIdProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(ResourceIdProperty)]
+    [DataMember(Name = TokenPropertyKeys.ResourceId, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ResourceId)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string ResourceId { get; set; }
 
     /// <summary>
     /// Gets or sets the user identifier.
     /// </summary>
-    [DataMember(Name = UserIdProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(UserIdProperty)]
+    [DataMember(Name = TokenPropertyKeys.UserId, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.UserId)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string UserId { get; set; }
 
@@ -539,8 +390,8 @@ public class TokenInfo
     /// <summary>
     /// Gets or sets the scope string.
     /// </summary>
-    [DataMember(Name = ScopeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(ScopeProperty)]
+    [DataMember(Name = TokenPropertyKeys.Scope, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Scope)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ScopeString
     {
@@ -604,7 +455,7 @@ public class TokenInfo
     public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase, Cases parameterCase = Cases.Original)
     {
         if (string.IsNullOrEmpty(TokenType)) return null;
-        var scheme = StringExtensions.ToSpecificCaseInvariant(TokenType ?? BearerTokenType, schemeCase);
+        var scheme = StringExtensions.ToSpecificCaseInvariant(TokenType ?? TokenPropertyKeys.BearerTokenType, schemeCase);
         return AccessToken == null ? new(scheme) : new(scheme, StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase));
     }
 
@@ -834,7 +685,7 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// <param name="refreshToken">The refresh token.</param>
     /// <param name="scope">The permission scope.</param>
     protected BaseAccountTokenInfo(T user, string accessToken, TimeSpan expires, string refreshToken = null, IEnumerable<string> scope = null)
-        : base(BearerTokenType, accessToken, expires, refreshToken, scope)
+        : base(TokenPropertyKeys.BearerTokenType, accessToken, expires, refreshToken, scope)
     {
         User = user;
     }
@@ -971,8 +822,8 @@ public abstract class BaseAccountTokenInfo<T> : TokenInfo
     /// <summary>
     /// Gets or sets the client identifier.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.ClientId, EmitDefaultValue = true)]
-    [JsonPropertyName(TokenRequestProperties.ClientId)]
+    [DataMember(Name = TokenPropertyKeys.ClientId, EmitDefaultValue = true)]
+    [JsonPropertyName(TokenPropertyKeys.ClientId)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ClientId { get; set; }
 

@@ -33,8 +33,8 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the response responseTypes, e.g. code, token, id_token.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.ResponseType, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.ResponseType)]
+    [DataMember(Name = TokenPropertyKeys.ResponseType, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ResponseType)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The response types, e.g. code, token, id_token.")]
     public List<string> ResponseTypes { get; set; }
@@ -42,7 +42,7 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the redirect URI where authentication responses can be sent and received by client.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.RedirectUri, EmitDefaultValue = false)]
+    [DataMember(Name = TokenPropertyKeys.RedirectUri, EmitDefaultValue = false)]
     [JsonPropertyName("redirect_uri")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The redirect URI where authentication responses can be sent and received by client.")]
@@ -51,8 +51,8 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the collection of scopes.
     /// </summary>
-    [DataMember(Name = TokenInfo.ScopeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ScopeProperty)]
+    [DataMember(Name = TokenPropertyKeys.Scope, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Scope)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The scopes.")]
     public List<string> Scopes { get; set; }
@@ -78,8 +78,8 @@ public class AuthorizationEndpointRequest
     /// <summary>
     /// Gets or sets the value included in the request that is also returned in the token response. It can be a string of any content.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.State, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.State)]
+    [DataMember(Name = TokenPropertyKeys.State, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.State)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The value included in the request that is also returned in the token response.")]
     public string State { get; set; }
@@ -140,19 +140,19 @@ public class AuthorizationEndpointRequest
     /// Adds the item of response type: token.
     /// </summary>
     public void AddResponseTypeToken()
-        => AddResponseType(TokenInfo.TokenKey);
+        => AddResponseType(TokenPropertyKeys.Token);
 
     /// <summary>
     /// Adds the item of response type: id_token.
     /// </summary>
     public void AddResponseTypeIdToken()
-        => AddResponseType(TokenInfo.IdTokenProperty);
+        => AddResponseType(TokenPropertyKeys.IdToken);
 
     /// <summary>
     /// Adds the item of response type: code.
     /// </summary>
     public void AddResponseTypeCode()
-        => AddResponseType(TokenRequestProperties.Code);
+        => AddResponseType(TokenPropertyKeys.Code);
 
     /// <summary>
     /// Adds the item of scope.
@@ -227,12 +227,12 @@ public class AuthorizationEndpointRequest
     {
         var q = new QueryData();
         q.SetIfNotEmpty("client_id", ClientId);
-        q.SetIfNotEmpty(TokenRequestProperties.ResponseType, StringExtensions.Join(' ', ResponseTypes));
-        q.SetIfNotEmpty(TokenRequestProperties.RedirectUri, RedirectUri?.OriginalString);
-        q.SetIfNotEmpty(TokenInfo.ScopeProperty, StringExtensions.Join(' ', Scopes));
+        q.SetIfNotEmpty(TokenPropertyKeys.ResponseType, StringExtensions.Join(' ', ResponseTypes));
+        q.SetIfNotEmpty(TokenPropertyKeys.RedirectUri, RedirectUri?.OriginalString);
+        q.SetIfNotEmpty(TokenPropertyKeys.Scope, StringExtensions.Join(' ', Scopes));
         q.SetIfNotEmpty("nonce", Nonce);
         q.SetIfNotEmpty("response_mode", ResponseMode);
-        q.SetIfNotEmpty(TokenRequestProperties.State, State);
+        q.SetIfNotEmpty(TokenPropertyKeys.State, State);
         q.SetIfNotEmpty("prompt", Prompt);
         q.SetIfNotEmpty("login_hint", UserName);
         q.SetIfNotEmpty("domain_hint", DomainHint);
@@ -302,8 +302,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the authorization code.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.Code, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.Code)]
+    [DataMember(Name = TokenPropertyKeys.Code, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Code)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The authorization code.")]
     public string Code { get; set; }
@@ -311,8 +311,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the access token.
     /// </summary>
-    [DataMember(Name = TokenInfo.AccessTokenProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.AccessTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.AccessToken, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.AccessToken)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The access token.")]
     public string AccessToken { get; set; }
@@ -320,8 +320,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the refresh token.
     /// </summary>
-    [DataMember(Name = TokenInfo.RefreshTokenProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.RefreshTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.RefreshToken, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.RefreshToken)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The refresh token.")]
     public string RefreshToken { get; set; }
@@ -329,8 +329,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the token type.
     /// </summary>
-    [DataMember(Name = TokenInfo.TokenTypeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.TokenTypeProperty)]
+    [DataMember(Name = TokenPropertyKeys.TokenType, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.TokenType)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The token type.")]
     public string TokenType { get; set; }
@@ -338,8 +338,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the token expiration seconds.
     /// </summary>
-    [DataMember(Name = TokenInfo.ExpiresInProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ExpiresInProperty)]
+    [DataMember(Name = TokenPropertyKeys.ExpiresIn, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ExpiresIn)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The expiration seconds..")]
     public int? ExpiredInSecond
@@ -367,8 +367,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the collection of scopes.
     /// </summary>
-    [DataMember(Name = TokenInfo.ScopeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ScopeProperty)]
+    [DataMember(Name = TokenPropertyKeys.Scope, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Scope)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The scope.")]
     public List<string> Scopes { get; set; }
@@ -376,8 +376,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the ID token.
     /// </summary>
-    [DataMember(Name = TokenInfo.IdTokenProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.IdTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.IdToken, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.IdToken)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The ID token.")]
     public string IdToken { get; set; }
@@ -385,8 +385,8 @@ public class AuthorizationRedirectRequest
     /// <summary>
     /// Gets or sets the value which is from the request of authorization. It can be a string of any content.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.State, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.State)]
+    [DataMember(Name = TokenPropertyKeys.State, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.State)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [Description("The value which is from the request of authorization.")]
     public string State { get; set; }
@@ -432,7 +432,7 @@ public class AuthorizationRedirectRequest
             has = true;
         }
 
-        if (responseTypes.Contains(TokenInfo.IdTokenProperty))
+        if (responseTypes.Contains(TokenPropertyKeys.IdToken))
         {
             IdToken = token.IdToken;
             has = true;
@@ -449,7 +449,7 @@ public class AuthorizationRedirectRequest
     /// <param name="value">The access token.</param>
     public void SetAccessToken(string value)
     {
-        TokenType = TokenInfo.BearerTokenType;
+        TokenType = TokenPropertyKeys.BearerTokenType;
         AccessToken = value;
     }
 
@@ -483,7 +483,7 @@ public class AuthorizationRedirectRequest
     /// <param name="value">The ID token.</param>
     public void SetIdToken(string value)
     {
-        TokenType = TokenInfo.BearerTokenType;
+        TokenType = TokenPropertyKeys.BearerTokenType;
         IdToken = value;
     }
 
@@ -583,14 +583,14 @@ public class AuthorizationRedirectRequest
     protected virtual QueryData ToQueryData()
     {
         var q = new QueryData();
-        q.SetIfNotEmpty(TokenRequestProperties.Code, Code);
-        q.SetIfNotEmpty(TokenInfo.AccessTokenProperty, AccessToken);
-        q.SetIfNotEmpty(TokenInfo.RefreshTokenProperty, RefreshToken);
-        q.SetIfNotEmpty(TokenInfo.TokenTypeProperty, TokenType);
-        if (ExpiredInSecond.HasValue) q.Add(TokenInfo.ExpiresInProperty, ExpiredInSecond.Value);
-        q.SetIfNotEmpty(TokenInfo.ScopeProperty, StringExtensions.Join(' ', Scopes));
-        q.SetIfNotEmpty(TokenInfo.IdTokenProperty, IdToken);
-        q.SetIfNotEmpty(TokenRequestProperties.State, State);
+        q.SetIfNotEmpty(TokenPropertyKeys.Code, Code);
+        q.SetIfNotEmpty(TokenPropertyKeys.AccessToken, AccessToken);
+        q.SetIfNotEmpty(TokenPropertyKeys.RefreshToken, RefreshToken);
+        q.SetIfNotEmpty(TokenPropertyKeys.TokenType, TokenType);
+        if (ExpiredInSecond.HasValue) q.Add(TokenPropertyKeys.ExpiresIn, ExpiredInSecond.Value);
+        q.SetIfNotEmpty(TokenPropertyKeys.Scope, StringExtensions.Join(' ', Scopes));
+        q.SetIfNotEmpty(TokenPropertyKeys.IdToken, IdToken);
+        q.SetIfNotEmpty(TokenPropertyKeys.State, State);
         q.SetIfNotEmpty("nonce", Nonce);
         return q;
     }

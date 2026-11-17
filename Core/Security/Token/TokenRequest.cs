@@ -86,10 +86,10 @@ public class TokenRequest : IQueryDataGenerator
     {
         Body = body ?? new QueryDataTokenRequestBody(clientCredentials);
         if (clientCredentials == null) return;
-        var clientId = clientCredentials[TokenRequestProperties.ClientId];
-        var clientSecret = clientCredentials[TokenRequestProperties.ClientSecret];
+        var clientId = clientCredentials[TokenPropertyKeys.ClientId];
+        var clientSecret = clientCredentials[TokenPropertyKeys.ClientSecret];
         if (!string.IsNullOrEmpty(clientId) || !string.IsNullOrEmpty(clientSecret)) ClientCredentials = new AppAccessingKey(clientId, clientSecret);
-        ScopeString = clientCredentials[TokenInfo.ScopeProperty];
+        ScopeString = clientCredentials[TokenPropertyKeys.Scope];
     }
 
     /// <summary>
@@ -116,15 +116,15 @@ public class TokenRequest : IQueryDataGenerator
     /// <summary>
     /// Gets the grant type.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.GrantType)]
-    [JsonPropertyName(TokenRequestProperties.GrantType)]
+    [DataMember(Name = TokenPropertyKeys.GrantType)]
+    [JsonPropertyName(TokenPropertyKeys.GrantType)]
     public string GrantType => Body?.GrantType;
 
     /// <summary>
     /// Gets the client identifier.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.ClientId)]
-    [JsonPropertyName(TokenRequestProperties.ClientId)]
+    [DataMember(Name = TokenPropertyKeys.ClientId)]
+    [JsonPropertyName(TokenPropertyKeys.ClientId)]
     public string ClientId
     {
         get
@@ -155,8 +155,8 @@ public class TokenRequest : IQueryDataGenerator
     /// <summary>
     /// Gets or sets the scope string.
     /// </summary>
-    [DataMember(Name = TokenInfo.ScopeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ScopeProperty)]
+    [DataMember(Name = TokenPropertyKeys.Scope, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Scope)]
     public string ScopeString
     {
         get
@@ -186,10 +186,10 @@ public class TokenRequest : IQueryDataGenerator
         if (string.IsNullOrWhiteSpace(name)) return null;
         return name switch
         {
-            TokenRequestProperties.GrantType => GrantType,
-            TokenRequestProperties.ClientId => ClientId,
-            TokenRequestProperties.ClientSecret => ClientCredentials.Secret.ToUnsecureString(),
-            TokenInfo.ScopeProperty => ScopeString,
+            TokenPropertyKeys.GrantType => GrantType,
+            TokenPropertyKeys.ClientId => ClientId,
+            TokenPropertyKeys.ClientSecret => ClientCredentials.Secret.ToUnsecureString(),
+            TokenPropertyKeys.Scope => ScopeString,
             _ => Body?.Property(name),
         };
     }
@@ -201,9 +201,9 @@ public class TokenRequest : IQueryDataGenerator
     public virtual QueryData ToQueryData()
     {
         var data = Body?.ToQueryData() ?? new QueryData();
-        if (!string.IsNullOrWhiteSpace(ClientId)) data.Add(TokenRequestProperties.ClientId, ClientId);
-        if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add(TokenRequestProperties.ClientSecret, ClientCredentials.Secret.ToUnsecureString());
-        if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add(TokenInfo.ScopeProperty, ScopeString);
+        if (!string.IsNullOrWhiteSpace(ClientId)) data.Add(TokenPropertyKeys.ClientId, ClientId);
+        if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add(TokenPropertyKeys.ClientSecret, ClientCredentials.Secret.ToUnsecureString());
+        if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add(TokenPropertyKeys.Scope, ScopeString);
         return data;
     }
 
@@ -215,11 +215,11 @@ public class TokenRequest : IQueryDataGenerator
     {
         var json = Body?.ToJsonObject() ?? new JsonObjectNode();
         if (!string.IsNullOrWhiteSpace(ClientId))
-            json.SetValue(TokenRequestProperties.ClientId, ClientId);
+            json.SetValue(TokenPropertyKeys.ClientId, ClientId);
         if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
-            json.SetValue(TokenRequestProperties.ClientSecret, ClientCredentials.Secret.ToUnsecureString());
+            json.SetValue(TokenPropertyKeys.ClientSecret, ClientCredentials.Secret.ToUnsecureString());
         if (!string.IsNullOrWhiteSpace(ScopeString))
-            json.SetValue(TokenInfo.ScopeProperty, ScopeString);
+            json.SetValue(TokenPropertyKeys.Scope, ScopeString);
         return json;
     }
 
@@ -244,7 +244,7 @@ public class TokenRequest : IQueryDataGenerator
     public override string ToString()
     {
         var data = ToQueryData() ?? new();
-        data.Remove(TokenRequestProperties.ClientSecret);
+        data.Remove(TokenPropertyKeys.ClientSecret);
         return data.ToString();
     }
 
@@ -317,90 +317,4 @@ public class TokenRequest<T> : TokenRequest where T : TokenRequestBody
     /// Gets the body.
     /// </summary>
     public new T Body { get; }
-}
-
-/// <summary>
-/// The property key and value consts.
-/// </summary>
-public static class TokenRequestProperties
-{
-    /// <summary>
-    /// The grant type property name.
-    /// </summary>
-    public const string GrantType = "grant_type";
-
-    /// <summary>
-    /// The client identifier property name.
-    /// </summary>
-    public const string ClientId = "client_id";
-
-    /// <summary>
-    /// The client secret property name.
-    /// </summary>
-    public const string ClientSecret = "client_secret";
-
-    /// <summary>
-    /// The grant type value of client credentials.
-    /// </summary>
-    public const string ClientCredentials = "client_credentials";
-
-    /// <summary>
-    /// The grant type value of authorization code.
-    /// </summary>
-    public const string AuthorizationCode = "authorization_code";
-
-    /// <summary>
-    /// The code property name.
-    /// </summary>
-    public const string Code = "code";
-
-    /// <summary>
-    /// The redirect URI property name.
-    /// </summary>
-    public const string RedirectUri = "redirect_uri";
-
-    /// <summary>
-    /// The code verifier property name.
-    /// </summary>
-    public const string CodeVerifier = "code_verifier";
-
-    /// <summary>
-    /// The service provider property name.
-    /// </summary>
-    public const string ServiceProvider = "provider";
-
-    /// <summary>
-    /// The state property name.
-    /// </summary>
-    public const string State = "state";
-
-    /// <summary>
-    /// The response type property name.
-    /// </summary>
-    public const string ResponseType = "response_type";
-
-    /// <summary>
-    /// The grant type value of refresh token.
-    /// </summary>
-    public const string RefreshToken = "refresh_token";
-
-    /// <summary>
-    /// The grant type value of password.
-    /// </summary>
-    public const string Password = "password";
-
-    /// <summary>
-    /// The user name property name.
-    /// </summary>
-    public const string UserName = "username";
-
-    /// <summary>
-    /// The LDAP (Lightweight Directory Access Protocol) property name.
-    /// </summary>
-    public const string Ldap = "ldap";
-
-    /// <summary>
-    /// The token type of basic.
-    /// </summary>
-    public const string Basic = "Basic";
 }

@@ -92,6 +92,27 @@ public class ErrorMessageResult : MessageResult
     {
         ErrorCode = errorCode;
     }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ErrorMessageResult"/> class.
+    /// </summary>
+    public ErrorMessageResult(string message, string errorCode, MessageResult inner) : this(message ?? inner?.Message, errorCode)
+    {
+        if (inner is null || message is null) return;
+        var sb = new StringBuilder();
+        var hasMessage = !string.IsNullOrWhiteSpace(inner.Message);
+        if (!string.IsNullOrWhiteSpace(inner.ErrorCode))
+        {
+            sb.Append(inner.ErrorCode);
+            if (hasMessage) sb.Append(": ");
+        }
+
+        if (hasMessage) sb.Append(inner.Message);
+        Details = new();
+        if (sb.Length > 0) Details.Add(sb.ToString());
+        if (inner is not ErrorMessageResult err || err.Details is null) return;
+        Details.AddRange(err.Details);
+        LinkUrl = err.LinkUrl;
+    }
 
     /// <summary>
     /// Gets or sets the URL of help link.

@@ -172,9 +172,9 @@ public class AppAccessingKey : IIdPropertyModel
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
     public AuthenticationHeaderValue ToAuthenticationHeaderValue(string tokenType = null)
     {
-        if (string.IsNullOrWhiteSpace(tokenType)) tokenType = TokenInfo.BearerTokenType;
+        if (string.IsNullOrWhiteSpace(tokenType)) tokenType = TokenPropertyKeys.BearerTokenType;
         var secret = SecureStringExtensions.ToUnsecureString(Secret);
-        if (tokenType == TokenRequestProperties.Basic)
+        if (tokenType == TokenPropertyKeys.Basic)
             return new(tokenType, Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Id}:{secret}")));
         return secret is null ? new(tokenType) : new(tokenType, secret);
     }

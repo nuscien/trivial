@@ -265,6 +265,49 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
     }
 
     /// <summary>
+    /// Adds the next page, filling gaps between pages with default values.
+    /// </summary>
+    /// <param name="nextPage">The collection of next page to add.</param>
+    public void AddRange(CollectionResult<T> nextPage)
+    {
+        var data = InitData();
+        if (nextPage?.Data is null) return;
+        var offset = Offset ?? 0;
+        var nextOffset = nextPage.Offset ?? (data.Count + offset);
+        var before = offset - nextOffset;
+        if (before > 0)
+        {
+            Offset = offset = nextOffset;
+            while (before > 0)
+            {
+                data.Insert(0, default);
+                before--;
+            }
+        }
+
+        var i = nextOffset;
+        var nextCount = nextOffset + nextPage.Data.Count;
+        var count = Math.Min(offset + data.Count, nextCount);
+        for (; i < count; i++)
+        {
+            var item = nextPage.TryGetValue(i - nextOffset);
+            var index = i - offset;
+            if (!ReferenceEquals(data[index], item)) data[index] = item;
+        }
+
+        while (i < nextCount && offset + data.Count < nextOffset)
+        {
+            data.Add(default);
+        }
+
+        for (; i < nextCount; i++)
+        {
+            var item = nextPage.TryGetValue(i - nextOffset);
+            data.Add(item);
+        }
+    }
+
+    /// <summary>
     /// Tries to get the specific one.
     /// </summary>
     /// <param name="index">The index.</param>
@@ -375,6 +418,24 @@ public class CollectionResult<T> : MessageResult, ICollectionResult<T>
         if (col == null) return new List<T>();
         return col.Where(predicate);
     }
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value returned by selector.</typeparam>
+    /// <param name="selector">A transform function to apply to each element.</param>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+    public IEnumerable<TResult> Select<TResult>(Func<T, TResult> selector)
+        => Data.Select(selector);
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value returned by selector.</typeparam>
+    /// <param name="selector">A transform function to apply to each element.</param>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+    public IEnumerable<TResult> Select<TResult>(Func<T, int, TResult> selector)
+        => Data.Select(selector);
 
     /// <summary>
     /// Initializes the data to ensure it is not null.

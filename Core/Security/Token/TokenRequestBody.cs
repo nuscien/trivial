@@ -34,8 +34,8 @@ public abstract class TokenRequestBody(string grantType) : IQueryDataGenerator
     /// <summary>
     /// Gets the grant type.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.GrantType)]
-    [JsonPropertyName(TokenRequestProperties.GrantType)]
+    [DataMember(Name = TokenPropertyKeys.GrantType)]
+    [JsonPropertyName(TokenPropertyKeys.GrantType)]
     public string GrantType { get; } = grantType;
 
     /// <summary>
@@ -139,7 +139,7 @@ internal sealed class QueryDataTokenRequestBody : TokenRequestBody
     /// Initializes a new instance of the QueryDataTokenRequestBody class.
     /// </summary>
     /// <param name="q">The query data.</param>
-    public QueryDataTokenRequestBody(QueryData q) : base(q[TokenRequestProperties.GrantType])
+    public QueryDataTokenRequestBody(QueryData q) : base(q[TokenPropertyKeys.GrantType])
     {
         query = q ?? new();
     }
@@ -172,7 +172,7 @@ public class ClientTokenRequestBody : TokenRequestBody
     /// <summary>
     /// Initializes a new instance of the ClientCredentialsTokenRequest class.
     /// </summary>
-    public ClientTokenRequestBody() : base(TokenRequestProperties.ClientCredentials)
+    public ClientTokenRequestBody() : base(TokenPropertyKeys.ClientCredentials)
     {
     }
 
@@ -200,7 +200,7 @@ public class ClientTokenRequestBody : TokenRequestBody
     private void Fill(QueryData q)
     {
         if (q == null) return;
-        var grantType = q[TokenRequestProperties.GrantType];
+        var grantType = q[TokenPropertyKeys.GrantType];
         if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
     }
 
@@ -245,7 +245,7 @@ public class CodeTokenRequestBody : TokenRequestBody
     /// <summary>
     /// Initializes a new instance of the CodeTokenRequest class.
     /// </summary>
-    public CodeTokenRequestBody() : base(TokenRequestProperties.AuthorizationCode)
+    public CodeTokenRequestBody() : base(TokenPropertyKeys.AuthorizationCode)
     {
     }
 
@@ -273,29 +273,29 @@ public class CodeTokenRequestBody : TokenRequestBody
     /// <summary>
     /// Gets or sets the authorization code.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.Code)]
-    [JsonPropertyName(TokenRequestProperties.Code)]
+    [DataMember(Name = TokenPropertyKeys.Code)]
+    [JsonPropertyName(TokenPropertyKeys.Code)]
     public string Code { get; set; }
 
     /// <summary>
     /// Gets or sets the redirect URI.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.RedirectUri, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.RedirectUri)]
+    [DataMember(Name = TokenPropertyKeys.RedirectUri, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.RedirectUri)]
     public Uri RedirectUri { get; set; }
 
     /// <summary>
     /// Gets or sets the code verifier.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.CodeVerifier, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.CodeVerifier)]
+    [DataMember(Name = TokenPropertyKeys.CodeVerifier, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.CodeVerifier)]
     public string CodeVerifier { get; set; }
 
     /// <summary>
     /// Gets or sets the service provider.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.ServiceProvider, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.ServiceProvider)]
+    [DataMember(Name = TokenPropertyKeys.ServiceProvider, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ServiceProvider)]
     public string ServiceProvider { get; set; }
 
     /// <summary>
@@ -321,16 +321,16 @@ public class CodeTokenRequestBody : TokenRequestBody
     private void Fill(QueryData q)
     {
         if (q == null) return;
-        var grantType = q[TokenRequestProperties.GrantType];
+        var grantType = q[TokenPropertyKeys.GrantType];
         if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
-        var code = q[TokenRequestProperties.Code];
-        if (code != null) Code = q[TokenRequestProperties.Code];
-        var codeVerifier = q[TokenRequestProperties.CodeVerifier];
+        var code = q[TokenPropertyKeys.Code];
+        if (code != null) Code = q[TokenPropertyKeys.Code];
+        var codeVerifier = q[TokenPropertyKeys.CodeVerifier];
         if (codeVerifier != null) CodeVerifier = codeVerifier;
-        var redirectUri = q[TokenRequestProperties.RedirectUri];
+        var redirectUri = q[TokenPropertyKeys.RedirectUri];
         if (redirectUri != null) RedirectUri = redirectUri == string.Empty ? null : new Uri(redirectUri, UriKind.RelativeOrAbsolute);
-        var provider = q[TokenRequestProperties.ServiceProvider];
-        if (provider != null) ServiceProvider = q[TokenRequestProperties.ServiceProvider];
+        var provider = q[TokenPropertyKeys.ServiceProvider];
+        if (provider != null) ServiceProvider = q[TokenPropertyKeys.ServiceProvider];
     }
 
     /// <summary>
@@ -374,7 +374,7 @@ public class RefreshTokenRequestBody : TokenRequestBody
     /// <summary>
     /// Initializes a new instance of the TokenRequest class.
     /// </summary>
-    public RefreshTokenRequestBody() : base(TokenRequestProperties.RefreshToken)
+    public RefreshTokenRequestBody() : base(TokenPropertyKeys.RefreshToken)
     {
     }
 
@@ -398,8 +398,8 @@ public class RefreshTokenRequestBody : TokenRequestBody
     /// <summary>
     /// Gets or sets the refresh token.
     /// </summary>
-    [DataMember(Name = TokenInfo.RefreshTokenProperty)]
-    [JsonPropertyName(TokenInfo.RefreshTokenProperty)]
+    [DataMember(Name = TokenPropertyKeys.RefreshToken)]
+    [JsonPropertyName(TokenPropertyKeys.RefreshToken)]
     public string RefreshToken { get; set; }
 
     /// <summary>
@@ -426,9 +426,9 @@ public class RefreshTokenRequestBody : TokenRequestBody
     private void Fill(QueryData q)
     {
         if (q == null) return;
-        var grantType = q[TokenRequestProperties.GrantType];
+        var grantType = q[TokenPropertyKeys.GrantType];
         if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
-        var refreshToken = q[TokenInfo.RefreshTokenProperty];
+        var refreshToken = q[TokenPropertyKeys.RefreshToken];
         if (refreshToken != null) RefreshToken = refreshToken;
     }
 
@@ -478,7 +478,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <summary>
     /// Initializes a new instance of the TokenRequest class.
     /// </summary>
-    public PasswordTokenRequestBody() : base(TokenRequestProperties.Password)
+    public PasswordTokenRequestBody() : base(TokenPropertyKeys.Password)
     {
     }
 
@@ -487,7 +487,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// </summary>
     /// <param name="credential">A network credential instance.</param>
     /// <param name="ignoreDomain">true if ignore the domain; otherwise, set user name as domain and user name.</param>
-    public PasswordTokenRequestBody(NetworkCredential credential, bool ignoreDomain = false) : base(TokenRequestProperties.Password)
+    public PasswordTokenRequestBody(NetworkCredential credential, bool ignoreDomain = false) : base(TokenPropertyKeys.Password)
     {
         if (string.IsNullOrWhiteSpace(credential.Domain) || ignoreDomain || credential.UserName.Contains('@'))
         {
@@ -540,8 +540,8 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <summary>
     /// Gets or sets the user name.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.UserName)]
-    [JsonPropertyName(TokenRequestProperties.UserName)]
+    [DataMember(Name = TokenPropertyKeys.UserName)]
+    [JsonPropertyName(TokenPropertyKeys.UserName)]
     public string UserName { get; set; }
 
     /// <summary>
@@ -553,8 +553,8 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     /// <summary>
     /// Gets or sets the address of Lightweight Directory Access Protocol.
     /// </summary>
-    [DataMember(Name = TokenRequestProperties.Ldap, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenRequestProperties.Ldap)]
+    [DataMember(Name = TokenPropertyKeys.Ldap, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.Ldap)]
     public string Ldap { get; set; }
 
     /// <summary>
@@ -578,7 +578,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
         sb.Append(':');
         if (Password != null && Password.Length > 0) sb.Append(Password.ToUnsecureString());
         return new AuthenticationHeaderValue(
-            StringExtensions.ToSpecificCaseInvariant(TokenRequestProperties.Basic, schemeCase),
+            StringExtensions.ToSpecificCaseInvariant(TokenPropertyKeys.Basic, schemeCase),
             Convert.ToBase64String((encoding ?? Encoding.UTF8).GetBytes(sb.ToString())));
     }
 
@@ -604,7 +604,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     public override QueryData ToQueryData()
     {
         var query = base.ToQueryData() ?? new();
-        query[TokenRequestProperties.Password] = Password.ToUnsecureString();
+        query[TokenPropertyKeys.Password] = Password.ToUnsecureString();
         return query;
     }
 
@@ -640,7 +640,7 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     internal protected override JsonObjectNode ToJsonObject()
     {
         var json = base.ToJsonObject() ?? new();
-        json.SetValue(TokenRequestProperties.Password, Password.ToUnsecureString());
+        json.SetValue(TokenPropertyKeys.Password, Password.ToUnsecureString());
         return json;
     }
 
@@ -653,13 +653,13 @@ public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredent
     private void Fill(QueryData q)
     {
         if (q == null) return;
-        var grantType = q[TokenRequestProperties.GrantType];
+        var grantType = q[TokenPropertyKeys.GrantType];
         if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
-        var userName = q[TokenRequestProperties.UserName];
+        var userName = q[TokenPropertyKeys.UserName];
         if (userName != null) UserName = userName;
-        var password = q[TokenRequestProperties.Password];
+        var password = q[TokenPropertyKeys.Password];
         if (password != null) Password = password == string.Empty ? null : password.ToSecure();
-        var ldap = q[TokenRequestProperties.Ldap];
+        var ldap = q[TokenPropertyKeys.Ldap];
         if (ldap != null) Ldap = ldap;
     }
 

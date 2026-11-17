@@ -80,7 +80,7 @@ public class JwtUnitTest
         };
         var s = req.ToString();
         req = ProtectedResourceMetadataLink.TryParse(s);
-        Assert.AreEqual(TokenInfo.BearerTokenType, req.ToAuthenticationHeader()?.Scheme);
+        Assert.AreEqual(TokenPropertyKeys.BearerTokenType, req.ToAuthenticationHeader()?.Scheme);
         Assert.IsNotNull(req?.Uri);
         Assert.AreEqual(uri.OriginalString, req.Url);
         Assert.AreEqual(realm, req.Realm);

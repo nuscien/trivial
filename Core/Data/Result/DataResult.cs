@@ -56,8 +56,8 @@ public class MessageResult : BaseObservableProperties
     /// <summary>
     /// Gets or sets the code of error.
     /// </summary>
-    [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
-    [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
+    [DataMember(Name = TokenPropertyKeys.ErrorCode, EmitDefaultValue = false)]
+    [JsonPropertyName(TokenPropertyKeys.ErrorCode)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The error code.")]
     public string ErrorCode
@@ -94,11 +94,23 @@ public class MessageResult : BaseObservableProperties
     }
 
     /// <summary>
+    /// Gets a value indicating whether the response is failed.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsError => !string.IsNullOrWhiteSpace(ErrorCode);
+
+    /// <summary>
     /// Gets or sets the additional optional tag.
     /// </summary>
     /// <remarks>The property is used for caller information and is not under observable.</remarks>
     [JsonIgnore]
     public object Tag { get; set; }
+
+    /// <summary>
+    /// Gets or sets the additional mapping properties from JSON.
+    /// </summary>
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> AdditionalProperties { get; set; }
 
     /// <summary>
     /// Creates a new tracking ID to use.
