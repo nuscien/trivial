@@ -359,6 +359,13 @@ public class DataEventArgs<T> : EventArgs, IObjectRef<T>
     /// <summary>
     /// Initializes a new instance of the DataEventArgs class.
     /// </summary>
+    public DataEventArgs()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the DataEventArgs class.
+    /// </summary>
     /// <param name="data">The data.</param>
     public DataEventArgs(T data)
     {

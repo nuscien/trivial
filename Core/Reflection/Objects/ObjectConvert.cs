@@ -521,7 +521,7 @@ public static class ObjectConvert
     public static void Invoke<T>(this DataEventHandler<T> handler, object sender, DataResult<T> result)
     {
         if (handler == null) return;
-        var args = result == null ? new DataEventArgs<T>(default) : new DataEventArgs<T>(result.Data, result.Message);
+        var args = result == null ? new DataEventArgs<T>() : new DataEventArgs<T>(result.Data, result.Message);
         handler(sender, args);
     }
 

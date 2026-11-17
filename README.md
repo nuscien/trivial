@@ -32,11 +32,11 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 
 ## Other Trivial libraries repo
 
-- [Science](https://github.com/nuscien/science)
-  - Chemistry
-  - Maths
-  - Messages
 - [WinKit](https://github.com/nuscien/winkit)
   - Windows Kit (WinUI components) &amp; Local Web App framework
   - Console (Command line components)
   - Web (ASP.NET components)
+- [Science](https://github.com/nuscien/science)
+  - Chemistry
+  - Maths
+  - Messages

@@ -491,8 +491,9 @@
     {
       "name": "Collection",
       "name#zh": "集合",
-      "dir": "Collection",
+      "dir": "Collection/List",
       "file": true,
+      "file#zh": "Shuoming.md",
       "end": {
         "start": true,
         "end": true
